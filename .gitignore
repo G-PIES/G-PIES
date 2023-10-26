@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# MacOS
+*.DS_Store
+
+# Research Docs
+*.pdf
