@@ -1,5 +1,5 @@
 cluster_dynamics: main.cpp
-	g++ main.cpp -o cluster_dynamics
+	g++ main.cpp -o cluster_dynamics.out
 
 clean:
-	rm cluster_dynamics
+	rm *.out
