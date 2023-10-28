@@ -11,8 +11,8 @@
 
 // Dynamic memory allocation and command-line arguments can help
 // optimize the simulation's memory usage. - Sean H.
-double interstitials[CONCENTRATION_BOUNDS];
-double vacancies[CONCENTRATION_BOUNDS];
+//double interstitials[CONCENTRATION_BOUNDS];
+//double vacancies[CONCENTRATION_BOUNDS];
 
 int concentration_bounds;   // Setting an overall global variable to hold the concentration_bounds
                             // so that we aren't forces to pass the variable to every single function. - Sean H.
@@ -135,45 +135,50 @@ int main(int argc, char* argv[])
 
     // All of the values of the results arrays should be set to -1.f, except for the very
     // first elements, which must be set to 0.f
-    double* interstitials_test = (double*)calloc(concentration_bounds, sizeof(double));
-    double* vacancies_test = (double*)calloc(concentration_bounds, sizeof(double));
+    double* interstitials = (double*)calloc(concentration_bounds, sizeof(double));
+    double* vacancies = (double*)calloc(concentration_bounds, sizeof(double));
 
     // malloc() and calloc() return a value of NULL if the memory allocation failed. We need to
     // test for that.
-    if (interstitials_test == NULL) {
+    if (interstitials == NULL) {
         fprintf(stderr, "An error occurred when allocating memory for the interstitial array.\n");
         return 1;
-    } else if (vacancies_test == NULL) {
+    } else if (vacancies == NULL) {
         fprintf(stderr, "An error occurred when allocating memory for the vacancies array.\n");
         return 2;
     } else
-        printf("$d Bytes of memory was successfully allocated for both the interstitial and vacancy arrays.", concentration_bounds * sizeof(double));
+        fprintf(stdout, "$d Bytes of memory was successfully allocated for both the interstitial and vacancy arrays.", concentration_bounds * sizeof(double));
 
     //interstitials[0] = 0.f;
     //vacancies[0] = 0.f;
 
-    interstitials_test[0] = 0.f;
-    vacancies_test[0] = 0.f;
+    // Set the first characters of the interstitials and vacancies arrays to
+    // be 0.f.
+    interstitials[0] = 0.f;
+    vacancies[0] = 0.f;
 
+    // Using memset to initialize the rest or each array to be full
+    // of -1.f.
+    // IMPORTANT: We need to offset the arrays by the size of the double datatype to
+    // ensure we only overwrite the indices from 1 to 499. - Sean H.
+    memset(interstitials + sizeof(double), -1.f, (concentration_bounds - 1) * sizeof(double));
+    memset(vacancies + sizeof(double), -1.f, (concentration_bounds - 1) * sizeof(double));
+
+    /*
     for (int i = 1; i < concentration_bounds; ++i)
     {
-        //interstitials[i] = -1.f;
-        //vacancies[i] = -1.f;
-
-        interstitials_test[i] = -1.f;
-        vacancies_test[i] = -1.f;
+        interstitials[i] = -1.f;
+        vacancies[i] = -1.f;
     }
+    */
+
     // -----------------------------------------------------------------
 
     // calculate interstitial / vacancy concentrations -----------------
     for (int n = 1; n < concentration_bounds; ++n)
     {
-        /*
-        interstitials[n] = i_clusters(n, OSIRIS, SA304);
-        vacancies[n] = v_clusters(n, OSIRIS, SA304);
-        */
-        interstitials_test[n] = i_clusters(n, interstitials_test, OSIRIS, SA304);
-        vacancies_test[n] = v_clusters(n, vacancies_test, OSIRIS, SA304);
+        interstitials[n] = i_clusters(n, interstitials, OSIRIS, SA304);
+        vacancies[n] = v_clusters(n, vacancies, OSIRIS, SA304);
     }
     // -----------------------------------------------------------------
 
@@ -181,13 +186,13 @@ int main(int argc, char* argv[])
     fprintf(stdout, "Cluster Size\t-\tInterstitials\t-\tVacancies\n\n");
     for (int n = 1; n < concentration_bounds; ++n)
     {
-        fprintf(stdout, "%d\t\t\t%8.1f\t\t%8.1f\n\n", n, interstitials_test[n], vacancies_test[n]);
+        fprintf(stdout, "%d\t\t\t%8.1f\t\t%8.1f\n\n", n, interstitials[n], vacancies[n]);
     }
     // -----------------------------------------------------------------
 
     // Free up the dynamically allocated arrays.
-    free(interstitials_test);
-    free(vacancies_test);
+    free(interstitials);
+    free(vacancies);
 
     return 0;
 }
