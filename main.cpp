@@ -149,8 +149,6 @@ int main(int argc, char* argv[])
     } else
         fprintf(stdout, "$d Bytes of memory was successfully allocated for both the interstitial and vacancy arrays.", concentration_bounds * sizeof(double));
 
-    //interstitials[0] = 0.f;
-    //vacancies[0] = 0.f;
 
     // Set the first characters of the interstitials and vacancies arrays to
     // be 0.f.
@@ -160,7 +158,9 @@ int main(int argc, char* argv[])
     // Using memset to initialize the rest or each array to be full
     // of -1.f.
     // IMPORTANT: We need to offset the arrays by the size of the double datatype to
-    // ensure we only overwrite the indices from 1 to 499. - Sean H.
+    // ensure we only overwrite the indices from 1 to concentration_bounds - 1.
+    // As such, we are only setting (concentration_bounds - 1) * sizeof(double)
+    // bytes of memory. - Sean H.
     memset(interstitials + sizeof(double), -1.f, (concentration_bounds - 1) * sizeof(double));
     memset(vacancies + sizeof(double), -1.f, (concentration_bounds - 1) * sizeof(double));
 
