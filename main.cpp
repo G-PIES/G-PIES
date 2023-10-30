@@ -1,5 +1,5 @@
 #include <iostream>
-#include <stdlib.h> // For dynamic memory allocation
+#include <cstring>
 
 #include "cluster_dynamics.hpp"
 
