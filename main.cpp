@@ -3,140 +3,43 @@
 
 #include "cluster_dynamics.hpp"
 
-#ifndef CONCENTRATION_BOUNDS
-#define CONCENTRATION_BOUNDS 100 
-#endif
 
-// result arrays of interstitials and vacancies
+// --------------------------------------------------------------------------------------------
+// GLOBALS
+NuclearReactor OSIRIS = { "OSIRIS", 2.9e-7, 330.f, .3f, .5f, .2f, .06f, .06f, .03f, .02f };
+Material SA304 = { "SA304", .45f, 1.35f, 1e-3, .6f, 4.1f, 1.7f, .6f, .5f, .7f, 63.f, .8f, 1.1f, 33, .65f, 1.f, 1e10, 4e-3 };
 
-// Dynamic memory allocation and command-line arguments can help
-// optimize the simulation's memory usage. - Sean H.
-//double interstitials[CONCENTRATION_BOUNDS];
-//double vacancies[CONCENTRATION_BOUNDS];
+int concentration_boundary;
+int simulation_time;
+int delta_time;
 
-int concentration_bounds;   // Setting an overall global variable to hold the concentration_bounds
-                            // so that we aren't forces to pass the variable to every single function. - Sean H.
+size_t* interstitials;
+size_t* vacancies;
 
-// number of clusters of N interstitials (in) per unit volume
-/* Pokor et al. 2004, 2a
-                  (1)     (2)                    (3)              (4)
-    dCi(n) / dt = Gi(n) + a[i,n+1] * Ci(n + 1) - b[i,n] * Ci(n) + c[i,n-1] * Ci(n-1)
-*/
-// The interstitial and vacancies arrays that were allocated in the main() function
-// can be passed by reference. In this case, we only need the interstitials. - Sean H.
-double i_clusters(int in, double* inters, NuclearReactor& reactor, Material& material)
-{
-    // boundary
-    if (in > concentration_bounds || in < 1) return 0;
+NuclearReactor* reactor = &OSIRIS;
+Material* material = &SA304;
+// --------------------------------------------------------------------------------------------
 
-    // if n + 1 has not yet been calculated
-    if (inters[in + 1] < 0) {
-        // Recurse down to the boundry base-case, see above.
-        inters[in + 1] = i_clusters(in + 1, inters, reactor, material);
-    }
-
-    // Using the dynamically allocated array to store the interstitial values,
-    // calculate the rates, and calculate the new quantity of interstitials. - Sean H.
-    return
-        // (1)
-        reactor.i_defect_production(in) +
-        // (2)
-        iemission_vabsorption_np1(in + 1) * inters[in + 1] -
-        // (3)
-        iemission_vabsorption_n(in) * inters[in] +
-        // (4)
-        iemission_vabsorption_nm1(in - 1) * inters[in - 1];
-    /*
-    if (interstitials[in + 1] < 0)
-    {
-        // recurse to the boundary
-        interstitials[in + 1] = i_clusters(in + 1, reactor, material);
-    }
-    */
-
-   /*
-    return
-        // (1)
-        reactor.i_defect_production(in) +
-        // (2)
-        iemission_vabsorption_np1(in + 1) * interstitials[in + 1] -
-        // (3)
-        iemission_vabsorption_n(in) * interstitials[in] +
-        // (4)
-        iemission_vabsorption_nm1(in - 1) * interstitials[in - 1];
-    */
-}
-
-// number of clusters of N vacancies (vn) per unit volume
-/* Pokor et al. 2004, 2a
-                  (1)     (2)                    (3)              (4)
-    dCv(n) / dt = Gv(n) + a[v,n+1] * Cv(n + 1) - b[v,n] * Cv(n) + c[v,n-1] * Cv(n-1)
-*/
-// The interstitial and vacancies arrays that were allocated in the main() function
-// can be passed by reference. In this case, we only need the vacancies. - Sean H.
-double v_clusters(int vn, double* vacans, NuclearReactor& reactor, Material& material)
-{
-    // boundary
-    if (vn > concentration_bounds || vn < 1) return 0;
-
-    // If n + 1 has not yet been calculated
-    if (vacans[vn + 1] < 0) {
-        // Recurse to the boundry and the base-case.
-        vacans[vn + 1] = v_clusters(vn + 1, vacans, reactor, material);
-    }
-
-    return
-        // (1)
-        reactor.v_defect_production(vn) +
-        // (2)
-        iemission_vabsorption_np1(vn + 1) * vacans[vn + 1] -
-        // (3)
-        iemission_vabsorption_n(vn) * vacans[vn] +
-        // (4)
-        iemission_vabsorption_nm1(vn - 1) * vacans[vn - 1];
-
-
-    // if n + 1 has not yet been calculated
-    /*
-    if (vacancies[vn + 1] < 0)
-    {
-        // recurse to the boundary
-        vacancies[vn + 1] = v_clusters(vn + 1, reactor, material);
-    }
-    */
-
-   /*
-    return
-        // (1)
-        reactor.v_defect_production(vn) +
-        // (2)
-        iemission_vabsorption_np1(vn + 1) * vacancies[vn + 1] -
-        // (3)
-        iemission_vabsorption_n(vn) * vacancies[vn] +
-        // (4)
-        iemission_vabsorption_nm1(vn - 1) * vacancies[vn - 1];
-    */
-
-}
 
 int main(int argc, char* argv[])
 {
+    // command-line argument parsing
     // Pass the value of the CONCENTRATION_BOUNDS via the command-line.
     // If no value was passed, we can simply rely on the previously
     // provided global CONCENTRATION_BOUNDS. If a value was provided, we can
     // update the global integer of concentration_bounds.
-    if (argc != 2) {
-        concentration_bounds = CONCENTRATION_BOUNDS;
-    } else {
-        concentration_bounds = atoi(argv[1]);
-    }
+    if (argc > 1) concentration_boundary = atoi(argv[1]);
+    else concentration_boundary = CONCENTRATION_BOUNDARY;
 
-    // initialize result arrays ----------------------------------------
+    if (argc > 2) simulation_time = atoi(argv[2]);
+    else simulation_time = SIMULATION_TIME;
 
-    // All of the values of the results arrays should be set to -1.f, except for the very
-    // first elements, which must be set to 0.f
-    double* interstitials = (double*)calloc(concentration_bounds, sizeof(double));
-    double* vacancies = (double*)calloc(concentration_bounds, sizeof(double));
+    if (argc > 3) delta_time = atoi(argv[4]);
+    else delta_time = DELTA_TIME;
+
+    // All of the values of the results arrays should be set to 0
+    interstitials = (size_t*)calloc(concentration_boundary, sizeof(size_t));
+    vacancies = (size_t*)calloc(concentration_boundary, sizeof(size_t));
 
     // malloc() and calloc() return a value of NULL if the memory allocation failed. We need to
     // test for that.
@@ -147,52 +50,46 @@ int main(int argc, char* argv[])
         fprintf(stderr, "An error occurred when allocating memory for the vacancies array.\n");
         return 2;
     } else
-        fprintf(stdout, "$d Bytes of memory was successfully allocated for both the interstitial and vacancy arrays.", concentration_bounds * sizeof(double));
+        fprintf(stdout, "%lu Bytes of memory was successfully allocated for both the interstitial and vacancy arrays.\n", concentration_boundary * sizeof(size_t));
 
 
-    // Set the first characters of the interstitials and vacancies arrays to
-    // be 0.f.
-    interstitials[0] = 0.f;
-    vacancies[0] = 0.f;
-
-    // Using memset to initialize the rest or each array to be full
-    // of -1.f.
-    // IMPORTANT: We need to offset the arrays by the size of the double datatype to
-    // ensure we only overwrite the indices from 1 to concentration_bounds - 1.
-    // As such, we are only setting (concentration_bounds - 1) * sizeof(double)
+    // Using memset to initialize the rest or each array to 0
+    // IMPORTANT: We need to offset the arrays by the size of the size_t datatype to
+    // ensure we only overwrite the indices from 0 to concentration_boundary - 1.
+    // As such, we are only setting (concentration_boundary) * sizeof(size_t)
     // bytes of memory. - Sean H.
-    memset(interstitials + sizeof(double), -1.f, (concentration_bounds - 1) * sizeof(double));
-    memset(vacancies + sizeof(double), -1.f, (concentration_bounds - 1) * sizeof(double));
+    memset(interstitials, 0, (concentration_boundary) * sizeof(size_t));
+    memset(vacancies, 0, (concentration_boundary) * sizeof(size_t));
 
-    /*
-    for (int i = 1; i < concentration_bounds; ++i)
+
+    // --------------------------------------------------------------------------------------------
+    // main simulation loop
+    for (int t = 0; t < simulation_time; t += delta_time)
     {
-        interstitials[i] = -1.f;
-        vacancies[i] = -1.f;
+        // calculate interstitial / vacancy concentrations for this time slice
+        for (int n = 1; n < concentration_boundary; ++n)
+        {
+            interstitials[n] = (size_t)i_clusters(n);
+            vacancies[n] = (size_t)v_clusters(n);
+        }
     }
-    */
+    // --------------------------------------------------------------------------------------------
 
-    // -----------------------------------------------------------------
 
-    // calculate interstitial / vacancy concentrations -----------------
-    for (int n = 1; n < concentration_bounds; ++n)
-    {
-        interstitials[n] = i_clusters(n, interstitials, OSIRIS, SA304);
-        vacancies[n] = v_clusters(n, vacancies, OSIRIS, SA304);
-    }
-    // -----------------------------------------------------------------
-
-    // print results ---------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // print results
     fprintf(stdout, "Cluster Size\t-\tInterstitials\t-\tVacancies\n\n");
-    for (int n = 1; n < concentration_bounds; ++n)
+    for (int n = 1; n < concentration_boundary; ++n)
     {
-        fprintf(stdout, "%d\t\t\t%8.1f\t\t%8.1f\n\n", n, interstitials[n], vacancies[n]);
+        fprintf(stdout, "%d\t\t\t%lu\t\t%lu\n\n", n, interstitials[n], vacancies[n]);
     }
-    // -----------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+
 
     // Free up the dynamically allocated arrays.
     free(interstitials);
     free(vacancies);
+
 
     return 0;
 }

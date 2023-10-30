@@ -1,8 +1,24 @@
 #ifndef CLUSTER_DYNAMICS_HPP
 #define CLUSTER_DYNAMICS_HPP
 
+#ifndef CONCENTRATION_BOUNDARY
+#define CONCENTRATION_BOUNDARY 10
+#endif
 
-// (Pokor et al. 2004, Table 5)
+#ifndef SIMULATION_TIME
+#define SIMULATION_TIME 3
+#endif
+
+#ifndef DELTA_TIME
+#define DELTA_TIME 1
+#endif
+
+#ifndef BOLTZMANN_EV_KELVIN
+#define BOLTZMANN_EV_KELVIN 8.6173e-5
+#endif
+
+
+// C. Pokor et al. / Journal of Nuclear Materials 326 (2004), Table 5
 struct NuclearReactor
 {
     const char* species;
@@ -10,7 +26,7 @@ struct NuclearReactor
     // neutron flux inside of the nuclear reactor
     double flux; 
 
-    // (C) 
+    // (Celcius) 
     double temperature;
 
     // recombination in the cascades
@@ -26,44 +42,14 @@ struct NuclearReactor
     double v_tri;
     double v_quad;
 
-    // defect production of interstitials
-    inline double i_defect_production(int cluster_size)
+    inline double temperature_kelvin()
     {
-        switch (cluster_size)
-        {
-            case 1: return recombination * flux * (1 - i_bi - i_tri - i_quad);
-            case 2: return recombination * flux * i_bi;
-            case 3: return recombination * flux * i_tri;
-            case 4: return recombination * flux * i_quad;
-
-            default: break;
-        }
-
-        // cluster sizes > greater than 4 always zero
-        return 0.f;
-    };
-
-    // defect production of vacancies
-    inline double v_defect_production(int cluster_size)
-    {
-        switch (cluster_size)
-        {
-            case 1: return recombination * flux * (1 - v_bi - v_tri - v_quad);
-            case 2: return recombination * flux * v_bi;
-            case 3: return recombination * flux * v_tri;
-            case 4: return recombination * flux * v_quad;
-
-            default: break;
-        }
-
-        // cluster sizes > greater than 4 always zero
-        return 0.f;
-    };
+        return temperature + 273.15;
+    }
 };
 
-NuclearReactor OSIRIS = { "OSIRIS", 2.9e-7, 330.f, .3f, .5f, .2f, .06f, .06f, .03f, .02f };
 
-// (Pokor et al. 2004, Table 6)
+// C. Pokor et al. / Journal of Nuclear Materials 326 (2004), Table 6
 struct Material
 {
     const char* species;
@@ -108,28 +94,66 @@ struct Material
     double grain_size;
 };
 
-Material SA304 = { "SA304", .45f, 1.35f, 1e-3, .6f, 4.1f, 1.7f, .6f, .5f, .7f, 63.f, .8f, 1.1f, 33, .65f, 1.f, 1e10, 4e10-3 };
 
-// TODO: rates of interstitial emission and vacancy absorption
-/* Pokor et al. 2004, 2b
-*/
-double iemission_vabsorption_np1(int np1)
-{
-    return 1.f;
-}
+// --------------------------------------------------------------------------------------------
+// PROTOTYPES 
+double i_defect_production(int);
+double v_defect_production(int);
+double i_clusters(int in);
+double v_clusters(int vn);
+double v_clusters(int vn);
+double iemission_vabsorption_np1(int np1);
+double vemission_iabsorption_np1(int np1);
+double iemission_vabsorption_n(int n);
+double vemission_iabsorption_n(int n);
+double iemission_vabsorption_nm1(int nm1);
+double vemission_iabsorption_nm1(int nm1);
+double i_clusters1(int in);
+double v_clusters1(int vn);
+double i_emission_time(int nmax);
+double v_emission_time(int nmax);
+double i_absorption_time(int nmax);
+double v_absorption_time(int nmax);
+double annihilation_rate();
+double i_dislocation_annihilation_time();
+double v_dislocation_annihilation_time();
+double i_grain_boundary_annihilation_time(int vn);
+double v_grain_boundary_annihilation_time(int vn);
+double ii_sum_absorption(int nmax);
+double iv_sum_absorption(int nmax);
+double vv_sum_absorption(int nmax);
+double vi_sum_absorption(int nmax);
+double ii_emission(int in);
+double ii_absorption(int in);
+double iv_absorption(int in);
+double vv_emission(int vn);
+double vv_absorption(int vn);
+double vi_absorption(int vn);
+double i_bias_factor(int in);
+double v_bias_factor(int vn);
+double i_binding_energy(int in);
+double v_binding_energy(int vn);
+// --------------------------------------------------------------------------------------------
 
-/* Pokor et al. 2004, 2c
-*/
-double iemission_vabsorption_n(int n)
-{
-    return 1.f;
-}
 
-/* Pokor et al. 2004, 2d
-*/
-double iemission_vabsorption_nm1(int nm1)
-{
-    return 1.f;
-}
+// --------------------------------------------------------------------------------------------
+// GLOBALS (declared in main.cpp)
+extern NuclearReactor OSIRIS;
+extern Material SA304;
+
+// Setting an overall global variable to hold the concentration_boundary
+// so that we aren't forces to pass the variable to every single function. - Sean H.
+extern int concentration_boundary;
+extern int simulation_time;
+extern int delta_time;
+
+// result arrays
+extern size_t* interstitials;
+extern size_t* vacancies;
+
+extern NuclearReactor* reactor;
+extern Material* material;
+// --------------------------------------------------------------------------------------------
+
 
 #endif
