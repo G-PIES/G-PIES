@@ -13,8 +13,8 @@ int concentration_boundary;
 int simulation_time;
 int delta_time;
 
-size_t* interstitials;
-size_t* vacancies;
+uint64_t* interstitials;
+uint64_t* vacancies;
 
 NuclearReactor* reactor = &OSIRIS;
 Material* material = &SA304;
@@ -38,8 +38,8 @@ int main(int argc, char* argv[])
     else delta_time = DELTA_TIME;
 
     // All of the values of the results arrays should be set to 0
-    interstitials = (size_t*)calloc(concentration_boundary, sizeof(size_t));
-    vacancies = (size_t*)calloc(concentration_boundary, sizeof(size_t));
+    interstitials = (uint64_t*)calloc(concentration_boundary, sizeof(uint64_t));
+    vacancies = (uint64_t*)calloc(concentration_boundary, sizeof(uint64_t));
 
     // malloc() and calloc() return a value of NULL if the memory allocation failed. We need to
     // test for that.
@@ -50,16 +50,16 @@ int main(int argc, char* argv[])
         fprintf(stderr, "An error occurred when allocating memory for the vacancies array.\n");
         return 2;
     } else
-        fprintf(stdout, "%lu Bytes of memory was successfully allocated for both the interstitial and vacancy arrays.\n", concentration_boundary * sizeof(size_t));
+        fprintf(stdout, "%lu Bytes of memory was successfully allocated for both the interstitial and vacancy arrays.\n", concentration_boundary * sizeof(uint64_t));
 
 
     // Using memset to initialize the rest or each array to 0
-    // IMPORTANT: We need to offset the arrays by the size of the size_t datatype to
+    // IMPORTANT: We need to offset the arrays by the size of the uint64_t datatype to
     // ensure we only overwrite the indices from 0 to concentration_boundary - 1.
-    // As such, we are only setting (concentration_boundary) * sizeof(size_t)
+    // As such, we are only setting (concentration_boundary) * sizeof(uint64_t)
     // bytes of memory. - Sean H.
-    memset(interstitials, 0, (concentration_boundary) * sizeof(size_t));
-    memset(vacancies, 0, (concentration_boundary) * sizeof(size_t));
+    memset(interstitials, 0, (concentration_boundary) * sizeof(uint64_t));
+    memset(vacancies, 0, (concentration_boundary) * sizeof(uint64_t));
 
 
     // --------------------------------------------------------------------------------------------
@@ -69,8 +69,8 @@ int main(int argc, char* argv[])
         // calculate interstitial / vacancy concentrations for this time slice
         for (int n = 1; n < concentration_boundary; ++n)
         {
-            interstitials[n] = (size_t)i_clusters(n);
-            vacancies[n] = (size_t)v_clusters(n);
+            interstitials[n] = (uint64_t)i_clusters(n);
+            vacancies[n] = (uint64_t)v_clusters(n);
         }
     }
     // --------------------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
     fprintf(stdout, "Cluster Size\t-\tInterstitials\t-\tVacancies\n\n");
     for (int n = 1; n < concentration_boundary; ++n)
     {
-        fprintf(stdout, "%d\t\t\t%lu\t\t%lu\n\n", n, interstitials[n], vacancies[n]);
+        fprintf(stdout, "%d\t\t\t%llu\t\t%llu\n\n", n, interstitials[n], vacancies[n]);
     }
     // --------------------------------------------------------------------------------------------
 

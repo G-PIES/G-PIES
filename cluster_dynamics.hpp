@@ -148,8 +148,8 @@ extern int simulation_time;
 extern int delta_time;
 
 // result arrays
-extern size_t* interstitials;
-extern size_t* vacancies;
+extern uint64_t* interstitials;
+extern uint64_t* vacancies;
 
 extern NuclearReactor* reactor;
 extern Material* material;

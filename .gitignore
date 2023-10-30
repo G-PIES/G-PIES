@@ -28,7 +28,7 @@
 
 # Executables
 *.exe
-*.out
+*.out*
 *.app
 
 # MacOS
@@ -36,3 +36,6 @@
 
 # Research Docs
 *.pdf
+
+# Local Configurations
+.vscode
