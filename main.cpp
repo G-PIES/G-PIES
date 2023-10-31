@@ -5,6 +5,10 @@
 
 #include "cluster_dynamics.hpp"
 
+//#define DEBUG_PRINT
+
+void debug_print();
+void debug_print_iterations(const char* func_name, double (*func)(int));
 
 // --------------------------------------------------------------------------------------------
 // GLOBALS
@@ -63,6 +67,10 @@ int main(int argc, char* argv[])
     memset(interstitials, 0, concentration_boundary * sizeof(double));
     memset(vacancies, 0, concentration_boundary * sizeof(double));
 
+    #ifdef DEBUG_PRINT
+        debug_print();
+        return 0;
+    #endif
 
     // --------------------------------------------------------------------------------------------
     // main simulation loop
@@ -71,8 +79,8 @@ int main(int argc, char* argv[])
         // calculate interstitial / vacancy concentrations for this time slice
         for (int n = 1; n < concentration_boundary; ++n)
         {
-            interstitials[n] = std::max(i_clusters(n), (double)0.f);
-            vacancies[n] = std::max(v_clusters(n), (double)0.f);
+            interstitials[n] = i_clusters(n);
+            vacancies[n] = v_clusters(n);
         }
     }
     // --------------------------------------------------------------------------------------------
@@ -83,9 +91,7 @@ int main(int argc, char* argv[])
     fprintf(stdout, "Cluster Size\t-\tInterstitials\t-\tVacancies\n\n");
     for (int n = 1; n < concentration_boundary; ++n)
     {
-        uint64_t i = (uint64_t)std::floor(interstitials[n]);
-        uint64_t v = (uint64_t)std::floor(vacancies[n]);
-        fprintf(stdout, "%d\t\t\t%llu\t\t%llu\n\n", n, i, v);
+        fprintf(stdout, "%d\t\t\t%8.10f\t\t%8.10f\n\n", n, interstitials[n], vacancies[n]);
     }
     // --------------------------------------------------------------------------------------------
 
@@ -96,4 +102,72 @@ int main(int argc, char* argv[])
 
 
     return 0;
+}
+
+void debug_print()
+{
+    fprintf(stdout, "\n\n");
+
+    debug_print_iterations("i_defect_production", i_defect_production);
+    debug_print_iterations("v_defect_production", v_defect_production);
+
+    for (int n = 0; n < concentration_boundary; ++n)
+    {
+        interstitials[n] = i_clusters(n);
+        vacancies[n] = v_clusters(n);
+        fprintf(stdout, "i_clusters(%d)\t%8.20lf\n", n, interstitials[n]);
+        fprintf(stdout, "v_clusters(%d)\t%8.20lf\n", n, vacancies[n]);
+        fprintf(stdout, "\n\n");
+    }
+
+    debug_print_iterations("iemission_vabsorption_np1", iemission_vabsorption_np1);
+    debug_print_iterations("iemission_vabsorption_n", iemission_vabsorption_n);
+    debug_print_iterations("iemission_vabsorption_nm1", iemission_vabsorption_nm1);
+
+    debug_print_iterations("vemission_iabsorption_np1", vemission_iabsorption_np1);
+    debug_print_iterations("vemission_iabsorption_n", vemission_iabsorption_n);
+    debug_print_iterations("vemission_iabsorption_nm1", vemission_iabsorption_nm1);
+
+    debug_print_iterations("i_clusters1", i_clusters1);
+    debug_print_iterations("v_clusters1", v_clusters1);
+
+    debug_print_iterations("i_emission_time", i_emission_time);
+    debug_print_iterations("v_emission_time", v_emission_time);
+
+    debug_print_iterations("i_absorption_time", i_absorption_time);
+    debug_print_iterations("v_absorption_time", v_absorption_time);
+
+    fprintf(stdout, "%s\t%8.20f\n", "annihilation_rate", annihilation_rate());
+    fprintf(stdout, "\n\n");
+
+    fprintf(stdout, "%s\t%8.20f\n", "i_dislocation_annihilation_time", i_dislocation_annihilation_time());
+    fprintf(stdout, "%s\t%8.20f\n", "v_dislocation_annihilation_time", v_dislocation_annihilation_time());
+    fprintf(stdout, "\n\n");
+
+    debug_print_iterations("i_grain_boundary_annihilation_time", i_grain_boundary_annihilation_time);
+    debug_print_iterations("v_grain_boundary_annihilation_time", v_grain_boundary_annihilation_time);
+    debug_print_iterations("ii_sum_absorption", ii_sum_absorption);
+    debug_print_iterations("iv_sum_absorption", iv_sum_absorption);
+    debug_print_iterations("vv_sum_absorption", vv_sum_absorption);
+    debug_print_iterations("vi_sum_absorption", vi_sum_absorption);
+
+    debug_print_iterations("ii_emission", ii_emission);
+    debug_print_iterations("ii_absorption", ii_absorption);
+    debug_print_iterations("iv_absorption", iv_absorption);
+    debug_print_iterations("vv_emission", vv_emission);
+    debug_print_iterations("vv_absorption", vv_absorption);
+    debug_print_iterations("vi_absorption", vi_absorption);
+
+    debug_print_iterations("i_bias_factor", i_bias_factor);
+    debug_print_iterations("v_bias_factor", v_bias_factor);
+
+    debug_print_iterations("i_binding_energy", i_binding_energy);
+    debug_print_iterations("v_binding_energy", v_binding_energy);
+}
+
+void debug_print_iterations(const char* func_name, double (*func)(int))
+{
+    for (int n = 0; n < concentration_boundary; ++n)
+        fprintf(stdout, "%s(%d)\t%8.20f\n", func_name, n, func(n));
+    fprintf(stdout, "\n\n");
 }
