@@ -17,6 +17,10 @@
 #define BOLTZMANN_EV_KELVIN 8.6173e-5
 #endif
 
+#ifndef DISLOCATION_DENSITY_EVOLUTION
+#define DISLOCATION_DENSITY_EVOLUTION 300
+#endif
+
 
 // C. Pokor et al. / Journal of Nuclear Materials 326 (2004), Table 5
 struct NuclearReactor

@@ -525,75 +525,81 @@ double vi_sum_absorption(int nmax)
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 4a
+    Rate of emission of an interstitial by an interstital loop of size (n).
 */
-double ii_emission(int in)
+double ii_emission(int n)
 {
     // TODO: atomic volume
     float atomic_volume = 1e-30;
     return 
-        2 * M_PI * in *
-        i_bias_factor(in) *
+        2 * M_PI * n *
+        i_bias_factor(n) *
         material->i_diffusion / atomic_volume *
         exp
         (
-            -i_binding_energy(in) /
+            -i_binding_energy(n) /
             (BOLTZMANN_EV_KELVIN * reactor->temperature_kelvin())
         );
 }
 
 
 /*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 4b
+    Rate of absorption of an interstitial by an interstital loop of size (n).
 */
-double ii_absorption(int in)
+double ii_absorption(int n)
 {
     return 
-        2 * M_PI * in *
-        i_bias_factor(in) *
+        2 * M_PI * n *
+        i_bias_factor(n) *
         material->i_diffusion;
 }
 
 /*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 4c
+    Rate of absorption of an interstitial by a vacancy loop of size (n).
 */
-double iv_absorption(int in)
+double iv_absorption(int n)
 {
     return 
-        2 * M_PI * in *
-        i_bias_factor(in) *
+        2 * M_PI * n *
+        i_bias_factor(n) *
         material->v_diffusion;
 }
 
 /*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 4d
+    Rate of emission of a vacancy by a vacancy loop of size (n).
 */
-double vv_emission(int vn)
+double vv_emission(int n)
 {
     return 
-        2 * M_PI * vn *
-        v_bias_factor(vn) *
+        2 * M_PI * n *
+        v_bias_factor(n) *
         material->v_diffusion *
         exp
         (
-            -v_binding_energy(vn) /
+            -v_binding_energy(n) /
             (BOLTZMANN_EV_KELVIN * reactor->temperature_kelvin())
         );
 }
 
 /*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 4e
+    Rate of absorption of a vacancy by a vacancy loop of size (n).
 */
-double vv_absorption(int vn)
+double vv_absorption(int n)
 {
     return 
-        2 * M_PI * vn *
-        v_bias_factor(vn) *
+        2 * M_PI * n *
+        v_bias_factor(n) *
         material->v_diffusion;
 }
 
 /*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 4f
+    Rate of absorption of a vacancy by an interstitial loop of size (n).
 */
-double vi_absorption(int vn)
+double vi_absorption(int n)
 {
     return 
-        2 * M_PI * vn *
-        v_bias_factor(vn) *
+        2 * M_PI * n *
+        v_bias_factor(n) *
         material->i_diffusion;
 }
 // --------------------------------------------------------------------------------------------
@@ -601,6 +607,7 @@ double vi_absorption(int vn)
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 5
+    Interstitial bias factor.
 */
 double i_bias_factor(int in)
 {
@@ -626,6 +633,9 @@ double i_bias_factor(int in)
         );
 }
 
+/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 5
+    Vacancy bias factor.
+*/
 double v_bias_factor(int vn)
 {
     // TODO: lattice parameters
@@ -654,6 +664,7 @@ double v_bias_factor(int vn)
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 6
+    Interstitial binding energy.
 */
 double i_binding_energy(int in)
 {
@@ -663,6 +674,9 @@ double i_binding_energy(int in)
         (pow(in, .8f) - pow(in - 1, .8f));
 }
 
+/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 6
+    Vacancy binding energy.
+*/
 double v_binding_energy(int vn)
 {
     return

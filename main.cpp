@@ -5,7 +5,7 @@
 
 #include "cluster_dynamics.hpp"
 
-//#define DEBUG_PRINT
+#define DEBUG_PRINT
 
 void debug_print();
 void debug_print_iterations(const char* func_name, double (*func)(int));
@@ -34,6 +34,7 @@ int main(int argc, char* argv[])
     // If no value was passed, we can simply rely on the previously
     // provided global CONCENTRATION_BOUNDS. If a value was provided, we can
     // update the global integer of concentration_bounds.
+    /*
     if (argc > 1) concentration_boundary = atoi(argv[1]);
     else concentration_boundary = CONCENTRATION_BOUNDARY;
 
@@ -42,6 +43,7 @@ int main(int argc, char* argv[])
 
     if (argc > 3) delta_time = atoi(argv[4]);
     else delta_time = DELTA_TIME;
+    */
 
     // All of the values of the results arrays should be set to 0
     //interstitials = (double*)calloc(concentration_boundary, sizeof(double));
@@ -49,6 +51,7 @@ int main(int argc, char* argv[])
 
     // malloc() and calloc() return a value of NULL if the memory allocation failed. We need to
     // test for that.
+    /*
     if (interstitials == NULL) {
         fprintf(stderr, "An error occurred when allocating memory for the interstitial array.\n");
         return 1;
@@ -57,6 +60,7 @@ int main(int argc, char* argv[])
         return 2;
     } else
         fprintf(stdout, "%lu Bytes of memory was successfully allocated for both the interstitial and vacancy arrays.\n", concentration_boundary * sizeof(double));
+    */
 
 
     // Using memset to initialize the rest or each array to 0
