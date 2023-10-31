@@ -13,7 +13,7 @@ void debug_print_iterations(const char* func_name, double (*func)(int));
 // --------------------------------------------------------------------------------------------
 // GLOBALS
 NuclearReactor OSIRIS = { "OSIRIS", 2.9e-7, 330.f, .3f, .5f, .2f, .06f, .06f, .03f, .02f };
-Material SA304 = { "SA304", .45f, 1.35f, 1e-3, .6f, 4.1f, 1.7f, .6f, .5f, 7e-7, 63.f, .8f, 1.1f, 33, .65f, 1.f, 10e10, 4e-3 };
+Material SA304 = { "SA304", .45f, 1.35f, 1e-3, .6f, 4.1f, 1.7f, .6f, .5f, .7e-7, 63.f, .8f, 1.1f, 33, .65f, 1.f, 1 / (10e10 * 1e4), 4e-3 };
 
 int concentration_boundary;
 int simulation_time;
@@ -34,7 +34,6 @@ int main(int argc, char* argv[])
     // If no value was passed, we can simply rely on the previously
     // provided global CONCENTRATION_BOUNDS. If a value was provided, we can
     // update the global integer of concentration_bounds.
-    /*
     if (argc > 1) concentration_boundary = atoi(argv[1]);
     else concentration_boundary = CONCENTRATION_BOUNDARY;
 
@@ -43,7 +42,6 @@ int main(int argc, char* argv[])
 
     if (argc > 3) delta_time = atoi(argv[4]);
     else delta_time = DELTA_TIME;
-    */
 
     // All of the values of the results arrays should be set to 0
     //interstitials = (double*)calloc(concentration_boundary, sizeof(double));

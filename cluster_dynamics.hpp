@@ -2,11 +2,11 @@
 #define CLUSTER_DYNAMICS_HPP
 
 #ifndef CONCENTRATION_BOUNDARY
-#define CONCENTRATION_BOUNDARY 10
+#define CONCENTRATION_BOUNDARY 5
 #endif
 
 #ifndef SIMULATION_TIME
-#define SIMULATION_TIME 2
+#define SIMULATION_TIME 10
 #endif
 
 #ifndef DELTA_TIME
@@ -91,7 +91,7 @@ struct Material
     double v_dislocation_bias;
     double v_dislocation_bias_param;
 
-    // (m^-2)
+    // (cm^2)
     double dislocation_density_initial;
 
     // grain size (cm)

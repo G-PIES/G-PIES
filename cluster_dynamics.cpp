@@ -55,15 +55,16 @@ double v_defect_production(int n)
 */
 double i_clusters(int in)
 {
+    // TODO (2) (4)
     return
         // (1)
         i_defect_production(in) +
         // (2)
-        iemission_vabsorption_np1(in + 1) * interstitials[in + 1] -
+        //iemission_vabsorption_np1(in + 1) * interstitials[in + 1] -
         // (3)
         iemission_vabsorption_n(in) * interstitials[in];
         // (4)
-        iemission_vabsorption_nm1(in - 1) * interstitials[in - 1];
+        //iemission_vabsorption_nm1(in - 1) * interstitials[in - 1];
 }
 
 /*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 2a
@@ -74,15 +75,16 @@ double i_clusters(int in)
 */
 double v_clusters(int vn)
 {
+    // TODO (2) (4)
     return
         // (1)
         v_defect_production(vn) +
         // (2)
-        vemission_iabsorption_np1(vn + 1) * vacancies[vn + 1] -
+        //vemission_iabsorption_np1(vn + 1) * vacancies[vn + 1] -
         // (3)
         vemission_iabsorption_n(vn) * vacancies[vn];
         // (4)
-        vemission_iabsorption_nm1(vn - 1) * vacancies[vn - 1];
+        //vemission_iabsorption_nm1(vn - 1) * vacancies[vn - 1];
 }
 // --------------------------------------------------------------------------------------------
 
@@ -268,8 +270,8 @@ double v_clusters1(int vn)
     Characteristic time for emitting an interstitial by the population of interstital or vacancy
     clusters of size up to (nmax).
 
-                (1)                 (2)                     (3)
-    tEi(n) = SUM [ E[i,i](n) * Ci(n) + 4 * E[i,i](2) * Ci(2) + B[i,v](2) * Cv(2) * Ci(2) ]
+                (1)                      (2)                     (3)
+    tEi(n) = SUM ( E[i,i](n) * Ci(n) ) + 4 * E[i,i](2) * Ci(2) + B[i,v](2) * Cv(2) * Ci(2)
 */
 double i_emission_time(int nmax)
 {
@@ -278,22 +280,24 @@ double i_emission_time(int nmax)
     {
         time +=
             // (1)
-            ii_emission(in) * interstitials[in] +
-            // (2)
-            4 * ii_emission(2) * interstitials[2] +
-            // (3)
-            iv_absorption(2) * vacancies[2] * interstitials[2];
+            ii_emission(in) * interstitials[in];
     }
 
-    return 0.f;
+    time +=
+        // (2)
+        4 * ii_emission(2) * interstitials[2] +
+        // (3)
+        iv_absorption(2) * vacancies[2] * interstitials[2];
+
+    return time;
 }
 
 /*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 3b
     Characteristic time for emitting a vacancy by the population of interstital or vacancy
     clusters of size up to (nmax).
 
-                (1)                 (2)                     (3)
-    tEv(n) = SUM[n>0] ( E[v,v](n) * Cv(n) + 4 * E[v,v](2) * Cv(2) + B[v,i](2) * Cv(2) * Ci(2) )
+                (1)                           (2)                     (3)
+    tEv(n) = SUM[n>0] ( E[v,v](n) * Cv(n) ) + 4 * E[v,v](2) * Cv(2) + B[v,i](2) * Cv(2) * Ci(2)
 */
 double v_emission_time(int nmax)
 {
@@ -302,14 +306,16 @@ double v_emission_time(int nmax)
     {
         time += 
             // (1)
-            vv_emission(vn) * vacancies[vn] +
-            // (2)
-            4 * vv_emission(2) * vacancies[2] +
-            // (3)
-            vi_absorption(2) * vacancies[2] * interstitials[2];
+            vv_emission(vn) * vacancies[vn];
     }
 
-    return 0.f;
+    time +=
+        // (2)
+        4 * vv_emission(2) * vacancies[2] +
+        // (3)
+        vi_absorption(2) * vacancies[2] * interstitials[2];
+
+    return time;
 }
 // --------------------------------------------------------------------------------------------
 
@@ -529,8 +535,9 @@ double vi_sum_absorption(int nmax)
 */
 double ii_emission(int n)
 {
-    // TODO: atomic volume
-    float atomic_volume = 1e-30;
+    // TODO: average atomic volume of SA304: .7 m^3/kmol
+    // converted to cm^3/kmol
+    float atomic_volume = .7e6;
     return 
         2 * M_PI * n *
         i_bias_factor(n) *
@@ -611,9 +618,15 @@ double vi_absorption(int n)
 */
 double i_bias_factor(int in)
 {
-    // TODO: lattice parameters
-    float lattice_param_a = 1e8;
-    float burgers_vector = 1e8;
+    // TODO
+    // lattice parameters (picometeres)
+    // Chromium: 291 pm
+    // Nickel: 352.4 pm
+    float lattice_param = 291.f * 1e-10;
+
+    // TODO
+    // Face-Centered Cubic Lattice (fcc) burgers vector magnitude
+    float burgers_vector = lattice_param / pow(2, .5f);
 
     return 
         material->i_dislocation_bias +
@@ -621,15 +634,16 @@ double i_bias_factor(int in)
             sqrt
             (
                     burgers_vector /
-                    (8 * M_PI * lattice_param_a)
+                    (8 * M_PI * lattice_param)
             ) *
             material->i_loop_bias -
             material->i_dislocation_bias
         ) *
+        1 /
         pow
         (
             in,
-            -1 * material->i_dislocation_bias_param / 2
+            material->i_dislocation_bias_param / 2
         );
 }
 
@@ -638,9 +652,15 @@ double i_bias_factor(int in)
 */
 double v_bias_factor(int vn)
 {
-    // TODO: lattice parameters
-    float lattice_param_a = 1e8;
-    float burgers_vector = 1e8;
+    // TODO
+    // lattice parameters (picometeres)
+    // Chromium: 291 pm
+    // Nickel: 352.4 pm
+    float lattice_param = 291.f * 1e-10;
+
+    // TODO
+    // Face-Centered Cubic Lattice (fcc) burgers vector magnitude
+    float burgers_vector = lattice_param / pow(2, .5f);
 
     return 
         material->v_dislocation_bias +
@@ -648,15 +668,16 @@ double v_bias_factor(int vn)
             sqrt
             (
                     burgers_vector /
-                    (8 * M_PI * lattice_param_a)
+                    (8 * M_PI * lattice_param)
             ) *
             material->v_loop_bias -
             material->v_dislocation_bias
         ) *
+        1 /
         pow
         (
             vn,
-            -1 * material->v_dislocation_bias_param / 2
+            material->v_dislocation_bias_param / 2
         );
 }
 // --------------------------------------------------------------------------------------------
