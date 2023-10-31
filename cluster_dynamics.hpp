@@ -6,7 +6,7 @@
 #endif
 
 #ifndef SIMULATION_TIME
-#define SIMULATION_TIME 3
+#define SIMULATION_TIME 2
 #endif
 
 #ifndef DELTA_TIME
@@ -70,7 +70,7 @@ struct Material
     double i_binding;
     double v_binding;
 
-    // recombination radius between defects (nm)
+    // recombination radius between defects (cm)
     double recombination_radius;
 
     // bias factor of the loops for interstitials
@@ -148,8 +148,8 @@ extern int simulation_time;
 extern int delta_time;
 
 // result arrays
-extern uint64_t* interstitials;
-extern uint64_t* vacancies;
+extern double interstitials[CONCENTRATION_BOUNDARY];
+extern double vacancies[CONCENTRATION_BOUNDARY];
 
 extern NuclearReactor* reactor;
 extern Material* material;

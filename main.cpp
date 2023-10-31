@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cstring>
+#include <cmath>
+#include <algorithm>
 
 #include "cluster_dynamics.hpp"
 
@@ -7,14 +9,14 @@
 // --------------------------------------------------------------------------------------------
 // GLOBALS
 NuclearReactor OSIRIS = { "OSIRIS", 2.9e-7, 330.f, .3f, .5f, .2f, .06f, .06f, .03f, .02f };
-Material SA304 = { "SA304", .45f, 1.35f, 1e-3, .6f, 4.1f, 1.7f, .6f, .5f, .7f, 63.f, .8f, 1.1f, 33, .65f, 1.f, 1e10, 4e-3 };
+Material SA304 = { "SA304", .45f, 1.35f, 1e-3, .6f, 4.1f, 1.7f, .6f, .5f, 7e-7, 63.f, .8f, 1.1f, 33, .65f, 1.f, 10e10, 4e-3 };
 
 int concentration_boundary;
 int simulation_time;
 int delta_time;
 
-uint64_t* interstitials;
-uint64_t* vacancies;
+double interstitials[CONCENTRATION_BOUNDARY];
+double vacancies[CONCENTRATION_BOUNDARY];
 
 NuclearReactor* reactor = &OSIRIS;
 Material* material = &SA304;
@@ -38,8 +40,8 @@ int main(int argc, char* argv[])
     else delta_time = DELTA_TIME;
 
     // All of the values of the results arrays should be set to 0
-    interstitials = (uint64_t*)calloc(concentration_boundary, sizeof(uint64_t));
-    vacancies = (uint64_t*)calloc(concentration_boundary, sizeof(uint64_t));
+    //interstitials = (double*)calloc(concentration_boundary, sizeof(double));
+    //vacancies = (double*)calloc(concentration_boundary, sizeof(double));
 
     // malloc() and calloc() return a value of NULL if the memory allocation failed. We need to
     // test for that.
@@ -50,16 +52,16 @@ int main(int argc, char* argv[])
         fprintf(stderr, "An error occurred when allocating memory for the vacancies array.\n");
         return 2;
     } else
-        fprintf(stdout, "%lu Bytes of memory was successfully allocated for both the interstitial and vacancy arrays.\n", concentration_boundary * sizeof(uint64_t));
+        fprintf(stdout, "%lu Bytes of memory was successfully allocated for both the interstitial and vacancy arrays.\n", concentration_boundary * sizeof(double));
 
 
     // Using memset to initialize the rest or each array to 0
-    // IMPORTANT: We need to offset the arrays by the size of the uint64_t datatype to
+    // IMPORTANT: We need to offset the arrays by the size of the double datatype to
     // ensure we only overwrite the indices from 0 to concentration_boundary - 1.
-    // As such, we are only setting (concentration_boundary) * sizeof(uint64_t)
+    // As such, we are only setting (concentration_boundary) * sizeof(double)
     // bytes of memory. - Sean H.
-    memset(interstitials, 0, (concentration_boundary) * sizeof(uint64_t));
-    memset(vacancies, 0, (concentration_boundary) * sizeof(uint64_t));
+    memset(interstitials, 0, concentration_boundary * sizeof(double));
+    memset(vacancies, 0, concentration_boundary * sizeof(double));
 
 
     // --------------------------------------------------------------------------------------------
@@ -69,8 +71,8 @@ int main(int argc, char* argv[])
         // calculate interstitial / vacancy concentrations for this time slice
         for (int n = 1; n < concentration_boundary; ++n)
         {
-            interstitials[n] = (uint64_t)i_clusters(n);
-            vacancies[n] = (uint64_t)v_clusters(n);
+            interstitials[n] = std::max(i_clusters(n), (double)0.f);
+            vacancies[n] = std::max(v_clusters(n), (double)0.f);
         }
     }
     // --------------------------------------------------------------------------------------------
@@ -81,14 +83,16 @@ int main(int argc, char* argv[])
     fprintf(stdout, "Cluster Size\t-\tInterstitials\t-\tVacancies\n\n");
     for (int n = 1; n < concentration_boundary; ++n)
     {
-        fprintf(stdout, "%d\t\t\t%llu\t\t%llu\n\n", n, interstitials[n], vacancies[n]);
+        uint64_t i = (uint64_t)std::floor(interstitials[n]);
+        uint64_t v = (uint64_t)std::floor(vacancies[n]);
+        fprintf(stdout, "%d\t\t\t%llu\t\t%llu\n\n", n, i, v);
     }
     // --------------------------------------------------------------------------------------------
 
 
     // Free up the dynamically allocated arrays.
-    free(interstitials);
-    free(vacancies);
+    //free(interstitials);
+    //free(vacancies);
 
 
     return 0;

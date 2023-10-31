@@ -52,8 +52,6 @@ double v_defect_production(int cluster_size)
 */
 double i_clusters(int in)
 {
-    // Using the dynamically allocated array to store the interstitial values,
-    // calculate the rates, and calculate the new quantity of interstitials. - Sean H.
     return
         // (1)
         i_defect_production(in) +
@@ -113,12 +111,14 @@ double vemission_iabsorption_n(int n)
 */
 double iemission_vabsorption_nm1(int nm1)
 {
-    return ii_absorption(nm1) * i_clusters1(nm1);
+    return nm1 == 0 ? 0 :
+        ii_absorption(nm1) * i_clusters1(nm1);
 }
 
 double vemission_iabsorption_nm1(int nm1)
 {
-    return vv_absorption(nm1) * v_clusters1(nm1);
+    return nm1 == 0 ? 0 :
+        vv_absorption(nm1) * v_clusters1(nm1);
 }
 // --------------------------------------------------------------------------------------------
 
@@ -138,7 +138,7 @@ double vemission_iabsorption_nm1(int nm1)
 */
 double i_clusters1(int in)
 {
-    return
+    return 
         // (1)
         i_defect_production(1) -
         // (2)
@@ -155,7 +155,7 @@ double i_clusters1(int in)
 
 double v_clusters1(int vn)
 {
-    return
+    return 
         // (1)
         v_defect_production(1) -
         // (2)
@@ -374,6 +374,7 @@ double ii_emission(int in)
         );
 }
 
+
 /*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 4b
 */
 double ii_absorption(int in)
@@ -437,8 +438,8 @@ double vi_absorption(int vn)
 double i_bias_factor(int in)
 {
     // TODO: lattice parameters
-    float lattice_param_a = 1e-10;
-    float burgers_vector = 1e-30;
+    float lattice_param_a = 1e8;
+    float burgers_vector = 1e8;
 
     return 
         material->i_dislocation_bias +
@@ -461,8 +462,8 @@ double i_bias_factor(int in)
 double v_bias_factor(int vn)
 {
     // TODO: lattice parameters
-    float lattice_param_a = 1.f;
-    float burgers_vector = 1.f;
+    float lattice_param_a = 1e8;
+    float burgers_vector = 1e8;
 
     return 
         material->v_dislocation_bias +
