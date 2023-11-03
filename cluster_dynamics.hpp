@@ -6,20 +6,42 @@
 #endif
 
 #ifndef SIMULATION_TIME
-#define SIMULATION_TIME 10
+#define SIMULATION_TIME 10 // seconds (s)
 #endif
 
 #ifndef DELTA_TIME
-#define DELTA_TIME 1
+#define DELTA_TIME 1 // seconds (s)
 #endif
 
 #ifndef BOLTZMANN_EV_KELVIN
-#define BOLTZMANN_EV_KELVIN 8.6173e-5
+#define BOLTZMANN_EV_KELVIN 8.6173e-5 // (eV / Kelvin)
 #endif
 
 #ifndef DISLOCATION_DENSITY_EVOLUTION
 #define DISLOCATION_DENSITY_EVOLUTION 300
 #endif
+
+// verbose printing
+#ifndef VPRINT
+#define VPRINT true
+#endif
+
+// verbose breakpoints
+#ifndef VBREAK
+#define VBREAK true
+#endif
+
+#define TABS "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
+
+
+// Celcius to Kevlin Conversion
+const double CELCIUS_KELVIN_CONV = 273.15f;
+
+// Second to femtosecond conversion
+const double SEC_FS_CONV = 1e15;
+
+// Meter to centimeter conversion
+const double M_CM_CONV = 1e-4;
 
 
 // C. Pokor et al. / Journal of Nuclear Materials 326 (2004), Table 5
@@ -27,10 +49,10 @@ struct NuclearReactor
 {
     const char* species;
 
-    // neutron flux inside of the nuclear reactor
+    // neutron flux inside of the nuclear reactor (cm^2 / s)
     double flux; 
 
-    // (Celcius) 
+    // (Kelvin) 
     double temperature;
 
     // recombination in the cascades
@@ -45,11 +67,6 @@ struct NuclearReactor
     double v_bi;
     double v_tri;
     double v_quad;
-
-    inline double temperature_kelvin()
-    {
-        return temperature + 273.15;
-    }
 };
 
 
@@ -62,7 +79,7 @@ struct Material
     double i_migration;
     double v_migration;
 
-    // diffusion coefficients (pre-exponential) (cm^2/s)
+    // diffusion coefficients (pre-exponential) (cm^2 / s)
     double i_diffusion;
     double v_diffusion;
 
@@ -139,6 +156,16 @@ double i_binding_energy(int in);
 double v_binding_energy(int vn);
 // --------------------------------------------------------------------------------------------
 
+inline double print_return(double result)
+{
+    fprintf(stdout, "= %8.20f", result);
+    fprintf(stdout, "\n\n");
+    #if VBREAK
+    fgetc(stdin);
+    #endif
+    return result;
+}
+
 
 // --------------------------------------------------------------------------------------------
 // GLOBALS (declared in main.cpp)
@@ -152,8 +179,8 @@ extern int simulation_time;
 extern int delta_time;
 
 // result arrays
-extern double interstitials[CONCENTRATION_BOUNDARY];
-extern double vacancies[CONCENTRATION_BOUNDARY];
+extern std::array<double, CONCENTRATION_BOUNDARY> interstitials;
+extern std::array<double, CONCENTRATION_BOUNDARY> vacancies;
 
 extern NuclearReactor* reactor;
 extern Material* material;
