@@ -12,7 +12,7 @@ double i_defect_production(int n)
     switch (n)
     {
         case 1: return reactor->recombination * reactor->flux *
-                       (1.f - reactor->i_bi - reactor->i_tri - reactor->i_quad);
+                       (1.0 - reactor->i_bi - reactor->i_tri - reactor->i_quad);
         case 2: return reactor->recombination * reactor->flux * reactor->i_bi;
         case 3: return reactor->recombination * reactor->flux * reactor->i_tri;
         case 4: return reactor->recombination * reactor->flux * reactor->i_quad;
@@ -21,7 +21,7 @@ double i_defect_production(int n)
     }
 
     // cluster sizes > greater than 4 always zero
-    return 0.f;
+    return 0.0;
 };
 
 /*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 1a-1e
@@ -32,7 +32,7 @@ double v_defect_production(int n)
     switch (n)
     {
         case 1: return reactor->recombination * reactor->flux *
-                       (1.f - reactor->v_bi - reactor->v_tri - reactor->v_quad);
+                       (1.0 - reactor->v_bi - reactor->v_tri - reactor->v_quad);
         case 2: return reactor->recombination * reactor->flux * reactor->v_bi;
         case 3: return reactor->recombination * reactor->flux * reactor->v_tri;
         case 4: return reactor->recombination * reactor->flux * reactor->v_quad;
@@ -41,7 +41,7 @@ double v_defect_production(int n)
     }
 
     // cluster sizes > greater than 4 always zero
-    return 0.f;
+    return 0.0;
 };
 // --------------------------------------------------------------------------------------------
 
@@ -59,14 +59,14 @@ double i_clusters(int in)
     double g = i_defect_production(in);
     double np1 = iemission_vabsorption_np1(in + 1);
     double n = iemission_vabsorption_n(in);
-    double nm1 = in == 0 ? 0.f : iemission_vabsorption_nm1(in - 1);
-    fprintf(stdout, "%s\n", __FUNCTION__);
-    fprintf(stdout, "i_defect_production(%d)%.*s%8.20f +\n", in, 12, TABS, g);
-    fprintf(stdout, "iemission_vabsorption_np1(%d) * interstitials[%d]%.*s%8.20f * %8.20f -\n", in + 1, in + 1, 9, TABS, np1, interstitials[in + 1]);
-    fprintf(stdout, "iemission_vabsorption_n(%d) * interstitials[%d]%.*s%8.20f * %8.20f", in, in, 9, TABS, n, interstitials[in]);
-    if (in > 1) fprintf(stdout, " +\niemission_vabsorption_nm1(%d) * interstitials[%d]%.*s%8.20f * %8.20f",  in - 1, in - 1, 9, TABS, nm1, interstitials[in - 1]);
+    double nm1 = in == 0 ? 0.0 : iemission_vabsorption_nm1(in - 1);
+    fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
+    fprintf(stdout, "i_defect_production(%d)%.*s%8.15lf +\n", in, 12, TABS, g);
+    fprintf(stdout, "iemission_vabsorption_np1(%d) * interstitials[%d]%.*s%8.15lf * %8.15lf -\n", in + 1, in + 1, 9, TABS, np1, interstitials[in + 1]);
+    fprintf(stdout, "iemission_vabsorption_n(%d) * interstitials[%d]%.*s%8.15lf * %8.15lf", in, in, 9, TABS, n, interstitials[in]);
+    if (in > 1) fprintf(stdout, " +\niemission_vabsorption_nm1(%d) * interstitials[%d]%.*s%8.15lf * %8.15lf",  in - 1, in - 1, 9, TABS, nm1, interstitials[in - 1]);
     fprintf(stdout, "\n");
-    return print_return(g + np1 * interstitials[in + 1] - n * interstitials[in] + in == 1 ? 0.f : nm1 * interstitials[in - 1]);
+    return print_return(g + np1 * interstitials[in + 1] - n * interstitials[in] + in == 1 ? 0.0 : nm1 * interstitials[in - 1]);
     #else
     return
         // (1)
@@ -75,7 +75,7 @@ double i_clusters(int in)
         iemission_vabsorption_np1(in + 1) * interstitials[in + 1] -
         // (3)
         iemission_vabsorption_n(in) * interstitials[in] +
-        in == 1 ? 0.f :
+        in == 1 ? 0.0 :
         // (4)
         iemission_vabsorption_nm1(in - 1) * interstitials[in - 1];
     #endif
@@ -93,13 +93,13 @@ double v_clusters(int vn)
     double g = v_defect_production(vn);
     double np1 = vemission_iabsorption_np1(vn + 1);
     double n = vemission_iabsorption_n(vn);
-    double nm1 = vn == 0 ? 0.f : vemission_iabsorption_nm1(vn - 1);
-    fprintf(stdout, "%s\n", __FUNCTION__);
-    fprintf(stdout, "v_defect_production(%d)%.*s%8.20f +\n", vn, 12, TABS, g);
-    fprintf(stdout, "vemission_iabsorption_np1(%d) * vacancies[%d]%.*s%8.20f * %8.20f -\n",  vn + 1, vn + 1, 9, TABS, np1, vacancies[vn + 1]);
-    fprintf(stdout, "vemission_iabsorption_n(%d) * vacancies[%d]%.*s%8.20f * %8.20f", vn, vn, 9, TABS, n, vacancies[vn]);
-    if (vn > 1) fprintf(stdout, " +\nvemission_iabsorption_nm1(%d) * vacancies[%d]%.*s%8.20f * %8.20f", vn - 1, vn - 1, 9, TABS, nm1, vacancies[vn - 1]);
-    return print_return(g + np1 * vacancies[vn + 1] - n * vacancies[vn] + vn == 1 ? 0.f : nm1 * vacancies[vn - 1]);
+    double nm1 = vn == 0 ? 0.0 : vemission_iabsorption_nm1(vn - 1);
+    fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
+    fprintf(stdout, "v_defect_production(%d)%.*s%8.15lf +\n", vn, 12, TABS, g);
+    fprintf(stdout, "vemission_iabsorption_np1(%d) * vacancies[%d]%.*s%8.15lf * %8.15lf -\n",  vn + 1, vn + 1, 9, TABS, np1, vacancies[vn + 1]);
+    fprintf(stdout, "vemission_iabsorption_n(%d) * vacancies[%d]%.*s%8.15lf * %8.15lf", vn, vn, 9, TABS, n, vacancies[vn]);
+    if (vn > 1) fprintf(stdout, " +\nvemission_iabsorption_nm1(%d) * vacancies[%d]%.*s%8.15lf * %8.15lf", vn - 1, vn - 1, 9, TABS, nm1, vacancies[vn - 1]);
+    return print_return(g + np1 * vacancies[vn + 1] - n * vacancies[vn] + vn == 1 ? 0.0 : nm1 * vacancies[vn - 1]);
     #else
     return
         // (1)
@@ -108,7 +108,7 @@ double v_clusters(int vn)
         vemission_iabsorption_np1(vn + 1) * vacancies[vn + 1] -
         // (3)
         vemission_iabsorption_n(vn) * vacancies[vn] +
-        vn == 1 ? 0.f :
+        vn == 1 ? 0.0 :
         // (4)
         vemission_iabsorption_nm1(vn - 1) * vacancies[vn - 1];
     #endif
@@ -130,10 +130,10 @@ double iemission_vabsorption_np1(int np1)
     double iva = iv_absorption(np1);
     double vc1 = v_clusters1(np1);
     double iie = ii_emission(np1);
-    fprintf(stdout, "%s\n", __FUNCTION__);
-    fprintf(stdout, "iv_absorption(%d)%.*s%8.20f *\n", np1, 12, TABS, iva);
-    fprintf(stdout, "v_clusters1(%d)%.*s%8.20f +\n", np1, 13, TABS, vc1);
-    fprintf(stdout, "ii_emission(%d)%.*s%8.20f\n", np1, 13, TABS, iie);
+    fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
+    fprintf(stdout, "iv_absorption(%d)%.*s%8.15lf *\n", np1, 12, TABS, iva);
+    fprintf(stdout, "v_clusters1(%d)%.*s%8.15lf +\n", np1, 13, TABS, vc1);
+    fprintf(stdout, "ii_emission(%d)%.*s%8.15lf\n", np1, 13, TABS, iie);
     return print_return(iva * vc1 + iie);
     #else
     return
@@ -159,10 +159,10 @@ double vemission_iabsorption_np1(int np1)
     double via = vi_absorption(np1);
     double ic1 = i_clusters1(np1);
     double vve = vv_emission(np1);
-    fprintf(stdout, "%s\n", __FUNCTION__);
-    fprintf(stdout, "vi_absorption(%d)%.*s%8.20f *\n", np1, 12, TABS, via);
-    fprintf(stdout, "i_clusters1(%d)%.*s%8.20f +\n", np1, 13, TABS, ic1);
-    fprintf(stdout, "vv_emission(%d)%.*s%8.20f\n", np1, 13, TABS, vve);
+    fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
+    fprintf(stdout, "vi_absorption(%d)%.*s%8.15lf *\n", np1, 12, TABS, via);
+    fprintf(stdout, "i_clusters1(%d)%.*s%8.15lf +\n", np1, 13, TABS, ic1);
+    fprintf(stdout, "vv_emission(%d)%.*s%8.15lf\n", np1, 13, TABS, vve);
     return print_return(via * ic1 + vve);
     #else
     return 
@@ -191,10 +191,10 @@ double iemission_vabsorption_n(int n)
     double iia = ii_absorption(n);
     double ic1 = i_clusters1(n);
     double iie = ii_emission(n);
-    fprintf(stdout, "%s\n", __FUNCTION__);
-    fprintf(stdout, "iv_absorption(%d) * v_clusters1(%d)%.*s%8.20f * %8.20f +\n", n, n, 10, TABS, iva, vc1);
-    fprintf(stdout, "ii_absorption(%d) * i_clusters1(%d)%.*s%8.20f * %8.20f +\n", n, n, 10, TABS, iia, ic1);
-    fprintf(stdout, "ii_emission(%d)%.*s%8.20f\n", n, 13, TABS, iie);
+    fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
+    fprintf(stdout, "iv_absorption(%d) * v_clusters1(%d)%.*s%8.15lf * %8.15lf +\n", n, n, 10, TABS, iva, vc1);
+    fprintf(stdout, "ii_absorption(%d) * i_clusters1(%d)%.*s%8.15lf * %8.15lf +\n", n, n, 10, TABS, iia, ic1);
+    fprintf(stdout, "ii_emission(%d)%.*s%8.15lf\n", n, 13, TABS, iie);
     return print_return(iva * vc1 + iia * ic1 + iie);
     #else
     return 
@@ -223,10 +223,10 @@ double vemission_iabsorption_n(int n)
     double vva = vv_absorption(n);
     double vc1 = v_clusters1(n);
     double vve = vv_emission(n);
-    fprintf(stdout, "%s\n", __FUNCTION__);
-    fprintf(stdout, "vi_absorption(%d) * i_clusters1(%d)%.*s%8.20f * %8.20f +\n", n, n, 10, TABS, via, ic1);
-    fprintf(stdout, "vv_absorption(%d) * v_clusters1(%d)%.*s%8.20f * %8.20f +\n", n, n, 10, TABS, vva, vc1);
-    fprintf(stdout, "vv_emission(%d)%.*s%8.20f\n", n, 13, TABS, vve);
+    fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
+    fprintf(stdout, "vi_absorption(%d) * i_clusters1(%d)%.*s%8.15lf * %8.15lf +\n", n, n, 10, TABS, via, ic1);
+    fprintf(stdout, "vv_absorption(%d) * v_clusters1(%d)%.*s%8.15lf * %8.15lf +\n", n, n, 10, TABS, vva, vc1);
+    fprintf(stdout, "vv_emission(%d)%.*s%8.15lf\n", n, 13, TABS, vve);
     return print_return(via * ic1 + vva * vc1 + vve);
     #else
     return 
@@ -251,9 +251,9 @@ double iemission_vabsorption_nm1(int nm1)
     #if VPRINT
     double iia = ii_absorption(nm1);
     double ic1 = i_clusters1(nm1);
-    fprintf(stdout, "%s\n", __FUNCTION__);
-    fprintf(stdout, "ii_absorption(%d)%.*s%8.20f *\n", nm1, 12, TABS, iia);
-    fprintf(stdout, "i_clusters1(%d)%.*s%8.20f\n", nm1, 13, TABS, ic1);
+    fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
+    fprintf(stdout, "ii_absorption(%d)%.*s%8.15lf *\n", nm1, 12, TABS, iia);
+    fprintf(stdout, "i_clusters1(%d)%.*s%8.15lf\n", nm1, 13, TABS, ic1);
     return print_return(iia * ic1);
     #else
     return
@@ -276,9 +276,9 @@ double vemission_iabsorption_nm1(int nm1)
     #if VPRINT
     double vva = vv_absorption(nm1);
     double vc1 = v_clusters1(nm1);
-    fprintf(stdout, "%s\n", __FUNCTION__);
-    fprintf(stdout, "vv_absorption(%d)%.*s%8.20f *\n", nm1, 12, TABS, vva);
-    fprintf(stdout, "v_clusters1(%d)%.*s%8.20f\n", nm1, 13, TABS, vc1);
+    fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
+    fprintf(stdout, "vv_absorption(%d)%.*s%8.15lf *\n", nm1, 12, TABS, vva);
+    fprintf(stdout, "v_clusters1(%d)%.*s%8.15lf\n", nm1, 13, TABS, vc1);
     return print_return(vva * vc1);
     #else
     return
@@ -370,7 +370,7 @@ double v_clusters1(int vn)
 */
 double i_emission_time(int nmax)
 {
-    double time = 0.f;
+    double time = 0.0;
     for (int in = 2; in < nmax; ++in)
     {
         time +=
@@ -396,7 +396,7 @@ double i_emission_time(int nmax)
 */
 double v_emission_time(int nmax)
 {
-    double time = 0.f;
+    double time = 0.0;
     for (int vn = 2; vn < nmax; ++vn)
     {
         time += 
@@ -580,7 +580,7 @@ double v_grain_boundary_annihilation_time(int vn)
 
 double ii_sum_absorption(int nmax)
 {
-    double emission = 0.f;
+    double emission = 0.0;
     for (int vn = 1; vn < nmax; ++vn)
     {
         emission += ii_absorption(vn) * interstitials[vn];
@@ -591,7 +591,7 @@ double ii_sum_absorption(int nmax)
 
 double iv_sum_absorption(int nmax)
 {
-    double emission = 0.f;
+    double emission = 0.0;
     for (int n = 1; n < nmax; ++n)
     {
         emission += iv_absorption(n) * interstitials[n];
@@ -602,7 +602,7 @@ double iv_sum_absorption(int nmax)
 
 double vv_sum_absorption(int nmax)
 {
-    double emission = 0.f;
+    double emission = 0.0;
     for (int n = 1; n < nmax; ++n)
     {
         emission += vv_absorption(n) * vacancies[n];
@@ -613,7 +613,7 @@ double vv_sum_absorption(int nmax)
 
 double vi_sum_absorption(int nmax)
 {
-    double emission = 0.f;
+    double emission = 0.0;
     for (int n = 1; n < nmax; ++n)
     {
         emission += vi_absorption(n) * vacancies[n];
@@ -644,12 +644,12 @@ double ii_emission(int n)
             -ibe /
             (BOLTZMANN_EV_KELVIN * reactor->temperature)
         );
-    fprintf(stdout, "%s\n", __FUNCTION__);
-    fprintf(stdout, "2 * M_PI * %d%.*s%8.20f *\n", n, 13, TABS, pi2n);
-    fprintf(stdout, "i_bias_factor(%d)%.*s%8.20f *\n", n, 12, TABS, ibf);
-    fprintf(stdout, "material->i_diffusion / atomic_volume%.*s%8.20f *\n", 10, TABS, id);
-    fprintf(stdout, "-i_binding_energy(%d)%.*s%8.20f *\n", n, 12, TABS, -ibe);
-    fprintf(stdout, "exp(-i_binding_energy(%d) / (k * reactor->temperature))%.*s%8.20f *\n", n, 8, TABS, evexp);
+    fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
+    fprintf(stdout, "2 * M_PI * %d%.*s%8.15lf *\n", n, 13, TABS, pi2n);
+    fprintf(stdout, "i_bias_factor(%d)%.*s%8.15lf *\n", n, 12, TABS, ibf);
+    fprintf(stdout, "material->i_diffusion / atomic_volume%.*s%8.15lf *\n", 10, TABS, id);
+    fprintf(stdout, "-i_binding_energy(%d)%.*s%8.15lf *\n", n, 12, TABS, -ibe);
+    fprintf(stdout, "exp(-i_binding_energy(%d) / (k * reactor->temperature))%.*s%8.15lf *\n", n, 8, TABS, evexp);
     return print_return(pi2n * ibf * id * evexp);
     #else
     return 
@@ -703,12 +703,12 @@ double vv_emission(int n)
             -vbe /
             (BOLTZMANN_EV_KELVIN * reactor->temperature)
         );
-    fprintf(stdout, "%s\n", __FUNCTION__);
-    fprintf(stdout, "2 * M_PI * %d%.*s%8.20f *\n", n, 13, TABS, pi2n);
-    fprintf(stdout, "v_bias_factor(%d)%.*s%8.20f *\n", n, 12, TABS, vbf);
-    fprintf(stdout, "material->v_diffusion%.*s%8.20f *\n", 12, TABS, vd);
-    fprintf(stdout, "-v_binding_energy(%d)%.*s%8.20f *\n", n, 12, TABS, -vbe);
-    fprintf(stdout, "exp(-v_binding_energy(%d) / (k * reactor->temperature))%.*s%8.20f *\n", n, 8, TABS, evexp);
+    fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
+    fprintf(stdout, "2 * M_PI * %d%.*s%8.15lf *\n", n, 13, TABS, pi2n);
+    fprintf(stdout, "v_bias_factor(%d)%.*s%8.15lf *\n", n, 12, TABS, vbf);
+    fprintf(stdout, "material->v_diffusion%.*s%8.15lf *\n", 12, TABS, vd);
+    fprintf(stdout, "-v_binding_energy(%d)%.*s%8.15lf *\n", n, 12, TABS, -vbe);
+    fprintf(stdout, "exp(-v_binding_energy(%d) / (k * reactor->temperature))%.*s%8.15lf *\n", n, 8, TABS, evexp);
     return print_return(pi2n * vbf * vd * evexp);
     #else
     return 
@@ -761,7 +761,7 @@ double i_bias_factor(int in)
 
     // TODO
     // Face-Centered Cubic Lattice (fcc) burgers vector magnitude
-    float burgers_vector = lattice_param / pow(2, .5f);
+    float burgers_vector = lattice_param / pow(2, .5);
 
     #if VPRINT
     double idb = material->i_dislocation_bias;
@@ -780,10 +780,10 @@ double i_bias_factor(int in)
             in,
             material->i_dislocation_bias_param / 2
         );
-    fprintf(stdout, "%s\n", __FUNCTION__);
-    fprintf(stdout, "material->i_dislocation_bias%.*s%8.20f +\n", 11, TABS, idb);
-    fprintf(stdout, "sqrt(burgers_vector / (8 * M_PI * lattice_param)) * material->i_loop_bias - material->i_dislocation_bias%.*s%8.20f *\n", 1, TABS, llp);
-    fprintf(stdout, "1 / pow(%d, material->i_dislocation_bias_param / 2)%.*s%8.20f\n", in, 8, TABS, nexp);
+    fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
+    fprintf(stdout, "material->i_dislocation_bias%.*s%8.15lf +\n", 11, TABS, idb);
+    fprintf(stdout, "sqrt(burgers_vector / (8 * M_PI * lattice_param)) * material->i_loop_bias - material->i_dislocation_bias%.*s%8.15lf *\n", 1, TABS, llp);
+    fprintf(stdout, "1 / pow(%d, material->i_dislocation_bias_param / 2)%.*s%8.15lf\n", in, 8, TABS, nexp);
     return print_return(idb + llp * nexp);
     #else
     return 
@@ -819,7 +819,7 @@ double v_bias_factor(int vn)
 
     // TODO
     // Face-Centered Cubic Lattice (fcc) burgers vector magnitude
-    float burgers_vector = lattice_param / pow(2, .5f);
+    float burgers_vector = lattice_param / pow(2, .5);
 
     #if VPRINT
     double vdb = material->v_dislocation_bias;
@@ -838,10 +838,10 @@ double v_bias_factor(int vn)
             vn,
             material->v_dislocation_bias_param / 2
         );
-    fprintf(stdout, "%s\n", __FUNCTION__);
-    fprintf(stdout, "material->v_dislocation_bias%.*s%8.20f +\n", 11, TABS, vdb);
-    fprintf(stdout, "sqrt(burgers_vector / (8 * M_PI * lattice_param)) * material->v_loop_bias - material->v_dislocation_bias%.*s%8.20f *\n", 1, TABS, llp);
-    fprintf(stdout, "1 / pow(%d, material->v_dislocation_bias_param / 2)%.*s%8.20f\n", vn, 8, TABS, nexp);
+    fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
+    fprintf(stdout, "material->v_dislocation_bias%.*s%8.15lf +\n", 11, TABS, vdb);
+    fprintf(stdout, "sqrt(burgers_vector / (8 * M_PI * lattice_param)) * material->v_loop_bias - material->v_dislocation_bias%.*s%8.15lf *\n", 1, TABS, llp);
+    fprintf(stdout, "1 / pow(%d, material->v_dislocation_bias_param / 2)%.*s%8.15lf\n", vn, 8, TABS, nexp);
     return print_return(vdb + llp * nexp);
     #else
     return 
@@ -874,18 +874,18 @@ double i_binding_energy(int in)
 {
     #if VPRINT
     double ifo = material->i_formation;
-    double factor = (material->i_binding - material->i_formation) / (pow(2.f, .8f) - 1);
-    double npow = (pow(in, .8f) - pow(in - 1, .8f));
-    fprintf(stdout, "%s\n", __FUNCTION__);
-    fprintf(stdout, "material->i_formation%.*s%8.20f +\n", 12, TABS, ifo);
-    fprintf(stdout, "(material->i_binding - material->i_formation) / (pow(2.f, .8f) - 1)%.*s%8.20f *\n", 6, TABS, factor);
-    fprintf(stdout, "(pow(%d, .8f) - pow(%d, .8f))%.*s%8.20f *\n", in, in - 1, 11, TABS, npow);
+    double factor = (material->i_binding - material->i_formation) / (pow(2.0, .8) - 1);
+    double npow = (pow(in, .8) - pow(in - 1, .8));
+    fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
+    fprintf(stdout, "material->i_formation%.*s%8.15lf +\n", 12, TABS, ifo);
+    fprintf(stdout, "(material->i_binding - material->i_formation) / (pow(2.0, .8) - 1)%.*s%8.15lf *\n", 6, TABS, factor);
+    fprintf(stdout, "(pow(%d, .8) - pow(%d, .8))%.*s%8.15lf *\n", in, in - 1, 11, TABS, npow);
     return print_return(ifo + factor * npow);
     #else
     return
         material->i_formation +
-        (material->i_binding - material->i_formation) / (pow(2.f, .8f) - 1) *
-        (pow(in, .8f) - pow(in - 1, .8f));
+        (material->i_binding - material->i_formation) / (pow(2.0, .8) - 1) *
+        (pow(in, .8) - pow(in - 1, .8));
     #endif
 }
 
@@ -896,18 +896,18 @@ double v_binding_energy(int vn)
 {
     #if VPRINT
     double vfo = material->v_formation;
-    double factor = (material->v_binding - material->v_formation) / (pow(2.f, .8f) - 1);
-    double npow = (pow(vn, .8f) - pow(vn - 1, .8f));
-    fprintf(stdout, "%s\n", __FUNCTION__);
-    fprintf(stdout, "material->v_formation%.*s%8.20f +\n", 12, TABS, vfo);
-    fprintf(stdout, "(material->v_binding - material->v_formation) / (pow(2.f, .8f) - 1)%.*s%8.20f *\n", 6, TABS, factor);
-    fprintf(stdout, "(pow(%d, .8f) - pow(%d, .8f))%.*s%8.20f *\n", vn, vn - 1, 11, TABS, npow);
+    double factor = (material->v_binding - material->v_formation) / (pow(2.0, .8) - 1);
+    double npow = (pow(vn, .8) - pow(vn - 1, .8));
+    fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
+    fprintf(stdout, "material->v_formation%.*s%8.15lf +\n", 12, TABS, vfo);
+    fprintf(stdout, "(material->v_binding - material->v_formation) / (pow(2.0, .8) - 1)%.*s%8.15lf *\n", 6, TABS, factor);
+    fprintf(stdout, "(pow(%d, .8) - pow(%d, .8))%.*s%8.15lf *\n", vn, vn - 1, 11, TABS, npow);
     return print_return(vfo + factor * npow);
     #else
     return
         material->v_formation +
-        (material->v_binding - material->v_formation) / (pow(2.f, .8f) - 1) *
-        (pow(vn, .8f) - pow(vn - 1, .8f));
+        (material->v_binding - material->v_formation) / (pow(2.0, .8) - 1) *
+        (pow(vn, .8) - pow(vn - 1, .8));
     #endif
 }
 // --------------------------------------------------------------------------------------------

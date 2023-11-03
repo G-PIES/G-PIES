@@ -158,7 +158,7 @@ double v_binding_energy(int vn);
 
 inline double print_return(double result)
 {
-    fprintf(stdout, "= %8.20f", result);
+    fprintf(stdout, "= %8.15lf", result);
     fprintf(stdout, "\n\n");
     #if VBREAK
     fgetc(stdin);

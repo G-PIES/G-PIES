@@ -20,10 +20,10 @@ NuclearReactor OSIRIS =
     "OSIRIS", // (1)
     2.9e-7, // (2)
     330.f + CELCIUS_KELVIN_CONV,  // (3)
-    .3f, // (4)
+    .3, // (4)
     // (5)
-    .5f, // bi
-    .2f, // tri
+    .5, // bi
+    .2, // tri
     .06f, // quad
     // (6)
     .06f, // bi
@@ -52,22 +52,22 @@ Material SA304 = {
     1.35f, // v
     // (3)
     1e-3, // i
-    .6f, // v
+    .6, // v
     // (4)
-    4.1f, // i
-    1.7f, // v
+    4.1, // i
+    1.7, // v
     // (5)
-    .6f,  // i
-    .5f,  // v
+    .6,  // i
+    .5,  // v
     .7e-7, // (6)
     63.f, // (7)
     // (8)
-    .8f, 
-    1.1f, // param
+    .8, 
+    1.1, // param
     33, // (9)
     // (10)
     .65f, 
-    1.f, // param
+    1.0, // param
     10e10 * M_CM_CONV, // (11)
     4e-3 // (12)
 };
@@ -92,22 +92,22 @@ int main(int argc, char* argv[])
     simulation_time = SIMULATION_TIME;
     delta_time = DELTA_TIME;
 
-    interstitials.fill(0.f);
-    vacancies.fill(0.f);
-    interstitials_temp.fill(0.f);
-    vacancies_temp.fill(0.f);
+    interstitials.fill(0.0);
+    vacancies.fill(0.0);
+    interstitials_temp.fill(0.0);
+    vacancies_temp.fill(0.0);
 
     // --------------------------------------------------------------------------------------------
     // main simulation loop
     for (int t = 0; t < simulation_time; t += delta_time)
     {
-        #if VPRINT
-        fprintf(stdout, "\n--------------------------------------------------------------------------------------- t = %d\n", t);
-        #endif
-
         // calculate interstitial / vacancy concentrations for this time slice
         for (int n = 1; n < concentration_boundary; ++n)
         {
+            #if VPRINT
+            fprintf(stdout, "\n------------------------------------------------------------------------------- t = %d\tn = %d\n", t, n);
+            #endif
+
             interstitials_temp[n] = i_clusters(n);
             vacancies_temp[n] = v_clusters(n);
         }
@@ -120,11 +120,13 @@ int main(int argc, char* argv[])
 
     // --------------------------------------------------------------------------------------------
     // print results
+    #if !VPRINT
     fprintf(stdout, "Cluster Size\t-\tInterstitials\t-\tVacancies\n\n");
     for (int n = 1; n < concentration_boundary; ++n)
     {
         fprintf(stdout, "%d\t\t\t%8.10f\t\t%8.10f\n\n", n, interstitials[n], vacancies[n]);
     }
+    #endif
     // --------------------------------------------------------------------------------------------
 
 
