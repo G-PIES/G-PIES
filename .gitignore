@@ -39,3 +39,6 @@
 
 # Local Configurations
 .vscode
+
+# csv
+*.csv

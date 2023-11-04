@@ -33,9 +33,26 @@ CCFLAGS += -std=c++17
 ext = .out
 binary = cluster_dynamics$(ext)
 
+ifdef C
+	CCFLAGS += -D CONCENTRATION_BOUNDARY=$(C)
+endif
+
+ifdef T
+	CCFLAGS += -D SIMULATION_TIME=$(T)
+endif
+
+ifdef DT
+	CCFLAGS += -D DELTA_TIME=$(DT)
+endif
+
 # standard compilation
 cluster_dynamics: main.cpp
 	$(CC) $(CCFLAGS) *.cpp -o $(binary)
+
+# compile and run
+cdr: main.cpp
+	$(CC) $(CCFLAGS) *.cpp -o $(binary)
+	./$(binary)
 
 # debug symbols
 debug:
@@ -49,6 +66,10 @@ vprint:
 vprintr:
 	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true *.cpp -o $(binary)
 	./$(binary)
+
+csv:
+	$(CC) $(CCFLAGS) -D CSV=true *.cpp -o $(binary)
+	./$(binary) > cd-output.csv
 
 # run the binary
 run:

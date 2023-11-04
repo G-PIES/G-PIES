@@ -2,11 +2,11 @@
 #define CLUSTER_DYNAMICS_HPP
 
 #ifndef CONCENTRATION_BOUNDARY
-#define CONCENTRATION_BOUNDARY 5
+#define CONCENTRATION_BOUNDARY 11
 #endif
 
 #ifndef SIMULATION_TIME
-#define SIMULATION_TIME 10 // seconds (s)
+#define SIMULATION_TIME 16 // seconds (s)
 #endif
 
 #ifndef DELTA_TIME
@@ -23,25 +23,34 @@
 
 // verbose printing
 #ifndef VPRINT
-#define VPRINT true
+#define VPRINT false 
 #endif
 
 // verbose breakpoints
 #ifndef VBREAK
-#define VBREAK true
+#define VBREAK false 
 #endif
 
+// csv output
+#ifndef CSV
+#define CSV false
+#endif
+
+// used in formatted debug printing
 #define TABS "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
 
 
 // Celcius to Kevlin Conversion
-const double CELCIUS_KELVIN_CONV = 273.15f;
+const double CELCIUS_KELVIN_CONV = 273.15;
 
 // Second to femtosecond conversion
 const double SEC_FS_CONV = 1e15;
 
 // Meter to centimeter conversion
-const double M_CM_CONV = 1e-4;
+const double M_CM_CONV = 1e4;
+
+// Picometer to centimeter conversion
+const double PM_CM_CONV = 1e10;
 
 
 // C. Pokor et al. / Journal of Nuclear Materials 326 (2004), Table 5
@@ -118,47 +127,48 @@ struct Material
 
 // --------------------------------------------------------------------------------------------
 // PROTOTYPES 
+bool validate(uint64_t);
 double i_defect_production(int);
 double v_defect_production(int);
-double i_clusters(int in);
-double v_clusters(int vn);
-double v_clusters(int vn);
-double iemission_vabsorption_np1(int np1);
-double vemission_iabsorption_np1(int np1);
-double iemission_vabsorption_n(int n);
-double vemission_iabsorption_n(int n);
-double iemission_vabsorption_nm1(int nm1);
-double vemission_iabsorption_nm1(int nm1);
-double i_clusters1(int in);
-double v_clusters1(int vn);
-double i_emission_time(int nmax);
-double v_emission_time(int nmax);
-double i_absorption_time(int nmax);
-double v_absorption_time(int nmax);
+double i_clusters(uint64_t in);
+double v_clusters(uint64_t vn);
+double v_clusters(uint64_t vn);
+double iemission_vabsorption_np1(uint64_t np1);
+double vemission_iabsorption_np1(uint64_t np1);
+double iemission_vabsorption_n(uint64_t n);
+double vemission_iabsorption_n(uint64_t n);
+double iemission_vabsorption_nm1(uint64_t nm1);
+double vemission_iabsorption_nm1(uint64_t nm1);
+double i_clusters1(uint64_t in);
+double v_clusters1(uint64_t vn);
+double i_emission_time(uint64_t nmax);
+double v_emission_time(uint64_t nmax);
+double i_absorption_time(uint64_t nmax);
+double v_absorption_time(uint64_t nmax);
 double annihilation_rate();
 double i_dislocation_annihilation_time();
 double v_dislocation_annihilation_time();
-double i_grain_boundary_annihilation_time(int vn);
-double v_grain_boundary_annihilation_time(int vn);
-double ii_sum_absorption(int nmax);
-double iv_sum_absorption(int nmax);
-double vv_sum_absorption(int nmax);
-double vi_sum_absorption(int nmax);
-double ii_emission(int in);
-double ii_absorption(int in);
-double iv_absorption(int in);
-double vv_emission(int vn);
-double vv_absorption(int vn);
-double vi_absorption(int vn);
-double i_bias_factor(int in);
-double v_bias_factor(int vn);
-double i_binding_energy(int in);
-double v_binding_energy(int vn);
+double i_grain_boundary_annihilation_time(uint64_t vn);
+double v_grain_boundary_annihilation_time(uint64_t vn);
+double ii_sum_absorption(uint64_t nmax);
+double iv_sum_absorption(uint64_t nmax);
+double vv_sum_absorption(uint64_t nmax);
+double vi_sum_absorption(uint64_t nmax);
+double ii_emission(uint64_t in);
+double ii_absorption(uint64_t in);
+double iv_absorption(uint64_t in);
+double vv_emission(uint64_t vn);
+double vv_absorption(uint64_t vn);
+double vi_absorption(uint64_t vn);
+double i_bias_factor(uint64_t in);
+double v_bias_factor(uint64_t vn);
+double i_binding_energy(uint64_t in);
+double v_binding_energy(uint64_t vn);
 // --------------------------------------------------------------------------------------------
 
 inline double print_return(double result)
 {
-    fprintf(stdout, "= %8.15lf", result);
+    fprintf(stdout, "%.*s= %8.15lf", 15, TABS, result);
     fprintf(stdout, "\n\n");
     #if VBREAK
     fgetc(stdin);
@@ -174,9 +184,9 @@ extern Material SA304;
 
 // Setting an overall global variable to hold the concentration_boundary
 // so that we aren't forces to pass the variable to every single function. - Sean H.
-extern int concentration_boundary;
-extern int simulation_time;
-extern int delta_time;
+extern uint64_t concentration_boundary;
+extern uint64_t simulation_time;
+extern uint64_t delta_time;
 
 // result arrays
 extern std::array<double, CONCENTRATION_BOUNDARY> interstitials;

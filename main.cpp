@@ -19,16 +19,16 @@ NuclearReactor OSIRIS =
 { 
     "OSIRIS", // (1)
     2.9e-7, // (2)
-    330.f + CELCIUS_KELVIN_CONV,  // (3)
+    330.0 + CELCIUS_KELVIN_CONV,  // (3)
     .3, // (4)
     // (5)
     .5, // bi
     .2, // tri
-    .06f, // quad
+    .06, // quad
     // (6)
-    .06f, // bi
-    .03f, // tri
-    .02f  // quad
+    .06, // bi
+    .03, // tri
+    .02  // quad
 };
 
 /*  Material
@@ -48,8 +48,8 @@ NuclearReactor OSIRIS =
 Material SA304 = { 
     "SA304", // (1)
     // (2)
-    .45f, // i
-    1.35f, // v
+    .45, // i
+    1.35, // v
     // (3)
     1e-3, // i
     .6, // v
@@ -60,21 +60,21 @@ Material SA304 = {
     .6,  // i
     .5,  // v
     .7e-7, // (6)
-    63.f, // (7)
+    63.0, // (7)
     // (8)
     .8, 
     1.1, // param
     33, // (9)
     // (10)
-    .65f, 
+    .65, 
     1.0, // param
-    10e10 * M_CM_CONV, // (11)
+    1 / (10e10 * M_CM_CONV), // (11)
     4e-3 // (12)
 };
 
-int concentration_boundary;
-int simulation_time;
-int delta_time;
+uint64_t concentration_boundary;
+uint64_t simulation_time;
+uint64_t delta_time;
 
 std::array<double, CONCENTRATION_BOUNDARY> interstitials;
 std::array<double, CONCENTRATION_BOUNDARY> vacancies;
@@ -97,38 +97,63 @@ int main(int argc, char* argv[])
     interstitials_temp.fill(0.0);
     vacancies_temp.fill(0.0);
 
+    #if CSV
+    fprintf(stdout, "Time (s),Cluster Size,# Interstitial Clusters,# Vacancy Clusters\n");
+    #endif
+
+    bool valid_sim = true;
     // --------------------------------------------------------------------------------------------
     // main simulation loop
-    for (int t = 0; t < simulation_time; t += delta_time)
+    for (uint64_t t = 0; t < simulation_time && valid_sim; t += delta_time)
     {
         // calculate interstitial / vacancy concentrations for this time slice
-        for (int n = 1; n < concentration_boundary; ++n)
+        for (uint64_t n = 1; n < concentration_boundary && valid_sim; ++n)
         {
             #if VPRINT
-            fprintf(stdout, "\n------------------------------------------------------------------------------- t = %d\tn = %d\n", t, n);
+            fprintf(stdout, "\n------------------------------------------------------------------------------- t = %llu\tn = %llu\n", t, n);
             #endif
 
             interstitials_temp[n] = i_clusters(n);
             vacancies_temp[n] = v_clusters(n);
+
+            if (!(valid_sim = validate(n)))
+            {
+                fprintf(stdout, "\nINVALID SIM @ t = %llu\tn = %llu\n\n", t, n);
+            }
+
+            #if CSV
+            fprintf(stdout, "%llu,%llu,%15.15lf,%15.15lf\n", t, n, interstitials_temp[n], vacancies_temp[n]);
+            #endif
         }
 
-        interstitials = interstitials_temp;
-        vacancies = vacancies_temp;
+        if (valid_sim)
+        {
+            interstitials = interstitials_temp;
+            vacancies = vacancies_temp;
+        }
     }
     // --------------------------------------------------------------------------------------------
 
 
     // --------------------------------------------------------------------------------------------
     // print results
-    #if !VPRINT
-    fprintf(stdout, "Cluster Size\t-\tInterstitials\t-\tVacancies\n\n");
-    for (int n = 1; n < concentration_boundary; ++n)
+    #if !VPRINT && !CSV
+    fprintf(stdout, "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n");
+    for (uint64_t n = 1; n < concentration_boundary; ++n)
     {
-        fprintf(stdout, "%d\t\t\t%8.10f\t\t%8.10f\n\n", n, interstitials[n], vacancies[n]);
+        fprintf(stdout, "%llu\t\t\t\t\t%15.15lf\t\t\t%15.15lf\n\n", n, interstitials[n], vacancies[n]);
     }
     #endif
     // --------------------------------------------------------------------------------------------
 
 
     return 0;
+}
+
+bool validate(uint64_t n)
+{
+    return !std::isnan(interstitials_temp[n]) &&
+    !std::isinf(interstitials_temp[n]) &&
+    !std::isnan(vacancies_temp[n]) &&
+    !std::isinf(vacancies_temp[n]);
 }
