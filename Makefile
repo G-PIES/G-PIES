@@ -45,6 +45,10 @@ ifdef DT
 	CCFLAGS += -D DELTA_TIME=$(DT)
 endif
 
+ifdef N
+	CCFLAGS += -D N=$(N)
+endif
+
 # standard compilation
 cluster_dynamics: main.cpp
 	$(CC) $(CCFLAGS) *.cpp -o $(binary)

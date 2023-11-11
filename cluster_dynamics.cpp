@@ -496,7 +496,7 @@ double i_dislocation_annihilation_time()
 {
     return
         // (1)
-        material->dislocation_density_initial *
+        dislocation_density *
         // (2)
         material->i_diffusion *
         // (3)
@@ -515,7 +515,7 @@ double v_dislocation_annihilation_time()
 {
     return
         // (1)
-        material->dislocation_density_initial *
+        dislocation_density *
         // (2)
         material->v_diffusion *
         // (3)
@@ -541,7 +541,7 @@ double i_grain_boundary_annihilation_time(uint64_t in)
         sqrt
         (
             // (2)
-            material->dislocation_density_initial * 
+            dislocation_density * 
             material->i_dislocation_bias +
             // (3)
             ii_sum_absorption(in) +
@@ -568,7 +568,7 @@ double v_grain_boundary_annihilation_time(uint64_t vn)
         sqrt
         (
             // (2)
-            material->dislocation_density_initial *
+            dislocation_density *
             material->v_dislocation_bias +
             // (3)
             vv_sum_absorption(vn) +
@@ -634,6 +634,7 @@ double ii_emission(uint64_t n)
     // TODO: average atomic volume of SA304: .7 m^3/kmol
     // converted to cm^3/kmol
     float atomic_volume = .7e6;
+
     #if VPRINT
     double pi2n = 2 * M_PI; //* n;
     double ibf = i_bias_factor(n);
@@ -754,24 +755,18 @@ double vi_absorption(uint64_t n)
 */
 double i_bias_factor(uint64_t in)
 {
-    return 1.0;
-    // TODO
-    // lattice parameters (picometeres)
-    // Chromium: 291 pm
-    // Nickel: 352.4 pm
-    double lattice_param = 291.0 * PM_CM_CONV;
-
+    return 1.;
     // TODO
     // Face-Centered Cubic Lattice (fcc) burgers vector magnitude
-    double burgers_vector = lattice_param / pow(2.0, .5);
+    double b = burgers_vector(lattice_parameters::sa304);
 
     #if VPRINT
     double idb = material->i_dislocation_bias;
     double llp = 
         sqrt
         (
-                burgers_vector /
-                (8 * M_PI * lattice_param)
+                b /
+                (8 * M_PI * lattice_parameters::sa304)
         ) *
         material->i_loop_bias -
         material->i_dislocation_bias;
@@ -784,7 +779,7 @@ double i_bias_factor(uint64_t in)
         );
     fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
     fprintf(stdout, "material->i_dislocation_bias%.*s%8.15lf +\n", 11, TABS, idb);
-    fprintf(stdout, "sqrt(burgers_vector / (8 * M_PI * lattice_param)) * material->i_loop_bias - material->i_dislocation_bias%.*s%8.15lf *\n", 1, TABS, llp);
+    fprintf(stdout, "sqrt(burgers_vector / (8 * M_PI * lattice_parameters::sa304)) * material->i_loop_bias - material->i_dislocation_bias%.*s%8.15lf *\n", 1, TABS, llp);
     fprintf(stdout, "1 / pow(%llu, material->i_dislocation_bias_param / 2)%.*s%8.15lf\n", in, 8, TABS, nexp);
     return print_return(idb + llp * nexp);
     #else
@@ -793,8 +788,8 @@ double i_bias_factor(uint64_t in)
         (
             sqrt
             (
-                    burgers_vector /
-                    (8 * M_PI * lattice_param)
+                    b /
+                    (8 * M_PI * lattice_parameters::sa304)
             ) *
             material->i_loop_bias -
             material->i_dislocation_bias
@@ -813,24 +808,18 @@ double i_bias_factor(uint64_t in)
 */
 double v_bias_factor(uint64_t vn)
 {
-    return 1.0;
-    // TODO
-    // lattice parameters (picometeres)
-    // Chromium: 291 pm
-    // Nickel: 352.4 pm
-    double lattice_param = 291.0 * PM_CM_CONV;
-
+    return 1.;
     // TODO
     // Face-Centered Cubic Lattice (fcc) burgers vector magnitude
-    double burgers_vector = lattice_param / pow(2.0, .5);
+    double b = burgers_vector(lattice_parameters::sa304);
 
     #if VPRINT
     double vdb = material->v_dislocation_bias;
     double llp = 
         sqrt
         (
-                burgers_vector /
-                (8 * M_PI * lattice_param)
+                b /
+                (8 * M_PI * lattice_parameters::sa304)
         ) *
         material->v_loop_bias -
         material->v_dislocation_bias;
@@ -843,7 +832,7 @@ double v_bias_factor(uint64_t vn)
         );
     fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
     fprintf(stdout, "material->v_dislocation_bias%.*s%8.15lf +\n", 11, TABS, vdb);
-    fprintf(stdout, "sqrt(burgers_vector / (8 * M_PI * lattice_param)) * material->v_loop_bias - material->v_dislocation_bias%.*s%8.15lf *\n", 1, TABS, llp);
+    fprintf(stdout, "sqrt(burgers_vector / (8 * M_PI * lattice_parameters::sa304)) * material->v_loop_bias - material->v_dislocation_bias%.*s%8.15lf *\n", 1, TABS, llp);
     fprintf(stdout, "1 / pow(%llu, material->v_dislocation_bias_param / 2)%.*s%8.15lf\n", vn, 8, TABS, nexp);
     return print_return(vdb + llp * nexp);
     #else
@@ -852,8 +841,8 @@ double v_bias_factor(uint64_t vn)
         (
             sqrt
             (
-                    burgers_vector /
-                    (8 * M_PI * lattice_param)
+                    b /
+                    (8 * M_PI * lattice_parameters::sa304)
             ) *
             material->v_loop_bias -
             material->v_dislocation_bias
@@ -878,7 +867,7 @@ double i_binding_energy(uint64_t in)
     #if VPRINT
     double ifo = material->i_formation;
     double factor = (material->i_binding - material->i_formation) / (pow(2.0, .8) - 1);
-    double npow = (pow(in, .8) - pow(in - 1, .8));
+    double npow = (pow(in, .8) - pow(in - 1., .8));
     fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
     fprintf(stdout, "material->i_formation%.*s%8.15lf +\n", 12, TABS, ifo);
     fprintf(stdout, "(material->i_binding - material->i_formation) / (pow(2.0, .8) - 1)%.*s%8.15lf *\n", 6, TABS, factor);
@@ -888,7 +877,7 @@ double i_binding_energy(uint64_t in)
     return
         material->i_formation +
         (material->i_binding - material->i_formation) / (pow(2.0, .8) - 1) *
-        (pow(in, .8) - pow(in - 1, .8));
+        (pow(in, .8) - pow(in - 1., .8));
     #endif
 }
 
@@ -900,7 +889,7 @@ double v_binding_energy(uint64_t vn)
     #if VPRINT
     double vfo = material->v_formation;
     double factor = (material->v_binding - material->v_formation) / (pow(2.0, .8) - 1);
-    double npow = (pow(vn, .8) - pow(vn - 1, .8));
+    double npow = (pow(vn, .8) - pow(vn - 1., .8));
     fprintf(stdout, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
     fprintf(stdout, "material->v_formation%.*s%8.15lf +\n", 12, TABS, vfo);
     fprintf(stdout, "(material->v_binding - material->v_formation) / (pow(2.0, .8) - 1)%.*s%8.15lf *\n", 6, TABS, factor);
@@ -910,7 +899,30 @@ double v_binding_energy(uint64_t vn)
     return
         material->v_formation +
         (material->v_binding - material->v_formation) / (pow(2.0, .8) - 1) *
-        (pow(vn, .8) - pow(vn - 1, .8));
+        (pow(vn, .8) - pow(vn - 1., .8));
     #endif
+}
+// --------------------------------------------------------------------------------------------
+
+
+// --------------------------------------------------------------------------------------------
+/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 8
+*/
+double dislocation_density_delta()
+{
+    return 
+        -DISLOCATION_DENSITY_EVOLUTION * 
+        pow(burgers_vector(lattice_parameters::sa304), 2) *
+        pow(dislocation_density, 3./2.);
+}
+// --------------------------------------------------------------------------------------------
+
+
+// --------------------------------------------------------------------------------------------
+/*  Burgers vector
+*/
+double burgers_vector(double lattice_parameter)
+{
+    return lattice_parameter / pow(2.0, .5);
 }
 // --------------------------------------------------------------------------------------------

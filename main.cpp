@@ -80,6 +80,7 @@ std::array<double, CONCENTRATION_BOUNDARY> interstitials;
 std::array<double, CONCENTRATION_BOUNDARY> vacancies;
 std::array<double, CONCENTRATION_BOUNDARY> interstitials_temp;
 std::array<double, CONCENTRATION_BOUNDARY> vacancies_temp;
+double dislocation_density;
 
 NuclearReactor* reactor = &OSIRIS;
 Material* material = &SA304;
@@ -97,8 +98,11 @@ int main(int argc, char* argv[])
     interstitials_temp.fill(0.0);
     vacancies_temp.fill(0.0);
 
+    // initial dislocation density
+    dislocation_density = material->dislocation_density_initial;
+
     #if CSV
-    fprintf(stdout, "Time (s),Cluster Size,# Interstitial Clusters,# Vacancy Clusters\n");
+    fprintf(stdout, "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
     #endif
 
     bool valid_sim = true;
@@ -113,8 +117,8 @@ int main(int argc, char* argv[])
             fprintf(stdout, "\n------------------------------------------------------------------------------- t = %llu\tn = %llu\n", t, n);
             #endif
 
-            interstitials_temp[n] = i_clusters(n);
-            vacancies_temp[n] = v_clusters(n);
+            interstitials_temp[n] += i_clusters(n);
+            vacancies_temp[n] += v_clusters(n);
 
             if (!(valid_sim = validate(n)))
             {
@@ -122,7 +126,11 @@ int main(int argc, char* argv[])
             }
 
             #if CSV
-            fprintf(stdout, "%llu,%llu,%15.15lf,%15.15lf\n", t, n, interstitials_temp[n], vacancies_temp[n]);
+                #ifdef N
+                fprintf(stdout, "%llu,%llu,%15.15lf,%15.15lf\n", t, (uint64_t)N, interstitials_temp[N], vacancies_temp[N]);
+                #else
+                fprintf(stdout, "%llu,%llu,%15.15lf,%15.15lf\n", t, n, interstitials_temp[n], vacancies_temp[n]);
+                #endif
             #endif
         }
 
@@ -130,6 +138,7 @@ int main(int argc, char* argv[])
         {
             interstitials = interstitials_temp;
             vacancies = vacancies_temp;
+            dislocation_density += dislocation_density_delta();
         }
     }
     // --------------------------------------------------------------------------------------------

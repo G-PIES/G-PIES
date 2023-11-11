@@ -2,15 +2,15 @@
 #define CLUSTER_DYNAMICS_HPP
 
 #ifndef CONCENTRATION_BOUNDARY
-#define CONCENTRATION_BOUNDARY 11
+#define CONCENTRATION_BOUNDARY 5
 #endif
 
 #ifndef SIMULATION_TIME
-#define SIMULATION_TIME 16 // seconds (s)
+#define SIMULATION_TIME 60 * 60 * 24 * 365 // seconds (s)
 #endif
 
 #ifndef DELTA_TIME
-#define DELTA_TIME 1 // seconds (s)
+#define DELTA_TIME 60 * 60 * 24 // seconds (s)
 #endif
 
 #ifndef BOLTZMANN_EV_KELVIN
@@ -36,9 +36,8 @@
 #define CSV false
 #endif
 
-// used in formatted debug printing
+// used formatted debug printing
 #define TABS "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
-
 
 // Celcius to Kevlin Conversion
 const double CELCIUS_KELVIN_CONV = 273.15;
@@ -64,15 +63,15 @@ struct NuclearReactor
     // (Kelvin) 
     double temperature;
 
-    // recombination in the cascades
+    // recombination the cascades
     double recombination; 
 
-    // interstitials in the cascades
+    // interstitials the cascades
     double i_bi;
     double i_tri;
     double i_quad;
 
-    // vacancies in the cascades
+    // vacancies the cascades
     double v_bi;
     double v_tri;
     double v_quad;
@@ -128,42 +127,43 @@ struct Material
 // --------------------------------------------------------------------------------------------
 // PROTOTYPES 
 bool validate(uint64_t);
-double i_defect_production(int);
-double v_defect_production(int);
-double i_clusters(uint64_t in);
-double v_clusters(uint64_t vn);
-double v_clusters(uint64_t vn);
-double iemission_vabsorption_np1(uint64_t np1);
-double vemission_iabsorption_np1(uint64_t np1);
-double iemission_vabsorption_n(uint64_t n);
-double vemission_iabsorption_n(uint64_t n);
-double iemission_vabsorption_nm1(uint64_t nm1);
-double vemission_iabsorption_nm1(uint64_t nm1);
-double i_clusters1(uint64_t in);
-double v_clusters1(uint64_t vn);
-double i_emission_time(uint64_t nmax);
-double v_emission_time(uint64_t nmax);
-double i_absorption_time(uint64_t nmax);
-double v_absorption_time(uint64_t nmax);
+double i_defect_production(uint64_t);
+double v_defect_production(uint64_t);
+double i_clusters(uint64_t);
+double v_clusters(uint64_t);
+double iemission_vabsorption_np1(uint64_t);
+double vemission_iabsorption_np1(uint64_t);
+double iemission_vabsorption_n(uint64_t);
+double vemission_iabsorption_n(uint64_t);
+double iemission_vabsorption_nm1(uint64_t);
+double vemission_iabsorption_nm1(uint64_t);
+double i_clusters1(uint64_t);
+double v_clusters1(uint64_t);
+double i_emission_time(uint64_t);
+double v_emission_time(uint64_t);
+double i_absorption_time(uint64_t);
+double v_absorption_time(uint64_t);
 double annihilation_rate();
 double i_dislocation_annihilation_time();
 double v_dislocation_annihilation_time();
-double i_grain_boundary_annihilation_time(uint64_t vn);
-double v_grain_boundary_annihilation_time(uint64_t vn);
-double ii_sum_absorption(uint64_t nmax);
-double iv_sum_absorption(uint64_t nmax);
-double vv_sum_absorption(uint64_t nmax);
-double vi_sum_absorption(uint64_t nmax);
-double ii_emission(uint64_t in);
-double ii_absorption(uint64_t in);
-double iv_absorption(uint64_t in);
-double vv_emission(uint64_t vn);
-double vv_absorption(uint64_t vn);
-double vi_absorption(uint64_t vn);
-double i_bias_factor(uint64_t in);
-double v_bias_factor(uint64_t vn);
-double i_binding_energy(uint64_t in);
-double v_binding_energy(uint64_t vn);
+double i_grain_boundary_annihilation_time(uint64_t);
+double v_grain_boundary_annihilation_time(uint64_t);
+double ii_sum_absorption(uint64_t);
+double iv_sum_absorption(uint64_t);
+double vv_sum_absorption(uint64_t);
+double vi_sum_absorption(uint64_t);
+double ii_emission(uint64_t);
+double ii_absorption(uint64_t);
+double iv_absorption(uint64_t);
+double vv_emission(uint64_t);
+double vv_absorption(uint64_t);
+double vi_absorption(uint64_t);
+double i_bias_factor(uint64_t);
+double v_bias_factor(uint64_t);
+double i_binding_energy(uint64_t);
+double v_binding_energy(uint64_t);
+double dislocation_density_delta();
+double burgers_vector(double);
 // --------------------------------------------------------------------------------------------
 
 inline double print_return(double result)
@@ -178,7 +178,7 @@ inline double print_return(double result)
 
 
 // --------------------------------------------------------------------------------------------
-// GLOBALS (declared in main.cpp)
+// GLOBALS (declared main.cpp)
 extern NuclearReactor OSIRIS;
 extern Material SA304;
 
@@ -191,9 +191,28 @@ extern uint64_t delta_time;
 // result arrays
 extern std::array<double, CONCENTRATION_BOUNDARY> interstitials;
 extern std::array<double, CONCENTRATION_BOUNDARY> vacancies;
+extern double dislocation_density;
 
 extern NuclearReactor* reactor;
 extern Material* material;
+// --------------------------------------------------------------------------------------------
+
+
+// --------------------------------------------------------------------------------------------
+namespace lattice_parameters
+{
+    // Chromium: 291 pm
+    const double chromium = 291.0 * PM_CM_CONV;
+    // Nickel: 352.4 pm
+    const double nickel = 352.4 * PM_CM_CONV;
+    // Carbon: 246.4 pm
+    const double carbon = 246.4 * PM_CM_CONV;
+
+    const double sa304 = 
+                    chromium * .18 +
+                    nickel * .08 +
+                    carbon * .74;
+}
 // --------------------------------------------------------------------------------------------
 
 
