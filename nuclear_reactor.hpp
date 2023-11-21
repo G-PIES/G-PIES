@@ -1,0 +1,59 @@
+#ifndef NUCLEAR_REACTOR_HPP
+#define NUCLEAR_REACTOR_HPP 
+
+#include "conversions.hpp"
+
+// C. Pokor et al. / Journal of Nuclear Materials 326 (2004), Table 5
+struct NuclearReactor
+{
+    const char* species;
+
+    // neutron flux inside of the nuclear reactor (cm^2 / s)
+    double flux; 
+
+    // (Kelvin) 
+    double temperature;
+
+    // recombination the cascades
+    double recombination; 
+
+    // interstitials the cascades
+    double i_bi;
+    double i_tri;
+    double i_quad;
+
+    // vacancies the cascades
+    double v_bi;
+    double v_tri;
+    double v_quad;
+
+    // factor of dislocation density evolution
+    double dislocation_density_evolution;
+};
+
+// --------------------------------------------------------------------------------------------
+// REACTOR DEFINITIONS
+namespace nuclear_reactors
+{
+
+inline NuclearReactor OSIRIS()
+{
+    return
+    {
+        .species = "OSIRIS",
+        .flux = 2.9e-7,
+        .temperature = 330. + CELCIUS_KELVIN_CONV,
+        .recombination = .3, 
+        .i_bi = .5,
+        .i_tri = .2,
+        .i_quad = .06,
+        .v_bi = .06,
+        .v_tri = .03,
+        .v_quad = .02,
+        .dislocation_density_evolution = 300.
+    };
+}
+
+}
+
+#endif

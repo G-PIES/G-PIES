@@ -4,74 +4,10 @@
 #include <array>
 
 #include "cluster_dynamics.hpp"
+#include "nuclear_reactor.hpp"
 
 // --------------------------------------------------------------------------------------------
 //  GLOBALS
-/*  Nuclear Reactor
-    (1) Species Name
-    (2) Flux (cm^2 / s)
-    (3) Temperature (Kelvin)
-    (4) Recombination in Cascades
-    (5) Interstitials in Cascades
-    (6) Vancacies in Cascades
-*/
-NuclearReactor OSIRIS =
-{ 
-    "OSIRIS", // (1)
-    2.9e-7, // (2)
-    330.0 + CELCIUS_KELVIN_CONV,  // (3)
-    .3, // (4)
-    // (5)
-    .5, // bi
-    .2, // tri
-    .06, // quad
-    // (6)
-    .06, // bi
-    .03, // tri
-    .02  // quad
-};
-
-/*  Material
-    (1) Species Name
-    (2) Migration Energy (eV)
-    (3) Diffusion Coefficients (cm^2 / s)
-    (4) Formation Energy (eV)
-    (5) Binding Energy (eV)
-    (6) Recombination Radius (cm)
-    (7) Interstitial Loop Bias
-    (8) Interstitial Dislocation Bias
-    (9) Vacancy Loop Bias
-    (10) Vacancy Dislocation Bias
-    (11) Initial Dislocation Density (cm^2)
-    (12) Grain Size (cm)
-*/
-Material SA304 = { 
-    "SA304", // (1)
-    // (2)
-    .45, // i
-    1.35, // v
-    // (3)
-    1e-3, // i
-    .6, // v
-    // (4)
-    4.1, // i
-    1.7, // v
-    // (5)
-    .6,  // i
-    .5,  // v
-    .7e-7, // (6)
-    63.0, // (7)
-    // (8)
-    .8, 
-    1.1, // param
-    33, // (9)
-    // (10)
-    .65, 
-    1.0, // param
-    1 / (10e10 * M_CM_CONV), // (11)
-    4e-3 // (12)
-};
-
 uint64_t concentration_boundary;
 uint64_t simulation_time;
 uint64_t delta_time;
@@ -82,24 +18,27 @@ std::array<double, CONCENTRATION_BOUNDARY> interstitials_temp;
 std::array<double, CONCENTRATION_BOUNDARY> vacancies_temp;
 double dislocation_density;
 
-NuclearReactor* reactor = &OSIRIS;
-Material* material = &SA304;
+NuclearReactor reactor;
+Material material;
 // --------------------------------------------------------------------------------------------
 
 
 int main(int argc, char* argv[])
 {
+    reactor = nuclear_reactors::OSIRIS();
+    material = materials::SA304();
+
     concentration_boundary = CONCENTRATION_BOUNDARY;
     simulation_time = SIMULATION_TIME;
     delta_time = DELTA_TIME;
 
-    interstitials.fill(0.0);
-    vacancies.fill(0.0);
-    interstitials_temp.fill(0.0);
-    vacancies_temp.fill(0.0);
+    interstitials.fill(0.);
+    vacancies.fill(0.);
+    interstitials_temp.fill(0.);
+    vacancies_temp.fill(0.);
 
     // initial dislocation density
-    dislocation_density = material->dislocation_density_initial;
+    dislocation_density = material.dislocation_density_initial;
 
     #if CSV
     fprintf(stdout, "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
@@ -117,8 +56,8 @@ int main(int argc, char* argv[])
             fprintf(stdout, "\n------------------------------------------------------------------------------- t = %llu\tn = %llu\n", t, n);
             #endif
 
-            interstitials_temp[n] += i_clusters(n);
-            vacancies_temp[n] += v_clusters(n);
+            interstitials_temp[n] += i_clusters_delta(n);
+            vacancies_temp[n] += v_clusters_delta(n);
 
             if (!(valid_sim = validate(n)))
             {
