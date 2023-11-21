@@ -3,7 +3,7 @@
 
 #include "conversions.hpp"
 
-// C. Pokor et al. / Journal of Nuclear Materials 326 (2004), Table 5
+// C. Pokor / Journal of Nuclear Materials 326 (2004), Table 5
 struct NuclearReactor
 {
     const char* species;
@@ -14,15 +14,15 @@ struct NuclearReactor
     // (Kelvin) 
     double temperature;
 
-    // recombination the cascades
+    // recombination in the cascades
     double recombination; 
 
-    // interstitials the cascades
+    // interstitials in the cascades
     double i_bi;
     double i_tri;
     double i_quad;
 
-    // vacancies the cascades
+    // vacancies in the cascades
     double v_bi;
     double v_tri;
     double v_quad;

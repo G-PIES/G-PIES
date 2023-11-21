@@ -5,7 +5,7 @@
 
 #include "conversions.hpp"
 
-// C. Pokor et al. / Journal of Nuclear Materials 326 (2004), Table 6
+// C. Pokor / Journal of Nuclear Materials 326 (2004), Table 6
 struct Material
 {
     const char* species;

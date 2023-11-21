@@ -6,7 +6,7 @@
 #include "material.hpp"
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 1a-1e
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
     The rate of production of interstital defects from the irradiation cascade for size (n) clusters.
 */
 double i_defect_production(uint64_t n)
@@ -26,7 +26,7 @@ double i_defect_production(uint64_t n)
     return 0.;
 };
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 1a-1e
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
     The rate of production of vacancy defects from the irradiation cascade for size (n) clusters.
 */
 double v_defect_production(uint64_t n)
@@ -49,7 +49,7 @@ double v_defect_production(uint64_t n)
 
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 2a
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2a
     The number of clusters that contain (in) interstitials per unit volume.
 
                   (1)     (2)                    (3)              (4)
@@ -82,7 +82,7 @@ double i_clusters_delta(uint64_t in)
     #endif
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 2a
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2a
     The number of clusters that contain (vn) vacancies per unit volume.
 
                   (1)     (2)                    (3)              (4)
@@ -118,7 +118,7 @@ double v_clusters_delta(uint64_t vn)
 
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 2b
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2b
     The combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (np1),
     both events leading to an interstitial loop of size n.
 
@@ -147,7 +147,7 @@ double iemission_vabsorption_np1(uint64_t np1)
     #endif
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 2b
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2b
     The combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (np1),
     both events leading to an interstitial loop of size n.
 
@@ -176,7 +176,7 @@ double vemission_iabsorption_np1(uint64_t np1)
     #endif
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 2c
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2c
     The rate that a loop of size n can evolve toward a loop of size
     n + 1 absorbing an interstitial, or toward a loop of size
     n - 1 absorbing a vacancy or emitting an interstitial.
@@ -208,7 +208,7 @@ double iemission_vabsorption_n(uint64_t n)
     #endif
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 2c
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2c
     The rate that a loop of size n can evolve toward a loop of size
     n + 1 absorbing an vacancy, or toward a loop of size
     n - 1 absorbing an interstitial or emitting a vacancy.
@@ -240,7 +240,7 @@ double vemission_iabsorption_n(uint64_t n)
     #endif
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 2d
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2d
     The rate that an interstitial loop of size n - 1 can evolve into a
     loop of size n by absorbing an interstitial.
 
@@ -265,7 +265,7 @@ double iemission_vabsorption_nm1(uint64_t nm1)
     #endif
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 2d
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2d
     The rate that a vacancy loop of size n - 1 can evolve into a
     loop of size n by absorbing a vacancy.
 
@@ -293,7 +293,7 @@ double vemission_iabsorption_nm1(uint64_t nm1)
 
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 3a
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3a
     Point defects concentrations per unit volume given a cluster size (in).
     ** in is only used in characteristic time calculations which rely on cluster sizes up to (in).
 
@@ -327,7 +327,7 @@ double i_clusters1(uint64_t in)
         i_emission_time(in);
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 3a
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3a
     Point defects concentrations per unit volume given a cluster size (vn).
     ** vn is only used in characteristic time calculations which rely on cluster sizes up to (vn).
 
@@ -364,7 +364,7 @@ double v_clusters1(uint64_t vn)
 
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 3b
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3b
     Characteristic time for emitting an interstitial by the population of interstital or vacancy
     clusters of size up to (nmax).
 
@@ -390,7 +390,7 @@ double i_emission_time(uint64_t nmax)
     return time;
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 3b
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3b
     Characteristic time for emitting a vacancy by the population of interstital or vacancy
     clusters of size up to (nmax).
 
@@ -419,7 +419,7 @@ double v_emission_time(uint64_t nmax)
 
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 3c
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3c
     Characteristic time for absorbing an interstitial by the population of interstital or vacancy
     clusters of size up to (nmax).
 
@@ -441,7 +441,7 @@ double i_absorption_time(uint64_t nmax)
     return time;
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 3c
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3c
     Characteristic time for absorbing a vacancy by the population of interstital or vacancy
     clusters of size up to (nmax).
 
@@ -466,7 +466,7 @@ double v_absorption_time(uint64_t nmax)
 
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 3d
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3d
     Annihilation rate of vacancies and insterstitals.
 
           (1)      (2)         (3)
@@ -486,7 +486,7 @@ double annihilation_rate()
 
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 3e
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3e
     Characteristic time for annihilation of interstitials on dislocations.
 
            (1)   (2)    (3)
@@ -505,7 +505,7 @@ double i_dislocation_annihilation_time()
         material.i_dislocation_bias;
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 3e
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3e
     Characteristic time for annihilation of vacancies on dislocations.
 
            (1)   (2)    (3)
@@ -527,7 +527,7 @@ double v_dislocation_annihilation_time()
 
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 3f
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3f
     Characteristic time for annihilation of interstitials on grain boundaries.
 
            (1)            (2)      (3)                            (4)                              (5)
@@ -554,7 +554,7 @@ double i_grain_boundary_annihilation_time(uint64_t in)
         material.grain_size;
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 3f
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3f
     Characteristic time for annihilation of interstitials on grain boundaries.
 
            (1)            (2)      (3)                            (4)                              (5)
@@ -628,7 +628,7 @@ double vi_sum_absorption(uint64_t nmax)
 
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 4a
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4a
     Rate of emission of an interstitial by an interstital loop of size (n).
 */
 double ii_emission(uint64_t n)
@@ -665,7 +665,7 @@ double ii_emission(uint64_t n)
 }
 
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 4b
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4b
     Rate of absorption of an interstitial by an interstital loop of size (n).
 */
 double ii_absorption(uint64_t n)
@@ -676,7 +676,7 @@ double ii_absorption(uint64_t n)
         material.i_diffusion;
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 4c
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4c
     Rate of absorption of an interstitial by a vacancy loop of size (n).
 */
 double iv_absorption(uint64_t n)
@@ -687,7 +687,7 @@ double iv_absorption(uint64_t n)
         material.v_diffusion;
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 4d
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4d
     Rate of emission of a vacancy by a vacancy loop of size (n).
 */
 double vv_emission(uint64_t n)
@@ -723,7 +723,7 @@ double vv_emission(uint64_t n)
     #endif
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 4e
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4e
     Rate of absorption of a vacancy by a vacancy loop of size (n).
 */
 double vv_absorption(uint64_t n)
@@ -734,7 +734,7 @@ double vv_absorption(uint64_t n)
         material.v_diffusion;
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 4f
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4f
     Rate of absorption of a vacancy by an interstitial loop of size (n).
 */
 double vi_absorption(uint64_t n)
@@ -748,7 +748,7 @@ double vi_absorption(uint64_t n)
 
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 5
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 5
     Interstitial bias factor.
 */
 double i_bias_factor(uint64_t in)
@@ -798,7 +798,7 @@ double i_bias_factor(uint64_t in)
     #endif
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 5
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 5
     Vacancy bias factor.
 */
 double v_bias_factor(uint64_t vn)
@@ -851,7 +851,7 @@ double v_bias_factor(uint64_t vn)
 
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 6
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 6
     Interstitial binding energy.
 */
 double i_binding_energy(uint64_t in)
@@ -873,7 +873,7 @@ double i_binding_energy(uint64_t in)
     #endif
 }
 
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 6
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 6
     Vacancy binding energy.
 */
 double v_binding_energy(uint64_t vn)
@@ -898,7 +898,7 @@ double v_binding_energy(uint64_t vn)
 
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor et al. / Journal of Nuclear Materials 326 (2004), 8
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 8
 */
 double dislocation_density_delta()
 {
@@ -911,7 +911,7 @@ double dislocation_density_delta()
 
 
 // --------------------------------------------------------------------------------------------
-/* cluster size 
+/*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg. 346, 7.63
 */
 double cluster_radius(uint64_t n)
 {
