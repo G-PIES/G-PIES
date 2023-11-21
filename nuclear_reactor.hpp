@@ -42,7 +42,7 @@ inline NuclearReactor OSIRIS()
     {
         .species = "OSIRIS",
         .flux = 2.9e-7,
-        .temperature = 330. + CELCIUS_KELVIN_CONV,
+        .temperature = CELCIUS_KELVIN_CONV(330.),
         .recombination = .3, 
         .i_bi = .5,
         .i_tri = .2,

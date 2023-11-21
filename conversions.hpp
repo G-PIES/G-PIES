@@ -1,11 +1,11 @@
-// Celcius to Kevlin Conversion
-#define CELCIUS_KELVIN_CONV 273.15
+// celcius to kevlin conversion
+#define CELCIUS_KELVIN_CONV(c) (c + 273.15)
 
-// Second to femtosecond conversion
-#define SEC_FS_CONV 1e15
+// second to femtosecond conversion
+#define SEC_FS_CONV(s) (s * 1e15)
 
-// Meter to centimeter conversion
-#define M_CM_CONV 1e4
+// meter to centimeter conversion
+#define M_CM_CONV(m) (m * 1e4)
 
-// Picometer to centimeter conversion
-#define PM_CM_CONV 1e-10
+// picometer to centimeter conversion
+#define PM_CM_CONV(pm) (pm * 1e-10)

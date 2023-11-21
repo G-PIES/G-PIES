@@ -65,10 +65,10 @@ struct Material
 namespace lattice_params
 {
 
-    const double chromium = 291. * PM_CM_CONV;
-    const double nickel = 352.4 * PM_CM_CONV;
-    const double fcc_nickel = 360. * PM_CM_CONV;
-    const double carbon = 246.4 * PM_CM_CONV;
+    const double chromium = PM_CM_CONV(291.);
+    const double nickel = PM_CM_CONV(352.4);
+    const double fcc_nickel = PM_CM_CONV(360.);
+    const double carbon = PM_CM_CONV(246.4);
 
 }
 // --------------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ inline Material SA304()
         .v_loop_bias = 33.,
         .v_dislocation_bias = .65, 
         .v_dislocation_bias_param = 1.,
-        .dislocation_density_initial = 1. / (10e10 * M_CM_CONV),
+        .dislocation_density_initial = 1. / (double)M_CM_CONV(10e10),
         .grain_size = 4e-3,
         .lattice_param = lattice_param,
         .burgers_vector = lattice_param / pow(2., .5),
