@@ -22,23 +22,49 @@ NuclearReactor reactor;
 Material material;
 // --------------------------------------------------------------------------------------------
 
+void init_globals(int argc, char* argv[])
+{
+    concentration_boundary = CONCENTRATION_BOUNDARY;
+    simulation_time = SIMULATION_TIME;
+    delta_time = DELTA_TIME;
+
+    switch (argc)
+    {
+        case 4:
+            concentration_boundary = strtoul(argv[3], NULL, 10);
+        case 3:
+            simulation_time = strtoul(argv[2], NULL, 10);
+        case 2:
+            delta_time = strtoul(argv[1], NULL, 10);
+        default:
+            break;
+    }
+    
+    interstitials.fill(0.);
+    vacancies.fill(0.);
+    interstitials_temp.fill(0.);
+    vacancies_temp.fill(0.);
+}
+
+void print_start_message()
+{
+    fprintf(stderr, "Simulation Started: ");
+    fprintf(stderr, "delta_time: %lu, ", delta_time);
+    fprintf(stderr, "simulation_time: %lu, ", simulation_time);
+    fprintf(stderr, "concentration_boundary: %lu", concentration_boundary);
+}
 
 int main(int argc, char* argv[])
 {
     reactor = nuclear_reactors::OSIRIS();
     material = materials::SA304();
 
-    concentration_boundary = CONCENTRATION_BOUNDARY;
-    simulation_time = SIMULATION_TIME;
-    delta_time = DELTA_TIME;
-
-    interstitials.fill(0.);
-    vacancies.fill(0.);
-    interstitials_temp.fill(0.);
-    vacancies_temp.fill(0.);
+    init_globals(argc, argv);
 
     // initial dislocation density
     dislocation_density = material.dislocation_density_initial;
+
+    print_start_message();
 
     #if CSV
     fprintf(stdout, "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
@@ -53,7 +79,7 @@ int main(int argc, char* argv[])
         for (uint64_t n = 1; n < concentration_boundary && valid_sim; ++n)
         {
             #if VPRINT
-            fprintf(stdout, "\n------------------------------------------------------------------------------- t = %llu\tn = %llu\n", t, n);
+            fprintf(stdout, "\n------------------------------------------------------------------------------- t = %lu\tn = %lu\n", t, n);
             #endif
 
             interstitials_temp[n] += i_clusters_delta(n);
@@ -61,14 +87,14 @@ int main(int argc, char* argv[])
 
             if (!(valid_sim = validate(n)))
             {
-                fprintf(stdout, "\nINVALID SIM @ t = %llu\tn = %llu\n\n", t, n);
+                fprintf(stderr, "\nINVALID SIM @ t = %lu\tn = %lu\n\n", t, n);
             }
 
             #if CSV
                 #ifdef N
-                fprintf(stdout, "%llu,%llu,%15.15lf,%15.15lf\n", t, (uint64_t)N, interstitials_temp[N], vacancies_temp[N]);
+                fprintf(stdout, "%lu,%lu,%15.15lf,%15.15lf\n", t, (uint64_t)N, interstitials_temp[N], vacancies_temp[N]);
                 #else
-                fprintf(stdout, "%llu,%llu,%15.15lf,%15.15lf\n", t, n, interstitials_temp[n], vacancies_temp[n]);
+                fprintf(stdout, "%lu,%lu,%15.15lf,%15.15lf\n", t, n, interstitials_temp[n], vacancies_temp[n]);
                 #endif
             #endif
         }
@@ -89,7 +115,7 @@ int main(int argc, char* argv[])
     fprintf(stdout, "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n");
     for (uint64_t n = 1; n < concentration_boundary; ++n)
     {
-        fprintf(stdout, "%llu\t\t\t\t\t%15.15lf\t\t\t%15.15lf\n\n", n, interstitials[n], vacancies[n]);
+        fprintf(stdout, "%lu\t\t\t\t\t%15.15lf\t\t\t%15.15lf\n\n", n, interstitials[n], vacancies[n]);
     }
     #endif
     // --------------------------------------------------------------------------------------------
