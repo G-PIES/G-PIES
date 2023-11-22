@@ -98,8 +98,8 @@ inline double print_return(double result)
 // Setting an overall global variable to hold the concentration_boundary
 // so that we aren't forces to pass the variable to every single function. - Sean H.
 extern uint64_t concentration_boundary;
-extern uint64_t simulation_time;
-extern uint64_t delta_time;
+extern double simulation_time;
+extern double delta_time;
 
 // result arrays
 extern std::array<double, CONCENTRATION_BOUNDARY> interstitials;
