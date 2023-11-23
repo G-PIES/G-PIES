@@ -11,7 +11,7 @@
 */
 double i_defect_production(uint64_t n)
 {
-    
+    return 0.;
     switch (n)
     {
         case 1: return reactor.recombination * reactor.flux *
@@ -32,6 +32,7 @@ double i_defect_production(uint64_t n)
 */
 double v_defect_production(uint64_t n)
 {
+    return 0.;
     switch (n)
     {
         case 1: return reactor.recombination * reactor.flux *
@@ -131,7 +132,7 @@ double iemission_vabsorption_np1(uint64_t np1)
 {
     #if VPRINT
     double iva = iv_absorption(np1);
-    double vc1 = v_clusters1(np1);
+    double vc1 = vacancies[1];
     double iie = ii_emission(np1);
     fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
     fprintf(stderr, "iv_absorption(%lu)%.*s%g *\n", np1, 12, TABS, iva);
@@ -144,7 +145,7 @@ double iemission_vabsorption_np1(uint64_t np1)
         // (1)
         iv_absorption(np1) *
         // (2)
-        v_clusters1(np1) + 
+        vacancies[1] + 
         // (3)
         ii_emission(np1);
     #endif
@@ -161,7 +162,7 @@ double vemission_iabsorption_np1(uint64_t np1)
 {
     #if VPRINT
     double via = vi_absorption(np1);
-    double ic1 = i_clusters1(np1);
+    double ic1 = interstitials[1];
     double vve = vv_emission(np1);
     fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
     fprintf(stderr, "vi_absorption(%lu)%.*s%g *\n", np1, 12, TABS, via);
@@ -173,7 +174,7 @@ double vemission_iabsorption_np1(uint64_t np1)
         // (1)
         vi_absorption(np1) * 
         // (2)
-        i_clusters1(np1) + 
+        interstitials[1] + 
         // (3)
         vv_emission(np1);
     #endif
@@ -191,9 +192,9 @@ double iemission_vabsorption_n(uint64_t n)
 {
     #if VPRINT
     double iva = iv_absorption(n);
-    double vc1 = v_clusters1(n);
+    double vc1 = vacancies[1];
     double iia = ii_absorption(n);
-    double ic1 = i_clusters1(n);
+    double ic1 = interstitials[1];
     double iie = ii_emission(n);
     fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
     fprintf(stderr, "iv_absorption(%lu) * v_clusters1(%lu)%.*s%g * %g +\n", n, n, 10, TABS, iva, vc1);
@@ -203,9 +204,9 @@ double iemission_vabsorption_n(uint64_t n)
     #else
     return 0;
         // (1)
-        iv_absorption(n) * v_clusters1(n) + 
+        iv_absorption(n) * vacancies[1] + 
         // (2)
-        ii_absorption(n) * i_clusters1(n) +
+        ii_absorption(n) * interstitials[1] +
         // (3)
         ii_emission(n);
     #endif
@@ -223,9 +224,9 @@ double vemission_iabsorption_n(uint64_t n)
 {
     #if VPRINT
     double via = vi_absorption(n);
-    double ic1 = i_clusters1(n);
+    double ic1 = interstitials[1];
     double vva = vv_absorption(n);
-    double vc1 = v_clusters1(n);
+    double vc1 = vacancies[1];
     double vve = vv_emission(n);
     fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
     fprintf(stderr, "vi_absorption(%lu) * i_clusters1(%lu)%.*s%g * %g +\n", n, n, 10, TABS, via, ic1);
@@ -235,9 +236,9 @@ double vemission_iabsorption_n(uint64_t n)
     #else
     return 
         // (1)
-        vi_absorption(n) * i_clusters1(n) + 
+        vi_absorption(n) * interstitials[1] + 
         // (2)
-        vv_absorption(n) * v_clusters1(n) +
+        vv_absorption(n) * vacancies[1] +
         // (3)
         vv_emission(n);
     #endif
@@ -254,7 +255,7 @@ double iemission_vabsorption_nm1(uint64_t nm1)
 {
     #if VPRINT
     double iia = ii_absorption(nm1);
-    double ic1 = i_clusters1(nm1);
+    double ic1 = interstitials[1];
     fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
     fprintf(stderr, "ii_absorption(%lu)%.*s%g *\n", nm1, 12, TABS, iia);
     fprintf(stderr, "i_clusters1(%lu)%.*s%g\n", nm1, 13, TABS, ic1);
@@ -264,7 +265,7 @@ double iemission_vabsorption_nm1(uint64_t nm1)
         // (1)
         ii_absorption(nm1) *
         // (2)
-        i_clusters1(nm1);
+        interstitials[1];
     #endif
 }
 
@@ -279,7 +280,7 @@ double vemission_iabsorption_nm1(uint64_t nm1)
 {
     #if VPRINT
     double vva = vv_absorption(nm1);
-    double vc1 = v_clusters1(nm1);
+    double vc1 = vacancies[1];
     fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
     fprintf(stderr, "vv_absorption(%lu)%.*s%g *\n", nm1, 12, TABS, vva);
     fprintf(stderr, "v_clusters1(%lu)%.*s%g\n", nm1, 13, TABS, vc1);
@@ -289,7 +290,7 @@ double vemission_iabsorption_nm1(uint64_t nm1)
         // (1)
         vv_absorption(nm1) * 
         // (2)
-        v_clusters1(nm1);
+        vacancies[1];
     #endif
 }
 // --------------------------------------------------------------------------------------------
@@ -300,8 +301,8 @@ double vemission_iabsorption_nm1(uint64_t nm1)
     Point defects concentrations per unit volume given a cluster size (in).
     ** in is only used in characteristic time calculations which rely on cluster sizes up to (in).
 
-            (1)     (2)
-    Ci(1) = Gi(1) - Riv * Ci(1) * Cv(1) - 
+                (1)     (2)
+    dCi(1)/dt = Gi(1) - Riv * Ci(1) * Cv(1) - 
             (3)
             Ci(1) / (tAdi) - 
             (4)
@@ -311,10 +312,8 @@ double vemission_iabsorption_nm1(uint64_t nm1)
             (6)
             1 / (tEi)
 */
-double i_clusters1(uint64_t in)
+double i1_cluster_delta(uint64_t in)
 {
-    return interstitials[1];
-    // TODO
     return 
         // (1)
         i_defect_production(1) -
@@ -345,7 +344,7 @@ double i_clusters1(uint64_t in)
             (6)
             1 / (tEv)
 */
-double v_clusters1(uint64_t vn)
+double v1_cluster_delta(uint64_t vn)
 {
     return vacancies[1];
     // TODO

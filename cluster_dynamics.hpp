@@ -5,7 +5,7 @@
 #include "material.hpp"
 
 #ifndef CONCENTRATION_BOUNDARY
-#define CONCENTRATION_BOUNDARY 5
+#define CONCENTRATION_BOUNDARY 10
 #endif
 
 #ifndef SIMULATION_TIME
@@ -52,8 +52,8 @@ double iemission_vabsorption_n(uint64_t);
 double vemission_iabsorption_n(uint64_t);
 double iemission_vabsorption_nm1(uint64_t);
 double vemission_iabsorption_nm1(uint64_t);
-double i_clusters1(uint64_t);
-double v_clusters1(uint64_t);
+double i1_cluster_delta(uint64_t);
+double v1_cluster_delta(uint64_t);
 double i_emission_time(uint64_t);
 double v_emission_time(uint64_t);
 double i_absorption_time(uint64_t);
@@ -83,7 +83,7 @@ double cluster_radius(uint64_t);
 
 inline double print_return(double result)
 {
-    fprintf(stdout, "%.*s= %8.15lf", 15, TABS, result);
+    fprintf(stdout, "%.*s= %8.15g", 15, TABS, result);
     fprintf(stdout, "\n\n");
     #if VBREAK
     fgetc(stdin);

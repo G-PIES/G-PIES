@@ -30,8 +30,6 @@ void init_globals(int argc, char* argv[])
 
     switch (argc)
     {
-        case 4:
-            concentration_boundary = strtoul(argv[3], NULL, 10);
         case 3:
             simulation_time = strtod(argv[2], NULL);
         case 2:
@@ -70,13 +68,20 @@ int main(int argc, char* argv[])
     fprintf(stdout, "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
     #endif
 
+    interstitials[5] = 5e-12;
+    vacancies[5] = 5e-12;
+
     bool valid_sim = true;
     // --------------------------------------------------------------------------------------------
     // main simulation loop
     for (double t = 0; t < simulation_time && valid_sim; t += delta_time)
     {
         // calculate interstitial / vacancy concentrations for this time slice
-        for (uint64_t n = 1; n < concentration_boundary && valid_sim; ++n)
+
+        interstitials_temp[1] += i1_cluster_delta(concentration_boundary - 1) * delta_time;
+        vacancies_temp[1] += v1_cluster_delta(concentration_boundary - 1) * delta_time;
+
+        for (uint64_t n = 2; n < concentration_boundary && valid_sim; ++n)
         {
             #if VPRINT
             fprintf(stdout, "\n------------------------------------------------------------------------------- t = %g\tn = %lu\n", t, n);
@@ -87,7 +92,7 @@ int main(int argc, char* argv[])
 
             if (!(valid_sim = validate(n)))
             {
-                fprintf(stderr, "\nINVALID SIM @ t = %g\tn = %lu\n\n", t, n);
+                fprintf(stderr, "\nINVALID SIM @ t = %g\tn = %llu\n\n", t, (unsigned long long) n);
             }
 
             #if CSV
