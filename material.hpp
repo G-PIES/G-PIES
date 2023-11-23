@@ -86,15 +86,15 @@ inline Material SA304()
     return
     { 
         .species = "SA304",
-        .i_migration = .45,
-        .v_migration = 1.35,
-        .i_diffusion = 1e-3,
-        .v_diffusion = .6,
-        .i_formation = 4.1,
-        .v_formation = 1.7,
-        .i_binding = .6,
-        .v_binding = .5,
-        .recombination_radius = .7e-7,
+        .i_migration = .45,  // eV
+        .v_migration = 1.35, // eV
+        .i_diffusion = 1e-3, // cm^2/s
+        .v_diffusion = .6,   // cm^2/s
+        .i_formation = 4.1,  // eV
+        .v_formation = 1.7,  // eV
+        .i_binding = .6,     // eV
+        .v_binding = .5,     // eV
+        .recombination_radius = .7e-7,  // cm
         .i_loop_bias = 63.,
         .i_dislocation_bias = .8, 
         .i_dislocation_bias_param = 1.1,
@@ -103,9 +103,9 @@ inline Material SA304()
         .v_dislocation_bias_param = 1.,
         .dislocation_density_initial = 1. / (double)M_CM_CONV(10e10),
         .grain_size = 4e-3,
-        .lattice_param = lattice_param,
+        .lattice_param = lattice_param,                 //cm
         .burgers_vector = lattice_param / pow(2., .5),
-        .atomic_volume = pow(lattice_param, 3.) / 4.
+        .atomic_volume = pow(lattice_param, 3.) / 4.    //cm^3
     };
 }
 

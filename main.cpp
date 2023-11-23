@@ -48,10 +48,10 @@ void init_globals(int argc, char* argv[])
 
 void print_start_message()
 {
-    fprintf(stderr, "Simulation Started: ");
+    fprintf(stderr, "\nSimulation Started: ");
     fprintf(stderr, "delta_time: %g, ", delta_time);
     fprintf(stderr, "simulation_time: %g, ", simulation_time);
-    fprintf(stderr, "concentration_boundary: %lu", concentration_boundary);
+    fprintf(stderr, "concentration_boundary: %lu\n\n", concentration_boundary);
 }
 
 int main(int argc, char* argv[])
@@ -79,11 +79,11 @@ int main(int argc, char* argv[])
         for (uint64_t n = 1; n < concentration_boundary && valid_sim; ++n)
         {
             #if VPRINT
-            fprintf(stdout, "\n------------------------------------------------------------------------------- t = %lu\tn = %lu\n", t, n);
+            fprintf(stdout, "\n------------------------------------------------------------------------------- t = %g\tn = %lu\n", t, n);
             #endif
 
-            interstitials_temp[n] += i_clusters_delta(n);
-            vacancies_temp[n] += v_clusters_delta(n);
+            interstitials_temp[n] += i_clusters_delta(n) * delta_time;
+            vacancies_temp[n] += v_clusters_delta(n) * delta_time;
 
             if (!(valid_sim = validate(n)))
             {
@@ -92,9 +92,9 @@ int main(int argc, char* argv[])
 
             #if CSV
                 #ifdef N
-                fprintf(stdout, "%lu,%lu,%15.15lf,%15.15lf\n", t, (uint64_t)N, interstitials_temp[N], vacancies_temp[N]);
+                fprintf(stdout, "%g,%lu,%g,%g\n", t, (uint64_t)N, interstitials_temp[N], vacancies_temp[N]);
                 #else
-                fprintf(stdout, "%lu,%lu,%15.15lf,%15.15lf\n", t, n, interstitials_temp[n], vacancies_temp[n]);
+                fprintf(stdout, "%g,%lu,%g,%g\n", t, n, interstitials_temp[n], vacancies_temp[n]);
                 #endif
             #endif
         }
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
     fprintf(stdout, "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n");
     for (uint64_t n = 1; n < concentration_boundary; ++n)
     {
-        fprintf(stdout, "%lu\t\t\t\t\t%g\t\t\t\t%g\n\n", n, interstitials[n], vacancies[n]);
+        fprintf(stdout, "%lu\t\t\t\t\t%13g\t\t\t  %15g\n\n", n, interstitials[n], vacancies[n]);
     }
     #endif
     // --------------------------------------------------------------------------------------------
