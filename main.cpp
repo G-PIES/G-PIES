@@ -68,9 +68,6 @@ int main(int argc, char* argv[])
     fprintf(stdout, "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
     #endif
 
-    interstitials[5] = 5e-12;
-    vacancies[5] = 5e-12;
-
     bool valid_sim = true;
     // --------------------------------------------------------------------------------------------
     // main simulation loop

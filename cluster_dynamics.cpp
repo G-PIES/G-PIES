@@ -11,7 +11,6 @@
 */
 double i_defect_production(uint64_t n)
 {
-    return 0.;
     switch (n)
     {
         case 1: return reactor.recombination * reactor.flux *
@@ -32,7 +31,6 @@ double i_defect_production(uint64_t n)
 */
 double v_defect_production(uint64_t n)
 {
-    return 0.;
     switch (n)
     {
         case 1: return reactor.recombination * reactor.flux *
@@ -346,8 +344,6 @@ double i1_cluster_delta(uint64_t in)
 */
 double v1_cluster_delta(uint64_t vn)
 {
-    return vacancies[1];
-    // TODO
     return 
         // (1)
         v_defect_production(1) -
@@ -378,9 +374,9 @@ double i_emission_time(uint64_t nmax)
     double time = 0.;
     for (uint64_t in = 2; in < nmax; ++in)
     {
-        time +=
-            // (1)
-            ii_emission(in) * interstitials[in];
+          time +=
+        //      // (1)
+              ii_emission(in) * interstitials[in];
     }
 
     time +=
@@ -658,7 +654,8 @@ double ii_emission(uint64_t n)
     return 
         2 * M_PI * cluster_radius(n) *
         i_bias_factor(n) *
-        material.i_diffusion / material.atomic_volume *
+        material.i_diffusion * exp(-material.i_migration / BOLTZMANN_EV_KELVIN * reactor.temperature)
+        / material.atomic_volume *
         exp
         (
             -i_binding_energy(n) /
@@ -717,7 +714,7 @@ double vv_emission(uint64_t n)
     return 
         2 * M_PI * cluster_radius(n) *
         v_bias_factor(n) *
-        material.v_diffusion *
+        (material.v_diffusion * exp(-material.v_migration / BOLTZMANN_EV_KELVIN * reactor.temperature)) *
         exp
         (
             -v_binding_energy(n) /
