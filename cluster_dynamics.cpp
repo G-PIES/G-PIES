@@ -479,7 +479,7 @@ double annihilation_rate()
         // (1)
         4 * M_PI * 
         // (2)
-        (material.i_diffusion + material.v_diffusion) *
+        (i_diffusion() + v_diffusion()) *
         // (3)
         material.recombination_radius;
 }
@@ -501,7 +501,7 @@ double i_dislocation_annihilation_time()
         // (1)
         dislocation_density *
         // (2)
-        material.i_diffusion *
+        i_diffusion() *
         // (3)
         material.i_dislocation_bias;
 }
@@ -520,7 +520,7 @@ double v_dislocation_annihilation_time()
         // (1)
         dislocation_density *
         // (2)
-        material.v_diffusion *
+        v_diffusion() *
         // (3)
         material.v_dislocation_bias;
 }
@@ -540,7 +540,7 @@ double i_grain_boundary_annihilation_time(uint64_t in)
 {
     return
         // (1)
-        6 * material.i_diffusion *
+        6 * i_diffusion() *
         sqrt
         (
             // (2)
@@ -567,7 +567,7 @@ double v_grain_boundary_annihilation_time(uint64_t vn)
 {
     return
         // (1)
-        6 * material.v_diffusion *
+        6 * v_diffusion() *
         sqrt
         (
             // (2)
@@ -657,8 +657,7 @@ double ii_emission(uint64_t n)
     return 
         2 * M_PI * cluster_radius(n) *
         i_bias_factor(n) *
-        material.i_diffusion * exp(-material.i_migration / BOLTZMANN_EV_KELVIN * reactor.temperature)
-        / material.atomic_volume *
+        i_diffusion() / material.atomic_volume *
         exp
         (
             -i_binding_energy(n) /
@@ -676,7 +675,7 @@ double ii_absorption(uint64_t n)
     return 
         2 * M_PI * cluster_radius(n) *
         i_bias_factor(n) *
-        material.i_diffusion;
+        i_diffusion();
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4c
@@ -687,7 +686,7 @@ double iv_absorption(uint64_t n)
     return 
         2 * M_PI * cluster_radius(n) *
         v_bias_factor(n) *
-        material.v_diffusion;
+        v_diffusion();
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4d
@@ -717,7 +716,7 @@ double vv_emission(uint64_t n)
     return 
         2 * M_PI * cluster_radius(n) *
         v_bias_factor(n) *
-        (material.v_diffusion * exp(-material.v_migration / BOLTZMANN_EV_KELVIN * reactor.temperature)) *
+        v_diffusion() *
         exp
         (
             -v_binding_energy(n) /
@@ -734,7 +733,7 @@ double vv_absorption(uint64_t n)
     return 
         2 * M_PI * cluster_radius(n) *
         v_bias_factor(n) *
-        material.v_diffusion;
+        v_diffusion();
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4f
@@ -745,7 +744,7 @@ double vi_absorption(uint64_t n)
     return 
         2 * M_PI * cluster_radius(n) *
         i_bias_factor(n) *
-        material.i_diffusion;
+        i_diffusion();
 }
 // --------------------------------------------------------------------------------------------
 
@@ -899,6 +898,25 @@ double v_binding_energy(uint64_t vn)
 }
 // --------------------------------------------------------------------------------------------
 
+// --------------------------------------------------------------------------------------------
+/*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg 193, 4.59
+*/  
+// --------------------------------------------------------------------------------------------
+double i_diffusion()
+{
+    return material.i_diffusion_0 * exp(-material.i_migration / (BOLTZMANN_EV_KELVIN * reactor.temperature));
+}
+
+// --------------------------------------------------------------------------------------------
+/*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg 193, 4.59
+*/  
+// --------------------------------------------------------------------------------------------
+double v_diffusion()
+{
+    return material.v_diffusion_0 * exp(-material.v_migration / (BOLTZMANN_EV_KELVIN * reactor.temperature));
+}
+
+// --------------------------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 8

@@ -128,8 +128,11 @@ int main(int argc, char* argv[])
 
 bool validate(uint64_t n)
 {
-    return !std::isnan(interstitials_temp[n]) &&
+    return 
+    !std::isnan(interstitials_temp[n]) &&
     !std::isinf(interstitials_temp[n]) &&
     !std::isnan(vacancies_temp[n]) &&
-    !std::isinf(vacancies_temp[n]);
+    !std::isinf(vacancies_temp[n]) &&
+    !(interstitials_temp[n] < 0) &&
+    !(vacancies_temp[n] < 0);
 }

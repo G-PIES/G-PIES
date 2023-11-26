@@ -77,6 +77,8 @@ double i_bias_factor(uint64_t);
 double v_bias_factor(uint64_t);
 double i_binding_energy(uint64_t);
 double v_binding_energy(uint64_t);
+double i_diffusion();
+double v_diffusion();
 double dislocation_density_delta();
 double cluster_radius(uint64_t);
 // --------------------------------------------------------------------------------------------

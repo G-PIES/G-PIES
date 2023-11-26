@@ -15,8 +15,8 @@ struct Material
     double v_migration;
 
     // diffusion coefficients (pre-exponential) (cm^2 / s)
-    double i_diffusion;
-    double v_diffusion;
+    double i_diffusion_0;
+    double v_diffusion_0;
 
     // formation energy (eV)
     double i_formation;
@@ -88,8 +88,8 @@ inline Material SA304()
         .species = "SA304",
         .i_migration = .45,  // eV
         .v_migration = 1.35, // eV
-        .i_diffusion = 1e-3, // cm^2/s
-        .v_diffusion = .6,   // cm^2/s
+        .i_diffusion_0 = 1e-3, // cm^2/s
+        .v_diffusion_0 = .6,   // cm^2/s
         .i_formation = 4.1,  // eV
         .v_formation = 1.7,  // eV
         .i_binding = .6,     // eV
