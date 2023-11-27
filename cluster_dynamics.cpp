@@ -748,8 +748,6 @@ double vi_absorption(uint64_t n)
 */
 double i_bias_factor(uint64_t in)
 {
-    return 1.;
-
     #if VPRINT
     double idb = material.i_dislocation_bias;
     double llp = 
@@ -798,8 +796,6 @@ double i_bias_factor(uint64_t in)
 */
 double v_bias_factor(uint64_t vn)
 {
-    return 1.;
-
     #if VPRINT
     double vdb = material.v_dislocation_bias;
     double llp = 
