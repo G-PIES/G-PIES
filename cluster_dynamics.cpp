@@ -492,8 +492,6 @@ double annihilation_rate()
 
            (1)   (2)    (3)
     tAdi = p  *  Di  *  Zi
-
-    TODO: calculate dislocation density instead of using initial value
 */
 double i_dislocation_annihilation_time()
 {
@@ -511,8 +509,6 @@ double i_dislocation_annihilation_time()
 
            (1)   (2)    (3)
     tAdv = p  *  Dv  *  Zv
-
-    TODO: calculate dislocation density instead of using initial value
 */
 double v_dislocation_annihilation_time()
 {
@@ -533,8 +529,6 @@ double v_dislocation_annihilation_time()
 
            (1)            (2)      (3)                            (4)                              (5)
     tAdi = 6 * Di * sqrt( p * Zi + SUM[n] ( B[i,i](n) * Ci(n) ) + SUM[n] ( B[v,i](n) * Cv(n) ) ) / d
-
-    TODO: calculate dislocation density instead of using initial value
 */
 double i_grain_boundary_annihilation_time(uint64_t in)
 {
@@ -560,8 +554,6 @@ double i_grain_boundary_annihilation_time(uint64_t in)
 
            (1)            (2)      (3)                            (4)                              (5)
     tAdv = 6 * Di * sqrt( p * Zv + SUM[n] ( B[v,v](n) * Cv(n) ) + SUM[n] ( B[i,v](n) * Ci(n) ) ) / d
-
-    TODO: calculate dislocation density instead of using initial value
 */
 double v_grain_boundary_annihilation_time(uint64_t vn)
 {

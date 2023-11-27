@@ -44,7 +44,7 @@ struct Material
     double v_dislocation_bias_param;
 
     // (cm^2)
-    double dislocation_density_initial;
+    double dislocation_density_0;
 
     // grain size (cm)
     double grain_size;
@@ -101,7 +101,7 @@ inline Material SA304()
         .v_loop_bias = 33.,
         .v_dislocation_bias = .65, 
         .v_dislocation_bias_param = 1.,
-        .dislocation_density_initial = 1. / (double)M_CM_CONV(10e10),
+        .dislocation_density_0 = 1. / (double)M_CM_CONV(10e10),
         .grain_size = 4e-3,
         .lattice_param = lattice_param,                 //cm
         .burgers_vector = lattice_param / pow(2., .5),

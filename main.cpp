@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
     init_globals(argc, argv);
 
     // initial dislocation density
-    dislocation_density = material.dislocation_density_initial;
+    dislocation_density = material.dislocation_density_0;
 
     print_start_message();
 
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
         {
             interstitials = interstitials_temp;
             vacancies = vacancies_temp;
-            dislocation_density += dislocation_density_delta();
+            dislocation_density += dislocation_density_delta() * delta_time;
         }
     }
     // --------------------------------------------------------------------------------------------
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
 
 bool validate(uint64_t n)
 {
-    return 
+    return
     !std::isnan(interstitials_temp[n]) &&
     !std::isinf(interstitials_temp[n]) &&
     !std::isnan(vacancies_temp[n]) &&
