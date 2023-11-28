@@ -78,6 +78,8 @@ int main(int argc, char* argv[])
         interstitials_temp[1] += i1_cluster_delta(concentration_boundary - 1) * delta_time;
         vacancies_temp[1] += v1_cluster_delta(concentration_boundary - 1) * delta_time;
 
+        valid_sim = validate(1, t);
+
         for (uint64_t n = 2; n < concentration_boundary && valid_sim; ++n)
         {
             #if VPRINT
@@ -87,10 +89,7 @@ int main(int argc, char* argv[])
             interstitials_temp[n] += i_clusters_delta(n) * delta_time;
             vacancies_temp[n] += v_clusters_delta(n) * delta_time;
 
-            if (!(valid_sim = validate(n)))
-            {
-                fprintf(stderr, "\nINVALID SIM @ t = %g\tn = %llu\n\n", t, (unsigned long long) n);
-            }
+            valid_sim = validate(n, t);
 
             #if CSV
                 #ifdef N
@@ -126,13 +125,21 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-bool validate(uint64_t n)
+bool validate(uint64_t n, double t)
 {
-    return
-    !std::isnan(interstitials_temp[n]) &&
-    !std::isinf(interstitials_temp[n]) &&
-    !std::isnan(vacancies_temp[n]) &&
-    !std::isinf(vacancies_temp[n]) &&
-    !(interstitials_temp[n] < 0) &&
-    !(vacancies_temp[n] < 0);
+    if (
+        !std::isnan(interstitials_temp[n]) &&
+        !std::isinf(interstitials_temp[n]) &&
+        !std::isnan(vacancies_temp[n]) &&
+        !std::isinf(vacancies_temp[n]) &&
+        !(interstitials_temp[n] < 0) &&
+        !(vacancies_temp[n] < 0)
+    )
+    {
+        return true;
+    }
+    {
+        fprintf(stderr, "\nINVALID SIM @ t = %g\tn = %llu\n\n", t, (unsigned long long) n);
+        return false;
+    }
 }

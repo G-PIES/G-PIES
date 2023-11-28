@@ -41,7 +41,7 @@
 
 // --------------------------------------------------------------------------------------------
 // PROTOTYPES 
-bool validate(uint64_t);
+bool validate(uint64_t, double);
 double i_defect_production(uint64_t);
 double v_defect_production(uint64_t);
 double i_clusters_delta(uint64_t);

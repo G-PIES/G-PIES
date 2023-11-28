@@ -203,7 +203,8 @@ double iemission_vabsorption_n(uint64_t n)
     fprintf(stderr, "ii_emission(%llu)%.*s%g\n", (unsigned long long) n, 13, TABS, iie);
     return print_return(iva * vc1 + iia * ic1 + iie);
     #else
-    return 0;
+
+    return
         // (1)
         iv_absorption(n) * vacancies[1] + 
         // (2)
@@ -313,7 +314,7 @@ double vemission_iabsorption_nm1(uint64_t nm1)
             (6)
             1 / (tEi)
 */
-double i1_cluster_delta(uint64_t in)
+double i1_cluster_delta(uint64_t nmax)
 {
     return 
         // (1)
@@ -323,11 +324,11 @@ double i1_cluster_delta(uint64_t in)
         // (3)
         interstitials[1] * i_dislocation_annihilation_time() -
         // (4)
-        interstitials[1] * i_grain_boundary_annihilation_time(in) -
+        interstitials[1] * i_grain_boundary_annihilation_time(nmax) -
         // (5)
-        interstitials[1] * i_absorption_time(in) +
+        interstitials[1] * i_absorption_time(nmax) +
         // (6)
-        i_emission_time(in);
+        i_emission_time(nmax);
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3a
@@ -345,7 +346,7 @@ double i1_cluster_delta(uint64_t in)
             (6)
             1 / (tEv)
 */
-double v1_cluster_delta(uint64_t vn)
+double v1_cluster_delta(uint64_t nmax)
 {
     return 
         // (1)
@@ -355,11 +356,11 @@ double v1_cluster_delta(uint64_t vn)
         // (3)
         vacancies[1] * v_dislocation_annihilation_time() -
         // (4)
-        vacancies[1] * v_grain_boundary_annihilation_time(vn) -
+        vacancies[1] * v_grain_boundary_annihilation_time(nmax) -
         // (5)
-        vacancies[1] * v_absorption_time(vn) +
+        vacancies[1] * v_absorption_time(nmax) +
         // (6)
-        v_emission_time(vn);
+        v_emission_time(nmax);
 }
 // --------------------------------------------------------------------------------------------
 
@@ -747,8 +748,6 @@ double vi_absorption(uint64_t n)
 */
 double i_bias_factor(uint64_t in)
 {
-    return 1.;
-
     #if VPRINT
     double idb = material.i_dislocation_bias;
     double llp = 
@@ -797,8 +796,6 @@ double i_bias_factor(uint64_t in)
 */
 double v_bias_factor(uint64_t vn)
 {
-    return 1.;
-
     #if VPRINT
     double vdb = material.v_dislocation_bias;
     double llp = 
