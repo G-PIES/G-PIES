@@ -9,11 +9,11 @@
 #endif
 
 #ifndef SIMULATION_TIME
-#define SIMULATION_TIME 60 * 60 * 24 * 365 // seconds (s)
+#define SIMULATION_TIME 1 // seconds (s)
 #endif
 
 #ifndef DELTA_TIME
-#define DELTA_TIME 60 * 60 * 24 // seconds (s)
+#define DELTA_TIME 1e-5 // seconds (s)
 #endif
 
 #ifndef BOLTZMANN_EV_KELVIN
