@@ -29,6 +29,7 @@ else
 endif
 
 CCFLAGS += -std=c++17
+INCLUDE_DIRS = ./include
 
 ext = .out
 binary = cluster_dynamics$(ext)
@@ -50,29 +51,29 @@ ifdef N
 endif
 
 # standard compilation
-cluster_dynamics: main.cpp
-	$(CC) $(CCFLAGS) *.cpp -o $(binary)
+cluster_dynamics: src/main.cpp
+	$(CC) $(CCFLAGS) src/*.cpp -o $(binary) -I$(INCLUDE_DIRS)
 
 # compile and run
 cdr: main.cpp
-	$(CC) $(CCFLAGS) *.cpp -o $(binary)
+	$(CC) $(CCFLAGS) src/*.cpp -o $(binary) -I$(INCLUDE_DIRS)
 	./$(binary)
 
 # debug symbols
 debug:
-	$(CC) $(CCFLAGS) -g *.cpp -o $(binary)
+	$(CC) $(CCFLAGS) -g src/*.cpp -o $(binary) -I$(INCLUDE_DIRS)
 
 # verbose printing and debug symbols
 vprint:
-	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true *.cpp -o $(binary)
+	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true src/*.cpp -o $(binary) -I$(INCLUDE_DIRS)
 
 # verbose printing, debug symbols, and run on compilation
 vprintr:
-	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true *.cpp -o $(binary)
+	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true src/*.cpp -o $(binary) -I$(INCLUDE_DIRS)
 	./$(binary)
 
 csv:
-	$(CC) $(CCFLAGS) -D CSV=true *.cpp -o $(binary)
+	$(CC) $(CCFLAGS) -D CSV=true src/*.cpp -o $(binary) -I$(INCLUDE_DIRS)
 	./$(binary) > cd-output.csv
 
 # run the binary
