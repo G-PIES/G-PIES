@@ -57,20 +57,6 @@ double v_defect_production(uint64_t n)
 */
 double i_clusters_delta(uint64_t in)
 {
-    #if VPRINT
-    double g = i_defect_production(in);
-    double np1 = iemission_vabsorption_np1(in + 1);
-    double n = iemission_vabsorption_n(in);
-    double nm1 = in == 1 ? 0. : iemission_vabsorption_nm1(in - 1);
-    fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
-    fprintf(stderr, "i_defect_production(%llu)%.*s%g +\n", (unsigned long long) in, 12, TABS, g);
-    fprintf(stderr, "iemission_vabsorption_np1(%llu) * interstitials[%llu]%.*s%g * %g -\n", (unsigned long long) in + 1, (unsigned long long) in + 1, 9, TABS, np1, interstitials[in + 1]);
-    fprintf(stderr, "iemission_vabsorption_n(%llu) * interstitials[%llu]%.*s%g * %g", (unsigned long long) in, (unsigned long long) in, 9, TABS, n, interstitials[in]);
-    if (in > 1) fprintf(stderr, " +\niemission_vabsorption_nm1(%llu) * interstitials[%llu]%.*s%g * %g",  (unsigned long long) in - 1, (unsigned long long) in - 1, 9, TABS, nm1, interstitials[in - 1]);
-    fprintf(stderr, "\n");
-    return print_return(g + np1 * interstitials[in + 1] - n * interstitials[in] + (in == 1 ? 0. : nm1 * interstitials[in - 1]));
-    #else
-
     return
         // (1)
         i_defect_production(in) +
@@ -80,7 +66,6 @@ double i_clusters_delta(uint64_t in)
         iemission_vabsorption_n(in) * interstitials[in] +
         // (4)
         (in == 1 ? 0. : iemission_vabsorption_nm1(in - 1) * interstitials[in - 1]);
-    #endif
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2a
@@ -91,22 +76,6 @@ double i_clusters_delta(uint64_t in)
 */
 double v_clusters_delta(uint64_t vn)
 {
-    #if VPRINT
-    double g = v_defect_production(vn);
-    double np1 = vemission_iabsorption_np1(vn + 1);
-    double n = vemission_iabsorption_n(vn);
-    double nm1 = vn == 1 ? 0. : vemission_iabsorption_nm1(vn - 1);
-    fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
-    fprintf(stderr, "v_defect_production(%llu)%.*s%g +\n", (unsigned long long) vn, 12, TABS, g);
-    fprintf(stderr, "vemission_iabsorption_np1(%llu) * vacancies[%llu]%.*s%g * %g -\n",  (unsigned long long) vn + 1, (unsigned long long) vn + 1, 9, TABS, np1, vacancies[vn + 1]);
-    fprintf(stderr, "vemission_iabsorption_n(%llu) * vacancies[%llu]%.*s%g * %g", (unsigned long long) vn, (unsigned long long) vn, 9, TABS, n, vacancies[vn]);
-    if (vn > 1) 
-        fprintf(stderr, " +\nvemission_iabsorption_nm1(%llu) * vacancies[%llu]%.*s%g * %g", 
-        (unsigned long long) vn - 1, (unsigned long long) vn - 1, 9, 
-        TABS, nm1, vacancies[vn - 1]);
-    fprintf(stderr, "\n");
-    return print_return(g + np1 * vacancies[vn + 1] - n * vacancies[vn] + (vn == 1 ? 0. : nm1 * vacancies[vn - 1]));
-    #else
     return
         // (1)
         v_defect_production(vn) +
@@ -116,7 +85,6 @@ double v_clusters_delta(uint64_t vn)
         vemission_iabsorption_n(vn) * vacancies[vn] +
         // (4)
         (vn == 1 ? 0. : vemission_iabsorption_nm1(vn - 1) * vacancies[vn - 1]);
-    #endif
 }
 // --------------------------------------------------------------------------------------------
 
@@ -131,17 +99,6 @@ double v_clusters_delta(uint64_t vn)
 */
 double iemission_vabsorption_np1(uint64_t np1)
 {
-    #if VPRINT
-    double iva = iv_absorption(np1);
-    double vc1 = vacancies[1];
-    double iie = ii_emission(np1);
-    fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
-    fprintf(stderr, "iv_absorption(%llu)%.*s%g *\n", (unsigned long long) np1, 12, TABS, iva);
-    fprintf(stderr, "v_clusters1(%llu)%.*s%g +\n", (unsigned long long) np1, 13, TABS, vc1);
-    fprintf(stderr, "ii_emission(%llu)%.*s%g\n", (unsigned long long) np1, 13, TABS, iie);
-    return print_return(iva * vc1 + iie);
-    #else
-
     return
         // (1)
         iv_absorption(np1) *
@@ -149,7 +106,6 @@ double iemission_vabsorption_np1(uint64_t np1)
         vacancies[1] + 
         // (3)
         ii_emission(np1);
-    #endif
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2b
@@ -161,16 +117,6 @@ double iemission_vabsorption_np1(uint64_t np1)
 */
 double vemission_iabsorption_np1(uint64_t np1)
 {
-    #if VPRINT
-    double via = vi_absorption(np1);
-    double ic1 = interstitials[1];
-    double vve = vv_emission(np1);
-    fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
-    fprintf(stderr, "vi_absorption(%llu)%.*s%g *\n", (unsigned long long) np1, 12, TABS, via);
-    fprintf(stderr, "i_clusters1(%llu)%.*s%g +\n", (unsigned long long) np1, 13, TABS, ic1);
-    fprintf(stderr, "vv_emission(%llu)%.*s%g\n", (unsigned long long) np1, 13, TABS, vve);
-    return print_return(via * ic1 + vve);
-    #else
     return 
         // (1)
         vi_absorption(np1) * 
@@ -178,7 +124,6 @@ double vemission_iabsorption_np1(uint64_t np1)
         interstitials[1] + 
         // (3)
         vv_emission(np1);
-    #endif
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2c
@@ -191,19 +136,6 @@ double vemission_iabsorption_np1(uint64_t np1)
 */
 double iemission_vabsorption_n(uint64_t n)
 {
-    #if VPRINT
-    double iva = iv_absorption(n);
-    double vc1 = vacancies[1];
-    double iia = ii_absorption(n);
-    double ic1 = interstitials[1];
-    double iie = ii_emission(n);
-    fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
-    fprintf(stderr, "iv_absorption(%llu) * v_clusters1(%llu)%.*s%g * %g +\n", (unsigned long long) n, (unsigned long long) n, 10, TABS, iva, vc1);
-    fprintf(stderr, "ii_absorption(%llu) * i_clusters1(%llu)%.*s%g * %g +\n", (unsigned long long) n, (unsigned long long) n, 10, TABS, iia, ic1);
-    fprintf(stderr, "ii_emission(%llu)%.*s%g\n", (unsigned long long) n, 13, TABS, iie);
-    return print_return(iva * vc1 + iia * ic1 + iie);
-    #else
-
     return
         // (1)
         iv_absorption(n) * vacancies[1] + 
@@ -211,7 +143,6 @@ double iemission_vabsorption_n(uint64_t n)
         ii_absorption(n) * interstitials[1] * (1 - dislocation_promotion_probability(n)) +
         // (3)
         ii_emission(n);
-    #endif
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2c
@@ -224,18 +155,6 @@ double iemission_vabsorption_n(uint64_t n)
 */
 double vemission_iabsorption_n(uint64_t n)
 {
-    #if VPRINT
-    double via = vi_absorption(n);
-    double ic1 = interstitials[1];
-    double vva = vv_absorption(n);
-    double vc1 = vacancies[1];
-    double vve = vv_emission(n);
-    fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
-    fprintf(stderr, "vi_absorption(%llu) * i_clusters1(%llu)%.*s%g * %g +\n", (unsigned long long) n, (unsigned long long) n, 10, TABS, via, ic1);
-    fprintf(stderr, "vv_absorption(%llu) * v_clusters1(%llu)%.*s%g * %g +\n", (unsigned long long) n, (unsigned long long) n, 10, TABS, vva, vc1);
-    fprintf(stderr, "vv_emission(%llu)%.*s%g\n", (unsigned long long) n, 13, TABS, vve);
-    return print_return(via * ic1 + vva * vc1 + vve);
-    #else
     return 
         // (1)
         vi_absorption(n) * interstitials[1] + 
@@ -243,7 +162,6 @@ double vemission_iabsorption_n(uint64_t n)
         vv_absorption(n) * vacancies[1] +
         // (3)
         vv_emission(n);
-    #endif
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2d
@@ -255,20 +173,11 @@ double vemission_iabsorption_n(uint64_t n)
 */
 double iemission_vabsorption_nm1(uint64_t nm1)
 {
-    #if VPRINT
-    double iia = ii_absorption(nm1);
-    double ic1 = interstitials[1];
-    fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
-    fprintf(stderr, "ii_absorption(%llu)%.*s%g *\n", (unsigned long long) nm1, 12, TABS, iia);
-    fprintf(stderr, "i_clusters1(%llu)%.*s%g\n", (unsigned long long) nm1, 13, TABS, ic1);
-    return print_return(iia * ic1);
-    #else
     return
         // (1)
         ii_absorption(nm1) *
         // (2)
         interstitials[1];
-    #endif
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2d
@@ -280,20 +189,11 @@ double iemission_vabsorption_nm1(uint64_t nm1)
 */
 double vemission_iabsorption_nm1(uint64_t nm1)
 {
-    #if VPRINT
-    double vva = vv_absorption(nm1);
-    double vc1 = vacancies[1];
-    fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
-    fprintf(stderr, "vv_absorption(%llu)%.*s%g *\n", (unsigned long long) nm1, 12, TABS, vva);
-    fprintf(stderr, "v_clusters1(%llu)%.*s%g\n", (unsigned long long) nm1, 13, TABS, vc1);
-    return print_return(vva * vc1);
-    #else
     return
         // (1)
         vv_absorption(nm1) * 
         // (2)
         vacancies[1];
-    #endif
 }
 // --------------------------------------------------------------------------------------------
 
@@ -627,26 +527,6 @@ double vi_sum_absorption(uint64_t nmax)
 */
 double ii_emission(uint64_t n)
 {
-    #if VPRINT
-    double pi2n = 2 * M_PI * cluster_radius(n);
-    double ibf = i_bias_factor(n);
-    double id = material.i_diffusion / material.atomic_volume;
-    double ibe = i_binding_energy(n);
-    double evexp =
-        exp
-        (
-            -ibe /
-            (BOLTZMANN_EV_KELVIN * reactor.temperature)
-        );
-    fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
-    fprintf(stderr, "2 * M_PI * %llu%.*s%g *\n", (unsigned long long) n, 13, TABS, pi2n);
-    fprintf(stderr, "i_bias_factor(%llu)%.*s%g *\n", (unsigned long long) n, 12, TABS, ibf);
-    fprintf(stderr, "material.i_diffusion / material.atomic_volume%.*s%g *\n", 10, TABS, id);
-    fprintf(stderr, "-i_binding_energy(%llu)%.*s%g *\n", (unsigned long long) n, 12, TABS, -ibe);
-    fprintf(stderr, "std::exp(-i_binding_energy(%llu) / (k * reactor.temperature))%.*s%g *\n", (unsigned long long) n, 8, TABS, evexp);
-    return print_return(pi2n * ibf * id * evexp);
-    #else
-
     return 
         2 * M_PI * cluster_radius(n) *
         i_bias_factor(n) *
@@ -656,7 +536,6 @@ double ii_emission(uint64_t n)
             -i_binding_energy(n) /
             (BOLTZMANN_EV_KELVIN * reactor.temperature)
         );
-    #endif
 }
 
 
@@ -687,25 +566,6 @@ double iv_absorption(uint64_t n)
 */
 double vv_emission(uint64_t n)
 {
-    #if VPRINT
-    double pi2n = 2 * M_PI; // * n;
-    double vbf = v_bias_factor(n);
-    double vd = material.v_diffusion;
-    double vbe = v_binding_energy(n);
-    double evexp =
-        exp
-        (
-            -vbe /
-            (BOLTZMANN_EV_KELVIN * reactor.temperature)
-        );
-    fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
-    fprintf(stderr, "2 * M_PI * %llu%.*s%g *\n", (unsigned long long) n, 13, TABS, pi2n);
-    fprintf(stderr, "v_bias_factor(%llu)%.*s%g *\n", (unsigned long long) n, 12, TABS, vbf);
-    fprintf(stderr, "material.v_diffusion%.*s%g *\n", 12, TABS, vd);
-    fprintf(stderr, "-v_binding_energy(%llu)%.*s%g *\n", (unsigned long long) n, 12, TABS, -vbe);
-    fprintf(stderr, "std::exp(-v_binding_energy(%llu) / (k * reactor.temperature))%.*s%g *\n", (unsigned long long) n, 8, TABS, evexp);
-    return print_return(pi2n * vbf * vd * evexp);
-    #else
     return 
         2 * M_PI * cluster_radius(n) *
         v_bias_factor(n) *
@@ -715,7 +575,6 @@ double vv_emission(uint64_t n)
             -v_binding_energy(n) /
             (BOLTZMANN_EV_KELVIN * reactor.temperature)
         );
-    #endif
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4e
@@ -748,29 +607,6 @@ double vi_absorption(uint64_t n)
 */
 double i_bias_factor(uint64_t in)
 {
-    #if VPRINT
-    double idb = material.i_dislocation_bias;
-    double llp = 
-        sqrt
-        (
-                material.burgers_vector /
-                (8 * M_PI * material.lattice_param)
-        ) *
-        material.i_loop_bias -
-        material.i_dislocation_bias;
-    double nexp = 
-        1 /
-        pow
-        (
-            in,
-            material.i_dislocation_bias_param / 2
-        );
-    fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
-    fprintf(stderr, "material.i_dislocation_bias%.*s%g +\n", 11, TABS, idb);
-    fprintf(stderr, "std::sqrt(burgers_vector / (8 * M_PI * material.lattice_param)) * material.i_loop_bias - material.i_dislocation_bias%.*s%g *\n", 1, TABS, llp);
-    fprintf(stderr, "1 / std::pow(%llu, material.i_dislocation_bias_param / 2)%.*s%g\n", (unsigned long long) in, 8, TABS, nexp);
-    return print_return(idb + llp * nexp);
-    #else
     return 
         material.i_dislocation_bias +
         (
@@ -788,7 +624,6 @@ double i_bias_factor(uint64_t in)
             in,
             material.i_dislocation_bias_param / 2
         );
-    #endif
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 5
@@ -796,29 +631,6 @@ double i_bias_factor(uint64_t in)
 */
 double v_bias_factor(uint64_t vn)
 {
-    #if VPRINT
-    double vdb = material.v_dislocation_bias;
-    double llp = 
-        sqrt
-        (
-                material.burgers_vector /
-                (8 * M_PI * material.lattice_param)
-        ) *
-        material.v_loop_bias -
-        material.v_dislocation_bias;
-    double nexp = 
-        1 /
-        pow
-        (
-            vn,
-            material.v_dislocation_bias_param / 2
-        );
-    fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
-    fprintf(stderr, "material.v_dislocation_bias%.*s%g +\n", 11, TABS, vdb);
-    fprintf(stderr, "std::sqrt(burgers_vector / (8 * M_PI * material.lattice_param)) * material.v_loop_bias - material.v_dislocation_bias%.*s%g *\n", 1, TABS, llp);
-    fprintf(stderr, "1 / std::pow(%llu, material.v_dislocation_bias_param / 2)%.*s%g\n", (unsigned long long) vn, 8, TABS, nexp);
-    return print_return(vdb + llp * nexp);
-    #else
     return 
         material.v_dislocation_bias +
         (
@@ -836,7 +648,6 @@ double v_bias_factor(uint64_t vn)
             vn,
             material.v_dislocation_bias_param / 2
         );
-    #endif
 }
 // --------------------------------------------------------------------------------------------
 
@@ -847,21 +658,10 @@ double v_bias_factor(uint64_t vn)
 */
 double i_binding_energy(uint64_t in)
 {
-    #if VPRINT
-    double ifo = material.i_formation;
-    double factor = (material.i_binding - material.i_formation) / (std::pow(2., .8) - 1);
-    double npow = (std::pow(in, .8) - std::pow(in - 1., .8));
-    fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
-    fprintf(stderr, "material.i_formation%.*s%g +\n", 12, TABS, ifo);
-    fprintf(stderr, "(material.i_binding - material.i_formation) / (std::pow(2., .8) - 1)%.*s%g *\n", 6, TABS, factor);
-    fprintf(stderr, "(std::pow(%llu, .8) - std::pow(%llu, .8))%.*s%g *\n", (unsigned long long) in, (unsigned long long) in - 1, 11, TABS, npow);
-    return print_return(ifo + factor * npow);
-    #else
     return
         material.i_formation +
         (material.i_binding - material.i_formation) / (std::pow(2., .8) - 1) *
         (std::pow(in, .8) - std::pow(in - 1., .8));
-    #endif
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 6
@@ -869,21 +669,10 @@ double i_binding_energy(uint64_t in)
 */
 double v_binding_energy(uint64_t vn)
 {
-    #if VPRINT
-    double vfo = material.v_formation;
-    double factor = (material.v_binding - material.v_formation) / (std::pow(2., .8) - 1);
-    double npow = (std::pow(vn, .8) - std::pow(vn - 1., .8));
-    fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
-    fprintf(stderr, "material.v_formation%.*s%g +\n", 12, TABS, vfo);
-    fprintf(stderr, "(material.v_binding - material.v_formation) / (std::pow(2., .8) - 1)%.*s%g *\n", 6, TABS, factor);
-    fprintf(stderr, "(std::pow(%llu, .8) - std::pow(%llu, .8))%.*s%g *\n", (unsigned long long) vn, (unsigned long long) vn - 1, 11, TABS, npow);
-    return print_return(vfo + factor * npow);
-    #else
     return
         material.v_formation +
         (material.v_binding - material.v_formation) / (std::pow(2., .8) - 1) *
         (std::pow(vn, .8) - std::pow(vn - 1., .8));
-    #endif
 }
 // --------------------------------------------------------------------------------------------
 

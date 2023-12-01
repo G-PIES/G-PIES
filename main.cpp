@@ -49,7 +49,7 @@ void print_start_message()
     fprintf(stderr, "\nSimulation Started: ");
     fprintf(stderr, "delta_time: %g, ", delta_time);
     fprintf(stderr, "simulation_time: %g, ", simulation_time);
-    fprintf(stderr, "concentration_boundary: %llu\n\n", (unsigned long long) concentration_boundary);
+    fprintf(stderr, "concentration_boundary: %llu\n\n", (unsigned long long)concentration_boundary);
 }
 
 int main(int argc, char* argv[])
@@ -80,18 +80,21 @@ int main(int argc, char* argv[])
 
         valid_sim = validate(1, t);
 
+        #if VPRINT
+        fprintf(stdout, "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\t\t-\t\t t = %g (s)\n\n", t);
+        fprintf(stdout, "1\t\t\t\t\t%13g\t\t\t  %15g\n\n", interstitials[1], vacancies[1]);
+        #endif
+
         for (uint64_t n = 2; n < concentration_boundary && valid_sim; ++n)
         {
-            #if VPRINT
-            fprintf(stdout, "\n------------------------------------------------------------------------------- t = %g\tn = %llu\n", t, (unsigned long long) n);
-            #endif
-
             interstitials_temp[n] += i_clusters_delta(n) * delta_time;
             vacancies_temp[n] += v_clusters_delta(n) * delta_time;
 
             valid_sim = validate(n, t);
 
-            #if CSV
+            #if VPRINT
+            fprintf(stdout, "%llu\t\t\t\t\t%13g\t\t\t  %15g\n\n", (unsigned long long)n, interstitials[n], vacancies[n]);
+            #elif CSV
                 #ifdef N
                 fprintf(stdout, "%g,%llu,%g,%g\n", t, (uint64_t)N, interstitials_temp[N], vacancies_temp[N]);
                 #else
@@ -99,6 +102,10 @@ int main(int argc, char* argv[])
                 #endif
             #endif
         }
+
+        #if VBREAK
+        fgetc(stdin);
+        #endif
 
         if (valid_sim)
         {
@@ -116,7 +123,7 @@ int main(int argc, char* argv[])
     fprintf(stdout, "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n");
     for (uint64_t n = 1; n < concentration_boundary; ++n)
     {
-        fprintf(stdout, "%llu\t\t\t\t\t%13g\t\t\t  %15g\n\n", (unsigned long long) n, interstitials[n], vacancies[n]);
+        fprintf(stdout, "%llu\t\t\t\t\t%13g\t\t\t  %15g\n\n", (unsigned long long)n, interstitials[n], vacancies[n]);
     }
     #endif
     // --------------------------------------------------------------------------------------------
@@ -139,7 +146,7 @@ bool validate(uint64_t n, double t)
         return true;
     }
     {
-        fprintf(stderr, "\nINVALID SIM @ t = %g\tn = %llu\n\n", t, (unsigned long long) n);
+        fprintf(stderr, "\nINVALID SIM @ t = %g\tn = %llu\n\n", t, (unsigned long long)n);
         return false;
     }
 }

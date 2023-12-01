@@ -85,17 +85,6 @@ double cluster_radius(uint64_t);
 // --------------------------------------------------------------------------------------------
 
 
-inline double print_return(double result)
-{
-    fprintf(stdout, "%.*s= %8.15g", 15, TABS, result);
-    fprintf(stdout, "\n\n");
-    #if VBREAK
-    fgetc(stdin);
-    #endif
-    return result;
-}
-
-
 // --------------------------------------------------------------------------------------------
 // GLOBALS (declared in main.cpp)
 
