@@ -285,9 +285,9 @@ double i_emission_time(uint64_t nmax)
 
     time +=
         // (2)
-        4 * ii_emission(2) * interstitials[2] +
+        4 * ii_emission(2) * interstitials[2]
         // (3)
-        iv_absorption(2) * vacancies[2] * interstitials[2];
+        + iv_absorption(2) * vacancies[2] * interstitials[2];
 
     return time;
 }
