@@ -643,7 +643,7 @@ double ii_emission(uint64_t n)
     fprintf(stderr, "i_bias_factor(%llu)%.*s%g *\n", (unsigned long long) n, 12, TABS, ibf);
     fprintf(stderr, "material.i_diffusion / material.atomic_volume%.*s%g *\n", 10, TABS, id);
     fprintf(stderr, "-i_binding_energy(%llu)%.*s%g *\n", (unsigned long long) n, 12, TABS, -ibe);
-    fprintf(stderr, "exp(-i_binding_energy(%llu) / (k * reactor.temperature))%.*s%g *\n", (unsigned long long) n, 8, TABS, evexp);
+    fprintf(stderr, "std::exp(-i_binding_energy(%llu) / (k * reactor.temperature))%.*s%g *\n", (unsigned long long) n, 8, TABS, evexp);
     return print_return(pi2n * ibf * id * evexp);
     #else
 
@@ -703,7 +703,7 @@ double vv_emission(uint64_t n)
     fprintf(stderr, "v_bias_factor(%llu)%.*s%g *\n", (unsigned long long) n, 12, TABS, vbf);
     fprintf(stderr, "material.v_diffusion%.*s%g *\n", 12, TABS, vd);
     fprintf(stderr, "-v_binding_energy(%llu)%.*s%g *\n", (unsigned long long) n, 12, TABS, -vbe);
-    fprintf(stderr, "exp(-v_binding_energy(%llu) / (k * reactor.temperature))%.*s%g *\n", (unsigned long long) n, 8, TABS, evexp);
+    fprintf(stderr, "std::exp(-v_binding_energy(%llu) / (k * reactor.temperature))%.*s%g *\n", (unsigned long long) n, 8, TABS, evexp);
     return print_return(pi2n * vbf * vd * evexp);
     #else
     return 
@@ -767,8 +767,8 @@ double i_bias_factor(uint64_t in)
         );
     fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
     fprintf(stderr, "material.i_dislocation_bias%.*s%g +\n", 11, TABS, idb);
-    fprintf(stderr, "sqrt(burgers_vector / (8 * M_PI * material.lattice_param)) * material.i_loop_bias - material.i_dislocation_bias%.*s%g *\n", 1, TABS, llp);
-    fprintf(stderr, "1 / pow(%llu, material.i_dislocation_bias_param / 2)%.*s%g\n", (unsigned long long) in, 8, TABS, nexp);
+    fprintf(stderr, "std::sqrt(burgers_vector / (8 * M_PI * material.lattice_param)) * material.i_loop_bias - material.i_dislocation_bias%.*s%g *\n", 1, TABS, llp);
+    fprintf(stderr, "1 / std::pow(%llu, material.i_dislocation_bias_param / 2)%.*s%g\n", (unsigned long long) in, 8, TABS, nexp);
     return print_return(idb + llp * nexp);
     #else
     return 
@@ -815,8 +815,8 @@ double v_bias_factor(uint64_t vn)
         );
     fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
     fprintf(stderr, "material.v_dislocation_bias%.*s%g +\n", 11, TABS, vdb);
-    fprintf(stderr, "sqrt(burgers_vector / (8 * M_PI * material.lattice_param)) * material.v_loop_bias - material.v_dislocation_bias%.*s%g *\n", 1, TABS, llp);
-    fprintf(stderr, "1 / pow(%llu, material.v_dislocation_bias_param / 2)%.*s%g\n", (unsigned long long) vn, 8, TABS, nexp);
+    fprintf(stderr, "std::sqrt(burgers_vector / (8 * M_PI * material.lattice_param)) * material.v_loop_bias - material.v_dislocation_bias%.*s%g *\n", 1, TABS, llp);
+    fprintf(stderr, "1 / std::pow(%llu, material.v_dislocation_bias_param / 2)%.*s%g\n", (unsigned long long) vn, 8, TABS, nexp);
     return print_return(vdb + llp * nexp);
     #else
     return 
@@ -849,18 +849,18 @@ double i_binding_energy(uint64_t in)
 {
     #if VPRINT
     double ifo = material.i_formation;
-    double factor = (material.i_binding - material.i_formation) / (pow(2., .8) - 1);
-    double npow = (pow(in, .8) - pow(in - 1., .8));
+    double factor = (material.i_binding - material.i_formation) / (std::pow(2., .8) - 1);
+    double npow = (std::pow(in, .8) - std::pow(in - 1., .8));
     fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
     fprintf(stderr, "material.i_formation%.*s%g +\n", 12, TABS, ifo);
-    fprintf(stderr, "(material.i_binding - material.i_formation) / (pow(2., .8) - 1)%.*s%g *\n", 6, TABS, factor);
-    fprintf(stderr, "(pow(%llu, .8) - pow(%llu, .8))%.*s%g *\n", (unsigned long long) in, (unsigned long long) in - 1, 11, TABS, npow);
+    fprintf(stderr, "(material.i_binding - material.i_formation) / (std::pow(2., .8) - 1)%.*s%g *\n", 6, TABS, factor);
+    fprintf(stderr, "(std::pow(%llu, .8) - std::pow(%llu, .8))%.*s%g *\n", (unsigned long long) in, (unsigned long long) in - 1, 11, TABS, npow);
     return print_return(ifo + factor * npow);
     #else
     return
         material.i_formation +
-        (material.i_binding - material.i_formation) / (pow(2., .8) - 1) *
-        (pow(in, .8) - pow(in - 1., .8));
+        (material.i_binding - material.i_formation) / (std::pow(2., .8) - 1) *
+        (std::pow(in, .8) - std::pow(in - 1., .8));
     #endif
 }
 
@@ -871,41 +871,39 @@ double v_binding_energy(uint64_t vn)
 {
     #if VPRINT
     double vfo = material.v_formation;
-    double factor = (material.v_binding - material.v_formation) / (pow(2., .8) - 1);
-    double npow = (pow(vn, .8) - pow(vn - 1., .8));
+    double factor = (material.v_binding - material.v_formation) / (std::pow(2., .8) - 1);
+    double npow = (std::pow(vn, .8) - std::pow(vn - 1., .8));
     fprintf(stderr, "%s\t%s:%d\n", __FUNCTION__, __FILE__, __LINE__);
     fprintf(stderr, "material.v_formation%.*s%g +\n", 12, TABS, vfo);
-    fprintf(stderr, "(material.v_binding - material.v_formation) / (pow(2., .8) - 1)%.*s%g *\n", 6, TABS, factor);
-    fprintf(stderr, "(pow(%llu, .8) - pow(%llu, .8))%.*s%g *\n", (unsigned long long) vn, (unsigned long long) vn - 1, 11, TABS, npow);
+    fprintf(stderr, "(material.v_binding - material.v_formation) / (std::pow(2., .8) - 1)%.*s%g *\n", 6, TABS, factor);
+    fprintf(stderr, "(std::pow(%llu, .8) - std::pow(%llu, .8))%.*s%g *\n", (unsigned long long) vn, (unsigned long long) vn - 1, 11, TABS, npow);
     return print_return(vfo + factor * npow);
     #else
     return
         material.v_formation +
-        (material.v_binding - material.v_formation) / (pow(2., .8) - 1) *
-        (pow(vn, .8) - pow(vn - 1., .8));
+        (material.v_binding - material.v_formation) / (std::pow(2., .8) - 1) *
+        (std::pow(vn, .8) - std::pow(vn - 1., .8));
     #endif
 }
 // --------------------------------------------------------------------------------------------
 
+
 // --------------------------------------------------------------------------------------------
 /*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg 193, 4.59
 */  
-// --------------------------------------------------------------------------------------------
 double i_diffusion()
 {
-    return material.i_diffusion_0 * exp(-material.i_migration / (BOLTZMANN_EV_KELVIN * reactor.temperature));
+    return material.i_diffusion_0 * std::exp(-material.i_migration / (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
 
-// --------------------------------------------------------------------------------------------
 /*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg 193, 4.59
 */  
-// --------------------------------------------------------------------------------------------
 double v_diffusion()
 {
-    return material.v_diffusion_0 * exp(-material.v_migration / (BOLTZMANN_EV_KELVIN * reactor.temperature));
+    return material.v_diffusion_0 * std::exp(-material.v_migration / (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
-
 // --------------------------------------------------------------------------------------------
+
 
 // --------------------------------------------------------------------------------------------
 /*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.12
@@ -925,6 +923,8 @@ double dislocation_promotion_probability(uint64_t n)
     return (2 * cluster_radius(n) * dr + std::pow(dr, 2)) 
          / (M_PI * r_0 / 2 - std::pow(cluster_radius(n), 2)); 
 }
+// --------------------------------------------------------------------------------------------
+
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 8
@@ -940,16 +940,17 @@ double dislocation_density_delta()
     return 
         gain -
         reactor.dislocation_density_evolution * 
-        pow(material.burgers_vector, 2) *
-        pow(dislocation_density, 3./2.);
+        std::pow(material.burgers_vector, 2) *
+        std::pow(dislocation_density, 3./2.);
 }
 // --------------------------------------------------------------------------------------------
+
 
 // --------------------------------------------------------------------------------------------
 /*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg. 346, 7.63
 */
 double cluster_radius(uint64_t n)
 {
-    return pow(sqrt(3) * pow(material.lattice_param, 2) * (double)n / (4 * M_PI), .5);
+    return std::sqrt(std::sqrt(3) * std::pow(material.lattice_param, 2) * (double)n / (4 * M_PI));
 }
 // --------------------------------------------------------------------------------------------

@@ -104,8 +104,8 @@ inline Material SA304()
         .dislocation_density_0 = 1. / (double)M_CM_CONV(10e10),
         .grain_size = 4e-3,
         .lattice_param = lattice_param,                 //cm
-        .burgers_vector = lattice_param / pow(2., .5),
-        .atomic_volume = pow(lattice_param, 3.) / 4.    //cm^3
+        .burgers_vector = lattice_param / std::sqrt(2.),
+        .atomic_volume = std::pow(lattice_param, 3) / 4.    //cm^3
     };
 }
 

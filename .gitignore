@@ -35,6 +35,7 @@
 *.DS_Store
 
 # Research Docs
+resources
 *.pdf
 
 # Local Configurations

@@ -79,10 +79,11 @@ double i_binding_energy(uint64_t);
 double v_binding_energy(uint64_t);
 double i_diffusion();
 double v_diffusion();
-double dislocation_promotion_probability(uint64_t n);
+double dislocation_promotion_probability(uint64_t);
 double dislocation_density_delta();
 double cluster_radius(uint64_t);
 // --------------------------------------------------------------------------------------------
+
 
 inline double print_return(double result)
 {
@@ -113,8 +114,6 @@ extern double dislocation_density;
 extern NuclearReactor reactor;
 extern Material material;
 // --------------------------------------------------------------------------------------------
-
-
 
 
 #endif
