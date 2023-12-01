@@ -208,7 +208,7 @@ double iemission_vabsorption_n(uint64_t n)
         // (1)
         iv_absorption(n) * vacancies[1] + 
         // (2)
-        ii_absorption(n) * interstitials[1] +
+        ii_absorption(n) * interstitials[1] * (1 - dislocation_promotion_probability(n)) +
         // (3)
         ii_emission(n);
     #endif
@@ -908,17 +908,42 @@ double v_diffusion()
 // --------------------------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------------------------
+/*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.12
+*/
+double dislocation_promotion_probability(uint64_t n)
+{
+    double dr = cluster_radius(n + 1) - cluster_radius(n);
+
+    double r_0_factor = 0.0;
+    for (int i = 1; i < concentration_boundary; ++i)
+    {
+        r_0_factor += cluster_radius(i) * interstitials[i];
+    }
+
+    double r_0 = std::sqrt((2 * M_PI * M_PI / material.atomic_volume) * r_0_factor + M_PI * dislocation_density);
+
+    return (2 * cluster_radius(n) * dr + std::pow(dr, 2)) 
+         / (M_PI * r_0 / 2 - std::pow(cluster_radius(n), 2)); 
+}
+
+// --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 8
 */
 double dislocation_density_delta()
 {
+    double gain = 0.0;
+    for (int n = 1; n < concentration_boundary; ++n)
+    {
+        gain += dislocation_promotion_probability(n) * ii_absorption(n) * interstitials[n];
+    }
+
     return 
-        -reactor.dislocation_density_evolution * 
+        gain -
+        reactor.dislocation_density_evolution * 
         pow(material.burgers_vector, 2) *
         pow(dislocation_density, 3./2.);
 }
 // --------------------------------------------------------------------------------------------
-
 
 // --------------------------------------------------------------------------------------------
 /*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg. 346, 7.63
