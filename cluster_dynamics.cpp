@@ -610,7 +610,7 @@ double i_bias_factor(uint64_t in)
     return 
         material.i_dislocation_bias +
         (
-            sqrt
+            std::sqrt
             (
                     material.burgers_vector /
                     (8 * M_PI * material.lattice_param)
@@ -619,10 +619,10 @@ double i_bias_factor(uint64_t in)
             material.i_dislocation_bias
         ) *
         1 /
-        pow
+        std::pow
         (
             in,
-            material.i_dislocation_bias_param / 2
+            material.i_dislocation_bias_param / 2.
         );
 }
 
@@ -634,7 +634,7 @@ double v_bias_factor(uint64_t vn)
     return 
         material.v_dislocation_bias +
         (
-            sqrt
+            std::sqrt
             (
                     material.burgers_vector /
                     (8 * M_PI * material.lattice_param)
@@ -643,10 +643,10 @@ double v_bias_factor(uint64_t vn)
             material.v_dislocation_bias
         ) *
         1 /
-        pow
+        std::pow
         (
             vn,
-            material.v_dislocation_bias_param / 2
+            material.v_dislocation_bias_param / 2.
         );
 }
 // --------------------------------------------------------------------------------------------
@@ -695,22 +695,29 @@ double v_diffusion()
 
 
 // --------------------------------------------------------------------------------------------
+/*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.10
+*/
+double mean_dislocation_cell_radius(uint64_t n)
+{
+    double r_0_factor = 0.;
+    for (uint64_t i = 1; i < concentration_boundary; ++i)
+    {
+        r_0_factor += cluster_radius(i) * interstitials[i];
+    }
+
+    return 1 / std::sqrt((2 * M_PI * M_PI / material.atomic_volume) * r_0_factor + M_PI * dislocation_density);
+}
+
 /*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.12
 */
 double dislocation_promotion_probability(uint64_t n)
 {
     double dr = cluster_radius(n + 1) - cluster_radius(n);
 
-    double r_0_factor = 0.0;
-    for (int i = 1; i < concentration_boundary; ++i)
-    {
-        r_0_factor += cluster_radius(i) * interstitials[i];
-    }
-
-    double r_0 = std::sqrt((2 * M_PI * M_PI / material.atomic_volume) * r_0_factor + M_PI * dislocation_density);
+    double r_0 = mean_dislocation_cell_radius(n);
 
     return (2 * cluster_radius(n) * dr + std::pow(dr, 2)) 
-         / (M_PI * r_0 / 2 - std::pow(cluster_radius(n), 2)); 
+         / (M_PI * r_0 / 2. - std::pow(cluster_radius(n), 2)); 
 }
 // --------------------------------------------------------------------------------------------
 
@@ -721,7 +728,7 @@ double dislocation_promotion_probability(uint64_t n)
 double dislocation_density_delta()
 {
     double gain = 0.0;
-    for (int n = 1; n < concentration_boundary; ++n)
+    for (uint64_t n = 1; n < concentration_boundary; ++n)
     {
         gain += dislocation_promotion_probability(n) * ii_absorption(n) * interstitials[n];
     }
