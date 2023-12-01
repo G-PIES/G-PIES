@@ -730,8 +730,10 @@ double dislocation_density_delta()
     double gain = 0.0;
     for (uint64_t n = 1; n < concentration_boundary; ++n)
     {
-        gain += dislocation_promotion_probability(n) * ii_absorption(n) * interstitials[n];
+        gain += cluster_radius(n) * dislocation_promotion_probability(n) * ii_absorption(n) * interstitials[n];
     }
+
+    gain *= 2 * M_PI / material.atomic_volume;
 
     return 
         gain
