@@ -376,7 +376,7 @@ double v1_cluster_delta(uint64_t nmax)
 double i_emission_time(uint64_t nmax)
 {
     double time = 0.;
-    for (uint64_t in = 2; in < nmax; ++in)
+    for (uint64_t in = 3; in < nmax; ++in)
     {
           time +=
         //      // (1)
@@ -402,7 +402,7 @@ double i_emission_time(uint64_t nmax)
 double v_emission_time(uint64_t nmax)
 {
     double time = 0.;
-    for (uint64_t vn = 2; vn < nmax; ++vn)
+    for (uint64_t vn = 3; vn < nmax; ++vn)
     {
         time += 
             // (1)
