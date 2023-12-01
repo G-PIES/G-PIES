@@ -65,7 +65,7 @@ double i_clusters_delta(uint64_t in)
         // (3)
         iemission_vabsorption_n(in) * interstitials[in] +
         // (4)
-        (in == 1 ? 0. : iemission_vabsorption_nm1(in - 1) * interstitials[in - 1]);
+        iemission_vabsorption_nm1(in - 1) * interstitials[in - 1];
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2a
@@ -84,7 +84,7 @@ double v_clusters_delta(uint64_t vn)
         // (3)
         vemission_iabsorption_n(vn) * vacancies[vn] +
         // (4)
-        (vn == 1 ? 0. : vemission_iabsorption_nm1(vn - 1) * vacancies[vn - 1]);
+        vemission_iabsorption_nm1(vn - 1) * vacancies[vn - 1];
 }
 // --------------------------------------------------------------------------------------------
 
