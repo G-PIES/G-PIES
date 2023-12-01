@@ -59,13 +59,13 @@ double i_clusters_delta(uint64_t in)
 {
     return
         // (1)
-        i_defect_production(in) +
+        i_defect_production(in)
         // (2)
-        iemission_vabsorption_np1(in + 1) * interstitials[in + 1] -
+        + iemission_vabsorption_np1(in + 1) * interstitials[in + 1]
         // (3)
-        iemission_vabsorption_n(in) * interstitials[in] +
+        - iemission_vabsorption_n(in) * interstitials[in]
         // (4)
-        iemission_vabsorption_nm1(in - 1) * interstitials[in - 1];
+        + iemission_vabsorption_nm1(in - 1) * interstitials[in - 1];
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2a
@@ -78,13 +78,13 @@ double v_clusters_delta(uint64_t vn)
 {
     return
         // (1)
-        v_defect_production(vn) +
+        v_defect_production(vn)
         // (2)
-        vemission_iabsorption_np1(vn + 1) * vacancies[vn + 1] -
+        + vemission_iabsorption_np1(vn + 1) * vacancies[vn + 1]
         // (3)
-        vemission_iabsorption_n(vn) * vacancies[vn] +
+        - vemission_iabsorption_n(vn) * vacancies[vn]
         // (4)
-        vemission_iabsorption_nm1(vn - 1) * vacancies[vn - 1];
+        + vemission_iabsorption_nm1(vn - 1) * vacancies[vn - 1];
 }
 // --------------------------------------------------------------------------------------------
 
@@ -138,11 +138,11 @@ double iemission_vabsorption_n(uint64_t n)
 {
     return
         // (1)
-        iv_absorption(n) * vacancies[1] + 
+        iv_absorption(n) * vacancies[1]
         // (2)
-        ii_absorption(n) * interstitials[1] * (1 - dislocation_promotion_probability(n)) +
+        + ii_absorption(n) * interstitials[1] * (1 - dislocation_promotion_probability(n))
         // (3)
-        ii_emission(n);
+        + ii_emission(n);
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2c
@@ -157,11 +157,11 @@ double vemission_iabsorption_n(uint64_t n)
 {
     return 
         // (1)
-        vi_absorption(n) * interstitials[1] + 
+        vi_absorption(n) * interstitials[1] 
         // (2)
-        vv_absorption(n) * vacancies[1] +
+        + vv_absorption(n) * vacancies[1]
         // (3)
-        vv_emission(n);
+        + vv_emission(n);
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2d
@@ -218,17 +218,17 @@ double i1_cluster_delta(uint64_t nmax)
 {
     return 
         // (1)
-        i_defect_production(1) -
+        i_defect_production(1)
         // (2)
-        annihilation_rate() * interstitials[1] * vacancies[1] -
+        - annihilation_rate() * interstitials[1] * vacancies[1]
         // (3)
-        interstitials[1] * i_dislocation_annihilation_time() -
+        - interstitials[1] * i_dislocation_annihilation_time()
         // (4)
-        interstitials[1] * i_grain_boundary_annihilation_time(nmax) -
+        - interstitials[1] * i_grain_boundary_annihilation_time(nmax)
         // (5)
-        interstitials[1] * i_absorption_time(nmax) +
+        - interstitials[1] * i_absorption_time(nmax)
         // (6)
-        i_emission_time(nmax);
+        + i_emission_time(nmax);
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3a
@@ -250,17 +250,17 @@ double v1_cluster_delta(uint64_t nmax)
 {
     return 
         // (1)
-        v_defect_production(1) -
+        v_defect_production(1)
         // (2)
-        annihilation_rate() * interstitials[1] * vacancies[1] -
+        - annihilation_rate() * interstitials[1] * vacancies[1]
         // (3)
-        vacancies[1] * v_dislocation_annihilation_time() -
+        - vacancies[1] * v_dislocation_annihilation_time()
         // (4)
-        vacancies[1] * v_grain_boundary_annihilation_time(nmax) -
+        - vacancies[1] * v_grain_boundary_annihilation_time(nmax)
         // (5)
-        vacancies[1] * v_absorption_time(nmax) +
+        - vacancies[1] * v_absorption_time(nmax)
         // (6)
-        v_emission_time(nmax);
+        + v_emission_time(nmax);
 }
 // --------------------------------------------------------------------------------------------
 
@@ -311,9 +311,9 @@ double v_emission_time(uint64_t nmax)
 
     time +=
         // (2)
-        4 * vv_emission(2) * vacancies[2] +
+        4 * vv_emission(2) * vacancies[2]
         // (3)
-        vi_absorption(2) * vacancies[2] * interstitials[2];
+        + vi_absorption(2) * vacancies[2] * interstitials[2];
 
     return time;
 }
@@ -335,9 +335,9 @@ double i_absorption_time(uint64_t nmax)
     {
         time +=
             // (1)
-            ii_absorption(in) * interstitials[in] +
+            ii_absorption(in) * interstitials[in]
             // (2)
-            vi_absorption(in) * vacancies[in];
+            + vi_absorption(in) * vacancies[in];
     }
 
     return time;
@@ -357,9 +357,9 @@ double v_absorption_time(uint64_t nmax)
     {
         time +=
             // (1)
-            vv_absorption(vn) * vacancies[vn] +
+            vv_absorption(vn) * vacancies[vn]
             // (2)
-            iv_absorption(vn) * interstitials[vn];
+            + iv_absorption(vn) * interstitials[vn];
     }
 
     return time;
@@ -440,11 +440,11 @@ double i_grain_boundary_annihilation_time(uint64_t in)
         (
             // (2)
             dislocation_density * 
-            material.i_dislocation_bias +
+            material.i_dislocation_bias
             // (3)
-            ii_sum_absorption(in) +
+            + ii_sum_absorption(in)
             // (4)
-            vi_sum_absorption(in)
+            + vi_sum_absorption(in)
         ) /
         // (5)
         material.grain_size;
@@ -465,11 +465,11 @@ double v_grain_boundary_annihilation_time(uint64_t vn)
         (
             // (2)
             dislocation_density *
-            material.v_dislocation_bias +
+            material.v_dislocation_bias
             // (3)
-            vv_sum_absorption(vn) +
+            + vv_sum_absorption(vn)
             // (4)
-            iv_sum_absorption(vn)
+            + iv_sum_absorption(vn)
         ) /
         // (5)
         material.grain_size;
@@ -659,8 +659,8 @@ double v_bias_factor(uint64_t vn)
 double i_binding_energy(uint64_t in)
 {
     return
-        material.i_formation +
-        (material.i_binding - material.i_formation) / (std::pow(2., .8) - 1) *
+        material.i_formation
+        + (material.i_binding - material.i_formation) / (std::pow(2., .8) - 1) *
         (std::pow(in, .8) - std::pow(in - 1., .8));
 }
 
@@ -670,8 +670,8 @@ double i_binding_energy(uint64_t in)
 double v_binding_energy(uint64_t vn)
 {
     return
-        material.v_formation +
-        (material.v_binding - material.v_formation) / (std::pow(2., .8) - 1) *
+        material.v_formation
+        + (material.v_binding - material.v_formation) / (std::pow(2., .8) - 1) *
         (std::pow(vn, .8) - std::pow(vn - 1., .8));
 }
 // --------------------------------------------------------------------------------------------
@@ -734,8 +734,8 @@ double dislocation_density_delta()
     }
 
     return 
-        gain -
-        reactor.dislocation_density_evolution * 
+        gain
+        - reactor.dislocation_density_evolution * 
         std::pow(material.burgers_vector, 2) *
         std::pow(dislocation_density, 3./2.);
 }
