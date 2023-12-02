@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
                 #ifdef N
                 fprintf(stdout, "%g,%llu,%g,%g\n", t, (uint64_t)N, interstitials_temp[N], vacancies_temp[N]);
                 #else
-                fprintf(stdout, "%g,%llu,%g,%g\n", t, n, interstitials_temp[n], vacancies_temp[n]);
+                fprintf(stdout, "%g,%llu,%g,%g\n", t, (unsigned long long) n, interstitials_temp[n], vacancies_temp[n]);
                 #endif
             #endif
         }

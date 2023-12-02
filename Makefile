@@ -29,10 +29,12 @@ else
 endif
 
 CCFLAGS += -std=c++17
-INCLUDE_DIRS = ./include
+INCLUDE_DIR = ./include
+LIB_DIR = ./lib
 
 ext = .out
 binary = cluster_dynamics$(ext)
+library = lib/libclusterdynamics.so
 
 ifdef C
 	CCFLAGS += -D CONCENTRATION_BOUNDARY=$(C)
@@ -50,36 +52,41 @@ ifdef N
 	CCFLAGS += -D N=$(N)
 endif
 
-# standard compilation
-cluster_dynamics: src/main.cpp
-	$(CC) $(CCFLAGS) src/*.cpp -o $(binary) -I$(INCLUDE_DIRS)
+# library compilation
+lib: src/cluster_dynamics.cpp 
+	$(CC) $(CCFLAGS) src/*.cpp -shared -fPIC -c -o $(library) -I$(INCLUDE_DIR) -I./src
 
-# compile and run
-cdr: main.cpp
-	$(CC) $(CCFLAGS) src/*.cpp -o $(binary) -I$(INCLUDE_DIRS)
+# example frontend compilation
+cluster_dynamics: example/main.cpp $(library)
+	$(CC) $(CCFLAGS) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
+
+# compile and run example frontend
+cdr: example/main.cpp $(library)
+	$(CC) $(CCFLAGS) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
 	./$(binary)
 
-# debug symbols
+# example frontend w/ debug symbols
 debug:
-	$(CC) $(CCFLAGS) -g src/*.cpp -o $(binary) -I$(INCLUDE_DIRS)
+	$(CC) $(CCFLAGS) -g example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
 
-# verbose printing and debug symbols
+# example frontend w/ verbose printing and debug symbols
 vprint:
-	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true src/*.cpp -o $(binary) -I$(INCLUDE_DIRS)
+	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
 
-# verbose printing, debug symbols, and run on compilation
+# example frontend w/ verbose printing, debug symbols, and run on compilation
 vprintr:
-	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true src/*.cpp -o $(binary) -I$(INCLUDE_DIRS)
+	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
 	./$(binary)
 
+# build example frontend, then run and export results to cd-output.csv
 csv:
-	$(CC) $(CCFLAGS) -D CSV=true src/*.cpp -o $(binary) -I$(INCLUDE_DIRS)
+	$(CC) $(CCFLAGS) -D CSV=true example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
 	./$(binary) > cd-output.csv
 
-# run the binary
+# run the example frontend
 run:
 	./$(binary)
 
 # remove binaries
 clean:
-	rm *$(ext)
+	rm *$(ext) lib/*.so
