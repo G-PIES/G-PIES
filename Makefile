@@ -81,7 +81,7 @@ vprintr:
 # build example frontend, then run and export results to cd-output.csv
 csv:
 	$(CC) $(CCFLAGS) -D CSV=true example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
-	./$(binary) > cd-output.csv
+	./$(binary) 1e-5 1 > cd-output.csv
 
 # run the example frontend
 run:
