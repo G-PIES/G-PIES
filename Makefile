@@ -52,6 +52,8 @@ ifdef N
 	CCFLAGS += -D N=$(N)
 endif
 
+.PHONY: lib cluster_dynamics
+
 # library compilation
 lib: src/cluster_dynamics.cpp 
 	$(CC) $(CCFLAGS) src/*.cpp -shared -fPIC -c -o $(library) -I$(INCLUDE_DIR) -I./src

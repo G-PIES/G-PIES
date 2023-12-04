@@ -742,17 +742,6 @@ double ClusterDynamics::dislocation_density_delta()
         std::pow(dislocation_density, 3./2.);
 }
 
-bool ClusterDynamics::validate(uint64_t n, double t)
-{
-    return 
-        !std::isnan(interstitials_temp[n]) &&
-        !std::isinf(interstitials_temp[n]) &&
-        !std::isnan(vacancies_temp[n]) &&
-        !std::isinf(vacancies_temp[n]) &&
-        !(interstitials_temp[n] < 0) &&
-        !(vacancies_temp[n] < 0);
-}
-
 // --------------------------------------------------------------------------------------------
 
 
@@ -764,6 +753,17 @@ double ClusterDynamics::cluster_radius(uint64_t n)
     return std::sqrt(std::sqrt(3) * std::pow(material.lattice_param, 2) * (double)n / (4 * M_PI));
 }
 // --------------------------------------------------------------------------------------------
+
+bool ClusterDynamics::validate(uint64_t n, double t)
+{
+    return 
+        !std::isnan(interstitials_temp[n]) &&
+        !std::isinf(interstitials_temp[n]) &&
+        !std::isnan(vacancies_temp[n]) &&
+        !std::isinf(vacancies_temp[n]) &&
+        !(interstitials_temp[n] < 0) &&
+        !(vacancies_temp[n] < 0);
+}
 
 ClusterDynamics::ClusterDynamics(uint64_t concentration_boundary, NuclearReactor reactor, Material material)
     : concentration_boundary(concentration_boundary), reactor(reactor), material(material)
