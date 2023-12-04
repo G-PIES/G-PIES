@@ -29,7 +29,7 @@ void print_start_message()
     fprintf(stderr, "\nSimulation Started: ");
     fprintf(stderr, "delta_time: %g, ", delta_time);
     fprintf(stderr, "simulation_time: %g, ", simulation_time);
-    fprintf(stderr, "concentration_boundary: %llu\n\n", (unsigned long long)concentration_boundary);
+    fprintf(stderr, "concentration_boundary: %llu\n", (unsigned long long)concentration_boundary);
 }
 
 void print_state(ClusterDynamicsState& state)
@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
     for (double t = 0; t < simulation_time; t = state.time)
     {
         // run simulation for this time slice
-        state = cd.Run(delta_time, sample_interval);
+        state = cd.run(delta_time, sample_interval);
 
         #if VPRINT 
             print_state(state);

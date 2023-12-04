@@ -778,7 +778,7 @@ ClusterDynamics::ClusterDynamics(uint64_t concentration_boundary, NuclearReactor
     dislocation_density = material.dislocation_density_0;
 }
 
-ClusterDynamicsState ClusterDynamics::Run(double delta_time, double total_time)
+ClusterDynamicsState ClusterDynamics::run(double delta_time, double total_time)
 {
     bool valid_sim = true;
     for (double endtime = time + total_time; time < endtime; time += delta_time)
@@ -810,4 +810,24 @@ ClusterDynamicsState ClusterDynamics::Run(double delta_time, double total_time)
         .vacancies = vacancies,
         .dislocation_density = dislocation_density
     };
+}
+
+Material ClusterDynamics::get_material()
+{
+    return material;
+}
+
+void ClusterDynamics::set_material(Material material)
+{
+    this->material = material;
+}
+
+NuclearReactor ClusterDynamics::get_reactor()
+{
+    return reactor;
+}
+
+void ClusterDynamics::set_reactor(NuclearReactor reactor)
+{
+    this->reactor = reactor;
 }

@@ -89,8 +89,12 @@ private:
 public:
 
   ClusterDynamics(uint64_t concentration_boundary, NuclearReactor reactor, Material material);
-  ClusterDynamicsState Run(double delta_time, double total_time);
+  ClusterDynamicsState run(double delta_time, double total_time);
 
+  Material get_material();
+  void set_material(Material material);
+  NuclearReactor get_reactor();
+  void set_reactor(NuclearReactor reactor);
 };
 
 
