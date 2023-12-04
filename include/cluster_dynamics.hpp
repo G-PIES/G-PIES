@@ -1,38 +1,13 @@
 #ifndef CLUSTER_DYNAMICS_HPP
 #define CLUSTER_DYNAMICS_HPP
 
+#include <vector>
+
 #include "nuclear_reactor.hpp"
 #include "material.hpp"
 
-#ifndef CONCENTRATION_BOUNDARY
-#define CONCENTRATION_BOUNDARY 10
-#endif
-
-#ifndef SIMULATION_TIME
-#define SIMULATION_TIME 1 // seconds (s)
-#endif
-
-#ifndef DELTA_TIME
-#define DELTA_TIME 1e-5 // seconds (s)
-#endif
-
 #ifndef BOLTZMANN_EV_KELVIN
 #define BOLTZMANN_EV_KELVIN 8.6173e-5 // (eV / Kelvin)
-#endif
-
-// verbose printing
-#ifndef VPRINT
-#define VPRINT false 
-#endif
-
-// verbose breakpoints
-#ifndef VBREAK
-#define VBREAK false 
-#endif
-
-// csv output
-#ifndef CSV
-#define CSV false
 #endif
 
 // used formatted debug printing
@@ -40,11 +15,11 @@
 
 struct ClusterDynamicsState
 {
-   bool valid;
-  double time;
-  std::array<double, CONCENTRATION_BOUNDARY> interstitials;
-  std::array<double, CONCENTRATION_BOUNDARY> vacancies;
-  double dislocation_density;
+  bool valid = true;
+  double time = 0.0;
+  std::vector<double> interstitials;
+  std::vector<double> vacancies;
+  double dislocation_density = 0.0;
 };
 
 class ClusterDynamics 
@@ -101,10 +76,10 @@ private:
   uint64_t concentration_boundary;
   double time;
 
-  std::array<double, CONCENTRATION_BOUNDARY> interstitials;
-  std::array<double, CONCENTRATION_BOUNDARY> interstitials_temp;
-  std::array<double, CONCENTRATION_BOUNDARY> vacancies;
-  std::array<double, CONCENTRATION_BOUNDARY> vacancies_temp;
+  std::vector<double> interstitials;
+  std::vector<double> interstitials_temp;
+  std::vector<double> vacancies;
+  std::vector<double> vacancies_temp;
   double dislocation_density;
 
   NuclearReactor reactor;
