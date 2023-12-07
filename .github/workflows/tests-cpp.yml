@@ -17,7 +17,7 @@ jobs:
 
 
       - name: Build 
-        run: g++ -std=c++17 cd-prototype/example/main.cpp -o simulation.exe
+        run: g++ -std=c++17 example/main.cpp -o simulation.exe
 
 
       - name: Upload Executable
