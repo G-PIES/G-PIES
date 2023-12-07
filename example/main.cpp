@@ -4,7 +4,7 @@
 #include <array>
 
 
-#include "material.hpp"\
+#include "material.hpp"
 #include "cluster_dynamics.hpp"
 #include "nuclear_reactor.hpp"
 
