@@ -1,0 +1,27 @@
+name: Build and Create Executable Artifact
+
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up C++ environment
+        uses: kurocha/setup-cpp@v1
+        with:
+          compiler: 'gcc'
+
+
+      - name: Build 
+        run: g++ -std=c++17 /example/main.cpp -o simulation.exe
+
+
+      - name: Upload Executable
+        uses: actions/upload-artifact@v2
+        with:
+          name: cd-executable
+          path: cd.exe
