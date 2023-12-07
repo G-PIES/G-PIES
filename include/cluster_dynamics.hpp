@@ -26,8 +26,7 @@ class ClusterDynamics
 {
 private:
   // --------------------------------------------------------------------------------------------
-  // PRIVATE PROTOTYPES 
-  bool validate(uint64_t, double);
+  // SIMULATION PHYSICS FUNCTIONS 
   double i_defect_production(uint64_t);
   double v_defect_production(uint64_t);
   double i_clusters_delta(uint64_t);
@@ -69,6 +68,15 @@ private:
   double dislocation_promotion_probability(uint64_t);
   double dislocation_density_delta();
   double cluster_radius(uint64_t);
+  // --------------------------------------------------------------------------------------------
+
+  // --------------------------------------------------------------------------------------------
+  // SIMULATION CONTROL FUNCTIONS 
+  
+
+  bool step(double delta_time);
+  bool validate(uint64_t, double);
+
   // --------------------------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------------------------

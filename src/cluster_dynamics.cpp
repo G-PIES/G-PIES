@@ -754,6 +754,30 @@ double ClusterDynamics::cluster_radius(uint64_t n)
 }
 // --------------------------------------------------------------------------------------------
 
+bool ClusterDynamics::step(double delta_time)
+{
+    // Calculate the change in size 1 defects
+    interstitials_temp[1] += i1_cluster_delta(concentration_boundary - 1) * delta_time;
+    vacancies_temp[1] += v1_cluster_delta(concentration_boundary - 1) * delta_time;
+
+    bool state_is_valid = validate(1, time);
+
+    // Calculate the changes in defects of size > 1
+    for (uint64_t n = 2; n < concentration_boundary; ++n)
+    {
+        interstitials_temp[n] += i_clusters_delta(n) * delta_time;
+        vacancies_temp[n] += v_clusters_delta(n) * delta_time;
+        
+        state_is_valid = state_is_valid && validate(n, time);
+    }
+
+    interstitials = interstitials_temp;
+    vacancies = vacancies_temp;
+    dislocation_density += dislocation_density_delta() * delta_time;
+
+    return state_is_valid;
+}
+
 bool ClusterDynamics::validate(uint64_t n, double t)
 {
     return 
@@ -780,31 +804,15 @@ ClusterDynamics::ClusterDynamics(uint64_t concentration_boundary, NuclearReactor
 
 ClusterDynamicsState ClusterDynamics::run(double delta_time, double total_time)
 {
-    bool valid_sim = true;
+    bool state_is_valid = true;
     for (double endtime = time + total_time; time < endtime; time += delta_time)
     {
-
-        interstitials_temp[1] += i1_cluster_delta(concentration_boundary - 1) * delta_time;
-        vacancies_temp[1] += v1_cluster_delta(concentration_boundary - 1) * delta_time;
-
-        valid_sim = validate(1, time);
-
-        for (uint64_t n = 2; n < concentration_boundary && valid_sim; ++n)
-        {
-            interstitials_temp[n] += i_clusters_delta(n) * delta_time;
-            vacancies_temp[n] += v_clusters_delta(n) * delta_time;
-            valid_sim = validate(n, time);
-        }
-
-        interstitials = interstitials_temp;
-        vacancies = vacancies_temp;
-        dislocation_density += dislocation_density_delta() * delta_time;
-
-        if (!valid_sim) break;
+        state_is_valid = step(delta_time);
+        if (!state_is_valid) break;
     }
 
     return ClusterDynamicsState {
-        .valid = valid_sim,
+        .valid = state_is_valid,
         .time = time,
         .interstitials = interstitials,
         .vacancies = vacancies,
