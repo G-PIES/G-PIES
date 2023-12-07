@@ -3,9 +3,10 @@
 #include <cmath>
 #include <array>
 
-#include "include/cluster_dynamics.hpp"
-#include "include/material.hpp"
-#include "include/nuclear_reactor.hpp"
+
+#include "material.hpp"\
+#include "cluster_dynamics.hpp"
+#include "nuclear_reactor.hpp"
 
 #ifndef VPRINT
 #define VPRINT false
