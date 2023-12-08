@@ -1,5 +1,4 @@
 ifeq ($(OS), Windows_NT)
-	CC = g++
 	CCFLAGS += -D WIN32
 	ifeq ($(PROCESSOR_ARCHITEW6432), AMD64)
 		CCFLAGS += -D AMD64
@@ -11,10 +10,8 @@ ifeq ($(OS), Windows_NT)
 else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S), Linux)
-		CC = g++
 		CCFLAGS += -D LINUX
 	else ifeq ($(UNAME_S), Darwin)
-		CC = clang
 		CCFLAGS += -D OSX
 	endif
 
@@ -27,6 +24,8 @@ else
 		CCFLAGS += -D ARM
 	endif
 endif
+
+CC = g++
 
 CCFLAGS += -std=c++17
 INCLUDE_DIR = ./include
@@ -55,7 +54,8 @@ endif
 .PHONY: lib cluster_dynamics
 
 # library compilation
-lib: src/cluster_dynamics.cpp 
+lib: src/cluster_dynamics.cpp
+	mkdir -p lib
 	$(CC) $(CCFLAGS) src/*.cpp -shared -fPIC -c -o $(library) -I$(INCLUDE_DIR) -I./src
 
 # example frontend compilation
