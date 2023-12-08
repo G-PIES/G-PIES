@@ -17,11 +17,11 @@ jobs:
 
 
       - name: Build 
-        run: g++ -std=c++17 example/main.cpp -o simulation.exe
+        run: make lib -o simulation.exe
 
 
       - name: Upload Executable
         uses: actions/upload-artifact@v2
         with:
           name: cd-executable
-          path: cd.exe
+          path: simlulation.exe
