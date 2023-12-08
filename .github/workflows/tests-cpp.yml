@@ -18,7 +18,7 @@ jobs:
 
       - name: Build backend
         run: make lib
-      - name: Build Sim
+      - name: Build sim
         run: make cluster_dynamics
 
 
