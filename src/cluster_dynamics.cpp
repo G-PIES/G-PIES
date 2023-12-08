@@ -1,10 +1,11 @@
 #include <cmath>
 #include <array>
+#include <cstdint>
+
 
 #include "cluster_dynamics.hpp"
 #include "nuclear_reactor.hpp"
 #include "material.hpp"
-#include <cstdint>
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
