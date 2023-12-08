@@ -16,8 +16,9 @@ jobs:
           compiler: 'g++'
 
 
-      - name: Build 
-        run: make lib 
+      - name: Build backend
+        run: make lib
+      - name: Build Sim
         run: make cluster_dynamics
 
 
