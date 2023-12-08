@@ -328,109 +328,6 @@ __device__ double CDSimulation::v1_cluster_delta(size_t nmax)
 }
 // --------------------------------------------------------------------------------------------
 
-
-// --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3b
-    Characteristic time for emitting an interstitial by the population of interstital or vacancy
-    clusters of size up to (nmax).
-
-                (1)                      (2)                     (3)
-    tEi(n) = SUM ( E[i,i](n) * Ci(n) ) + 4 * E[i,i](2) * Ci(2) + B[i,v](2) * Cv(2) * Ci(2)
-*/
-__device__ double CDSimulation::i_emission_time(size_t nmax)
-{
-    double time = 0.;
-    for (size_t in = 3; in < nmax; ++in)
-    {
-          time +=
-        //      // (1)
-              ii_emission(in) * interstitials[in];
-    }
-
-    time +=
-        // (2)
-        4 * ii_emission(2) * interstitials[2]
-        // (3)
-        + iv_absorption(2) * vacancies[2] * interstitials[2];
-
-    return time;
-}
-
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3b
-    Characteristic time for emitting a vacancy by the population of interstital or vacancy
-    clusters of size up to (nmax).
-
-                (1)                           (2)                     (3)
-    tEv(n) = SUM[n>0] ( E[v,v](n) * Cv(n) ) + 4 * E[v,v](2) * Cv(2) + B[v,i](2) * Cv(2) * Ci(2)
-*/
-__device__ double CDSimulation::v_emission_time(size_t nmax)
-{
-    double time = 0.;
-    for (size_t vn = 3; vn < nmax; ++vn)
-    {
-        time += 
-            // (1)
-            vv_emission(vn) * vacancies[vn];
-    }
-
-    time +=
-        // (2)
-        4 * vv_emission(2) * vacancies[2]
-        // (3)
-        + vi_absorption(2) * vacancies[2] * interstitials[2];
-
-    return time;
-}
-// --------------------------------------------------------------------------------------------
-
-
-// --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3c
-    Characteristic time for absorbing an interstitial by the population of interstital or vacancy
-    clusters of size up to (nmax).
-
-                        (1)                              (2)
-    tAi(n) = SUM[n>0] ( B[i,i](n) * Ci(n) ) + SUM[n>1] ( B[v,i](n) * Cv(n) )
-*/
-__device__ double CDSimulation::i_absorption_time(size_t nmax)
-{
-    double time = ii_absorption(1) * interstitials[1];
-    for (size_t in = 1; in < nmax; ++in)
-    {
-        time +=
-            // (1)
-            ii_absorption(in) * interstitials[in]
-            // (2)
-            + vi_absorption(in) * vacancies[in];
-    }
-
-    return time;
-}
-
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3c
-    Characteristic time for absorbing a vacancy by the population of interstital or vacancy
-    clusters of size up to (nmax).
-
-                        (1)                              (2)
-    tAv(n) = SUM[n>0] ( B[v,v](n) * Cv(n) ) + SUM[n>1] ( B[i,v](n) * Ci(n) )
-*/
-__device__ double CDSimulation::v_absorption_time(size_t nmax)
-{
-    double time = vv_absorption(1) * vacancies[1];
-    for (size_t vn = 1; vn < nmax; ++vn)
-    {
-        time +=
-            // (1)
-            vv_absorption(vn) * vacancies[vn]
-            // (2)
-            + iv_absorption(vn) * interstitials[vn];
-    }
-
-    return time;
-}
-// --------------------------------------------------------------------------------------------
-
-
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3d
     Annihilation rate of vacancies and insterstitals.
@@ -538,52 +435,6 @@ __device__ double CDSimulation::v_grain_boundary_annihilation_time(size_t vn)
         // (5)
         material.grain_size;
 }
-
-__device__ double CDSimulation::ii_sum_absorption(size_t nmax)
-{
-    double emission = 0.;
-    for (size_t vn = 1; vn < nmax; ++vn)
-    {
-        emission += ii_absorption(vn) * interstitials[vn];
-    }
-
-    return emission;
-}
-
-__device__ double CDSimulation::iv_sum_absorption(size_t nmax)
-{
-    double emission = 0.;
-    for (size_t n = 1; n < nmax; ++n)
-    {
-        emission += iv_absorption(n) * interstitials[n];
-    }
-
-    return emission;
-}
-
-__device__ double CDSimulation::vv_sum_absorption(size_t nmax)
-{
-    double emission = 0.;
-    for (size_t n = 1; n < nmax; ++n)
-    {
-        emission += vv_absorption(n) * vacancies[n];
-    }
-
-    return emission;
-}
-
-__device__ double CDSimulation::vi_sum_absorption(size_t nmax)
-{
-    double emission = 0.;
-    for (size_t n = 1; n < nmax; ++n)
-    {
-        emission += vi_absorption(n) * vacancies[n];
-    }
-
-    return emission;
-}
-// --------------------------------------------------------------------------------------------
-
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4a
@@ -772,6 +623,7 @@ __device__ double CDSimulation::mean_dislocation_cell_radius(size_t n)
     return 1 / std::sqrt((2 * M_PI * M_PI / material.atomic_volume) * r_0_factor + M_PI * dislocation_density);
 }
 
+// --------------------------------------------------------------------------------------------
 /*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.12
 */
 __device__ double CDSimulation::dislocation_promotion_probability(size_t n)
@@ -785,27 +637,6 @@ __device__ double CDSimulation::dislocation_promotion_probability(size_t n)
 }
 // --------------------------------------------------------------------------------------------
 
-
-// --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 8
-*/
-__device__ double CDSimulation::dislocation_density_delta()
-{
-    double gain = 0.0;
-    for (size_t n = 1; n < concentration_boundary; ++n)
-    {
-        gain += cluster_radius(n) * dislocation_promotion_probability(n) * ii_absorption(n) * interstitials[n];
-    }
-
-    gain *= 2 * M_PI / material.atomic_volume;
-
-    return 
-        gain
-        - reactor.dislocation_density_evolution * 
-        std::pow(material.burgers_vector, 2) *
-        std::pow(dislocation_density, 3./2.);
-}
-
 // --------------------------------------------------------------------------------------------
 /*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg. 346, 7.63
 */
@@ -813,7 +644,7 @@ __device__ double CDSimulation::cluster_radius(size_t n)
 {
     return std::sqrt(std::sqrt(3.0) * std::pow(material.lattice_param, 2) * (double)n / (4 * M_PI));
 }
-// --
+// --------------------------------------------------------------------------------------------
 
 __device__ double CDSimulation::update_clusters(size_t n, double delta_time)
 {

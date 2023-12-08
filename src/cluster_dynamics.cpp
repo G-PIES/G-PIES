@@ -837,7 +837,7 @@ extern bool CUDA_update_clusters(size_t concentration_boundary, double delta_tim
 bool ClusterDynamics::update_clusters_CUDA(double delta_time)
 {
     return CUDA_update_clusters(concentration_boundary, delta_time, interstitials.data(), vacancies.data(), interstitials_temp.data(), vacancies_temp.data(), 
-                                dislocation_density, material, reactor);
+                                 dislocation_density, material, reactor);
 }
 
 bool ClusterDynamics::update_clusters_OpenCL(double delta_time)
