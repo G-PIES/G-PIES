@@ -13,6 +13,13 @@
 // used formatted debug printing
 #define TABS "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
 
+enum class DeviceType
+{
+  SOFTWARE,
+  CUDA,
+  OPENCL
+};
+
 struct ClusterDynamicsState
 {
   bool valid = true;
@@ -72,11 +79,14 @@ private:
 
   // --------------------------------------------------------------------------------------------
   // SIMULATION CONTROL FUNCTIONS 
-  
-
   bool step(double delta_time);
-  bool validate(uint64_t, double);
 
+  bool update_clusters(double delta_time);
+  bool update_clusters_software(double delta_time);
+  bool update_clusters_CUDA(double delta_time);
+  bool update_clusters_OpenCL(double delta_time);
+
+  bool validate(uint64_t, double);
   // --------------------------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------------------------
@@ -92,6 +102,8 @@ private:
 
   NuclearReactor reactor;
   Material material;
+
+  DeviceType device_type = DeviceType::SOFTWARE;
   // --------------------------------------------------------------------------------------------
 
 public:

@@ -5,6 +5,18 @@
 #include "nuclear_reactor.hpp"
 #include "material.hpp"
 
+
+
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+/*
+ *  SIMULATION PHYSICS FUNCTIONS
+ */
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+
+
+
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
     The rate of production of interstital defects from the irradiation cascade for size (n) clusters.
@@ -754,6 +766,24 @@ double ClusterDynamics::cluster_radius(uint64_t n)
 }
 // --------------------------------------------------------------------------------------------
 
+
+
+
+
+
+
+
+
+
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+/*
+ *  SIMULATION CONTROL FUNCTIONS
+ */
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+
+
 bool ClusterDynamics::step(double delta_time)
 {
     // Calculate the change in size 1 defects
@@ -763,19 +793,54 @@ bool ClusterDynamics::step(double delta_time)
     bool state_is_valid = validate(1, time);
 
     // Calculate the changes in defects of size > 1
-    for (uint64_t n = 2; n < concentration_boundary; ++n)
-    {
-        interstitials_temp[n] += i_clusters_delta(n) * delta_time;
-        vacancies_temp[n] += v_clusters_delta(n) * delta_time;
-        
-        state_is_valid = state_is_valid && validate(n, time);
-    }
+    state_is_valid = state_is_valid && update_clusters(delta_time);
 
     interstitials = interstitials_temp;
     vacancies = vacancies_temp;
     dislocation_density += dislocation_density_delta() * delta_time;
 
     return state_is_valid;
+}
+
+bool ClusterDynamics::update_clusters(double delta_time)
+{
+    // Dispatch to the correct device
+    switch (device_type)
+    {
+        case DeviceType::SOFTWARE:
+            return update_clusters_software(delta_time);
+        case DeviceType::CUDA:
+            return update_clusters_CUDA(delta_time);
+        case DeviceType::OPENCL:
+            return update_clusters_OpenCL(delta_time);
+        default:
+            fprintf(stderr, "Error: Unknown device type.");
+            return false;
+    }
+}
+
+bool ClusterDynamics::update_clusters_software(double delta_time)
+{
+    for (uint64_t n = 2; n < concentration_boundary; ++n)
+    {
+        interstitials_temp[n] += i_clusters_delta(n) * delta_time;
+        vacancies_temp[n] += v_clusters_delta(n) * delta_time;
+        if (!validate(n, time)) return false;
+    }
+
+    return true;
+}
+
+bool ClusterDynamics::update_clusters_CUDA(double delta_time)
+{
+    fprintf(stderr, "ERROR: Cluster Dynamics CUDA simulation not implemented.");
+    return false;
+}
+
+bool ClusterDynamics::update_clusters_OpenCL(double delta_time)
+{
+    fprintf(stderr, "ERROR: Cluster Dynamics OpenCL simulation not implemented.");
+    return false;
 }
 
 bool ClusterDynamics::validate(uint64_t n, double t)
@@ -788,6 +853,25 @@ bool ClusterDynamics::validate(uint64_t n, double t)
         !(interstitials_temp[n] < 0) &&
         !(vacancies_temp[n] < 0);
 }
+
+
+
+
+
+
+
+
+
+
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+/*
+ *  PUBLIC INTERFACE FUNCTIONS
+ */
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+
+
 
 ClusterDynamics::ClusterDynamics(uint64_t concentration_boundary, NuclearReactor reactor, Material material)
     : concentration_boundary(concentration_boundary), reactor(reactor), material(material)
