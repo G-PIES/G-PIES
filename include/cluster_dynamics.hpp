@@ -6,14 +6,10 @@
 #include "nuclear_reactor.hpp"
 #include "material.hpp"
 
-#ifndef BOLTZMANN_EV_KELVIN
-#define BOLTZMANN_EV_KELVIN 8.6173e-5 // (eV / Kelvin)
-#endif
-
 // used formatted debug printing
 #define TABS "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
 
-enum class DeviceType
+enum class BackendType
 {
   SOFTWARE,
   CUDA,
@@ -79,12 +75,11 @@ private:
 
   // --------------------------------------------------------------------------------------------
   // SIMULATION CONTROL FUNCTIONS 
-  bool step(double delta_time);
-
-  bool update_clusters(double delta_time);
-  bool update_clusters_software(double delta_time);
-  bool update_clusters_CUDA(double delta_time);
-  bool update_clusters_OpenCL(double delta_time);
+  bool step(double);
+  bool update_clusters(double);
+  bool update_clusters_software(double);
+  bool update_clusters_CUDA(double);
+  bool update_clusters_OpenCL(double);
 
   bool validate(uint64_t, double);
   // --------------------------------------------------------------------------------------------
@@ -103,7 +98,7 @@ private:
   NuclearReactor reactor;
   Material material;
 
-  DeviceType device_type = DeviceType::SOFTWARE;
+  BackendType backend_type = BackendType::CUDA;
   // --------------------------------------------------------------------------------------------
 
 public:

@@ -52,15 +52,21 @@ ifdef N
 	CCFLAGS += -D N=$(N)
 endif
 
-.PHONY: lib cluster_dynamics
+.PHONY: lib cuda cluster_dynamics
 
 # library compilation
 lib: src/cluster_dynamics.cpp 
 	$(CC) $(CCFLAGS) src/*.cpp -shared -fPIC -c -o $(library) -I$(INCLUDE_DIR) -I./src
 
+cuda: src/cluster_dynamics.cu
+	nvcc src/cluster_dynamics.cu -c -I$(INCLUDE_DIR) -o cudacd.o
+	nvcc $(CCFLAGS) src/cluster_dynamics.cpp -c -o lib.o -I$(INCLUDE_DIR) -I./src
+	nvcc example/main.cpp -c -o main.o -I$(INCLUDE_DIR) -L$(LIB_DIR)
+	nvcc main.o lib.o cudacd.o -o cluster_dynamics.out
+
 # example frontend compilation
 cluster_dynamics: example/main.cpp $(library)
-	$(CC) $(CCFLAGS) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
+	$(CC) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
 
 # compile and run example frontend
 cdr: example/main.cpp $(library)

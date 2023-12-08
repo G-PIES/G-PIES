@@ -786,35 +786,36 @@ double ClusterDynamics::cluster_radius(uint64_t n)
 
 bool ClusterDynamics::step(double delta_time)
 {
+
     // Calculate the change in size 1 defects
     interstitials_temp[1] += i1_cluster_delta(concentration_boundary - 1) * delta_time;
     vacancies_temp[1] += v1_cluster_delta(concentration_boundary - 1) * delta_time;
-
     bool state_is_valid = validate(1, time);
 
     // Calculate the changes in defects of size > 1
     state_is_valid = state_is_valid && update_clusters(delta_time);
 
+    dislocation_density += dislocation_density_delta() * delta_time;
+
     interstitials = interstitials_temp;
     vacancies = vacancies_temp;
-    dislocation_density += dislocation_density_delta() * delta_time;
 
     return state_is_valid;
 }
 
 bool ClusterDynamics::update_clusters(double delta_time)
 {
-    // Dispatch to the correct device
-    switch (device_type)
+    // Dispatch to the correct api
+    switch (backend_type)
     {
-        case DeviceType::SOFTWARE:
+        case BackendType::SOFTWARE:
             return update_clusters_software(delta_time);
-        case DeviceType::CUDA:
+        case BackendType::CUDA:
             return update_clusters_CUDA(delta_time);
-        case DeviceType::OPENCL:
+        case BackendType::OPENCL:
             return update_clusters_OpenCL(delta_time);
         default:
-            fprintf(stderr, "Error: Unknown device type.");
+            fprintf(stderr, "Error: Unknown API type.");
             return false;
     }
 }
@@ -831,15 +832,17 @@ bool ClusterDynamics::update_clusters_software(double delta_time)
     return true;
 }
 
+extern bool CUDA_update_clusters(size_t concentration_boundary, double delta_time, double* is_in, double* vs_in, double* is_out, double* vs_out, 
+                                 double dislocation_density, Material material, NuclearReactor reactor);
 bool ClusterDynamics::update_clusters_CUDA(double delta_time)
 {
-    fprintf(stderr, "ERROR: Cluster Dynamics CUDA simulation not implemented.");
-    return false;
+    return CUDA_update_clusters(concentration_boundary, delta_time, interstitials.data(), vacancies.data(), interstitials_temp.data(), vacancies_temp.data(), 
+                                dislocation_density, material, reactor);
 }
 
 bool ClusterDynamics::update_clusters_OpenCL(double delta_time)
 {
-    fprintf(stderr, "ERROR: Cluster Dynamics OpenCL simulation not implemented.");
+    fprintf(stderr, "Error: OpenCL device type not yet implemented.");
     return false;
 }
 
