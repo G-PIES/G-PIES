@@ -25,5 +25,5 @@ jobs:
       - name: Upload Executable
         uses: actions/upload-artifact@v2
         with:
-          name: cd-executable
-          path: cluster_dymanics.out
+          name: cluster_dynamics
+          path: cluster_dynamics.out
