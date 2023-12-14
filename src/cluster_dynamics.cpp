@@ -790,7 +790,7 @@ bool ClusterDynamics::step(double delta_time)
     // Calculate the change in size 1 defects
     interstitials_temp[1] += i1_cluster_delta(concentration_boundary - 1) * delta_time;
     vacancies_temp[1] += v1_cluster_delta(concentration_boundary - 1) * delta_time;
-    bool state_is_valid = validate(1, time);
+    bool state_is_valid = validate(1);
 
     // Calculate the changes in defects of size > 1
     state_is_valid = state_is_valid && update_clusters(delta_time);
@@ -805,48 +805,40 @@ bool ClusterDynamics::step(double delta_time)
 
 bool ClusterDynamics::update_clusters(double delta_time)
 {
-    // Dispatch to the correct api
-    switch (backend_type)
-    {
-        case BackendType::SOFTWARE:
-            return update_clusters_software(delta_time);
-        case BackendType::CUDA:
-            return update_clusters_CUDA(delta_time);
-        case BackendType::OPENCL:
-            return update_clusters_OpenCL(delta_time);
-        default:
-            fprintf(stderr, "Error: Unknown API type.");
-            return false;
-    }
+    #ifdef USE_CUDA_BACKEND
+        return update_clusters_CUDA(delta_time);
+    #else
+        return update_clusters_software(delta_time);
+    #endif
 }
+
+#ifdef USE_CUDA_BACKEND
+extern bool CUDA_update_clusters(size_t concentration_boundary, double delta_time, double* is_in, double* vs_in, 
+                                 double* is_out, double* vs_out, double dislocation_density, Material material, NuclearReactor reactor);
+                                 
+bool ClusterDynamics::update_clusters_CUDA(double delta_time)
+{
+    return CUDA_update_clusters(concentration_boundary, delta_time, interstitials.data(), vacancies.data(), 
+                                interstitials_temp.data(), vacancies_temp.data(), dislocation_density, material, reactor);
+}
+#endif
 
 bool ClusterDynamics::update_clusters_software(double delta_time)
 {
-    for (uint64_t n = 2; n < concentration_boundary; ++n)
+    bool state_is_valid = true;
+
+    for (size_t n = 2; n < concentration_boundary; ++n)
     {
         interstitials_temp[n] += i_clusters_delta(n) * delta_time;
         vacancies_temp[n] += v_clusters_delta(n) * delta_time;
-        if (!validate(n, time)) return false;
+
+        state_is_valid = state_is_valid && validate(n);
     }
 
-    return true;
+    return state_is_valid;
 }
 
-extern bool CUDA_update_clusters(size_t concentration_boundary, double delta_time, double* is_in, double* vs_in, double* is_out, double* vs_out, 
-                                 double dislocation_density, Material material, NuclearReactor reactor);
-bool ClusterDynamics::update_clusters_CUDA(double delta_time)
-{
-    return CUDA_update_clusters(concentration_boundary, delta_time, interstitials.data(), vacancies.data(), interstitials_temp.data(), vacancies_temp.data(), 
-                                 dislocation_density, material, reactor);
-}
-
-bool ClusterDynamics::update_clusters_OpenCL(double delta_time)
-{
-    fprintf(stderr, "Error: OpenCL device type not yet implemented.");
-    return false;
-}
-
-bool ClusterDynamics::validate(uint64_t n, double t)
+bool ClusterDynamics::validate(uint64_t n)
 {
     return 
         !std::isnan(interstitials_temp[n]) &&
@@ -898,7 +890,8 @@ ClusterDynamicsState ClusterDynamics::run(double delta_time, double total_time)
         if (!state_is_valid) break;
     }
 
-    return ClusterDynamicsState {
+    return ClusterDynamicsState 
+    {
         .valid = state_is_valid,
         .time = time,
         .interstitials = interstitials,

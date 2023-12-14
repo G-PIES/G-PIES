@@ -43,3 +43,5 @@ resources
 
 # csv
 *.csv
+
+lib

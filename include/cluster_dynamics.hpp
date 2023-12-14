@@ -9,20 +9,13 @@
 // used formatted debug printing
 #define TABS "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
 
-enum class BackendType
-{
-  SOFTWARE,
-  CUDA,
-  OPENCL
-};
-
 struct ClusterDynamicsState
 {
-  bool valid = true;
-  double time = 0.0;
-  std::vector<double> interstitials;
-  std::vector<double> vacancies;
-  double dislocation_density = 0.0;
+    bool valid = true;
+    double time = 0.0;
+    std::vector<double> interstitials;
+    std::vector<double> vacancies;
+    double dislocation_density = 0.0;
 };
 
 class ClusterDynamics 
@@ -81,7 +74,7 @@ private:
   bool update_clusters_CUDA(double);
   bool update_clusters_OpenCL(double);
 
-  bool validate(uint64_t, double);
+  bool validate(uint64_t);
   // --------------------------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------------------------
@@ -89,27 +82,24 @@ private:
   uint64_t concentration_boundary;
   double time;
 
-  std::vector<double> interstitials;
-  std::vector<double> interstitials_temp;
-  std::vector<double> vacancies;
-  std::vector<double> vacancies_temp;
-  double dislocation_density;
+    std::vector<double> interstitials;
+    std::vector<double> interstitials_temp;
+    std::vector<double> vacancies;
+    std::vector<double> vacancies_temp;
+    double dislocation_density;
 
   NuclearReactor reactor;
   Material material;
-
-  BackendType backend_type = BackendType::CUDA;
   // --------------------------------------------------------------------------------------------
 
-public:
+  public:
+    ClusterDynamics(uint64_t concentration_boundary, NuclearReactor reactor, Material material);
+    ClusterDynamicsState run(double delta_time, double total_time);
 
-  ClusterDynamics(uint64_t concentration_boundary, NuclearReactor reactor, Material material);
-  ClusterDynamicsState run(double delta_time, double total_time);
-
-  Material get_material();
-  void set_material(Material material);
-  NuclearReactor get_reactor();
-  void set_reactor(NuclearReactor reactor);
+    Material get_material();
+    void set_material(Material material);
+    NuclearReactor get_reactor();
+    void set_reactor(NuclearReactor reactor);
 };
 
 

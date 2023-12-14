@@ -1,5 +1,4 @@
 ifeq ($(OS), Windows_NT)
-	CC = g++
 	CCFLAGS += -D WIN32
 	ifeq ($(PROCESSOR_ARCHITEW6432), AMD64)
 		CCFLAGS += -D AMD64
@@ -11,10 +10,8 @@ ifeq ($(OS), Windows_NT)
 else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S), Linux)
-		CC = g++
 		CCFLAGS += -D LINUX
 	else ifeq ($(UNAME_S), Darwin)
-		CC = clang
 		CCFLAGS += -D OSX
 	endif
 
@@ -27,6 +24,8 @@ else
 		CCFLAGS += -D ARM
 	endif
 endif
+
+CC = g++
 
 CCFLAGS += -std=c++17
 INCLUDE_DIR = ./include
@@ -55,18 +54,21 @@ endif
 .PHONY: lib cuda cluster_dynamics
 
 # library compilation
-lib: src/cluster_dynamics.cpp 
+lib: src/cluster_dynamics.cpp
+	mkdir -p lib
 	$(CC) $(CCFLAGS) src/*.cpp -shared -fPIC -c -o $(library) -I$(INCLUDE_DIR) -I./src
-
-cuda: src/cluster_dynamics.cu
-	nvcc -O3 src/cluster_dynamics.cu -c -I$(INCLUDE_DIR) -o cudacd.o
-	nvcc -O3 $(CCFLAGS) src/cluster_dynamics.cpp -c -o lib.o -I$(INCLUDE_DIR) -I./src
-	nvcc -O3 example/main.cpp -c -o main.o -I$(INCLUDE_DIR) -L$(LIB_DIR)
-	nvcc -O3 main.o lib.o cudacd.o -o cluster_dynamics.out
 
 # example frontend compilation
 cluster_dynamics: example/main.cpp $(library)
 	$(CC) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
+
+# CUDA backend & example frontend compilation
+cuda: src/cluster_dynamics.cu
+	nvcc -O3 src/cluster_dynamics.cu -c -I$(INCLUDE_DIR) -o cudacd.o
+	nvcc -O3 -D USE_CUDA_BACKEND $(CCFLAGS) src/cluster_dynamics.cpp -c -o lib.o -I$(INCLUDE_DIR) -I./src
+	nvcc -O3 example/main.cpp -c -o main.o -I$(INCLUDE_DIR) -L$(LIB_DIR)
+	nvcc -O3 main.o lib.o cudacd.o -o cluster_dynamics.out
+	rm *.o
 
 # compile and run example frontend
 cdr: example/main.cpp $(library)
