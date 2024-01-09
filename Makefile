@@ -1,3 +1,14 @@
+CC = g++
+NVCC = nvcc
+
+CCFLAGS += -std=c++17
+INCLUDE_DIR = ./include
+LIB_DIR = ./lib
+
+ext = .out
+binary = cluster_dynamics$(ext)
+library = lib/libclusterdynamics.so
+
 ifeq ($(OS), Windows_NT)
 	CCFLAGS += -D WIN32
 	ifeq ($(PROCESSOR_ARCHITEW6432), AMD64)
@@ -25,16 +36,6 @@ else
 	endif
 endif
 
-CC = g++
-
-CCFLAGS += -std=c++17
-INCLUDE_DIR = ./include
-LIB_DIR = ./lib
-
-ext = .out
-binary = cluster_dynamics$(ext)
-library = lib/libclusterdynamics.so
-
 ifdef C
 	CCFLAGS += -D CONCENTRATION_BOUNDARY=$(C)
 endif
@@ -51,24 +52,33 @@ ifdef N
 	CCFLAGS += -D N=$(N)
 endif
 
-.PHONY: lib cuda cluster_dynamics
+
+
+
+
+#----------------------------------------------------------------------------------------
+# Targets
+#----------------------------------------------------------------------------------------
+
+all: software_lib cuda_frontend
+
+.PHONY: lib cuda cluster_dynamics clean
 
 # library compilation
-lib: src/cluster_dynamics.cpp
+software_lib: src/cluster_dynamics.cu
 	mkdir -p lib
-	$(CC) $(CCFLAGS) src/*.cpp -shared -fPIC -c -o $(library) -I$(INCLUDE_DIR) -I./src
-
-# example frontend compilation
-cluster_dynamics: example/main.cpp $(library)
-	$(CC) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
+	$(CC) $(CCFLAGS) src/cluster_dynamics.cu -shared -fPIC -c -o $(library) -I$(INCLUDE_DIR) -I./src
 
 # CUDA backend & example frontend compilation
-cuda: src/cluster_dynamics.cu
-	nvcc -O3 src/cluster_dynamics.cu -c -I$(INCLUDE_DIR) -o cudacd.o
-	nvcc -O3 -D USE_CUDA_BACKEND $(CCFLAGS) src/cluster_dynamics.cpp -c -o lib.o -I$(INCLUDE_DIR) -I./src
-	nvcc -O3 example/main.cpp -c -o main.o -I$(INCLUDE_DIR) -L$(LIB_DIR)
-	nvcc -O3 main.o lib.o cudacd.o -o cluster_dynamics.out
+cuda_frontend: src/cluster_dynamics.cu
+	nvcc -O3 -pg -D USE_CUDA $(CCFLAGS) src/cluster_dynamics.cu -c -o lib.o -I$(INCLUDE_DIR) -I./src
+	nvcc -O3 -pg example/main.cpp -c -o main.o -I$(INCLUDE_DIR) -L$(LIB_DIR)
+	nvcc -O3 -pg main.o lib.o -o cluster_dynamics.out
 	rm *.o
+
+# example frontend compilation
+example_frontend: example/main.cpp $(library)
+	$(CC) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
 
 # compile and run example frontend
 cdr: example/main.cpp $(library)

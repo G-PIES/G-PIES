@@ -19,7 +19,7 @@
 #define CSV false
 #endif
 
-double concentration_boundary;
+size_t concentration_boundary;
 double simulation_time;
 double delta_time;
 double sample_interval; // How often (in seconds) to record the state
