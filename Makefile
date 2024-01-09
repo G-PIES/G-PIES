@@ -45,24 +45,24 @@ library = lib/libclusterdynamics$(LIB_EXT)
 # Targets
 #----------------------------------------------------------------------------------------
 
-all: software_lib cuda_frontend
+all: software_lib example_frontend
 
-.PHONY: lib cuda cluster_dynamics clean
+.PHONY: software_lib cuda_frontend example_frontend clean
 
 # library compilation
-software_lib: src/cluster_dynamics.cu
+software_lib:
 	mkdir -p lib
-	$(CC) $(CCFLAGS) src/cluster_dynamics.cu -shared -fPIC -c -o $(library) -I$(INCLUDE_DIR) -I./src
+	$(CC) $(CCFLAGS) src/cluster_dynamics.cpp -shared -fPIC -c -o $(library) -I$(INCLUDE_DIR) -I./src
 
 # CUDA backend & example frontend compilation
-cuda_frontend: src/cluster_dynamics.cu
-	nvcc -O3 -pg -D USE_CUDA $(CCFLAGS) src/cluster_dynamics.cu -c -o lib.o -I$(INCLUDE_DIR) -I./src
+cuda_frontend:
+	nvcc -O3 -pg -D USE_CUDA -x cu $(CCFLAGS) src/cluster_dynamics.cpp -c -o lib.o -I$(INCLUDE_DIR) -I./src
 	nvcc -O3 -pg example/main.cpp -c -o main.o -I$(INCLUDE_DIR) -L$(LIB_DIR)
 	nvcc -O3 -pg main.o lib.o -o cluster_dynamics.out
 	rm *.o
 
 # example frontend compilation
-example_frontend: example/main.cpp $(library)
+example_frontend:
 	$(CC) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
 
 # compile and run example frontend
