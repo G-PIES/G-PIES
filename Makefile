@@ -5,12 +5,11 @@ CCFLAGS += -std=c++17
 INCLUDE_DIR = ./include
 LIB_DIR = ./lib
 
-ext = .out
-binary = cluster_dynamics$(ext)
-library = lib/libclusterdynamics.so
-
 ifeq ($(OS), Windows_NT)
 	CCFLAGS += -D WIN32
+	CCFLAGS += -D_USE_MATH_DEFINES
+	LIB_EXT := .dll
+	EXE_EXT := .exe
 	ifeq ($(PROCESSOR_ARCHITEW6432), AMD64)
 		CCFLAGS += -D AMD64
 	else ifeq ($(PROCESSOR_ARCHITECTURE), AMD64)
@@ -19,6 +18,9 @@ ifeq ($(OS), Windows_NT)
 		CCFLAGS += -D IA32
 	endif
 else
+	LIB_EXT := .so
+	EXE_EXT := .out
+	
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S), Linux)
 		CCFLAGS += -D LINUX
@@ -36,25 +38,8 @@ else
 	endif
 endif
 
-ifdef C
-	CCFLAGS += -D CONCENTRATION_BOUNDARY=$(C)
-endif
-
-ifdef T
-	CCFLAGS += -D SIMULATION_TIME=$(T)
-endif
-
-ifdef DT
-	CCFLAGS += -D DELTA_TIME=$(DT)
-endif
-
-ifdef N
-	CCFLAGS += -D N=$(N)
-endif
-
-
-
-
+binary = cluster_dynamics$(EXE_EXT)
+library = lib/libclusterdynamics$(LIB_EXT)
 
 #----------------------------------------------------------------------------------------
 # Targets
@@ -109,4 +94,4 @@ run:
 
 # remove binaries
 clean:
-	rm *$(ext) lib/*.so
+	rm *$(ext) lib/*$(LIB_EXT)

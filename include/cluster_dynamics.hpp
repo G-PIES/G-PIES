@@ -1,6 +1,9 @@
 #pragma once
 
 #include <vector>
+#ifdef WIN32
+#include <cstdint>
+#endif
 
 #include "nuclear_reactor.hpp"
 #include "material.hpp"
