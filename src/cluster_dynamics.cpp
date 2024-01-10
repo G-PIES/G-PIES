@@ -696,7 +696,7 @@ CUDADECL double ClusterDynamics::v_diffusion()
 // --------------------------------------------------------------------------------------------
 /*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.10
 */
-CUDADECL double ClusterDynamics::mean_dislocation_cell_radius(size_t n)
+CUDADECL double ClusterDynamics::mean_dislocation_cell_radius()
 {
     double r_0_factor = 0.;
     for (size_t i = 1; i < concentration_boundary; ++i)
@@ -714,10 +714,8 @@ CUDADECL double ClusterDynamics::dislocation_promotion_probability(size_t n)
 {
     double dr = cluster_radius(n + 1) - cluster_radius(n);
 
-    double r_0 = mean_dislocation_cell_radius(n);
-
     return (2 * cluster_radius(n) * dr + std::pow(dr, 2)) 
-         / (M_PI * r_0 / 2. - std::pow(cluster_radius(n), 2)); 
+         / (M_PI * mean_radius / 2. - std::pow(cluster_radius(n), 2)); 
 }
 // --------------------------------------------------------------------------------------------
 
@@ -728,6 +726,8 @@ CUDADECL double ClusterDynamics::dislocation_promotion_probability(size_t n)
 double ClusterDynamics::dislocation_density_delta()
 {
     double gain = 0.0;
+
+    double mean_radius = mean_dislocation_cell_radius();
     for (size_t n = 1; n < concentration_boundary; ++n)
     {
         gain += cluster_radius(n) * dislocation_promotion_probability(n) * ii_absorption(n) * interstitials[n];
@@ -787,6 +787,8 @@ void ClusterDynamics::set_reactor(NuclearReactor reactor)
 bool ClusterDynamics::software_update_clusters(double delta_time)
 {
     bool state_is_valid = true;
+
+    mean_radius = mean_dislocation_cell_radius();
 
     for (size_t n = 2; n < concentration_boundary; ++n)
     {

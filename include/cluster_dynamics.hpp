@@ -38,6 +38,8 @@ public:
   size_t concentration_boundary;
   double dislocation_density;
 
+  double mean_radius;
+
   Material material;
   NuclearReactor reactor;
 
@@ -82,7 +84,7 @@ public:
   CUDADECL double v_binding_energy(size_t);
   CUDADECL double i_diffusion();
   CUDADECL double v_diffusion();
-  CUDADECL double mean_dislocation_cell_radius(size_t);
+  CUDADECL double mean_dislocation_cell_radius();
   CUDADECL double dislocation_promotion_probability(size_t);
   CUDADECL double dislocation_density_delta();
   CUDADECL double cluster_radius(size_t);

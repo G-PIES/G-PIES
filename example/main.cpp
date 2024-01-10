@@ -7,6 +7,8 @@
 #include "material.hpp"
 #include "nuclear_reactor.hpp"
 
+#include "timer.hpp"
+
 #ifndef VPRINT
 #define VPRINT false
 #endif
@@ -58,6 +60,28 @@ void print_csv(ClusterDynamicsState& state)
     }
 }
 
+void profile()
+{
+    std::vector<double> times;
+    Timer timer;
+
+    ClusterDynamicsState state;
+    NuclearReactor reactor = nuclear_reactors::OSIRIS();
+    Material material = materials::SA304();
+
+    for (int n = 100; n < 40000; n += 1000)
+    {
+        fprintf(stderr, "N=%d\n", n);
+        ClusterDynamics cd(n, reactor, material);
+
+        timer.Start();
+        state = cd.run(1e-5, 10e-5);
+        double time = timer.Stop();
+
+        fprintf(stdout, "\n%g", time);
+    }
+}
+
 int main(int argc, char* argv[])
 {
     NuclearReactor reactor = nuclear_reactors::OSIRIS();
@@ -90,6 +114,7 @@ int main(int argc, char* argv[])
     fprintf(stdout, "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
     #endif
 
+    Timer timer;
     ClusterDynamicsState state;
 
     // --------------------------------------------------------------------------------------------
@@ -115,7 +140,6 @@ int main(int argc, char* argv[])
         #endif
     }
     // --------------------------------------------------------------------------------------------
-
 
     // --------------------------------------------------------------------------------------------
     // print results
