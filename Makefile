@@ -1,10 +1,3 @@
-CC = g++
-NVCC = nvcc
-
-CCFLAGS += -std=c++17
-INCLUDE_DIR = ./include
-LIB_DIR = ./lib
-
 ifeq ($(OS), Windows_NT)
 	CCFLAGS += -D WIN32
 	CCFLAGS += -D_USE_MATH_DEFINES
@@ -38,6 +31,10 @@ else
 	endif
 endif
 
+CC = g++
+CCFLAGS += -std=c++17
+INCLUDE_FLAGS = -I./include -I./src -I./extern/googletest/include
+LIB_DIR = ./lib
 binary = cluster_dynamics$(EXE_EXT)
 library = lib/libclusterdynamics$(LIB_EXT)
 
@@ -47,57 +44,61 @@ library = lib/libclusterdynamics$(LIB_EXT)
 
 all: software_lib software_example_frontend
 
-.PHONY: software_lib software_example_frontend cuda_example_frontend clean
+.PHONY: software_lib software_example_frontend cuda_example_frontend test clean
 
-# software library compilation
+# Software library compilation
 software_lib:
 	mkdir -p lib
-	$(CC) $(CCFLAGS) src/cluster_dynamics.cpp -c -o libclusterdynamics.o -I$(INCLUDE_DIR) -I./src
+	$(CC) $(CCFLAGS) src/cluster_dynamics.cpp -c -o libclusterdynamics.o $(INCLUDE_FLAGS)
 	ar crs $(library) libclusterdynamics.o
 	rm libclusterdynamics.o
 
 # CUDA library compilation
 cuda_lib:
 	mkdir -p lib
-	nvcc -O3 -c -x cu -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics.cpp -o libclusterdynamics.o -I$(INCLUDE_DIR) -I./src
+	nvcc -O3 -c -x cu -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics.cpp -o libclusterdynamics.o $(INCLUDE_FLAGS)
 	ar crs $(library) libclusterdynamics.o
 	rm libclusterdynamics.o
 
-# example frontend compilation
+# Example frontend compilation
 example_frontend: software_lib
-	$(CC) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics 
+	$(CC) example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics 
 
 # CUDA backend & example frontend compilation
 cuda_example_frontend: cuda_lib
-	nvcc example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
+	nvcc example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 
-# compile and run example frontend
+test:
+	g++ ./test/tests.cpp -o test$(EXE_EXT) $(INCLUDE_FLAGS) -L./extern/googletest/lib/ -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamics
+	./test$(EXE_EXT)
+
+# Compile and run example frontend
 cdr: example/main.cpp $(library)
-	$(CC) $(CCFLAGS) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
+	$(CC) $(CCFLAGS) example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 	./$(binary)
 
-# example frontend w/ debug symbols
+# Example frontend w/ debug symbols
 debug:
-	$(CC) $(CCFLAGS) -g example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
+	$(CC) $(CCFLAGS) -g example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 
-# example frontend w/ verbose printing and debug symbols
+# Example frontend w/ verbose printing and debug symbols
 vprint:
-	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
+	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 
-# example frontend w/ verbose printing, debug symbols, and run on compilation
+# Example frontend w/ verbose printing, debug symbols, and run on compilation
 vprintr:
-	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
+	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 	./$(binary)
 
-# build example frontend, then run and export results to cd-output.csv
+# Build example frontend, then run and export results to cd-output.csv
 csv:
-	$(CC) $(CCFLAGS) -D CSV=true example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
+	$(CC) $(CCFLAGS) -D CSV=true example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 	./$(binary) 1e-5 1 > cd-output.csv
 
-# run the example frontend
+# Run the example frontend
 run:
 	./$(binary)
 
-# remove binaries
+# Remove binaries
 clean:
-	rm *$(ext) lib/*$(LIB_EXT)
+	rm *$(EXE_EXT) lib/*$(LIB_EXT)

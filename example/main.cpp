@@ -50,6 +50,8 @@ void print_state(ClusterDynamicsState& state)
     {
         fprintf(stdout, "%llu\t\t\t\t\t%13g\t\t\t  %15g\n\n", (unsigned long long)n, state.interstitials[n], state.vacancies[n]);
     }
+
+    fprintf(stderr, "\nDislocation Network Density: %g\n\n", state.dislocation_density);
 }
 
 void print_csv(ClusterDynamicsState& state)
@@ -84,9 +86,6 @@ void profile()
 
 int main(int argc, char* argv[])
 {
-    profile();
-    return 0;
-
     NuclearReactor reactor = nuclear_reactors::OSIRIS();
     Material material = materials::SA304();
 

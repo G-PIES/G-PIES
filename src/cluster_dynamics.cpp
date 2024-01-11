@@ -853,16 +853,18 @@ bool ClusterDynamics::validate(size_t n)
 ClusterDynamics::ClusterDynamics(size_t concentration_boundary, NuclearReactor reactor, Material material)
 : concentration_boundary(concentration_boundary), reactor(reactor), material(material)
 {
-    interstitials = new double[concentration_boundary];
-    vacancies = new double[concentration_boundary];
-    interstitials_temp = new double[concentration_boundary];
-    vacancies_temp = new double[concentration_boundary];
+    interstitials = new double[concentration_boundary]{0.0};
+    vacancies = new double[concentration_boundary]{0.0};
+    interstitials_temp = new double[concentration_boundary]{0.0};
+    vacancies_temp = new double[concentration_boundary]{0.0};
     dislocation_density = material.dislocation_density_0;
+    time = 0.0;
 }
 
 ClusterDynamicsState ClusterDynamics::run(double delta_time, double total_time)
 {
     bool state_is_valid = true;
+
     for (double endtime = time + total_time; time < endtime; time += delta_time)
     {
         state_is_valid = update_clusters(delta_time);
