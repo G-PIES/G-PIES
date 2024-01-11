@@ -803,7 +803,8 @@ ClusterDynamicsState ClusterDynamics::run(double delta_time, double total_time)
         if (!valid_sim) break;
     }
 
-    return ClusterDynamicsState {
+    return ClusterDynamicsState 
+    {
         .valid = valid_sim,
         .time = time,
         .interstitials = interstitials,
