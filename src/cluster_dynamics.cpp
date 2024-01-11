@@ -1,7 +1,5 @@
 #include <cmath>
 #include <array>
-#include <cstdint>
-
 
 #include "cluster_dynamics.hpp"
 #include "nuclear_reactor.hpp"
