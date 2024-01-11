@@ -17,9 +17,9 @@ jobs:
 
 
       - name: Build backend
-        run: make lib
+        run: make software_lib
       - name: Build sim
-        run: make cluster_dynamics
+        run: make example_frontend
 
 
       - name: Upload Executable
