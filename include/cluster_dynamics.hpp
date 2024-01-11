@@ -39,6 +39,10 @@ public:
   double dislocation_density;
 
   double mean_dislocation_radius_val;
+  double ii_sum_absorption_val;
+  double iv_sum_absorption_val;
+  double vv_sum_absorption_val;
+  double vi_sum_absorption_val;
 
   Material material;
   NuclearReactor reactor;
@@ -66,8 +70,8 @@ public:
   __CUDADECL__ double annihilation_rate();
   __CUDADECL__ double i_dislocation_annihilation_time();
   __CUDADECL__ double v_dislocation_annihilation_time();
-  __CUDADECL__ double i_grain_boundary_annihilation_time(size_t);
-  __CUDADECL__ double v_grain_boundary_annihilation_time(size_t);
+  __CUDADECL__ double i_grain_boundary_annihilation_time();
+  __CUDADECL__ double v_grain_boundary_annihilation_time();
   __CUDADECL__ double ii_sum_absorption(size_t);
   __CUDADECL__ double iv_sum_absorption(size_t);
   __CUDADECL__ double vv_sum_absorption(size_t);

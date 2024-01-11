@@ -75,7 +75,7 @@ void profile()
         ClusterDynamics cd(n, reactor, material);
 
         timer.Start();
-        state = cd.run(1e-5, 10e-5);
+        state = cd.run(1e-5, 1e-5);
         double time = timer.Stop();
 
         fprintf(stdout, "\n%g", time);
@@ -84,6 +84,9 @@ void profile()
 
 int main(int argc, char* argv[])
 {
+    profile();
+    return 0;
+
     NuclearReactor reactor = nuclear_reactors::OSIRIS();
     Material material = materials::SA304();
 

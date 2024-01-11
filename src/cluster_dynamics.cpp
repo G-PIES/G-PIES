@@ -225,7 +225,7 @@ __CUDADECL__ double ClusterDynamics::i1_cluster_delta(size_t nmax)
         // (3)
         - interstitials[1] * i_dislocation_annihilation_time()
         // (4)
-        - interstitials[1] * i_grain_boundary_annihilation_time(nmax)
+        - interstitials[1] * i_grain_boundary_annihilation_time()
         // (5)
         - interstitials[1] * i_absorption_time(nmax)
         // (6)
@@ -257,7 +257,7 @@ __CUDADECL__ double ClusterDynamics::v1_cluster_delta(size_t nmax)
         // (3)
         - vacancies[1] * v_dislocation_annihilation_time()
         // (4)
-        - vacancies[1] * v_grain_boundary_annihilation_time(nmax)
+        - vacancies[1] * v_grain_boundary_annihilation_time()
         // (5)
         - vacancies[1] * v_absorption_time(nmax)
         // (6)
@@ -432,7 +432,7 @@ __CUDADECL__ double ClusterDynamics::v_dislocation_annihilation_time()
            (1)            (2)      (3)                            (4)                              (5)
     tAdi = 6 * Di * sqrt( p * Zi + SUM[n] ( B[i,i](n) * Ci(n) ) + SUM[n] ( B[v,i](n) * Cv(n) ) ) / d
 */
-__CUDADECL__ double ClusterDynamics::i_grain_boundary_annihilation_time(size_t in)
+__CUDADECL__ double ClusterDynamics::i_grain_boundary_annihilation_time()
 {
     return
         // (1)
@@ -443,9 +443,9 @@ __CUDADECL__ double ClusterDynamics::i_grain_boundary_annihilation_time(size_t i
             dislocation_density * 
             material.i_dislocation_bias
             // (3)
-            + ii_sum_absorption(in)
+            + ii_sum_absorption_val
             // (4)
-            + vi_sum_absorption(in)
+            + vi_sum_absorption_val
         ) /
         // (5)
         material.grain_size;
@@ -457,7 +457,7 @@ __CUDADECL__ double ClusterDynamics::i_grain_boundary_annihilation_time(size_t i
            (1)            (2)      (3)                            (4)                              (5)
     tAdv = 6 * Di * sqrt( p * Zv + SUM[n] ( B[v,v](n) * Cv(n) ) + SUM[n] ( B[i,v](n) * Ci(n) ) ) / d
 */
-__CUDADECL__ double ClusterDynamics::v_grain_boundary_annihilation_time(size_t vn)
+__CUDADECL__ double ClusterDynamics::v_grain_boundary_annihilation_time()
 {
     return
         // (1)
@@ -468,9 +468,9 @@ __CUDADECL__ double ClusterDynamics::v_grain_boundary_annihilation_time(size_t v
             dislocation_density *
             material.v_dislocation_bias
             // (3)
-            + vv_sum_absorption(vn)
+            + vv_sum_absorption_val
             // (4)
-            + iv_sum_absorption(vn)
+            + iv_sum_absorption_val
         ) /
         // (5)
         material.grain_size;
@@ -800,6 +800,10 @@ bool ClusterDynamics::software_update_clusters(double delta_time)
 bool ClusterDynamics::update_clusters(double delta_time)
 {
     mean_dislocation_radius_val = mean_dislocation_cell_radius();
+    ii_sum_absorption_val = ii_sum_absorption(concentration_boundary - 1); // TODO - Create a CUDA reduction for each of these
+    iv_sum_absorption_val = iv_sum_absorption(concentration_boundary - 1);
+    vi_sum_absorption_val = vi_sum_absorption(concentration_boundary - 1);
+    vv_sum_absorption_val = vv_sum_absorption(concentration_boundary - 1);
 
     // Calculate the change in size 1 defects
     interstitials_temp[1] += i1_cluster_delta(concentration_boundary - 1) * delta_time;
