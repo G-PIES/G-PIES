@@ -64,11 +64,11 @@ cuda_lib:
 	rm libclusterdynamics.o
 
 # example frontend compilation
-example_frontend:
+example_frontend: software_lib
 	$(CC) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics 
 
 # CUDA backend & example frontend compilation
-cuda_example_frontend:
+cuda_example_frontend: cuda_lib
 	nvcc example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
 
 # compile and run example frontend
