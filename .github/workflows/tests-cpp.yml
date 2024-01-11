@@ -13,15 +13,17 @@ jobs:
       - name: Set up C++ environment
         uses: kurocha/setup-cpp@v1
         with:
-          compiler: 'gcc'
+          compiler: 'g++'
 
 
-      - name: Build 
-        run: g++ -std=c++17 /example/main.cpp -o simulation.exe
+      - name: Build backend
+        run: make lib
+      - name: Build sim
+        run: make cluster_dynamics
 
 
       - name: Upload Executable
         uses: actions/upload-artifact@v2
         with:
-          name: cd-executable
-          path: cd.exe
+          name: cluster_dynamics
+          path: cluster_dynamics.out
