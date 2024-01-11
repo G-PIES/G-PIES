@@ -8,7 +8,7 @@ LIB_DIR = ./lib
 ifeq ($(OS), Windows_NT)
 	CCFLAGS += -D WIN32
 	CCFLAGS += -D_USE_MATH_DEFINES
-	LIB_EXT := .dll
+	LIB_EXT := .lib
 	EXE_EXT := .exe
 	ifeq ($(PROCESSOR_ARCHITEW6432), AMD64)
 		CCFLAGS += -D AMD64
@@ -18,7 +18,7 @@ ifeq ($(OS), Windows_NT)
 		CCFLAGS += -D IA32
 	endif
 else
-	LIB_EXT := .so
+	LIB_EXT := .a
 	EXE_EXT := .out
 	
 	UNAME_S := $(shell uname -s)
@@ -45,25 +45,31 @@ library = lib/libclusterdynamics$(LIB_EXT)
 # Targets
 #----------------------------------------------------------------------------------------
 
-all: software_lib example_frontend
+all: software_lib software_example_frontend
 
-.PHONY: software_lib cuda_frontend example_frontend clean
+.PHONY: software_lib software_example_frontend cuda_example_frontend clean
 
-# library compilation
+# software library compilation
 software_lib:
 	mkdir -p lib
-	$(CC) $(CCFLAGS) src/cluster_dynamics.cpp -shared -fPIC -c -o $(library) -I$(INCLUDE_DIR) -I./src
+	$(CC) $(CCFLAGS) src/cluster_dynamics.cpp -c -o libclusterdynamics.o -I$(INCLUDE_DIR) -I./src
+	ar crs $(library) libclusterdynamics.o
+	rm libclusterdynamics.o
 
-# CUDA backend & example frontend compilation
-cuda_frontend:
-	nvcc -O3 -pg -D USE_CUDA -x cu $(CCFLAGS) src/cluster_dynamics.cpp -c -o lib.o -I$(INCLUDE_DIR) -I./src
-	nvcc -O3 -pg example/main.cpp -c -o main.o -I$(INCLUDE_DIR) -L$(LIB_DIR)
-	nvcc -O3 -pg main.o lib.o -o cluster_dynamics.out
-	rm *.o
+# CUDA library compilation
+cuda_lib:
+	mkdir -p lib
+	nvcc -O3 -c -x cu -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics.cpp -o libclusterdynamics.o -I$(INCLUDE_DIR) -I./src
+	ar crs $(library) libclusterdynamics.o
+	rm libclusterdynamics.o
 
 # example frontend compilation
 example_frontend:
-	$(CC) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
+	$(CC) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics 
+
+# CUDA backend & example frontend compilation
+cuda_example_frontend:
+	nvcc example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
 
 # compile and run example frontend
 cdr: example/main.cpp $(library)

@@ -279,8 +279,8 @@ double ClusterDynamics::i_emission_time(size_t nmax)
     for (size_t in = 3; in < nmax; ++in)
     {
           time +=
-        //      // (1)
-              ii_emission(in) * interstitials[in];
+            // (1)
+            ii_emission(in) * interstitials[in];
     }
 
     time +=
@@ -715,7 +715,7 @@ CUDADECL double ClusterDynamics::dislocation_promotion_probability(size_t n)
     double dr = cluster_radius(n + 1) - cluster_radius(n);
 
     return (2 * cluster_radius(n) * dr + std::pow(dr, 2)) 
-         / (M_PI * mean_radius / 2. - std::pow(cluster_radius(n), 2)); 
+         / (M_PI * mean_dislocation_radius_val / 2. - std::pow(cluster_radius(n), 2)); 
 }
 // --------------------------------------------------------------------------------------------
 
@@ -726,8 +726,6 @@ CUDADECL double ClusterDynamics::dislocation_promotion_probability(size_t n)
 double ClusterDynamics::dislocation_density_delta()
 {
     double gain = 0.0;
-
-    double mean_radius = mean_dislocation_cell_radius();
     for (size_t n = 1; n < concentration_boundary; ++n)
     {
         gain += cluster_radius(n) * dislocation_promotion_probability(n) * ii_absorption(n) * interstitials[n];
@@ -788,7 +786,7 @@ bool ClusterDynamics::software_update_clusters(double delta_time)
 {
     bool state_is_valid = true;
 
-    mean_radius = mean_dislocation_cell_radius();
+    mean_dislocation_radius_val = mean_dislocation_cell_radius();
 
     for (size_t n = 2; n < concentration_boundary; ++n)
     {
@@ -900,7 +898,7 @@ CUDADECL void ClusterDynamics::update_cluster_n(size_t n, double delta_time)
   vacancies_temp[n] += v_clusters_delta(n) * delta_time;
 }
 
-__global__ void cd_kernel(ClusterDynamics* simulation, double* is_in, double* is_out, double* vs_in, double* vs_out, double delta_time)
+__global__ void update_clusters_kernel(ClusterDynamics* simulation, double* is_in, double* is_out, double* vs_in, double* vs_out, double delta_time)
 {
   simulation->interstitials = is_in;
   simulation->interstitials_temp = is_out;
@@ -934,7 +932,7 @@ __host__ bool ClusterDynamics::CUDA_update_clusters(double delta_time)
 
   cudaMemcpy(d_simulation, this, sizeof(ClusterDynamics), cudaMemcpyHostToDevice);
 
-  cd_kernel<<<concentration_boundary - 2, 32>>>(d_simulation, d_is_in, d_is_out, d_vs_in, d_vs_out, delta_time);
+  update_clusters_kernel<<<concentration_boundary - 2, 32>>>(d_simulation, d_is_in, d_is_out, d_vs_in, d_vs_out, delta_time);
   cudaError_t error = cudaGetLastError();
   if (error != cudaSuccess)
   {

@@ -38,7 +38,12 @@ public:
   size_t concentration_boundary;
   double dislocation_density;
 
-  double mean_radius;
+  double ii_sum_absorption_val;
+  double iv_sum_absorption_val;
+  double vi_sum_absorption_val;
+  double v_sum_absorption_val;
+
+  double mean_dislocation_radius_val;
 
   Material material;
   NuclearReactor reactor;
