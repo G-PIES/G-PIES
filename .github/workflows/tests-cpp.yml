@@ -20,6 +20,8 @@ jobs:
         run: make software_lib
       - name: Build sim
         run: make example_frontend
+      - name: Run gtests
+        run: make gtest
 
 
       - name: Upload Executable
