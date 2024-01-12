@@ -44,7 +44,6 @@ resources
 # csv
 *.csv
 
-lib
-
-!extern/googletest/lib/libgtest_main.a
-!extern/googletest/lib/libgtest.a
+./lib
+!libgtest_main.a
+!libgtest.a
