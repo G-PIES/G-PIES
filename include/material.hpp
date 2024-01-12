@@ -5,6 +5,10 @@
 
 #include "conversions.hpp"
 
+#ifndef BOLTZMANN_EV_KELVIN
+#define BOLTZMANN_EV_KELVIN 8.6173e-5 // (eV / Kelvin)
+#endif
+
 // C. Pokor / Journal of Nuclear Materials 326 (2004), Table 6
 struct Material
 {

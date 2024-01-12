@@ -1,5 +1,15 @@
+CC = g++
+NVCC = nvcc
+
+CCFLAGS += -std=c++17
+INCLUDE_DIR = ./include
+LIB_DIR = ./lib
+
 ifeq ($(OS), Windows_NT)
 	CCFLAGS += -D WIN32
+	CCFLAGS += -D_USE_MATH_DEFINES
+	LIB_EXT := .lib
+	EXE_EXT := .exe
 	ifeq ($(PROCESSOR_ARCHITEW6432), AMD64)
 		CCFLAGS += -D AMD64
 	else ifeq ($(PROCESSOR_ARCHITECTURE), AMD64)
@@ -7,9 +17,10 @@ ifeq ($(OS), Windows_NT)
 	else ifeq ($(PROCESSOR_ARCHITECTURE), x86)
 		CCFLAGS += -D IA32
 	endif
-	CCFLAGS += -D_USE_MATH_DEFINES
-	LIB_EXT := .dll
 else
+	LIB_EXT := .a
+	EXE_EXT := .out
+	
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S), Linux)
 		CCFLAGS += -D LINUX
@@ -25,45 +36,40 @@ else
 	else ifneq ($(filter arm%, $(UNAME_P)),)
 		CCFLAGS += -D ARM
 	endif
-	LIB_EXT := .so
 endif
 
-CC = g++
-
-CCFLAGS += -std=c++17
-INCLUDE_DIR = ./include
-LIB_DIR = ./lib
-
-ext = .out
-binary = cluster_dynamics$(ext)
+binary = cluster_dynamics$(EXE_EXT)
 library = lib/libclusterdynamics$(LIB_EXT)
 
-ifdef C
-	CCFLAGS += -D CONCENTRATION_BOUNDARY=$(C)
-endif
+#----------------------------------------------------------------------------------------
+# Targets
+#----------------------------------------------------------------------------------------
 
-ifdef T
-	CCFLAGS += -D SIMULATION_TIME=$(T)
-endif
+all: software_lib software_example_frontend
 
-ifdef DT
-	CCFLAGS += -D DELTA_TIME=$(DT)
-endif
+.PHONY: software_lib software_example_frontend cuda_example_frontend clean
 
-ifdef N
-	CCFLAGS += -D N=$(N)
-endif
-
-.PHONY: lib cluster_dynamics
-
-# library compilation
-lib: src/cluster_dynamics.cpp
+# software library compilation
+software_lib:
 	mkdir -p lib
-	$(CC) $(CCFLAGS) src/*.cpp -shared -fPIC -c -o $(library) -I$(INCLUDE_DIR) -I./src
+	$(CC) $(CCFLAGS) src/cluster_dynamics.cpp -c -o libclusterdynamics.o -I$(INCLUDE_DIR) -I./src
+	ar crs $(library) libclusterdynamics.o
+	rm libclusterdynamics.o
+
+# CUDA library compilation
+cuda_lib:
+	mkdir -p lib
+	nvcc -O3 -c -x cu -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics.cpp -o libclusterdynamics.o -I$(INCLUDE_DIR) -I./src
+	ar crs $(library) libclusterdynamics.o
+	rm libclusterdynamics.o
 
 # example frontend compilation
-cluster_dynamics: example/main.cpp $(library)
-	$(CC) $(CCFLAGS) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
+example_frontend: software_lib
+	$(CC) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics 
+
+# CUDA backend & example frontend compilation
+cuda_example_frontend: cuda_lib
+	nvcc example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
 
 # compile and run example frontend
 cdr: example/main.cpp $(library)

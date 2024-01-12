@@ -1,15 +1,16 @@
-#include <cmath>
-#include <array>
+#include <stdio.h>
+#include <cstring>
+
+#include "material.hpp"
+#include "nuclear_reactor.hpp"
 
 #include "cluster_dynamics.hpp"
-#include "nuclear_reactor.hpp"
-#include "material.hpp"
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
     The rate of production of interstital defects from the irradiation cascade for size (n) clusters.
 */
-double ClusterDynamics::i_defect_production(uint64_t n)
+__CUDADECL__ double ClusterDynamics::i_defect_production(size_t n)
 {
     switch (n)
     {
@@ -29,7 +30,7 @@ double ClusterDynamics::i_defect_production(uint64_t n)
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
     The rate of production of vacancy defects from the irradiation cascade for size (n) clusters.
 */
-double ClusterDynamics::v_defect_production(uint64_t n)
+__CUDADECL__ double ClusterDynamics::v_defect_production(size_t n)
 {
     switch (n)
     {
@@ -55,16 +56,16 @@ double ClusterDynamics::v_defect_production(uint64_t n)
                   (1)     (2)                    (3)              (4)
     dCi(n) / dt = Gi(n) + a[i,n+1] * Ci(n + 1) - b[i,n] * Ci(n) + c[i,n-1] * Ci(n-1)
 */
-double ClusterDynamics::i_clusters_delta(uint64_t in)
+__CUDADECL__ double ClusterDynamics::i_clusters_delta(size_t in)
 {
     return
         // (1)
         i_defect_production(in)
         // (2)
         + iemission_vabsorption_np1(in + 1) * interstitials[in + 1]
-        // (3)
+        // // (3)
         - iemission_vabsorption_n(in) * interstitials[in]
-        // (4)
+        // // (4)
         + iemission_vabsorption_nm1(in - 1) * interstitials[in - 1];
 }
 
@@ -74,7 +75,7 @@ double ClusterDynamics::i_clusters_delta(uint64_t in)
                   (1)     (2)                    (3)              (4)
     dCv(n) / dt = Gv(n) + a[v,n+1] * Cv(n + 1) - b[v,n] * Cv(n) + c[v,n-1] * Cv(n-1)
 */
-double ClusterDynamics::v_clusters_delta(uint64_t vn)
+__CUDADECL__ double ClusterDynamics::v_clusters_delta(size_t vn)
 {
     return
         // (1)
@@ -97,7 +98,7 @@ double ClusterDynamics::v_clusters_delta(uint64_t vn)
                (1)             (2)     (3)
     a[i,n+1] = B[i,v](n + 1) * Cv(1) + E[i,i](n + 1)
 */
-double ClusterDynamics::iemission_vabsorption_np1(uint64_t np1)
+__CUDADECL__ double ClusterDynamics::iemission_vabsorption_np1(size_t np1)
 {
     return
         // (1)
@@ -115,7 +116,7 @@ double ClusterDynamics::iemission_vabsorption_np1(uint64_t np1)
                (1)             (2)     (3)
     a[v,n+1] = B[v,i](n + 1) * Ci(1) + E[v,v](n + 1)
 */
-double ClusterDynamics::vemission_iabsorption_np1(uint64_t np1)
+__CUDADECL__ double ClusterDynamics::vemission_iabsorption_np1(size_t np1)
 {
     return 
         // (1)
@@ -134,7 +135,7 @@ double ClusterDynamics::vemission_iabsorption_np1(uint64_t np1)
              (1)                 (2)                 (3)
     b[i,n] = B[i,v](n) * Cv(1) + B[i,i](n) * Ci(1) + E[i,i](n)
 */
-double ClusterDynamics::iemission_vabsorption_n(uint64_t n)
+__CUDADECL__ double ClusterDynamics::iemission_vabsorption_n(size_t n)
 {
     return
         // (1)
@@ -153,7 +154,7 @@ double ClusterDynamics::iemission_vabsorption_n(uint64_t n)
              (1)                 (2)                 (3)
     b[v,n] = B[v,i](n) * Ci(1) + B[v,v](n) * Cv(1) + E[v,v](n)
 */
-double ClusterDynamics::vemission_iabsorption_n(uint64_t n)
+__CUDADECL__ double ClusterDynamics::vemission_iabsorption_n(size_t n)
 {
     return 
         // (1)
@@ -171,7 +172,7 @@ double ClusterDynamics::vemission_iabsorption_n(uint64_t n)
                (1)           (2)
     c[i,n-1] = B[i,i](n-1) * Ci(1)
 */
-double ClusterDynamics::iemission_vabsorption_nm1(uint64_t nm1)
+__CUDADECL__ double ClusterDynamics::iemission_vabsorption_nm1(size_t nm1)
 {
     return
         // (1)
@@ -187,7 +188,7 @@ double ClusterDynamics::iemission_vabsorption_nm1(uint64_t nm1)
                (1)           (2)
     c[v,n-1] = B[v,v](n-1) * Cv(1)
 */
-double ClusterDynamics::vemission_iabsorption_nm1(uint64_t nm1)
+__CUDADECL__ double ClusterDynamics::vemission_iabsorption_nm1(size_t nm1)
 {
     return
         // (1)
@@ -214,7 +215,7 @@ double ClusterDynamics::vemission_iabsorption_nm1(uint64_t nm1)
             (6)
             1 / (tEi)
 */
-double ClusterDynamics::i1_cluster_delta(uint64_t nmax)
+__CUDADECL__ double ClusterDynamics::i1_cluster_delta(size_t nmax)
 {
     return 
         // (1)
@@ -224,7 +225,7 @@ double ClusterDynamics::i1_cluster_delta(uint64_t nmax)
         // (3)
         - interstitials[1] * i_dislocation_annihilation_time()
         // (4)
-        - interstitials[1] * i_grain_boundary_annihilation_time(nmax)
+        - interstitials[1] * i_grain_boundary_annihilation_time()
         // (5)
         - interstitials[1] * i_absorption_time(nmax)
         // (6)
@@ -246,7 +247,7 @@ double ClusterDynamics::i1_cluster_delta(uint64_t nmax)
             (6)
             1 / (tEv)
 */
-double ClusterDynamics::v1_cluster_delta(uint64_t nmax)
+__CUDADECL__ double ClusterDynamics::v1_cluster_delta(size_t nmax)
 {
     return 
         // (1)
@@ -256,14 +257,13 @@ double ClusterDynamics::v1_cluster_delta(uint64_t nmax)
         // (3)
         - vacancies[1] * v_dislocation_annihilation_time()
         // (4)
-        - vacancies[1] * v_grain_boundary_annihilation_time(nmax)
+        - vacancies[1] * v_grain_boundary_annihilation_time()
         // (5)
         - vacancies[1] * v_absorption_time(nmax)
         // (6)
         + v_emission_time(nmax);
 }
 // --------------------------------------------------------------------------------------------
-
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3b
@@ -273,14 +273,14 @@ double ClusterDynamics::v1_cluster_delta(uint64_t nmax)
                 (1)                      (2)                     (3)
     tEi(n) = SUM ( E[i,i](n) * Ci(n) ) + 4 * E[i,i](2) * Ci(2) + B[i,v](2) * Cv(2) * Ci(2)
 */
-double ClusterDynamics::i_emission_time(uint64_t nmax)
+double ClusterDynamics::i_emission_time(size_t nmax)
 {
     double time = 0.;
-    for (uint64_t in = 3; in < nmax; ++in)
+    for (size_t in = 3; in < nmax; ++in)
     {
           time +=
-        //      // (1)
-              ii_emission(in) * interstitials[in];
+            // (1)
+            ii_emission(in) * interstitials[in];
     }
 
     time +=
@@ -299,10 +299,10 @@ double ClusterDynamics::i_emission_time(uint64_t nmax)
                 (1)                           (2)                     (3)
     tEv(n) = SUM[n>0] ( E[v,v](n) * Cv(n) ) + 4 * E[v,v](2) * Cv(2) + B[v,i](2) * Cv(2) * Ci(2)
 */
-double ClusterDynamics::v_emission_time(uint64_t nmax)
+double ClusterDynamics::v_emission_time(size_t nmax)
 {
     double time = 0.;
-    for (uint64_t vn = 3; vn < nmax; ++vn)
+    for (size_t vn = 3; vn < nmax; ++vn)
     {
         time += 
             // (1)
@@ -328,10 +328,10 @@ double ClusterDynamics::v_emission_time(uint64_t nmax)
                         (1)                              (2)
     tAi(n) = SUM[n>0] ( B[i,i](n) * Ci(n) ) + SUM[n>1] ( B[v,i](n) * Cv(n) )
 */
-double ClusterDynamics::i_absorption_time(uint64_t nmax)
+double ClusterDynamics::i_absorption_time(size_t nmax)
 {
     double time = ii_absorption(1) * interstitials[1];
-    for (uint64_t in = 1; in < nmax; ++in)
+    for (size_t in = 1; in < nmax; ++in)
     {
         time +=
             // (1)
@@ -343,6 +343,7 @@ double ClusterDynamics::i_absorption_time(uint64_t nmax)
     return time;
 }
 
+
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3c
     Characteristic time for absorbing a vacancy by the population of interstital or vacancy
     clusters of size up to (nmax).
@@ -350,10 +351,10 @@ double ClusterDynamics::i_absorption_time(uint64_t nmax)
                         (1)                              (2)
     tAv(n) = SUM[n>0] ( B[v,v](n) * Cv(n) ) + SUM[n>1] ( B[i,v](n) * Ci(n) )
 */
-double ClusterDynamics::v_absorption_time(uint64_t nmax)
+double ClusterDynamics::v_absorption_time(size_t nmax)
 {
     double time = vv_absorption(1) * vacancies[1];
-    for (uint64_t vn = 1; vn < nmax; ++vn)
+    for (size_t vn = 1; vn < nmax; ++vn)
     {
         time +=
             // (1)
@@ -374,7 +375,7 @@ double ClusterDynamics::v_absorption_time(uint64_t nmax)
           (1)      (2)         (3)
     Riv = 4 * PI * (Di + Dv) * riv
 */
-double ClusterDynamics::annihilation_rate()
+__CUDADECL__ double ClusterDynamics::annihilation_rate()
 {
     return 
         // (1)
@@ -394,7 +395,7 @@ double ClusterDynamics::annihilation_rate()
            (1)   (2)    (3)
     tAdi = p  *  Di  *  Zi
 */
-double ClusterDynamics::i_dislocation_annihilation_time()
+__CUDADECL__ double ClusterDynamics::i_dislocation_annihilation_time()
 {
     return
         // (1)
@@ -411,7 +412,7 @@ double ClusterDynamics::i_dislocation_annihilation_time()
            (1)   (2)    (3)
     tAdv = p  *  Dv  *  Zv
 */
-double ClusterDynamics::v_dislocation_annihilation_time()
+__CUDADECL__ double ClusterDynamics::v_dislocation_annihilation_time()
 {
     return
         // (1)
@@ -431,7 +432,7 @@ double ClusterDynamics::v_dislocation_annihilation_time()
            (1)            (2)      (3)                            (4)                              (5)
     tAdi = 6 * Di * sqrt( p * Zi + SUM[n] ( B[i,i](n) * Ci(n) ) + SUM[n] ( B[v,i](n) * Cv(n) ) ) / d
 */
-double ClusterDynamics::i_grain_boundary_annihilation_time(uint64_t in)
+__CUDADECL__ double ClusterDynamics::i_grain_boundary_annihilation_time()
 {
     return
         // (1)
@@ -442,9 +443,9 @@ double ClusterDynamics::i_grain_boundary_annihilation_time(uint64_t in)
             dislocation_density * 
             material.i_dislocation_bias
             // (3)
-            + ii_sum_absorption(in)
+            + ii_sum_absorption_val
             // (4)
-            + vi_sum_absorption(in)
+            + vi_sum_absorption_val
         ) /
         // (5)
         material.grain_size;
@@ -456,7 +457,7 @@ double ClusterDynamics::i_grain_boundary_annihilation_time(uint64_t in)
            (1)            (2)      (3)                            (4)                              (5)
     tAdv = 6 * Di * sqrt( p * Zv + SUM[n] ( B[v,v](n) * Cv(n) ) + SUM[n] ( B[i,v](n) * Ci(n) ) ) / d
 */
-double ClusterDynamics::v_grain_boundary_annihilation_time(uint64_t vn)
+__CUDADECL__ double ClusterDynamics::v_grain_boundary_annihilation_time()
 {
     return
         // (1)
@@ -467,18 +468,18 @@ double ClusterDynamics::v_grain_boundary_annihilation_time(uint64_t vn)
             dislocation_density *
             material.v_dislocation_bias
             // (3)
-            + vv_sum_absorption(vn)
+            + vv_sum_absorption_val
             // (4)
-            + iv_sum_absorption(vn)
+            + iv_sum_absorption_val
         ) /
         // (5)
         material.grain_size;
 }
 
-double ClusterDynamics::ii_sum_absorption(uint64_t nmax)
+double ClusterDynamics::ii_sum_absorption(size_t nmax)
 {
     double emission = 0.;
-    for (uint64_t vn = 1; vn < nmax; ++vn)
+    for (size_t vn = 1; vn < nmax; ++vn)
     {
         emission += ii_absorption(vn) * interstitials[vn];
     }
@@ -486,10 +487,10 @@ double ClusterDynamics::ii_sum_absorption(uint64_t nmax)
     return emission;
 }
 
-double ClusterDynamics::iv_sum_absorption(uint64_t nmax)
+double ClusterDynamics::iv_sum_absorption(size_t nmax)
 {
     double emission = 0.;
-    for (uint64_t n = 1; n < nmax; ++n)
+    for (size_t n = 1; n < nmax; ++n)
     {
         emission += iv_absorption(n) * interstitials[n];
     }
@@ -497,10 +498,10 @@ double ClusterDynamics::iv_sum_absorption(uint64_t nmax)
     return emission;
 }
 
-double ClusterDynamics::vv_sum_absorption(uint64_t nmax)
+double ClusterDynamics::vv_sum_absorption(size_t nmax)
 {
     double emission = 0.;
-    for (uint64_t n = 1; n < nmax; ++n)
+    for (size_t n = 1; n < nmax; ++n)
     {
         emission += vv_absorption(n) * vacancies[n];
     }
@@ -508,24 +509,22 @@ double ClusterDynamics::vv_sum_absorption(uint64_t nmax)
     return emission;
 }
 
-double ClusterDynamics::vi_sum_absorption(uint64_t nmax)
+double ClusterDynamics::vi_sum_absorption(size_t nmax)
 {
     double emission = 0.;
-    for (uint64_t n = 1; n < nmax; ++n)
+    for (size_t n = 1; n < nmax; ++n)
     {
         emission += vi_absorption(n) * vacancies[n];
     }
 
     return emission;
 }
-// --------------------------------------------------------------------------------------------
-
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4a
     Rate of emission of an interstitial by an interstital loop of size (n).
 */
-double ClusterDynamics::ii_emission(uint64_t n)
+__CUDADECL__ double ClusterDynamics::ii_emission(size_t n)
 {
     return 
         2 * M_PI * cluster_radius(n) *
@@ -542,7 +541,7 @@ double ClusterDynamics::ii_emission(uint64_t n)
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4b
     Rate of absorption of an interstitial by an interstital loop of size (n).
 */
-double ClusterDynamics::ii_absorption(uint64_t n)
+__CUDADECL__ double ClusterDynamics::ii_absorption(size_t n)
 {
     return 
         2 * M_PI * cluster_radius(n) *
@@ -553,7 +552,7 @@ double ClusterDynamics::ii_absorption(uint64_t n)
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4c
     Rate of absorption of an interstitial by a vacancy loop of size (n).
 */
-double ClusterDynamics::iv_absorption(uint64_t n)
+__CUDADECL__ double ClusterDynamics::iv_absorption(size_t n)
 {
     return 
         2 * M_PI * cluster_radius(n) *
@@ -564,7 +563,7 @@ double ClusterDynamics::iv_absorption(uint64_t n)
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4d
     Rate of emission of a vacancy by a vacancy loop of size (n).
 */
-double ClusterDynamics::vv_emission(uint64_t n)
+__CUDADECL__ double ClusterDynamics::vv_emission(size_t n)
 {
     return 
         2 * M_PI * cluster_radius(n) *
@@ -580,7 +579,7 @@ double ClusterDynamics::vv_emission(uint64_t n)
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4e
     Rate of absorption of a vacancy by a vacancy loop of size (n).
 */
-double ClusterDynamics::vv_absorption(uint64_t n)
+__CUDADECL__ double ClusterDynamics::vv_absorption(size_t n)
 {
     return 
         2 * M_PI * cluster_radius(n) *
@@ -591,7 +590,7 @@ double ClusterDynamics::vv_absorption(uint64_t n)
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4f
     Rate of absorption of a vacancy by an interstitial loop of size (n).
 */
-double ClusterDynamics::vi_absorption(uint64_t n)
+__CUDADECL__ double ClusterDynamics::vi_absorption(size_t n)
 {
     return 
         2 * M_PI * cluster_radius(n) *
@@ -605,7 +604,7 @@ double ClusterDynamics::vi_absorption(uint64_t n)
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 5
     Interstitial bias factor.
 */
-double ClusterDynamics::i_bias_factor(uint64_t in)
+__CUDADECL__ double ClusterDynamics::i_bias_factor(size_t in)
 {
     return 
         material.i_dislocation_bias +
@@ -629,7 +628,7 @@ double ClusterDynamics::i_bias_factor(uint64_t in)
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 5
     Vacancy bias factor.
 */
-double ClusterDynamics::v_bias_factor(uint64_t vn)
+__CUDADECL__ double ClusterDynamics::v_bias_factor(size_t vn)
 {
     return 
         material.v_dislocation_bias +
@@ -656,7 +655,7 @@ double ClusterDynamics::v_bias_factor(uint64_t vn)
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 6
     Interstitial binding energy.
 */
-double ClusterDynamics::i_binding_energy(uint64_t in)
+__CUDADECL__ double ClusterDynamics::i_binding_energy(size_t in)
 {
     return
         material.i_formation
@@ -667,7 +666,7 @@ double ClusterDynamics::i_binding_energy(uint64_t in)
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 6
     Vacancy binding energy.
 */
-double ClusterDynamics::v_binding_energy(uint64_t vn)
+__CUDADECL__ double ClusterDynamics::v_binding_energy(size_t vn)
 {
     return
         material.v_formation
@@ -680,14 +679,14 @@ double ClusterDynamics::v_binding_energy(uint64_t vn)
 // --------------------------------------------------------------------------------------------
 /*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg 193, 4.59
 */  
-double ClusterDynamics::i_diffusion()
+__CUDADECL__ double ClusterDynamics::i_diffusion()
 {
     return material.i_diffusion_0 * std::exp(-material.i_migration / (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
 
 /*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg 193, 4.59
 */  
-double ClusterDynamics::v_diffusion()
+__CUDADECL__ double ClusterDynamics::v_diffusion()
 {
     return material.v_diffusion_0 * std::exp(-material.v_migration / (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
@@ -697,10 +696,10 @@ double ClusterDynamics::v_diffusion()
 // --------------------------------------------------------------------------------------------
 /*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.10
 */
-double ClusterDynamics::mean_dislocation_cell_radius(uint64_t n)
+__CUDADECL__ double ClusterDynamics::mean_dislocation_cell_radius()
 {
     double r_0_factor = 0.;
-    for (uint64_t i = 1; i < concentration_boundary; ++i)
+    for (size_t i = 1; i < concentration_boundary; ++i)
     {
         r_0_factor += cluster_radius(i) * interstitials[i];
     }
@@ -708,16 +707,15 @@ double ClusterDynamics::mean_dislocation_cell_radius(uint64_t n)
     return 1 / std::sqrt((2 * M_PI * M_PI / material.atomic_volume) * r_0_factor + M_PI * dislocation_density);
 }
 
+// --------------------------------------------------------------------------------------------
 /*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.12
 */
-double ClusterDynamics::dislocation_promotion_probability(uint64_t n)
+__CUDADECL__ double ClusterDynamics::dislocation_promotion_probability(size_t n)
 {
     double dr = cluster_radius(n + 1) - cluster_radius(n);
 
-    double r_0 = mean_dislocation_cell_radius(n);
-
     return (2 * cluster_radius(n) * dr + std::pow(dr, 2)) 
-         / (M_PI * r_0 / 2. - std::pow(cluster_radius(n), 2)); 
+         / (M_PI * mean_dislocation_radius_val / 2. - std::pow(cluster_radius(n), 2)); 
 }
 // --------------------------------------------------------------------------------------------
 
@@ -728,7 +726,7 @@ double ClusterDynamics::dislocation_promotion_probability(uint64_t n)
 double ClusterDynamics::dislocation_density_delta()
 {
     double gain = 0.0;
-    for (uint64_t n = 1; n < concentration_boundary; ++n)
+    for (size_t n = 1; n < concentration_boundary; ++n)
     {
         gain += cluster_radius(n) * dislocation_promotion_probability(n) * ii_absorption(n) * interstitials[n];
     }
@@ -744,74 +742,14 @@ double ClusterDynamics::dislocation_density_delta()
 
 // --------------------------------------------------------------------------------------------
 
-
 // --------------------------------------------------------------------------------------------
 /*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg. 346, 7.63
 */
-double ClusterDynamics::cluster_radius(uint64_t n)
+__CUDADECL__ double ClusterDynamics::cluster_radius(size_t n)
 {
-    return std::sqrt(std::sqrt(3) * std::pow(material.lattice_param, 2) * (double)n / (4 * M_PI));
+    return std::sqrt(std::sqrt(3.0) * std::pow(material.lattice_param, 2) * (double)n / (4 * M_PI));
 }
 // --------------------------------------------------------------------------------------------
-
-bool ClusterDynamics::validate(uint64_t n, double t)
-{
-    return 
-        !std::isnan(interstitials_temp[n]) &&
-        !std::isinf(interstitials_temp[n]) &&
-        !std::isnan(vacancies_temp[n]) &&
-        !std::isinf(vacancies_temp[n]) &&
-        !(interstitials_temp[n] < 0) &&
-        !(vacancies_temp[n] < 0);
-}
-
-ClusterDynamics::ClusterDynamics(uint64_t concentration_boundary, NuclearReactor reactor, Material material)
-    : concentration_boundary(concentration_boundary), reactor(reactor), material(material)
-{   
-    time = 0.0;
-
-    interstitials.assign(concentration_boundary, 0.0);
-    vacancies.assign(concentration_boundary, 0.0);
-    interstitials_temp.assign(concentration_boundary, 0.0);
-    vacancies_temp.assign(concentration_boundary, 0.0);
-
-    dislocation_density = material.dislocation_density_0;
-}
-
-ClusterDynamicsState ClusterDynamics::run(double delta_time, double total_time)
-{
-    bool valid_sim = true;
-    for (double endtime = time + total_time; time < endtime; time += delta_time)
-    {
-
-        interstitials_temp[1] += i1_cluster_delta(concentration_boundary - 1) * delta_time;
-        vacancies_temp[1] += v1_cluster_delta(concentration_boundary - 1) * delta_time;
-
-        valid_sim = validate(1, time);
-
-        for (uint64_t n = 2; n < concentration_boundary && valid_sim; ++n)
-        {
-            interstitials_temp[n] += i_clusters_delta(n) * delta_time;
-            vacancies_temp[n] += v_clusters_delta(n) * delta_time;
-            valid_sim = validate(n, time);
-        }
-
-        interstitials = interstitials_temp;
-        vacancies = vacancies_temp;
-        dislocation_density += dislocation_density_delta() * delta_time;
-
-        if (!valid_sim) break;
-    }
-
-    return ClusterDynamicsState 
-    {
-        .valid = valid_sim,
-        .time = time,
-        .interstitials = interstitials,
-        .vacancies = vacancies,
-        .dislocation_density = dislocation_density
-    };
-}
 
 Material ClusterDynamics::get_material()
 {
@@ -832,3 +770,188 @@ void ClusterDynamics::set_reactor(NuclearReactor reactor)
 {
     this->reactor = reactor;
 }
+
+
+
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+/*
+ *  SIMULATION CONTROL FUNCTIONS
+ */
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+
+
+bool ClusterDynamics::software_update_clusters(double delta_time)
+{
+    bool state_is_valid = true;
+
+    for (size_t n = 2; n < concentration_boundary; ++n)
+    {
+        interstitials_temp[n] += i_clusters_delta(n) * delta_time;
+        vacancies_temp[n] += v_clusters_delta(n) * delta_time;
+
+        state_is_valid = state_is_valid && validate(n);
+    }
+
+    return state_is_valid;
+}
+
+bool ClusterDynamics::update_clusters(double delta_time)
+{
+    mean_dislocation_radius_val = mean_dislocation_cell_radius();
+    ii_sum_absorption_val = ii_sum_absorption(concentration_boundary - 1); // TODO - Create a CUDA reduction for each of these
+    iv_sum_absorption_val = iv_sum_absorption(concentration_boundary - 1);
+    vi_sum_absorption_val = vi_sum_absorption(concentration_boundary - 1);
+    vv_sum_absorption_val = vv_sum_absorption(concentration_boundary - 1);
+
+    // Calculate the change in size 1 defects
+    interstitials_temp[1] += i1_cluster_delta(concentration_boundary - 1) * delta_time;
+    vacancies_temp[1] += v1_cluster_delta(concentration_boundary - 1) * delta_time;
+    bool state_is_valid = validate(1);
+
+    #ifdef USE_CUDA
+        state_is_valid = state_is_valid && CUDA_update_clusters(delta_time);
+    #else
+        state_is_valid = state_is_valid && software_update_clusters(delta_time);
+    #endif
+
+    dislocation_density += dislocation_density_delta() * delta_time;
+
+    std::memcpy(interstitials, interstitials_temp, concentration_boundary * sizeof(double));
+    std::memcpy(vacancies, vacancies_temp, concentration_boundary * sizeof(double));
+
+    return state_is_valid;
+}
+
+bool ClusterDynamics::validate(size_t n)
+{
+    return 
+        !std::isnan(interstitials_temp[n]) &&
+        !std::isinf(interstitials_temp[n]) &&
+        !std::isnan(vacancies_temp[n]) &&
+        !std::isinf(vacancies_temp[n]) &&
+        !(interstitials_temp[n] < 0) &&
+        !(vacancies_temp[n] < 0);
+}
+
+
+
+
+
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+/*
+ *  PUBLIC INTERFACE FUNCTIONS
+ */
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+
+
+
+
+ClusterDynamics::ClusterDynamics(size_t concentration_boundary, NuclearReactor reactor, Material material)
+: concentration_boundary(concentration_boundary), reactor(reactor), material(material)
+{
+    interstitials = new double[concentration_boundary];
+    vacancies = new double[concentration_boundary];
+    interstitials_temp = new double[concentration_boundary];
+    vacancies_temp = new double[concentration_boundary];
+    dislocation_density = material.dislocation_density_0;
+}
+
+ClusterDynamicsState ClusterDynamics::run(double delta_time, double total_time)
+{
+    bool state_is_valid = true;
+    for (double endtime = time + total_time; time < endtime; time += delta_time)
+    {
+        state_is_valid = update_clusters(delta_time);
+        if (!state_is_valid) break;
+    }
+
+    return ClusterDynamicsState 
+    {
+        .valid = state_is_valid,
+        .time = time,
+        .interstitials = std::vector<double>(interstitials, interstitials + concentration_boundary),
+        .vacancies = std::vector<double>(vacancies, vacancies + concentration_boundary),
+        .dislocation_density = dislocation_density
+    };
+}
+
+
+
+
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+/*
+ *  CUDA FUNCTIONS
+ */
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+
+
+
+#ifdef USE_CUDA
+
+__CUDADECL__ void ClusterDynamics::update_cluster_n(size_t n, double delta_time)
+{
+  if (n >= concentration_boundary) return;
+  
+  interstitials_temp[n] += i_clusters_delta(n) * delta_time;
+  vacancies_temp[n] += v_clusters_delta(n) * delta_time;
+}
+
+__global__ void update_clusters_kernel(ClusterDynamics* simulation, double* is_in, double* is_out, double* vs_in, double* vs_out, double delta_time)
+{
+  simulation->interstitials = is_in;
+  simulation->interstitials_temp = is_out;
+  simulation->vacancies = vs_in;
+  simulation->vacancies_temp = vs_out;
+
+  size_t index = 32 * blockIdx.x + threadIdx.x + 2; // Idx 0 is empty, 1 is handled outside CUDA
+  simulation->update_cluster_n(index, delta_time);
+}
+
+__host__ bool ClusterDynamics::CUDA_update_clusters(double delta_time)
+{
+  double* d_is_in;
+  double* d_is_out;
+  double* d_vs_in;
+  double* d_vs_out;
+  ClusterDynamics* d_simulation;
+
+  size_t arraysize = concentration_boundary * sizeof(double);
+
+  cudaMalloc((void**)&d_is_in, arraysize);
+  cudaMalloc((void**)&d_is_out, arraysize);
+  cudaMalloc((void**)&d_vs_in, arraysize);
+  cudaMalloc((void**)&d_vs_out, arraysize);
+  cudaMalloc((void**)&d_simulation, sizeof(ClusterDynamics));
+
+  cudaMemcpy(d_is_in, interstitials, arraysize, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_vs_in, vacancies, arraysize, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_is_out, interstitials_temp, arraysize, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_vs_out, vacancies_temp, arraysize, cudaMemcpyHostToDevice);
+
+  cudaMemcpy(d_simulation, this, sizeof(ClusterDynamics), cudaMemcpyHostToDevice);
+
+  update_clusters_kernel<<<concentration_boundary - 2, 32>>>(d_simulation, d_is_in, d_is_out, d_vs_in, d_vs_out, delta_time);
+  cudaError_t error = cudaGetLastError();
+  if (error != cudaSuccess)
+  {
+    fprintf(stderr, "\nCUDA Error: %s", cudaGetErrorString(error));
+  }
+
+  cudaMemcpy(interstitials_temp + 2, d_is_out + 2, arraysize - 2 * sizeof(double), cudaMemcpyDeviceToHost);
+  cudaMemcpy(vacancies_temp + 2, d_vs_out + 2, arraysize - 2 * sizeof(double), cudaMemcpyDeviceToHost);
+
+  cudaFree(d_is_in);
+  cudaFree(d_is_out);
+  cudaFree(d_vs_in);
+  cudaFree(d_vs_out);
+  cudaFree(d_simulation); // TODO - Really probably shouldn't reallocate and free all this in every step
+
+  return true; // TODO - get validation for each concentration
+}
+#endif
