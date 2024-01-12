@@ -23,6 +23,7 @@
 # Compiled Static libraries
 *.lai
 *.la
+*.a
 *.lib
 
 # Executables
@@ -44,3 +45,6 @@ resources
 *.csv
 
 lib
+
+!extern/googletest/lib/libgtest_main.a
+!extern/googletest/lib/libgtest.a
