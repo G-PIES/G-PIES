@@ -21,7 +21,7 @@ jobs:
       - name: Build sim
         run: make example_frontend
       - name: Run gtests
-        run: make gtest
+        run: make test
 
 
       - name: Upload Executable
