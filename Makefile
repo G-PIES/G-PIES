@@ -71,6 +71,11 @@ example_frontend: software_lib
 cuda_example_frontend: cuda_lib
 	nvcc example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
 
+# building the cluster dynamics simulation with the ui 
+# -- you need to have cern root installed locally for the libraries to link correctly.
+cldui: rootui/ui_main.cpp $(library)
+	$(CC) $(CCFLAGS) rootui/ui_main.cpp $$(root-config --glibs --cflags --libs) -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
+
 # compile and run example frontend
 cdr: example/main.cpp $(library)
 	$(CC) $(CCFLAGS) example/*.cpp -o $(binary) -I$(INCLUDE_DIR) -L$(LIB_DIR) -lclusterdynamics
