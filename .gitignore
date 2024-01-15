@@ -45,3 +45,6 @@ resources
 *.csv
 
 lib
+
+# databases
+*.db
