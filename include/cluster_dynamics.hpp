@@ -45,6 +45,9 @@ public:
   Material material;
   NuclearReactor reactor;
 
+  #ifdef USE_CUDA
+    ClusterDynamics* d_self;
+  #endif
 
 
   // Physics Model Functions
@@ -70,10 +73,10 @@ public:
   __CUDADECL__ double v_dislocation_annihilation_time();
   __CUDADECL__ double i_grain_boundary_annihilation_time();
   __CUDADECL__ double v_grain_boundary_annihilation_time();
-  __CUDADECL__ double ii_sum_absorption(size_t);
-  __CUDADECL__ double iv_sum_absorption(size_t);
-  __CUDADECL__ double vv_sum_absorption(size_t);
-  __CUDADECL__ double vi_sum_absorption(size_t);
+  double ii_sum_absorption(size_t);
+  double iv_sum_absorption(size_t);
+  double vv_sum_absorption(size_t);
+  double vi_sum_absorption(size_t);
   __CUDADECL__ double ii_emission(size_t);
   __CUDADECL__ double ii_absorption(size_t);
   __CUDADECL__ double iv_absorption(size_t);
@@ -95,6 +98,7 @@ public:
 
   // Simulation Control Functions
 
+  void setup_cuda();
   __CUDADECL__ void update_cluster_n(size_t n, double delta_time);
   bool update_clusters(double delta_time);
   bool software_update_clusters(double delta_time);

@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <cstring>
 
+#include <thrust/host_vector.h>
+#include <thrust/device_vector.h>
+#include <thrust/sequence.h>
+
 #include "material.hpp"
 #include "nuclear_reactor.hpp"
 
@@ -476,48 +480,132 @@ __CUDADECL__ double ClusterDynamics::v_grain_boundary_annihilation_time()
         material.grain_size;
 }
 
+class ii_absorption_functor
+{
+public:
+    ClusterDynamics* self;
+
+    __CUDADECL__ ii_absorption_functor(ClusterDynamics* self) : self(self)
+    {}
+
+    __CUDADECL__ double operator()(const double& i_concentration, const int& idx)
+    {
+        return self->ii_absorption(idx) * i_concentration;
+    }
+};
+
 double ClusterDynamics::ii_sum_absorption(size_t nmax)
 {
-    double emission = 0.;
-    for (size_t vn = 1; vn < nmax; ++vn)
-    {
-        emission += ii_absorption(vn) * interstitials[vn];
-    }
+    #ifdef USE_CUDA
+        thrust::device_vector<double> itrstls(interstitials, interstitials + concentration_boundary);
+        thrust::device_vector<int> indices(nmax);
+        ii_absorption_functor op(d_self);
+    #else
+        thrust::host_vector<double> itrstls(interstitials, interstitials + concentration_boundary);
+        thrust::host_vector<int> indices(nmax);
+        ii_absorption_functor op(this);
+    #endif
 
-    return emission;
+    thrust::sequence(indices.begin(), indices.end(), 1);
+    thrust::transform(itrstls.begin() + 1, itrstls.end(), indices.begin(), indices.begin(), op);
+
+    return thrust::reduce(itrstls.begin(), itrstls.end(), 0.0, thrust::plus<double>());
 }
+
+class iv_absorption_functor
+{
+public:
+    ClusterDynamics* self;
+
+    __CUDADECL__ iv_absorption_functor(ClusterDynamics* self) : self(self)
+    {}
+
+    __CUDADECL__ double operator()(const double& v_concentration, const int& idx)
+    {
+        return self->iv_absorption(idx) * v_concentration;
+    }
+};
 
 double ClusterDynamics::iv_sum_absorption(size_t nmax)
 {
-    double emission = 0.;
-    for (size_t n = 1; n < nmax; ++n)
-    {
-        emission += iv_absorption(n) * interstitials[n];
-    }
+    #ifdef USE_CUDA
+        thrust::device_vector<double> vcncs(vacancies, vacancies + concentration_boundary);
+        thrust::device_vector<int> indices(nmax);
+        iv_absorption_functor op(d_self);
+    #else
+        thrust::host_vector<double> vcncs(vacancies, vacancies + concentration_boundary);
+        thrust::host_vector<int> indices(nmax);
+        iv_absorption_functor op(this);
+    #endif
 
-    return emission;
+    thrust::sequence(indices.begin(), indices.end(), 1);
+    thrust::transform(vcncs.begin() + 1, vcncs.end(), indices.begin(), indices.begin(), op);
+
+    return thrust::reduce(vcncs.begin(), vcncs.end(), 0.0, thrust::plus<double>());
 }
+
+class vv_absorption_functor
+{
+public:
+    ClusterDynamics* self;
+
+    __CUDADECL__ vv_absorption_functor(ClusterDynamics* self) : self(self)
+    {}
+
+    __CUDADECL__ double operator()(const double& v_concentration, const int& idx)
+    {
+        return self->vv_absorption(idx) * v_concentration;
+    }
+};
 
 double ClusterDynamics::vv_sum_absorption(size_t nmax)
 {
-    double emission = 0.;
-    for (size_t n = 1; n < nmax; ++n)
-    {
-        emission += vv_absorption(n) * vacancies[n];
-    }
+    #ifdef USE_CUDA
+        thrust::device_vector<double> vcncs(vacancies, vacancies + concentration_boundary);
+        thrust::device_vector<int> indices(nmax);
+        vv_absorption_functor op(d_self);
+    #else
+        thrust::host_vector<double> vcncs(vacancies, vacancies + concentration_boundary);
+        thrust::host_vector<int> indices(nmax);
+        vv_absorption_functor op(this);
+    #endif
 
-    return emission;
+    thrust::sequence(indices.begin(), indices.end(), 1);
+    thrust::transform(vcncs.begin() + 1, vcncs.end(), indices.begin(), indices.begin(), op);
+
+    return thrust::reduce(vcncs.begin(), vcncs.end(), 0.0, thrust::plus<double>());
 }
+
+class vi_absorption_functor
+{
+public:
+    ClusterDynamics* self;
+
+    __CUDADECL__ vi_absorption_functor(ClusterDynamics* self) : self(self)
+    {}
+
+    __CUDADECL__ double operator()(const double& i_concentration, const int& idx)
+    {
+        return self->vi_absorption(idx) * i_concentration;
+    }
+};
 
 double ClusterDynamics::vi_sum_absorption(size_t nmax)
 {
-    double emission = 0.;
-    for (size_t n = 1; n < nmax; ++n)
-    {
-        emission += vi_absorption(n) * vacancies[n];
-    }
+    #ifdef USE_CUDA
+        thrust::device_vector<double> itrstls(interstitials, interstitials + concentration_boundary);
+        thrust::device_vector<int> indices(nmax);
+        vi_absorption_functor op(d_self);
+    #else
+        thrust::host_vector<double> itrstls(interstitials, interstitials + concentration_boundary);
+        thrust::host_vector<int> indices(nmax);
+        vi_absorption_functor op(this);
+    #endif
 
-    return emission;
+    thrust::sequence(indices.begin(), indices.end(), 1);
+    thrust::transform(itrstls.begin() + 1, itrstls.end(), indices.begin(), indices.begin(), op);
+
+    return thrust::reduce(itrstls.begin(), itrstls.end(), 0.0, thrust::plus<double>());
 }
 
 // --------------------------------------------------------------------------------------------
@@ -859,6 +947,10 @@ ClusterDynamics::ClusterDynamics(size_t concentration_boundary, NuclearReactor r
     vacancies_temp = new double[concentration_boundary]{0.0};
     dislocation_density = material.dislocation_density_0;
     time = 0.0;
+
+    #ifdef USE_CUDA
+        setup_cuda();
+    #endif
 }
 
 ClusterDynamicsState ClusterDynamics::run(double delta_time, double total_time)
@@ -896,6 +988,12 @@ ClusterDynamicsState ClusterDynamics::run(double delta_time, double total_time)
 
 #ifdef USE_CUDA
 
+void ClusterDynamics::setup_cuda()
+{
+    cudaMalloc(&d_self, sizeof(ClusterDynamics));
+    cudaMemcpy(d_self, this, sizeof(ClusterDynamics), cudaMemcpyHostToDevice);
+}
+
 __CUDADECL__ void ClusterDynamics::update_cluster_n(size_t n, double delta_time)
 {
   if (n >= concentration_boundary) return;
@@ -921,7 +1019,6 @@ __host__ bool ClusterDynamics::CUDA_update_clusters(double delta_time)
   double* d_is_out;
   double* d_vs_in;
   double* d_vs_out;
-  ClusterDynamics* d_simulation;
 
   size_t arraysize = concentration_boundary * sizeof(double);
 
@@ -929,16 +1026,15 @@ __host__ bool ClusterDynamics::CUDA_update_clusters(double delta_time)
   cudaMalloc((void**)&d_is_out, arraysize);
   cudaMalloc((void**)&d_vs_in, arraysize);
   cudaMalloc((void**)&d_vs_out, arraysize);
-  cudaMalloc((void**)&d_simulation, sizeof(ClusterDynamics));
 
   cudaMemcpy(d_is_in, interstitials, arraysize, cudaMemcpyHostToDevice);
   cudaMemcpy(d_vs_in, vacancies, arraysize, cudaMemcpyHostToDevice);
   cudaMemcpy(d_is_out, interstitials_temp, arraysize, cudaMemcpyHostToDevice);
   cudaMemcpy(d_vs_out, vacancies_temp, arraysize, cudaMemcpyHostToDevice);
 
-  cudaMemcpy(d_simulation, this, sizeof(ClusterDynamics), cudaMemcpyHostToDevice);
+  cudaMemcpy(d_self, this, sizeof(ClusterDynamics), cudaMemcpyHostToDevice);
 
-  update_clusters_kernel<<<concentration_boundary - 2, 32>>>(d_simulation, d_is_in, d_is_out, d_vs_in, d_vs_out, delta_time);
+  update_clusters_kernel<<<concentration_boundary - 2, 32>>>(d_self, d_is_in, d_is_out, d_vs_in, d_vs_out, delta_time);
   cudaError_t error = cudaGetLastError();
   if (error != cudaSuccess)
   {
@@ -951,8 +1047,7 @@ __host__ bool ClusterDynamics::CUDA_update_clusters(double delta_time)
   cudaFree(d_is_in);
   cudaFree(d_is_out);
   cudaFree(d_vs_in);
-  cudaFree(d_vs_out);
-  cudaFree(d_simulation); // TODO - Really probably shouldn't reallocate and free all this in every step
+  cudaFree(d_vs_out); // TODO - Really probably shouldn't reallocate and free all this in every step
 
   return true; // TODO - get validation for each concentration
 }

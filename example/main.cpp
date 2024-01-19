@@ -71,6 +71,9 @@ void profile()
     NuclearReactor reactor = nuclear_reactors::OSIRIS();
     Material material = materials::SA304();
 
+    ClusterDynamics cd(10, reactor, material);
+    cd.run(1e-5, 1e-5);
+
     for (int n = 100; n < 40000; n += 1000)
     {
         fprintf(stderr, "N=%d\n", n);
@@ -86,6 +89,9 @@ void profile()
 
 int main(int argc, char* argv[])
 {
+    profile();
+    return 0;
+
     NuclearReactor reactor = nuclear_reactors::OSIRIS();
     Material material = materials::SA304();
 

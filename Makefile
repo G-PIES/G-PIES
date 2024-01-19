@@ -49,7 +49,7 @@ all: software_lib software_example_frontend
 # Software library compilation
 software_lib:
 	mkdir -p lib
-	$(CC) $(CCFLAGS) src/cluster_dynamics.cpp -c -o libclusterdynamics.o $(INCLUDE_FLAGS)
+	nvcc $(CCFLAGS) src/cluster_dynamics.cpp -c -o libclusterdynamics.o $(INCLUDE_FLAGS)
 	ar crs $(library) libclusterdynamics.o
 	rm libclusterdynamics.o
 
