@@ -497,17 +497,17 @@ public:
 double ClusterDynamics::ii_sum_absorption(size_t nmax)
 {
     #ifdef USE_CUDA
-        thrust::device_vector<double> itrstls(interstitials, interstitials + concentration_boundary);
+        thrust::device_vector<double> itrstls(interstitials + 1, interstitials + concentration_boundary);
         thrust::device_vector<int> indices(nmax);
         ii_absorption_functor op(d_self);
     #else
-        thrust::host_vector<double> itrstls(interstitials, interstitials + concentration_boundary);
+        thrust::host_vector<double> itrstls(interstitials + 1, interstitials + concentration_boundary);
         thrust::host_vector<int> indices(nmax);
         ii_absorption_functor op(this);
     #endif
 
     thrust::sequence(indices.begin(), indices.end(), 1);
-    thrust::transform(itrstls.begin() + 1, itrstls.end(), indices.begin(), indices.begin(), op);
+    thrust::transform(itrstls.begin(), itrstls.end(), indices.begin(), indices.begin(), op);
 
     return thrust::reduce(itrstls.begin(), itrstls.end(), 0.0, thrust::plus<double>());
 }
@@ -529,17 +529,17 @@ public:
 double ClusterDynamics::iv_sum_absorption(size_t nmax)
 {
     #ifdef USE_CUDA
-        thrust::device_vector<double> vcncs(vacancies, vacancies + concentration_boundary);
+        thrust::device_vector<double> vcncs(vacancies + 1, vacancies + concentration_boundary);
         thrust::device_vector<int> indices(nmax);
         iv_absorption_functor op(d_self);
     #else
-        thrust::host_vector<double> vcncs(vacancies, vacancies + concentration_boundary);
+        thrust::host_vector<double> vcncs(vacancies + 1, vacancies + concentration_boundary);
         thrust::host_vector<int> indices(nmax);
         iv_absorption_functor op(this);
     #endif
 
     thrust::sequence(indices.begin(), indices.end(), 1);
-    thrust::transform(vcncs.begin() + 1, vcncs.end(), indices.begin(), indices.begin(), op);
+    thrust::transform(vcncs.begin(), vcncs.end(), indices.begin(), indices.begin(), op);
 
     return thrust::reduce(vcncs.begin(), vcncs.end(), 0.0, thrust::plus<double>());
 }
@@ -561,17 +561,17 @@ public:
 double ClusterDynamics::vv_sum_absorption(size_t nmax)
 {
     #ifdef USE_CUDA
-        thrust::device_vector<double> vcncs(vacancies, vacancies + concentration_boundary);
+        thrust::device_vector<double> vcncs(vacancies + 1, vacancies + concentration_boundary);
         thrust::device_vector<int> indices(nmax);
         vv_absorption_functor op(d_self);
     #else
-        thrust::host_vector<double> vcncs(vacancies, vacancies + concentration_boundary);
+        thrust::host_vector<double> vcncs(vacancies + 1, vacancies + concentration_boundary);
         thrust::host_vector<int> indices(nmax);
         vv_absorption_functor op(this);
     #endif
 
     thrust::sequence(indices.begin(), indices.end(), 1);
-    thrust::transform(vcncs.begin() + 1, vcncs.end(), indices.begin(), indices.begin(), op);
+    thrust::transform(vcncs.begin(), vcncs.end(), indices.begin(), indices.begin(), op);
 
     return thrust::reduce(vcncs.begin(), vcncs.end(), 0.0, thrust::plus<double>());
 }
@@ -593,17 +593,17 @@ public:
 double ClusterDynamics::vi_sum_absorption(size_t nmax)
 {
     #ifdef USE_CUDA
-        thrust::device_vector<double> itrstls(interstitials, interstitials + concentration_boundary);
+        thrust::device_vector<double> itrstls(interstitials + 1, interstitials + concentration_boundary);
         thrust::device_vector<int> indices(nmax);
         vi_absorption_functor op(d_self);
     #else
-        thrust::host_vector<double> itrstls(interstitials, interstitials + concentration_boundary);
+        thrust::host_vector<double> itrstls(interstitials + 1, interstitials + concentration_boundary);
         thrust::host_vector<int> indices(nmax);
         vi_absorption_functor op(this);
     #endif
 
     thrust::sequence(indices.begin(), indices.end(), 1);
-    thrust::transform(itrstls.begin() + 1, itrstls.end(), indices.begin(), indices.begin(), op);
+    thrust::transform(itrstls.begin(), itrstls.end(), indices.begin(), indices.begin(), op);
 
     return thrust::reduce(itrstls.begin(), itrstls.end(), 0.0, thrust::plus<double>());
 }
