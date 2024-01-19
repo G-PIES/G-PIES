@@ -56,7 +56,7 @@ software_lib:
 # CUDA library compilation
 cuda_lib:
 	mkdir -p lib
-	nvcc -O3 -c -x cu -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics.cpp -o libclusterdynamics.o $(INCLUDE_FLAGS)
+	nvcc -O3 -c -x cu --expt-extended-lambda -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics.cpp -o libclusterdynamics.o $(INCLUDE_FLAGS)
 	ar crs $(library) libclusterdynamics.o
 	rm libclusterdynamics.o
 
