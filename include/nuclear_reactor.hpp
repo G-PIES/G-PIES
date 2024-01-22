@@ -6,6 +6,9 @@
 // C. Pokor / Journal of Nuclear Materials 326 (2004), Table 5
 struct NuclearReactor
 {
+    int sqlite_id = -1;
+    const char* sqlite_creation_datetime;
+
     const char* species;
 
     // neutron flux inside of the nuclear reactor (cm^2 / s)
