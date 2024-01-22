@@ -44,7 +44,9 @@ resources
 # csv
 *.csv
 
-lib
+./lib
+!libgtest_main.a
+!libgtest.a
 
 # databases
 *.db
