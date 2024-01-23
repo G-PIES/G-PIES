@@ -7,59 +7,63 @@
 namespace db_queries 
 {
 
-// schema
+/*  SCHEMA
+    in SQLite, AUTOINCREMENT on PRIMARY KEYs only prevents the reuse of ROWIDs
+    which have not been used. The macro is omitted to avoid unnecessary overhead.
+    https://www.sqlite.org/autoinc.html
+*/
 std::string init =
     "CREATE TABLE IF NOT EXISTS reactors"
     "("
         "id_reactor INTEGER PRIMARY KEY AUTOINCREMENT,"
-        "creation_date DATETIME DEFAULT current_timestamp,"
-        "species text NOT NULL DEFAULT "","
-        "flux float NOT NULL DEFAULT 0.0,"
-        "temperature float NOT NULL DEFAULT 0.0,"
-        "recombination float NOT NULL DEFAULT 0.0,"
-        "i_bi float NOT NULL DEFAULT 0.0,"
-        "i_tri float NOT NULL DEFAULT 0.0,"
-        "i_quad float NOT NULL DEFAULT 0.0,"
-        "v_bi float NOT NULL DEFAULT 0.0,"
-        "v_tri float NOT NULL DEFAULT 0.0,"
-        "v_quad float NOT NULL DEFAULT 0.0,"
-        "dislocation_density_evolution float NOT NULL DEFAULT 0.0"
+        "creation_datetime TEXT DEFAULT current_timestamp,"
+        "species text NOT NULL DEFAULT '',"
+        "flux float DEFAULT 0.0,"
+        "temperature float DEFAULT 0.0,"
+        "recombination float DEFAULT 0.0,"
+        "i_bi float DEFAULT 0.0,"
+        "i_tri float DEFAULT 0.0,"
+        "i_quad float DEFAULT 0.0,"
+        "v_bi float DEFAULT 0.0,"
+        "v_tri float DEFAULT 0.0,"
+        "v_quad float DEFAULT 0.0,"
+        "dislocation_density_evolution float DEFAULT 0.0"
     ");"
 
     "CREATE TABLE IF NOT EXISTS materials"
     "("
-        "id_material INTEGER PRIMARY KEY AUTOINCREMENT,"
-        "creation_date DATETIME DEFAULT current_timestamp,"
-        "species text NOT NULL DEFAULT "","
-        "i_migration float NOT NULL DEFAULT 0.0,"
-        "v_migration float NOT NULL DEFAULT 0.0,"
-        "i_diffusion_0 float NOT NULL DEFAULT 0.0,"
-        "v_diffusion_0 float NOT NULL DEFAULT 0.0,"
-        "i_formation float NOT NULL DEFAULT 0.0,"
-        "v_formation float NOT NULL DEFAULT 0.0,"
-        "i_binding float NOT NULL DEFAULT 0.0,"
-        "v_binding float NOT NULL DEFAULT 0.0,"
-        "recombination_radius float NOT NULL DEFAULT 0.0,"
-        "i_loop_bias float NOT NULL DEFAULT 0.0,"
-        "i_dislocation_bias float NOT NULL DEFAULT 0.0,"
-        "i_dislocation_bias_param float NOT NULL DEFAULT 0.0,"
-        "v_loop_bias float NOT NULL DEFAULT 0.0,"
-        "v_dislocation_bias float NOT NULL DEFAULT 0.0,"
-        "v_dislocation_bias_param float NOT NULL DEFAULT 0.0,"
-        "dislocation_density_0 float NOT NULL DEFAULT 0.0,"
-        "grain_size float NOT NULL DEFAULT 0.0,"
-        "lattice_param float NOT NULL DEFAULT 0.0,"
-        "burgers_vector float NOT NULL DEFAULT 0.0,"
-        "atomic_volume float NOT NULL DEFAULT 0.0"
+        "id_material INTEGER PRIMARY KEY,"
+        "creation_datetime TEXT DEFAULT current_timestamp,"
+        "species text NOT NULL DEFAULT '',"
+        "i_migration float DEFAULT 0.0,"
+        "v_migration float DEFAULT 0.0,"
+        "i_diffusion_0 float DEFAULT 0.0,"
+        "v_diffusion_0 float DEFAULT 0.0,"
+        "i_formation float DEFAULT 0.0,"
+        "v_formation float DEFAULT 0.0,"
+        "i_binding float DEFAULT 0.0,"
+        "v_binding float DEFAULT 0.0,"
+        "recombination_radius float DEFAULT 0.0,"
+        "i_loop_bias float DEFAULT 0.0,"
+        "i_dislocation_bias float DEFAULT 0.0,"
+        "i_dislocation_bias_param float DEFAULT 0.0,"
+        "v_loop_bias float DEFAULT 0.0,"
+        "v_dislocation_bias float DEFAULT 0.0,"
+        "v_dislocation_bias_param float DEFAULT 0.0,"
+        "dislocation_density_0 float DEFAULT 0.0,"
+        "grain_size float DEFAULT 0.0,"
+        "lattice_param float DEFAULT 0.0,"
+        "burgers_vector float DEFAULT 0.0,"
+        "atomic_volume float DEFAULT 0.0"
     ");"
 
     "CREATE TABLE IF NOT EXISTS simulations"
     "("
-        "id_simulation INTEGER PRIMARY KEY AUTOINCREMENT,"
-        "creation_date DATETIME DEFAULT current_timestamp,"
+        "id_simulation INTEGER PRIMARY KEY,"
+        "creation_datetime TEXT DEFAULT current_timestamp,"
         "id_reactor INTEGER,"
-        "simulation_time FLOAT NOT NULL DEFAULT 0.0,"
-        "time_delta FLOAT NOT NULL DEFAULT 0.0,"
+        "simulation_time FLOAT DEFAULT 0.0,"
+        "time_delta FLOAT DEFAULT 0.0,"
         "data TEXT"
     ");"
 
@@ -71,10 +75,13 @@ std::string init =
     ");";
 
 std::string clear =
-    "DROP TABLE IF EXISTS simulations"
-    "DROP TABLE IF EXISTS reactors"
-    "DROP TABLE IF EXISTS materials"
-    "DROP TABLE IF EXISTS simulation_materials";
+    "DROP TABLE IF EXISTS simulations;"
+    "DROP TABLE IF EXISTS reactors;"
+    "DROP TABLE IF EXISTS materials;"
+    "DROP TABLE IF EXISTS simulation_materials;";
+
+std::string last_insert_rowid =
+    "SELECT last_insert_rowid();";
 
 // reactors CRUD
 

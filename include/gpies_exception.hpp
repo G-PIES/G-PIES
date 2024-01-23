@@ -5,10 +5,10 @@
 class GpiesException
 {
     public:
-    GpiesException::GpiesException(const char* message)
+    explicit GpiesException(const std::string& message)
     : message(message) {}
 
-    const char* message;
+    std::string message;
 };
 
 

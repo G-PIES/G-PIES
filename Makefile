@@ -33,7 +33,7 @@ endif
 
 CC = g++
 CCFLAGS += -std=c++17
-INCLUDE_FLAGS = -I./include -I./src -I./extern/googletest/include
+INCLUDE_FLAGS = -I./include -I./src
 LIB_DIR = ./lib
 binary = cluster_dynamics$(EXE_EXT)
 library = lib/libclusterdynamics$(LIB_EXT)
@@ -53,6 +53,12 @@ software_lib:
 	ar crs $(library) libclusterdynamics.o
 	rm libclusterdynamics.o
 
+db_lib:
+	mkdir -p lib
+	$(CC) $(CCFLAGS) src/client_db.cpp -c -o libclientdb.o $(INCLUDE_FLAGS)
+	ar crs lib/libclientdb$(LIB_EXT) libclientdb.o
+	rm libclientdb.o
+
 # CUDA library compilation
 cuda_lib:
 	mkdir -p lib
@@ -68,8 +74,12 @@ example_frontend: software_lib
 cuda_example_frontend: cuda_lib
 	nvcc example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 
+# SQLite database example complication
+db_example:
+	$(CC) example/db_example.cpp -o db_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclientdb -lsqlite3
+
 test:
-	g++ ./test/tests.cpp -o test$(EXE_EXT) $(INCLUDE_FLAGS) -L./extern/googletest/lib/ -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamics
+	g++ ./test/tests.cpp -o test$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L./extern/googletest/lib/ -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamics
 	./test$(EXE_EXT)
 
 # Compile and run example frontend

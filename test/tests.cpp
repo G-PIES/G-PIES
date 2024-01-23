@@ -1,17 +1,34 @@
 #include "gtest/gtest.h"
 #include "cluster_dynamics.hpp"
+#include "client_db.hpp"
 
-const NuclearReactor reactor = nuclear_reactors::OSIRIS();
-const Material material = materials::SA304();
+class ClusterDynamicsTest : public ::testing::Test
+{
+  protected:
+    NuclearReactor reactor;
+    Material material;
 
-TEST(CDTest, ResultIsValid) 
+    ClusterDynamicsTest() {}
+
+    virtual ~ClusterDynamicsTest() {}
+
+    virtual void SetUp()
+    {
+      nuclear_reactors::OSIRIS(reactor);
+      materials::SA304(material);
+    }
+
+    virtual void TearDown() {}
+};
+
+TEST_F(ClusterDynamicsTest, ResultIsValid) 
 {
   ClusterDynamics cd(100, reactor, material);
   ClusterDynamicsState state = cd.run(1e-5, 1e-5);
   ASSERT_EQ(state.valid, true);
 }
 
-TEST(CDTest, CorrectEndtime) 
+TEST_F(ClusterDynamicsTest, CorrectEndtime) 
 {
   ClusterDynamics cd(100, reactor, material);
 
@@ -25,7 +42,7 @@ TEST(CDTest, CorrectEndtime)
   EXPECT_NEAR(state.time, total_time, delta_time);
 }
 
-TEST(CDTest, ResultUnchanged)
+TEST_F(ClusterDynamicsTest, ResultUnchanged)
 {
   // Compare current results to old results to catch unexpected changes to results
   // Data generated with delta_time = 1e-5, total_time=1e-3, concentration_boundary=10
