@@ -68,7 +68,7 @@ cuda_lib:
 
 # Example frontend compilation
 example_frontend: software_lib
-	$(CC) example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics 
+	$(CC) example/main.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics 
 
 # CUDA backend & example frontend compilation
 cuda_example_frontend: cuda_lib
@@ -76,7 +76,9 @@ cuda_example_frontend: cuda_lib
 
 # SQLite database example complication
 db_example:
+	make db_lib
 	$(CC) example/db_example.cpp -o db_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclientdb -lsqlite3
+	./db_example.out
 
 test:
 	g++ ./test/tests.cpp -o test$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L./extern/googletest/lib/ -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamics

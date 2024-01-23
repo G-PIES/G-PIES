@@ -21,16 +21,9 @@ class ClientDb
     int read_reactors(std::vector<NuclearReactor>&);
     int read_reactor(const int, NuclearReactor&);
     int update_reactor(const NuclearReactor&);
-    int delete_reactor(const int);
+    int delete_reactor(const NuclearReactor&);
 
     // material CRUD
-    /*
-    int create_material(const Material&);
-    int read_materials(const std::vector<Material>&);
-    int read_material(const int, Material&);
-    int update_material(const Material&);
-    int delete_material(const int);
-    */
 
     // simulation CRUD
 
@@ -50,9 +43,24 @@ class ClientDb
     int last_insert_rowid(int&);
 
     // --------------------------------------------------------------------------------------------
+    // CREATE
+    template<typename T> int create_one(sqlite3_stmt*, void (*)(sqlite3*, const T&), T&);
+    // --------------------------------------------------------------------------------------------
+
+    // --------------------------------------------------------------------------------------------
     // READ 
-    template<typename T> int read(sqlite3_stmt*, void (*)(sqlite3_stmt*, T&), void (*)(sqlite3*, const int), const int, T&);
-    template<typename T> int read(sqlite3_stmt*, void (*)(sqlite3_stmt*, T&), void (*)(sqlite3*), std::vector<T>&);
+    template<typename T> int read_one(sqlite3_stmt*, void (*)(sqlite3_stmt*, T&), void (*)(sqlite3*, const int), const int, T&);
+    template<typename T> int read_all(sqlite3_stmt*, void (*)(sqlite3_stmt*, T&), void (*)(sqlite3*), std::vector<T>&);
+    // --------------------------------------------------------------------------------------------
+
+    // --------------------------------------------------------------------------------------------
+    // UPDATE / DELETE
+    template<typename T> int update_one(sqlite3_stmt*, void (*)(sqlite3*, const T&), const T&);
+    // --------------------------------------------------------------------------------------------
+
+    // --------------------------------------------------------------------------------------------
+    // DELETE 
+    template<typename T> int delete_one(sqlite3_stmt*, void (*)(sqlite3*, const T&), const T&);
     // --------------------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------------------
@@ -70,21 +78,21 @@ class ClientDb
     static void err_create_reactor(sqlite3*, const NuclearReactor&);
     static void err_read_reactors(sqlite3*);
     static void err_read_reactor(sqlite3*, const int);
-    void err_update_reactor(sqlite3*, const int);
-    void err_delete_reactor(sqlite3*, const int);
+    static void err_update_reactor(sqlite3*, const NuclearReactor&);
+    static void err_delete_reactor(sqlite3*, const NuclearReactor&);
     // --------------------------------------------------------------------------------------------
 };
 
 class ClientDbException : public GpiesException
 {
     public:
-    ClientDbException(const std::string& message, const int sqlite_code = -1, const std::string sqlite_errmsg = "")
+    ClientDbException(const std::string& message, const std::string sqlite_errmsg = "", const int sqlite_code = -1)
     : GpiesException(message), sqlite_code(sqlite_code), sqlite_errmsg(sqlite_errmsg)
     {
     }
 
-    int sqlite_code;
     std::string sqlite_errmsg;
+    int sqlite_code;
 };
 
 #endif // CLIENT_DB_HPP
