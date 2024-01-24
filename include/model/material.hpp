@@ -2,8 +2,10 @@
 #define MATERIAL_HPP
 
 #include <cmath>
+#include <string>
 
 #include "conversions.hpp"
+#include "datetime.hpp"
 
 #ifndef BOLTZMANN_EV_KELVIN
 #define BOLTZMANN_EV_KELVIN 8.6173e-5 // (eV / Kelvin)
@@ -12,7 +14,15 @@
 // C. Pokor / Journal of Nuclear Materials 326 (2004), Table 6
 struct Material
 {
-    const char* species;
+    Material() : sqlite_id(-1) 
+    {
+        datetime::utc_now(creation_datetime);
+    }
+
+    int sqlite_id;
+    std::string creation_datetime;
+
+    std::string species;
 
     // migration energy (eV)
     double i_migration;
@@ -83,37 +93,34 @@ namespace lattice_params
 namespace materials
 {
 
-inline Material SA304() 
+static void SA304(Material& material) 
 {
     double lattice_param = lattice_params::fcc_nickel;
 
-    return
-    { 
-        .species = "SA304",
-        .i_migration = .45,  // eV
-        .v_migration = 1.35, // eV
-        .i_diffusion_0 = 1e-3, // cm^2/s
-        .v_diffusion_0 = .6,   // cm^2/s
-        .i_formation = 4.1,  // eV
-        .v_formation = 1.7,  // eV
-        .i_binding = .6,     // eV
-        .v_binding = .5,     // eV
-        .recombination_radius = .7e-7,  // cm
-        .i_loop_bias = 63.,
-        .i_dislocation_bias = .8, 
-        .i_dislocation_bias_param = 1.1,
-        .v_loop_bias = 33.,
-        .v_dislocation_bias = .65, 
-        .v_dislocation_bias_param = 1.,
-        .dislocation_density_0 = 1. / (double)M_CM_CONV(10e10),
-        .grain_size = 4e-3,
-        .lattice_param = lattice_param,                 //cm
-        .burgers_vector = lattice_param / std::sqrt(2.),
-        .atomic_volume = std::pow(lattice_param, 3) / 4.    //cm^3
-    };
+    material.species = "SA304";
+    material.i_migration = .45;  // eV
+    material.v_migration = 1.35; // eV
+    material.i_diffusion_0 = 1e-3; // cm^2/s
+    material.v_diffusion_0 = .6;   // cm^2/s
+    material.i_formation = 4.1;  // eV
+    material.v_formation = 1.7;  // eV
+    material.i_binding = .6;     // eV
+    material.v_binding = .5;     // eV
+    material.recombination_radius = .7e-7;  // cm
+    material.i_loop_bias = 63.;
+    material.i_dislocation_bias = .8; 
+    material.i_dislocation_bias_param = 1.1;
+    material.v_loop_bias = 33.;
+    material.v_dislocation_bias = .65; 
+    material.v_dislocation_bias_param = 1.;
+    material.dislocation_density_0 = 1. / (double)M_CM_CONV(10e10);
+    material.grain_size = 4e-3;
+    material.lattice_param = lattice_param;                 //cm
+    material.burgers_vector = lattice_param / std::sqrt(2.);
+    material.atomic_volume = std::pow(lattice_param, 3) / 4.;    //cm^3
 }
 
 }
 
 
-#endif
+#endif // MATERIAL_HPP
