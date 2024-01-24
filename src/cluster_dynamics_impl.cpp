@@ -212,13 +212,13 @@ __CUDADECL__ double ClusterDynamicsImpl::vemission_iabsorption_nm1(size_t nm1)
             (6)
             1 / (tEi)
 */
-__CUDADECL__ double ClusterDynamicsImpl::i1_cluster_delta(size_t nmax)
+double ClusterDynamicsImpl::i1_cluster_delta(size_t nmax)
 {
     return 
         // (1)
         i_defect_production(1)
         // (2)
-        - annihilation_rate() * interstitials[1] * vacancies[1]
+        - annihilation_rate() * interstitials[1] * vacancies[1];
         // (3)
         - interstitials[1] * i_dislocation_annihilation_time()
         // (4)
@@ -244,7 +244,7 @@ __CUDADECL__ double ClusterDynamicsImpl::i1_cluster_delta(size_t nmax)
             (6)
             1 / (tEv)
 */
-__CUDADECL__ double ClusterDynamicsImpl::v1_cluster_delta(size_t nmax)
+double ClusterDynamicsImpl::v1_cluster_delta(size_t nmax)
 {
     return 
         // (1)
@@ -254,9 +254,9 @@ __CUDADECL__ double ClusterDynamicsImpl::v1_cluster_delta(size_t nmax)
         // (3)
         - vacancies[1] * v_dislocation_annihilation_time()
         // (4)
-        - vacancies[1] * v_grain_boundary_annihilation_time()
+        //- vacancies[1] * v_grain_boundary_annihilation_time()
         // (5)
-        - vacancies[1] * v_absorption_time(nmax)
+        - vacancies[1] * v_absorption_time(nmax);
         // (6)
         + v_emission_time(nmax);
 }
@@ -272,21 +272,18 @@ __CUDADECL__ double ClusterDynamicsImpl::v1_cluster_delta(size_t nmax)
 */
 double ClusterDynamicsImpl::i_emission_time(size_t nmax)
 {
-    double time = 0.;
-    for (size_t in = 3; in < nmax; ++in)
-    {
-          time +=
-            // (1)
-            ii_emission(in) * interstitials[in];
-    }
+  auto self = this->self;
+  double time = thrust::transform_reduce(indices.begin() + 2, indices.end(), [self] __CUDADECL__ (const int& idx){
+    return self->ii_emission(idx) * self->interstitials[idx];
+  }, 0.0, thrust::plus<double>());
 
-    time +=
-        // (2)
-        4 * ii_emission(2) * interstitials[2]
-        // (3)
-        + iv_absorption(2) * vacancies[2] * interstitials[2];
+  time +=
+      // (2)
+      4 * ii_emission(2) * interstitials[2]
+      // (3)
+      + iv_absorption(2) * vacancies[2] * interstitials[2];
 
-    return time;
+  return time;
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3b
@@ -298,21 +295,18 @@ double ClusterDynamicsImpl::i_emission_time(size_t nmax)
 */
 double ClusterDynamicsImpl::v_emission_time(size_t nmax)
 {
-    double time = 0.;
-    for (size_t vn = 3; vn < nmax; ++vn)
-    {
-        time += 
-            // (1)
-            vv_emission(vn) * vacancies[vn];
-    }
+  auto self = this->self;
+  double time = thrust::transform_reduce(indices.begin() + 2, indices.end(), [self] __CUDADECL__ (const int& idx){
+    return self->vv_emission(idx) * self->vacancies[idx];
+  }, 0.0, thrust::plus<double>());
 
-    time +=
-        // (2)
-        4 * vv_emission(2) * vacancies[2]
-        // (3)
-        + vi_absorption(2) * vacancies[2] * interstitials[2];
+  time +=
+      // (2)
+      4 * vv_emission(2) * vacancies[2]
+      // (3)
+      + vi_absorption(2) * vacancies[2] * interstitials[2];
 
-    return time;
+  return time;
 }
 // --------------------------------------------------------------------------------------------
 
@@ -327,17 +321,15 @@ double ClusterDynamicsImpl::v_emission_time(size_t nmax)
 */
 double ClusterDynamicsImpl::i_absorption_time(size_t nmax)
 {
-    double time = ii_absorption(1) * interstitials[1];
-    for (size_t in = 1; in < nmax; ++in)
-    {
-        time +=
-            // (1)
-            ii_absorption(in) * interstitials[in]
-            // (2)
-            + vi_absorption(in) * vacancies[in];
-    }
+  auto self = this->self;
+  double time = ii_absorption(1) * interstitials[1];
+  time += thrust::transform_reduce( indices.begin(), indices.end(), 
+  [self] __CUDADECL__ (const int& idx) {
+    return self->ii_absorption(idx) * self->interstitials[idx] + self->vi_absorption(idx) * self->vacancies[idx];
+  }, 
+  0.0, thrust::plus<double>());
 
-    return time;
+  return time;
 }
 
 
@@ -350,17 +342,13 @@ double ClusterDynamicsImpl::i_absorption_time(size_t nmax)
 */
 double ClusterDynamicsImpl::v_absorption_time(size_t nmax)
 {
-    double time = vv_absorption(1) * vacancies[1];
-    for (size_t vn = 1; vn < nmax; ++vn)
-    {
-        time +=
-            // (1)
-            vv_absorption(vn) * vacancies[vn]
-            // (2)
-            + iv_absorption(vn) * interstitials[vn];
-    }
+  auto self = this->self;
+  double time = vv_absorption(1) * vacancies[1];
+  time += thrust::transform_reduce(indices.begin(), indices.end(), [self] __CUDADECL__ (const int& idx) {
+    return self->vv_absorption(idx) * self->vacancies[idx] + self->iv_absorption(idx) * self->interstitials[idx];
+  }, 0.0, thrust::plus<double>());
 
-    return time;
+  return time;
 }
 // --------------------------------------------------------------------------------------------
 
@@ -649,15 +637,15 @@ __CUDADECL__ double ClusterDynamicsImpl::v_diffusion()
 // --------------------------------------------------------------------------------------------
 /*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.10
 */
-__CUDADECL__ double ClusterDynamicsImpl::mean_dislocation_cell_radius()
+double ClusterDynamicsImpl::mean_dislocation_cell_radius()
 {
-    double r_0_factor = 0.;
-    for (size_t i = 1; i < concentration_boundary; ++i)
-    {
-        r_0_factor += cluster_radius(i) * interstitials[i];
-    }
+  auto self = this->self;
+  double r_0_factor = thrust::transform_reduce(indices.begin(), indices.end(), 
+  [self] __CUDADECL__ (const int& idx){
+    return self->cluster_radius(idx) * self->interstitials[idx];
+  }, 0.0, thrust::plus<double>());
 
-    return 1 / std::sqrt((2 * M_PI * M_PI / material.atomic_volume) * r_0_factor + M_PI * dislocation_density);
+  return 1 / std::sqrt((2 * M_PI * M_PI / material.atomic_volume) * r_0_factor + M_PI * dislocation_density);
 }
 
 // --------------------------------------------------------------------------------------------
@@ -678,19 +666,20 @@ __CUDADECL__ double ClusterDynamicsImpl::dislocation_promotion_probability(size_
 */
 double ClusterDynamicsImpl::dislocation_density_delta()
 {
-    double gain = 0.0;
-    for (size_t n = 1; n < concentration_boundary; ++n)
-    {
-        gain += cluster_radius(n) * dislocation_promotion_probability(n) * ii_absorption(n) * interstitials[n];
-    }
+  auto self = this->self;
+  double gain = thrust::transform_reduce(
+    indices.begin(), indices.end(), [self] __CUDADECL__ (const int& idx){
+      return self->cluster_radius(idx) * self->dislocation_promotion_probability(idx) * self->ii_absorption(idx) * self->interstitials[idx];
+    }, 
+    0.0, thrust::plus<double>());
 
-    gain *= 2 * M_PI / material.atomic_volume;
+  gain *= 2 * M_PI / material.atomic_volume;
 
-    return 
-        gain
-        - reactor.dislocation_density_evolution * 
-        std::pow(material.burgers_vector, 2) *
-        std::pow(dislocation_density, 3./2.);
+  return 
+      gain
+      - reactor.dislocation_density_evolution * 
+      std::pow(material.burgers_vector, 2) *
+      std::pow(dislocation_density, 3./2.);
 }
 
 // --------------------------------------------------------------------------------------------
@@ -716,16 +705,18 @@ __CUDADECL__ double ClusterDynamicsImpl::cluster_radius(size_t n)
 
 bool ClusterDynamicsImpl::step(double delta_time)
 {
+  #ifdef USE_CUDA
+    cudaMemcpy(thrust::raw_pointer_cast(self), this, sizeof(ClusterDynamicsImpl), cudaMemcpyHostToDevice);
+  #endif
+
   mean_dislocation_radius_val = mean_dislocation_cell_radius();
   ii_sum_absorption_val = ii_sum_absorption(concentration_boundary - 1);
   iv_sum_absorption_val = iv_sum_absorption(concentration_boundary - 1);
   vi_sum_absorption_val = vi_sum_absorption(concentration_boundary - 1);
   vv_sum_absorption_val = vv_sum_absorption(concentration_boundary - 1);
 
-  // Calculate the change in size 1 defects
   bool state_is_valid = update_clusters_1(delta_time);
-  state_is_valid = state_is_valid && update_clusters(delta_time);
-
+  update_clusters(delta_time);
   dislocation_density += dislocation_density_delta() * delta_time;
 
   interstitials = interstitials_temp;
@@ -744,13 +735,11 @@ bool ClusterDynamicsImpl::update_clusters_1(double delta_time)
 bool ClusterDynamicsImpl::update_clusters(double delta_time)
 {
   auto self = this->self;
-  thrust_vector<int> indices(concentration_boundary - 2);
-  thrust::sequence(indices.begin(), indices.end(), 2);
-  thrust::transform(indices.begin(), indices.end(), interstitials_temp.begin() + 2, 
+  thrust::transform(indices.begin() + 1, indices.end(), interstitials_temp.begin() + 2, 
     [self, delta_time] __CUDADECL__ (const int& idx){
       return self->interstitials[idx] + self->i_clusters_delta(idx) * delta_time;
     });
-  thrust::transform(indices.begin(), indices.end(), vacancies_temp.begin() + 2, 
+  thrust::transform(indices.begin() + 1, indices.end(), vacancies_temp.begin() + 2, 
     [self, delta_time] __CUDADECL__ (const int& idx){
       return self->vacancies[idx] + self->v_clusters_delta(idx) * delta_time;
     });
@@ -768,8 +757,6 @@ ClusterDynamicsImpl::~ClusterDynamicsImpl()
 double ClusterDynamicsImpl::ii_sum_absorption(size_t nmax)
 {
   auto self = this->self;
-  thrust_vector<int> indices(nmax);
-  thrust::sequence(indices.begin(), indices.end(), 1);
   return thrust::transform_reduce(indices.begin(), indices.end(),
     [self] __CUDADECL__ (const int& idx) { 
       return self->ii_absorption(idx) * self->interstitials[idx];
@@ -780,8 +767,6 @@ double ClusterDynamicsImpl::ii_sum_absorption(size_t nmax)
 double ClusterDynamicsImpl::iv_sum_absorption(size_t nmax)
 {
   auto self = this->self;
-  thrust_vector<int> indices(nmax);
-  thrust::sequence(indices.begin(), indices.end(), 1);
   return thrust::transform_reduce(indices.begin(), indices.end(), 
     [self] __CUDADECL__ (const int& idx) {
         return self->iv_absorption(idx) * self->vacancies[idx];
@@ -792,8 +777,6 @@ double ClusterDynamicsImpl::iv_sum_absorption(size_t nmax)
 double ClusterDynamicsImpl::vv_sum_absorption(size_t nmax)
 {
   auto self = this->self;
-  thrust_vector<int> indices(nmax);
-  thrust::sequence(indices.begin(), indices.end(), 1);
   return thrust::transform_reduce(indices.begin(), indices.end(), 
     [self] __CUDADECL__ (const int& idx) {
         return self->vv_absorption(idx) * self->vacancies[idx];
@@ -804,8 +787,6 @@ double ClusterDynamicsImpl::vv_sum_absorption(size_t nmax)
 double ClusterDynamicsImpl::vi_sum_absorption(size_t nmax)
 {
   auto self = this->self;
-  thrust_vector<int> indices(nmax);
-  thrust::sequence(indices.begin(), indices.end(), 1);
   return thrust::transform_reduce(indices.begin(), indices.end(), 
     [self] __CUDADECL__ (const int& idx) {
         return self->vi_absorption(idx) * self->interstitials[idx];
@@ -843,16 +824,16 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, NuclearR
   : concentration_boundary(concentration_boundary), reactor(reactor), material(material),
     interstitials(concentration_boundary + 1, 0.0), vacancies(concentration_boundary + 1, 0.0),
     interstitials_temp(concentration_boundary + 1, 0.0), vacancies_temp(concentration_boundary + 1, 0.0),
-    dislocation_density(material.dislocation_density_0), time(0.0)
+    indices(concentration_boundary - 1, 0.0), dislocation_density(material.dislocation_density_0), time(0.0)
 {
   #ifdef USE_CUDA
     ClusterDynamicsImpl* ptr;
     cudaMalloc(&ptr, sizeof(ClusterDynamicsImpl));
-    cudaMemcpy(ptr, this, sizeof(ClusterDynamicsImpl), cudaMemcpyHostToDevice);
     self = thrust::device_ptr<ClusterDynamicsImpl>(ptr);
   #else
     self = this;
   #endif
+  thrust::sequence(indices.begin(), indices.end(), 1);
 }
 
 ClusterDynamicsState ClusterDynamicsImpl::run(double delta_time, double total_time)
@@ -865,12 +846,15 @@ ClusterDynamicsState ClusterDynamicsImpl::run(double delta_time, double total_ti
         if (!state_is_valid) break;
     }
 
+    thrust::host_vector<double> is(interstitials);
+    thrust::host_vector<double> vs(vacancies);
+
     return ClusterDynamicsState 
     {
         .valid = state_is_valid,
         .time = time,
-        .interstitials = std::vector<double>(interstitials.begin(), interstitials.end() - 1),
-        .vacancies = std::vector<double>(vacancies.begin(), vacancies.end() - 1),
+        .interstitials = std::vector<double>(is.begin(), is.end() - 1),
+        .vacancies = std::vector<double>(vs.begin(), vs.end() - 1),
         .dislocation_density = dislocation_density
     };
 }

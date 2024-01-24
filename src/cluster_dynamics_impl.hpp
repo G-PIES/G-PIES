@@ -48,10 +48,13 @@ public:
   double iv_sum_absorption_val;
   double vv_sum_absorption_val;
   double vi_sum_absorption_val;
+  double i1_val;
+  double v1_val;
 
   Material material;
   NuclearReactor reactor;
 
+  thrust_vector<int> indices;
   #ifdef USE_CUDA
     thrust::device_ptr<ClusterDynamicsImpl> self;
   #else
@@ -70,12 +73,12 @@ public:
   __CUDADECL__ double vemission_iabsorption_n(size_t);
   __CUDADECL__ double iemission_vabsorption_nm1(size_t);
   __CUDADECL__ double vemission_iabsorption_nm1(size_t);
-  __CUDADECL__ double i1_cluster_delta(size_t);
-  __CUDADECL__ double v1_cluster_delta(size_t);
-  __CUDADECL__ double i_emission_time(size_t);
-  __CUDADECL__ double v_emission_time(size_t);
-  __CUDADECL__ double i_absorption_time(size_t);
-  __CUDADECL__ double v_absorption_time(size_t);
+  double i1_cluster_delta(size_t);
+  double v1_cluster_delta(size_t);
+  double i_emission_time(size_t);
+  double v_emission_time(size_t);
+  double i_absorption_time(size_t);
+  double v_absorption_time(size_t);
   __CUDADECL__ double annihilation_rate();
   __CUDADECL__ double i_dislocation_annihilation_time();
   __CUDADECL__ double v_dislocation_annihilation_time();
@@ -93,14 +96,14 @@ public:
   __CUDADECL__ double v_binding_energy(size_t);
   __CUDADECL__ double i_diffusion();
   __CUDADECL__ double v_diffusion();
-  __CUDADECL__ double mean_dislocation_cell_radius();
   __CUDADECL__ double dislocation_promotion_probability(size_t);
-  __CUDADECL__ double dislocation_density_delta();
   __CUDADECL__ double cluster_radius(size_t);
 
   // Simulation Operation Functions
   bool update_clusters_1(double);
   bool update_clusters(double);
+  double dislocation_density_delta();
+  double mean_dislocation_cell_radius();
   double ii_sum_absorption(size_t);
   double iv_sum_absorption(size_t);
   double vv_sum_absorption(size_t);
