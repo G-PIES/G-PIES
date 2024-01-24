@@ -148,7 +148,7 @@ dbex: dblib
 
 # GoogleTest Cluster Dynamics Unit Tests
 cdtests:
-	g++ ./test/cdtests.cpp -o $(BIN_DIR)/cd_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L./extern/googletest/lib -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamics
+	g++ ./test/cd_tests.cpp -o $(BIN_DIR)/cd_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L./extern/googletest/lib -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamics
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_tests$(EXE_EXT) || ( exit 0 )
 
 # ----------------------------------------------------------------------------------------
