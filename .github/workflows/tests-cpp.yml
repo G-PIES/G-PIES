@@ -29,13 +29,13 @@ jobs:
       - name: Run Client Database Tests
         run: make dbtests R=1
 
-      - name: Upload Executable
+      - name: Upload Cluster Dynamics Executable
         uses: actions/upload-artifact@v2
         with:
           name: cluster_dynamics
           path: bin/cluster_dynamics.out
 
-      - name: Upload Executable
+      - name: Upload Client Database Executable 
         uses: actions/upload-artifact@v2
         with:
           name: client_db 
