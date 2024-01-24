@@ -121,3 +121,22 @@ TEST_F(ClusterDynamicsTest, v_defect_production_test)
   EXPECT_DOUBLE_EQ(expected_v_defect_productions[3], actual_v_defect_productions[3]);
   EXPECT_DOUBLE_EQ(expected_v_defect_productions[4], actual_v_defect_productions[4]);
 }
+
+TEST_F(ClusterDynamicsTest, ii_emission_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+
+  double expected_ii_emissions[3] = {
+    0.0,
+    0.0,
+    0.0
+  };
+  double actual_ii_emissions[3];
+  for (int i = 0; i < 3; ++i) {
+    actual_ii_emissions[i] = cd.ii_emission(i);
+  }
+
+  EXPECT_DOUBLE_EQ(expected_ii_emissions[0], actual_ii_emissions[0]);
+  EXPECT_DOUBLE_EQ(expected_ii_emissions[1], actual_ii_emissions[1]);
+  EXPECT_DOUBLE_EQ(expected_ii_emissions[2], actual_ii_emissions[2]);
+}
