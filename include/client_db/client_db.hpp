@@ -46,23 +46,23 @@ class ClientDb
 
     // --------------------------------------------------------------------------------------------
     // CREATE
-    template<typename T> int create_one(sqlite3_stmt*, void (*)(sqlite3*, const T&), T&);
+    template<typename T> int create_one(sqlite3_stmt*, void (*)(sqlite3_stmt*, const T&), T&);
     // --------------------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------------------
     // READ 
-    template<typename T> int read_one(sqlite3_stmt*, void (*)(sqlite3_stmt*, T&), void (*)(sqlite3*, const int), const int, T&);
-    template<typename T> int read_all(sqlite3_stmt*, void (*)(sqlite3_stmt*, T&), void (*)(sqlite3*), std::vector<T>&);
+    template<typename T> int read_one(sqlite3_stmt*, void (*)(sqlite3_stmt*, T&), void (*)(sqlite3_stmt*, const int), const int, T&);
+    template<typename T> int read_all(sqlite3_stmt*, void (*)(sqlite3_stmt*, T&), void (*)(sqlite3_stmt*), std::vector<T>&);
     // --------------------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------------------
     // UPDATE / DELETE
-    template<typename T> int update_one(sqlite3_stmt*, void (*)(sqlite3*, const T&), const T&);
+    template<typename T> int update_one(sqlite3_stmt*, void (*)(sqlite3_stmt*, const T&), const T&);
     // --------------------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------------------
     // DELETE 
-    template<typename T> int delete_one(sqlite3_stmt*, void (*)(sqlite3*, const T&), const T&);
+    template<typename T> int delete_one(sqlite3_stmt*, void (*)(sqlite3_stmt*, const T&), const T&);
     // --------------------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------------------
@@ -77,24 +77,25 @@ class ClientDb
 
     // --------------------------------------------------------------------------------------------
     // ERROR CALLBACKS 
-    static void err_create_reactor(sqlite3*, const NuclearReactor&);
-    static void err_read_reactors(sqlite3*);
-    static void err_read_reactor(sqlite3*, const int);
-    static void err_update_reactor(sqlite3*, const NuclearReactor&);
-    static void err_delete_reactor(sqlite3*, const NuclearReactor&);
+    static void err_create_reactor(sqlite3_stmt*, const NuclearReactor&);
+    static void err_read_reactors(sqlite3_stmt*);
+    static void err_read_reactor(sqlite3_stmt*, const int);
+    static void err_update_reactor(sqlite3_stmt*, const NuclearReactor&);
+    static void err_delete_reactor(sqlite3_stmt*, const NuclearReactor&);
     // --------------------------------------------------------------------------------------------
 };
 
 class ClientDbException : public GpiesException
 {
     public:
-    ClientDbException(const std::string& message, const std::string& sqlite_errmsg = "", const int sqlite_code = -1)
-    : GpiesException(message), sqlite_code(sqlite_code), sqlite_errmsg(sqlite_errmsg)
+    ClientDbException(const std::string& message, const std::string& sqlite_errmsg = "", const int sqlite_code = -1, const std::string& query = "")
+    : GpiesException(message), sqlite_errmsg(sqlite_errmsg), sqlite_code(sqlite_code), query(query)
     {
     }
 
     std::string sqlite_errmsg;
     int sqlite_code;
+    std::string query;
 };
 
 #endif // CLIENT_DB_HPP

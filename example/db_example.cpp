@@ -29,7 +29,8 @@ int main(int argc, char* argv[])
     }
     catch(const ClientDbException& e)
     {
-        fprintf(stderr, "%s\n%s sqlite code = %4d\n\n", e.message.c_str(), e.sqlite_errmsg.c_str(), e.sqlite_code);
+        fprintf(stderr, "%s\n%s sqlite code = %4d\n\n** SQL QUERY **\n%s\n\n",
+            e.message.c_str(), e.sqlite_errmsg.c_str(), e.sqlite_code, e.query.c_str());
     }
 
     return 0;
@@ -76,14 +77,13 @@ void reactors_crud()
 
     fprintf(stdout, "* UPDATE / READ REACTORS\n\n");
 
-    int sqlite_changes = 0;
     for (int i = 0; i < VEC_SIZE; ++i)
     {
         reactors[i].species = "U+G-PIES REACTOR " + std::to_string(i);
         reactor_randomize(reactors[i]);
 
         db.update_reactor(reactors[i], &sqlite_code);
-        fprintf(stdout, "%d REACTOR(S) UPDATED\n", sqlite_changes);
+        fprintf(stdout, "REACTOR UPDATED\n");
 
         db.read_reactor(reactors[i].sqlite_id, read_reactors[i], &sqlite_code);
         fprintf(stdout, "READ REACTOR\t-\tsqlite code = %4d\n", sqlite_code);
@@ -97,8 +97,7 @@ void reactors_crud()
     for (int i = 0; i < VEC_SIZE; ++i)
     {
         db.delete_reactor(reactors[i], &sqlite_code);
-        fprintf(stdout, "* %4d REACTOR(S) DELETED\t-\tid = %4d\n",
-            sqlite_changes, reactors[i].sqlite_id);
+        fprintf(stdout, "* REACTOR \"%s\" DELETED\t-\tid = %4d\n", reactors[i].species.c_str(), reactors[i].sqlite_id);
     }
 
     fprintf(stdout, "\n");
