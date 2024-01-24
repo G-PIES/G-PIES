@@ -148,7 +148,7 @@ dbex: dblib
 
 # GoogleTest Cluster Dynamics Unit Tests
 cdtests:
-	g++ ./test/cd_tests.cpp -o $(BIN_DIR)/cd_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L./extern/googletest/lib -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamics
+	g++ test/cd_tests.cpp -o $(BIN_DIR)/cd_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L./extern/googletest/lib -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamics
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_tests$(EXE_EXT) || ( exit 0 )
 
 # ----------------------------------------------------------------------------------------
@@ -158,11 +158,11 @@ cdtests:
 # CI Targets 
 
 # Cluster Dynamics
-cluster_dynamics:
+cluster_dynamics: cdlib 
 	$(CC) $(CCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cluster_dynamics$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics 
 
 # Database 
-client_db:
+client_db: dblib
 	$(CC) $(CCFLAGS) example/db_example.cpp -o $(BIN_DIR)/client_db$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclientdb -lsqlite3
 
 # ----------------------------------------------------------------------------------------
