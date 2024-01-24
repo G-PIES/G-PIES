@@ -16,13 +16,13 @@ jobs:
           compiler: 'g++'
 
 
-      - name: Build backend
+      - name: Build Sim Backend
         run: make cdlib
-      - name: Build sim
+      - name: Build Sim
         run: make cluster_dynamics
-      - name: Build db backend
+      - name: Build DB Backend
         run: make client_db
-      - name: Build dblib
+      - name: Build client_db
         run: make client_db
       - name: Run gtests
         run: make cdtests
