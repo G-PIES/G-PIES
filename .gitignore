@@ -44,6 +44,16 @@ resources
 # csv
 *.csv
 
+# databases
+./db
+db/*.db
+
+# dev directories
+./bin
+./build
 ./lib
+./out
+
+# gtest binaries
 !libgtest_main.a
 !libgtest.a

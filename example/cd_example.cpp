@@ -68,8 +68,12 @@ void profile()
     Timer timer;
 
     ClusterDynamicsState state;
-    NuclearReactor reactor = nuclear_reactors::OSIRIS();
-    Material material = materials::SA304();
+
+    NuclearReactor reactor;
+    nuclear_reactors::OSIRIS(reactor);
+
+    Material material;
+    materials::SA304(material);
 
     ClusterDynamics cd(10, reactor, material);
     cd.run(1e-5, 1e-5);
@@ -89,8 +93,11 @@ void profile()
 
 int main(int argc, char* argv[])
 {
-    NuclearReactor reactor = nuclear_reactors::OSIRIS();
-    Material material = materials::SA304();
+    NuclearReactor reactor;
+    nuclear_reactors::OSIRIS(reactor);
+
+    Material material;
+    materials::SA304(material);
 
     // Default values
     concentration_boundary = 10;
