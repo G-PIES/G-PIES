@@ -158,11 +158,11 @@ cdtests:
 # CI Targets 
 
 # Cluster Dynamics
-cluster_dynamics: cdlib
+cluster_dynamics:
 	$(CC) $(CCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cluster_dynamics$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics 
 
 # Database 
-client_db: dblib
+client_db:
 	$(CC) $(CCFLAGS) example/db_example.cpp -o $(BIN_DIR)/client_db$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclientdb -lsqlite3
 
 # ----------------------------------------------------------------------------------------
