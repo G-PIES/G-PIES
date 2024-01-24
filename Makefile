@@ -38,8 +38,8 @@ endif
 CC = g++
 CCFLAGS += -std=c++17
 
-INCLUDE_FLAGS = -Iinclude
-INCLUDE_FLAGS += -Isrc
+INCLUDE_FLAGS = -Isrc/client_db -Isrc/cluster_dynamics
+INCLUDE_FLAGS += -Iinclude/client_db -Iinclude/cluster_dynamics -Iinclude/model -Iinclude/utils
 
 # Directories
 BIN_DIR = bin
@@ -101,17 +101,17 @@ cd: cdlib cdcudalib cdex
 
 # Cluster Dynamics Library
 cdlib: bdirs
-	$(CC) $(CCFLAGS) src/cluster_dynamics.cpp -c -o $(BUILD_DIR)/libclusterdynamics.o $(INCLUDE_FLAGS)
+	$(CC) $(CCFLAGS) src/cluster_dynamics/*.cpp -c -o $(BUILD_DIR)/libclusterdynamics.o $(INCLUDE_FLAGS)
 	ar crs $(CD_LIB) $(BUILD_DIR)/libclusterdynamics.o
 
 # Cluster Dynamics CUDA Library
 cdcudalib: bdirs
-	nvcc -O3 -c -x cu -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics.cpp -o$(BUILD_DIR)/libclusterdynamicscuda.o $(INCLUDE_FLAGS)
+	nvcc -O3 -c -x cu -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics/*.cpp -o$(BUILD_DIR)/libclusterdynamicscuda.o $(INCLUDE_FLAGS)
 	ar crs $(CDCUDA_LIB) $(BUILD_DIR)/libclusterdynamicscuda.o
 
 # Client Database Example
 dblib: bdirs
-	$(CC) $(CCFLAGS) src/client_db.cpp -c -o $(BUILD_DIR)/libclientdb.o $(INCLUDE_FLAGS)
+	$(CC) $(CCFLAGS) src/client_db/*.cpp -c -o $(BUILD_DIR)/libclientdb.o $(INCLUDE_FLAGS)
 	ar crs $(DB_LIB) $(BUILD_DIR)/libclientdb.o
 
 # ----------------------------------------------------------------------------------------

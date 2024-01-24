@@ -48,9 +48,10 @@ resources
 db
 
 # dev directories
-lib
 bin
 build
+lib
+out
 
 # gtest binaries
 !libgtest_main.a
