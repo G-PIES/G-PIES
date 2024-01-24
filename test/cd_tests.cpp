@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "cluster_dynamics.hpp"
+#include "cluster_dynamics_impl.hpp"
 
 class ClusterDynamicsTest : public ::testing::Test
 {
@@ -69,4 +70,52 @@ TEST_F(ClusterDynamicsTest, ResultUnchanged)
   }
 
   EXPECT_NEAR(state.dislocation_density, dislocation_density_data, 1e-7);
+}
+
+TEST_F(ClusterDynamicsTest, i_defect_production_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+
+  // Starts from cluster size = 1
+  double expected_i_defect_productions[5] = {
+    2.0879999999999996e-08, 
+    4.3499999999999992e-08, 
+    1.7399999999999997e-08, 
+    5.2199999999999989e-09, 
+    0.0
+  };
+  double actual_i_defect_productions[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual_i_defect_productions[i] = cd.i_defect_production(i + 1);
+  }
+
+  for (int i = 0; i < 5; ++i)
+  {
+    EXPECT_DOUBLE_EQ(expected_i_defect_productions[i], actual_i_defect_productions[i]);
+  }
+}
+
+TEST_F(ClusterDynamicsTest, v_defect_production_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+
+  // Starts from cluster size = 1
+  double expected_v_defect_productions[5] = {
+    7.7429999999999973e-08, 
+    5.2199999999999989e-09, 
+    2.6099999999999995e-09, 
+    1.7399999999999998e-09, 
+    0.0
+  };
+  double actual_v_defect_productions[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual_v_defect_productions[i] = cd.v_defect_production(i + 1);
+  }
+
+  for (int i = 0; i < 5; ++i)
+  {
+    EXPECT_DOUBLE_EQ(expected_v_defect_productions[i], actual_v_defect_productions[i]);
+  }
 }
