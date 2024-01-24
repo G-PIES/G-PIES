@@ -23,7 +23,6 @@ jobs:
       - name: Run gtests
         run: make cdtests
 
-
       - name: Upload Executable
         uses: actions/upload-artifact@v2
         with:
