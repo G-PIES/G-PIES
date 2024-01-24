@@ -14,6 +14,7 @@
 #ifdef USE_CUDA
   #include <thrust/device_vector.h>
   #include <thrust/device_malloc.h>
+  #include <thrust/device_free.h>
 #endif
 
 // Used to transform CUDA code into raw C++ for the software version
@@ -21,7 +22,7 @@
     #define __CUDADECL__ __device__ __host__
 
     template<typename T>
-    using thrust_vector = thrust_vector<T>;
+    using thrust_vector = thrust::device_vector<T>;
 #else
     #define __CUDADECL__
 
@@ -109,6 +110,7 @@ public:
 
   // Interface functions
   ClusterDynamicsImpl(size_t concentration_boundary, NuclearReactor reactor, Material material);
+  ~ClusterDynamicsImpl();
     
   ClusterDynamicsState run(double delta_time, double total_time);
   Material get_material();

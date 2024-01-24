@@ -744,7 +744,6 @@ bool ClusterDynamicsImpl::update_clusters_1(double delta_time)
 bool ClusterDynamicsImpl::update_clusters(double delta_time)
 {
   auto self = this->self;
-
   thrust_vector<int> indices(concentration_boundary - 2);
   thrust::sequence(indices.begin(), indices.end(), 2);
   thrust::transform(indices.begin(), indices.end(), interstitials_temp.begin() + 2, 
@@ -757,6 +756,13 @@ bool ClusterDynamicsImpl::update_clusters(double delta_time)
     });
 
   return true; // TODO - Validate results
+}
+
+ClusterDynamicsImpl::~ClusterDynamicsImpl()
+{
+  #ifdef USE_CUDA
+    thrust::device_free(self);
+  #endif
 }
 
 double ClusterDynamicsImpl::ii_sum_absorption(size_t nmax)
@@ -832,11 +838,11 @@ bool ClusterDynamicsImpl::validate(size_t n)
 
 
 
-
+// TODO - clean up the uses of random +1/+2/-1/etc throughout the code
 ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, NuclearReactor reactor, Material material)
   : concentration_boundary(concentration_boundary), reactor(reactor), material(material),
-    interstitials(concentration_boundary, 0.0), vacancies(concentration_boundary, 0.0),
-    interstitials_temp(concentration_boundary, 0.0), vacancies_temp(concentration_boundary, 0.0),
+    interstitials(concentration_boundary + 1, 0.0), vacancies(concentration_boundary + 1, 0.0),
+    interstitials_temp(concentration_boundary + 1, 0.0), vacancies_temp(concentration_boundary + 1, 0.0),
     dislocation_density(material.dislocation_density_0), time(0.0)
 {
   #ifdef USE_CUDA
@@ -863,8 +869,8 @@ ClusterDynamicsState ClusterDynamicsImpl::run(double delta_time, double total_ti
     {
         .valid = state_is_valid,
         .time = time,
-        .interstitials = std::vector<double>(interstitials.begin(), interstitials.end()),
-        .vacancies = std::vector<double>(vacancies.begin(), vacancies.end()),
+        .interstitials = std::vector<double>(interstitials.begin(), interstitials.end() - 1),
+        .vacancies = std::vector<double>(vacancies.begin(), vacancies.end() - 1),
         .dislocation_density = dislocation_density
     };
 }
