@@ -19,7 +19,11 @@ jobs:
       - name: Build backend
         run: make cdlib
       - name: Build sim
-        run: make cdex
+        run: make cluster_dynamics
+      - name: Build db backend
+        run: make client_db
+      - name: Build dblib
+        run: make client_db
       - name: Run gtests
         run: make cdtests
 
