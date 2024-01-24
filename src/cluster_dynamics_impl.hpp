@@ -8,16 +8,25 @@
 #include "material.hpp"
 
 #include <thrust/host_vector.h>
-#include <thrust/device_vector.h>
-#include <thrust/device_malloc.h>
 #include <thrust/transform_reduce.h>
 #include <thrust/sequence.h>
+
+#ifdef USE_CUDA
+  #include <thrust/device_vector.h>
+  #include <thrust/device_malloc.h>
+#endif
 
 // Used to transform CUDA code into raw C++ for the software version
 #ifdef USE_CUDA
     #define __CUDADECL__ __device__ __host__
+
+    template<typename T>
+    using thrust_vector = thrust_vector<T>;
 #else
     #define __CUDADECL__
+
+    template<typename T>
+    using thrust_vector = thrust::host_vector<T>;
 #endif
 
 class ClusterDynamicsImpl
@@ -25,10 +34,10 @@ class ClusterDynamicsImpl
 public:
   double time;
 
-  thrust::device_vector<double> interstitials;
-  thrust::device_vector<double> interstitials_temp;
-  thrust::device_vector<double> vacancies;
-  thrust::device_vector<double> vacancies_temp;
+  thrust_vector<double> interstitials;
+  thrust_vector<double> interstitials_temp;
+  thrust_vector<double> vacancies;
+  thrust_vector<double> vacancies_temp;
 
   size_t concentration_boundary;
   double dislocation_density;
@@ -42,7 +51,11 @@ public:
   Material material;
   NuclearReactor reactor;
 
-  thrust::device_ptr<ClusterDynamicsImpl> self;
+  #ifdef USE_CUDA
+    thrust::device_ptr<ClusterDynamicsImpl> self;
+  #else
+    ClusterDynamicsImpl* self;
+  #endif
 
   // Physics Model Functions
 
@@ -94,7 +107,7 @@ public:
   bool step(double);
   bool validate(size_t);
 
-public:
+  // Interface functions
   ClusterDynamicsImpl(size_t concentration_boundary, NuclearReactor reactor, Material material);
     
   ClusterDynamicsState run(double delta_time, double total_time);

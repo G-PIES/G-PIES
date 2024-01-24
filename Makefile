@@ -49,8 +49,8 @@ all: software_lib software_example_frontend
 # Software library compilation
 software_lib:
 	mkdir -p lib
-	$(CC) $(CCFLAGS) src/cluster_dynamics.cpp -c -o clusterdynamics.o $(INCLUDE_FLAGS)
-	nvcc $(CCFLAGS) src/cluster_dynamics_impl.cpp -c -o clusterdynamicsimpl.o $(INCLUDE_FLAGS)
+	$(CC) $(CCFLAGS) -g -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CPP src/cluster_dynamics.cpp -c -o clusterdynamics.o $(INCLUDE_FLAGS)
+	$(CC) $(CCFLAGS) -g -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CPP src/cluster_dynamics_impl.cpp -c -o clusterdynamicsimpl.o $(INCLUDE_FLAGS)
 	ar crs $(library) clusterdynamics.o clusterdynamicsimpl.o
 	rm *.o
 
@@ -64,7 +64,7 @@ cuda_lib:
 
 # Example frontend compilation
 example_frontend: software_lib
-	$(CC) example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics 
+	$(CC) example/*.cpp -g -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics 
 
 # CUDA backend & example frontend compilation
 cuda_example_frontend: cuda_lib

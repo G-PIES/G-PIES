@@ -745,7 +745,7 @@ bool ClusterDynamicsImpl::update_clusters(double delta_time)
 {
   auto self = this->self;
 
-  thrust::device_vector<int> indices(concentration_boundary);
+  thrust_vector<int> indices(concentration_boundary - 2);
   thrust::sequence(indices.begin(), indices.end(), 2);
   thrust::transform(indices.begin(), indices.end(), interstitials_temp.begin() + 2, 
     [self, delta_time] __CUDADECL__ (const int& idx){
@@ -762,7 +762,7 @@ bool ClusterDynamicsImpl::update_clusters(double delta_time)
 double ClusterDynamicsImpl::ii_sum_absorption(size_t nmax)
 {
   auto self = this->self;
-  thrust::device_vector<int> indices(nmax);
+  thrust_vector<int> indices(nmax);
   thrust::sequence(indices.begin(), indices.end(), 1);
   return thrust::transform_reduce(indices.begin(), indices.end(),
     [self] __CUDADECL__ (const int& idx) { 
@@ -774,7 +774,7 @@ double ClusterDynamicsImpl::ii_sum_absorption(size_t nmax)
 double ClusterDynamicsImpl::iv_sum_absorption(size_t nmax)
 {
   auto self = this->self;
-  thrust::device_vector<int> indices(nmax);
+  thrust_vector<int> indices(nmax);
   thrust::sequence(indices.begin(), indices.end(), 1);
   return thrust::transform_reduce(indices.begin(), indices.end(), 
     [self] __CUDADECL__ (const int& idx) {
@@ -786,7 +786,7 @@ double ClusterDynamicsImpl::iv_sum_absorption(size_t nmax)
 double ClusterDynamicsImpl::vv_sum_absorption(size_t nmax)
 {
   auto self = this->self;
-  thrust::device_vector<int> indices(nmax);
+  thrust_vector<int> indices(nmax);
   thrust::sequence(indices.begin(), indices.end(), 1);
   return thrust::transform_reduce(indices.begin(), indices.end(), 
     [self] __CUDADECL__ (const int& idx) {
@@ -798,7 +798,7 @@ double ClusterDynamicsImpl::vv_sum_absorption(size_t nmax)
 double ClusterDynamicsImpl::vi_sum_absorption(size_t nmax)
 {
   auto self = this->self;
-  thrust::device_vector<int> indices(nmax);
+  thrust_vector<int> indices(nmax);
   thrust::sequence(indices.begin(), indices.end(), 1);
   return thrust::transform_reduce(indices.begin(), indices.end(), 
     [self] __CUDADECL__ (const int& idx) {
@@ -845,7 +845,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, NuclearR
     cudaMemcpy(ptr, this, sizeof(ClusterDynamicsImpl), cudaMemcpyHostToDevice);
     self = thrust::device_ptr<ClusterDynamicsImpl>(ptr);
   #else
-    self = thrust::device_ptr(this);
+    self = this;
   #endif
 }
 
