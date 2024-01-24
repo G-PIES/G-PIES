@@ -75,7 +75,10 @@ void profile()
     Material material;
     materials::SA304(material);
 
-    for (int n = 100; n < 40000; n += 1000)
+    ClusterDynamics cd(10, reactor, material);
+    cd.run(1e-5, 1e-5);
+
+    for (int n = 100; n < 400000; n += 10000)
     {
         fprintf(stderr, "N=%d\n", n);
         ClusterDynamics cd(n, reactor, material);

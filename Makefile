@@ -57,8 +57,7 @@ DB_LIB = $(LIB_DIR)/libclientdb$(LIB_EXT)
 
 # ----------------------------------------------------------------------------------------
 
-
-.PHONY: bdirs clean lib ex cuda cd cdlib cdcudalib dblib cdex cdcudaex dbex cdtests cdcsv
+.PHONY: bdirs clean lib ex cuda all cd cdlib cdcudalib dblib cdex cdv cdcsv cdcudaex dbex cdtests dbtests cluster_dynamics client_db
 
 # ----------------------------------------------------------------------------------------
 # Utilties 
@@ -75,7 +74,7 @@ bdirs:
 clean: 
 	rm -fr $(BIN_DIR)
 	rm -fr $(BUILD_DIR)
-	rm -fr  $(DB_DIR)/*.db
+	rm -fr $(DB_DIR)/*.db
 	rm -fr $(LIB_DIR)
 	rm -fr $(OUT_DIR)
 
@@ -103,18 +102,20 @@ cd: cdlib cdcudalib cdex
 
 # Cluster Dynamics Library
 cdlib: bdirs
-	$(CC) $(CCFLAGS) src/cluster_dynamics/*.cpp -c -o $(BUILD_DIR)/libclusterdynamics.o $(INCLUDE_FLAGS)
-	ar crs $(CD_LIB) $(BUILD_DIR)/libclusterdynamics.o
+	$(CC) $(CCFLAGS) src/cluster_dynamics/cluster_dynamics.cpp -c -o $(BUILD_DIR)/clusterdynamics.o $(INCLUDE_FLAGS)
+	$(CC) $(CCFLAGS) src/cluster_dynamics/cpu/*.cpp -c -o $(BUILD_DIR)/clusterdynamicsimpl.o $(INCLUDE_FLAGS)
+	ar crs $(CD_LIB) $(BUILD_DIR)/clusterdynamics.o $(BUILD_DIR)/clusterdynamicsimpl.o
 
 # Cluster Dynamics CUDA Library
 cdcudalib: bdirs
-	nvcc -O3 -c -x cu -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics/*.cpp -o$(BUILD_DIR)/libclusterdynamicscuda.o $(INCLUDE_FLAGS)
-	ar crs $(CDCUDA_LIB) $(BUILD_DIR)/libclusterdynamicscuda.o
+	nvcc -O3 $(CCFLAGS) src/cluster_dynamics/cluster_dynamics.cpp -c -o $(BUILD_DIR)/clusterdynamicscuda.o $(INCLUDE_FLAGS)
+	nvcc -c -x cu --expt-extended-lambda -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics/cuda/*.cpp -o $(BUILD_DIR)/clusterdynamicscudaimpl.o $(INCLUDE_FLAGS)
+	ar crs $(CDCUDA_LIB) $(BUILD_DIR)/clusterdynamicscuda.o $(BUILD_DIR)/clusterdynamicscudaimpl.o
 
 # Client Database Example
 dblib: bdirs
-	$(CC) $(CCFLAGS) src/client_db/*.cpp -c -o $(BUILD_DIR)/libclientdb.o $(INCLUDE_FLAGS)
-	ar crs $(DB_LIB) $(BUILD_DIR)/libclientdb.o
+	$(CC) $(CCFLAGS) src/client_db/*.cpp -c -o $(BUILD_DIR)/clientdb.o $(INCLUDE_FLAGS)
+	ar crs $(DB_LIB) $(BUILD_DIR)/clientdb.o
 
 # ----------------------------------------------------------------------------------------
 
@@ -125,12 +126,12 @@ dblib: bdirs
 
 # Cluster Dynamics Example
 cdex: cdlib
-	$(CC) $(CCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics 
+	$(CC) $(CCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_example$(EXE_EXT) || ( exit 0 )
 
 # Cluster Dynamics Example W/ Verbose Printing
 cdv:
-	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true example/*.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
+	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true example/cd_example.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_example$(EXE_EXT) || ( exit 0 )
 
 # Cluster Dynamics Example W/ CSV Output Formatting
@@ -138,7 +139,7 @@ cdcsv: cdlib
 	$(CC) $(CCFLAGS) -D CSV=true example/cd_example.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_example$(EXE_EXT) 1e-5 1 > $(OUT_DIR)/cd-output.csv || ( exit 0 )
 
-# Cluster Dynamics w/ CUDA Example
+# Cluster Dynamics W/ CUDA Example
 cdcudaex: cdcudalib
 	nvcc example/cd_example.cpp -o $(BIN_DIR)/cd_cuda_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamicscuda
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_cuda_example$(EXE_EXT) || ( exit 0 )
@@ -155,9 +156,14 @@ dbex: dblib
 # Tests 
 
 # GoogleTest Cluster Dynamics Unit Tests
-cdtests:
+cdtests: cdlib
 	$(CC) $(CCFLAGS) test/cd_tests.cpp -o $(BIN_DIR)/cd_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L$(GTEST_LIBS) -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamics
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_tests$(EXE_EXT) || ( exit 0 )
+
+# GoogleTest Cluster Dynamics W/ CUDA Unit Tests
+cdcudatests:
+	nvcc $(CCFLAGS) -DUSE_CUDA test/cd_tests.cpp -o $(BIN_DIR)/cdcuda_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L$(GTEST_LIBS) -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamicscuda
+	@[ "${R}" ] && ./$(BIN_DIR)/cdcuda_tests$(EXE_EXT) || ( exit 0 )
 
 # GoogleTest Cluster Dynamics Unit Tests
 dbtests:
