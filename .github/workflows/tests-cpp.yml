@@ -27,4 +27,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: cluster_dynamics
-          path: cluster_dynamics.out
+          path: bin/cluster_dynamics.out
