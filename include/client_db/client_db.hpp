@@ -98,9 +98,6 @@ private:
     // The path to the SQLite database which |db| will reference.
     std::string path;
 
-    // Returns the last inserted row id, regardless of the table.
-    int last_insert_rowid(int&);
-
 
     // --------------------------------------------------------------------------------------------
     /*  TEMPLATE FUNCTIONS
@@ -124,31 +121,48 @@ private:
 
     // --------------------------------------------------------------------------------------------
 
+
     // --------------------------------------------------------------------------------------------
     /*  COLUMN BINDING
         These are called by the public facing function to bind objects to SQLite statements.
     */
+
     static void bind_reactor(sqlite3_stmt*, const NuclearReactor&);
+
     // --------------------------------------------------------------------------------------------
+
 
     // --------------------------------------------------------------------------------------------
     /*  ROW CALLBACKS 
         These callbacks are used as parameters in the read template functions. They handle the
         underlying logic of copying data from a retrieved SQLite row into an object.
     */
+
     static void row_read_reactor(sqlite3_stmt*, NuclearReactor&);
+
     // --------------------------------------------------------------------------------------------
+
 
     // --------------------------------------------------------------------------------------------
     /*  ERROR CALLBACKS 
         These callbacks are used as parameters in all template functions to handle any errors that
         occur in the database queries.
     */
+
     static void err_create_reactor(sqlite3_stmt*, const NuclearReactor&);
     static void err_read_reactors(sqlite3_stmt*);
     static void err_read_reactor(sqlite3_stmt*, const int);
     static void err_update_reactor(sqlite3_stmt*, const NuclearReactor&);
     static void err_delete_reactor(sqlite3_stmt*, const NuclearReactor&);
+
+    // --------------------------------------------------------------------------------------------
+
+    // --------------------------------------------------------------------------------------------
+    // UTILITIES
+
+    // Returns the last inserted row id, regardless of the table.
+    int last_insert_rowid(int&);
+
     // --------------------------------------------------------------------------------------------
 };
 
