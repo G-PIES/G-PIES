@@ -17,12 +17,11 @@ jobs:
 
 
       - name: Build backend
-        run: make software_lib
+        run: make cdlib
       - name: Build sim
-        run: make example_frontend
+        run: make cdex
       - name: Run gtests
-        run: make test
-
+        run: make cdtests
 
       - name: Upload Executable
         uses: actions/upload-artifact@v2
