@@ -102,18 +102,19 @@ cd: cdlib cdcudalib cdex
 
 # Cluster Dynamics Library
 cdlib: bdirs
-	$(CC) $(CCFLAGS) src/cluster_dynamics/*.cpp -c -o $(BUILD_DIR)/libclusterdynamics.o $(INCLUDE_FLAGS)
-	ar crs $(CD_LIB) $(BUILD_DIR)/libclusterdynamics.o
+	$(CC) $(CCFLAGS) src/cluster_dynamics/*.cpp -o $(BUILD_DIR)/clusterdynamics.o $(INCLUDE_FLAGS)
+	ar crs $(CD_LIB) $(BUILD_DIR)/clusterdynamics.o
 
 # Cluster Dynamics CUDA Library
 cdcudalib: bdirs
-	nvcc -O3 -c -x cu -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics/*.cpp -o$(BUILD_DIR)/libclusterdynamicscuda.o $(INCLUDE_FLAGS)
-	ar crs $(CDCUDA_LIB) $(BUILD_DIR)/libclusterdynamicscuda.o
+	nvcc -O3 $(CCFLAGS) src/cluster_dynamics/cluster_dynamics.cpp -c -o $(BUILD_DIR)/clusterdynamicscuda.o $(INCLUDE_FLAGS)
+	nvcc -c -x cu --expt-extended-lambda -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics/cluster_dynamics_impl.cpp -o $(BUILD_DIR)/clusterdynamicscudaimpl.o $(INCLUDE_FLAGS)
+	ar crs $(CDCUDA_LIB) $(BUILD_DIR)/clusterdynamicscuda.o $(BUILD_DIR)/clusterdynamicscudaimpl.o
 
 # Client Database Example
 dblib: bdirs
-	$(CC) $(CCFLAGS) src/client_db/*.cpp -c -o $(BUILD_DIR)/libclientdb.o $(INCLUDE_FLAGS)
-	ar crs $(DB_LIB) $(BUILD_DIR)/libclientdb.o
+	$(CC) $(CCFLAGS) src/client_db/*.cpp -c -o $(BUILD_DIR)/clientdb.o $(INCLUDE_FLAGS)
+	ar crs $(DB_LIB) $(BUILD_DIR)/clientdb.o
 
 # ----------------------------------------------------------------------------------------
 

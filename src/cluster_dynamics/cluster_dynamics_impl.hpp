@@ -7,11 +7,11 @@
 #include "nuclear_reactor.hpp"
 #include "material.hpp"
 
-#include <thrust/host_vector.h>
-#include <thrust/transform_reduce.h>
-#include <thrust/sequence.h>
-
 #ifdef USE_CUDA
+  #include <thrust/host_vector.h>
+  #include <thrust/transform_reduce.h>
+  #include <thrust/sequence.h>
+
   #include <thrust/device_vector.h>
   #include <thrust/device_malloc.h>
   #include <thrust/device_free.h>
