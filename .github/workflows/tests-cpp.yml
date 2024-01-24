@@ -25,7 +25,7 @@ jobs:
       - name: Build client_db
         run: make client_db
       - name: Run gtests
-        run: make cdtests
+        run: make cdtests R=1
 
 
       - name: Upload Executable
