@@ -16,16 +16,20 @@ jobs:
           compiler: 'g++'
 
 
-      - name: Build backend
-        run: make software_lib
-      - name: Build sim
-        run: make example_frontend
+      - name: Build Sim Backend
+        run: make cdlib
+      - name: Build Sim
+        run: make cluster_dynamics
+      - name: Build DB Backend
+        run: make client_db
+      - name: Build client_db
+        run: make client_db
       - name: Run gtests
-        run: make test
+        run: make cdtests R=1
 
 
       - name: Upload Executable
         uses: actions/upload-artifact@v2
         with:
           name: cluster_dynamics
-          path: cluster_dynamics.out
+          path: bin/cluster_dynamics.out
