@@ -90,10 +90,11 @@ TEST_F(ClusterDynamicsTest, i_defect_production_test)
     actual_i_defect_productions[i] = cd.i_defect_production(i + 1);
   }
 
-  for (int i = 0; i < 5; ++i)
-  {
-    EXPECT_DOUBLE_EQ(expected_i_defect_productions[i], actual_i_defect_productions[i]);
-  }
+  EXPECT_DOUBLE_EQ(expected_i_defect_productions[0], actual_i_defect_productions[0]);
+  EXPECT_DOUBLE_EQ(expected_i_defect_productions[1], actual_i_defect_productions[1]);
+  EXPECT_DOUBLE_EQ(expected_i_defect_productions[2], actual_i_defect_productions[2]);
+  EXPECT_DOUBLE_EQ(expected_i_defect_productions[3], actual_i_defect_productions[3]);
+  EXPECT_DOUBLE_EQ(expected_i_defect_productions[4], actual_i_defect_productions[4]);
 }
 
 TEST_F(ClusterDynamicsTest, v_defect_production_test)
@@ -114,8 +115,9 @@ TEST_F(ClusterDynamicsTest, v_defect_production_test)
     actual_v_defect_productions[i] = cd.v_defect_production(i + 1);
   }
 
-  for (int i = 0; i < 5; ++i)
-  {
-    EXPECT_DOUBLE_EQ(expected_v_defect_productions[i], actual_v_defect_productions[i]);
-  }
+  EXPECT_DOUBLE_EQ(expected_v_defect_productions[0], actual_v_defect_productions[0]);
+  EXPECT_DOUBLE_EQ(expected_v_defect_productions[1], actual_v_defect_productions[1]);
+  EXPECT_DOUBLE_EQ(expected_v_defect_productions[2], actual_v_defect_productions[2]);
+  EXPECT_DOUBLE_EQ(expected_v_defect_productions[3], actual_v_defect_productions[3]);
+  EXPECT_DOUBLE_EQ(expected_v_defect_productions[4], actual_v_defect_productions[4]);
 }
