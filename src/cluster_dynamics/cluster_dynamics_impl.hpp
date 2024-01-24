@@ -22,12 +22,12 @@
     #define __CUDADECL__ __device__ __host__
 
     template<typename T>
-    using thrust_vector = thrust::device_vector<T>;
+    using vector = thrust::device_vector<T>;
 #else
     #define __CUDADECL__
 
     template<typename T>
-    using thrust_vector = thrust::host_vector<T>;
+    using vector = std::vector<T>;
 #endif
 
 class ClusterDynamicsImpl
@@ -35,10 +35,10 @@ class ClusterDynamicsImpl
 public:
   double time;
 
-  thrust_vector<double> interstitials;
-  thrust_vector<double> interstitials_temp;
-  thrust_vector<double> vacancies;
-  thrust_vector<double> vacancies_temp;
+  vector<double> interstitials;
+  vector<double> interstitials_temp;
+  vector<double> vacancies;
+  vector<double> vacancies_temp;
 
   size_t concentration_boundary;
   double dislocation_density;
@@ -54,7 +54,7 @@ public:
   Material material;
   NuclearReactor reactor;
 
-  thrust_vector<int> indices;
+  vector<int> indices;
   #ifdef USE_CUDA
     thrust::device_ptr<ClusterDynamicsImpl> self;
   #else
