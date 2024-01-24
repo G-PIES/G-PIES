@@ -1,3 +1,6 @@
+#ifndef CLUSTER_DYNAMICS_HPP
+#define CLUSTER_DYNAMICS_HPP
+
 #include <memory>
 #include "cluster_dynamics_state.hpp"
 #include "material.hpp"
@@ -19,3 +22,5 @@ public:
   NuclearReactor get_reactor();
   void set_reactor(NuclearReactor reactor);
 };
+
+#endif // CLUSTER_DYNAMICS_HPP
