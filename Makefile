@@ -17,8 +17,10 @@ else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S), Linux)
 		CCFLAGS += -D LINUX
+		GTEST_LIBS = ./extern/googletest/lib/linux
 	else ifeq ($(UNAME_S), Darwin)
 		CCFLAGS += -D OSX
+		GTEST_LIBS = ./extern/googletest/lib/apple
 	endif
 
 	UNAME_P := $(shell uname -p)
@@ -146,10 +148,21 @@ dbex: dblib
 	$(CC) $(CCFLAGS) example/db_example.cpp -o $(BIN_DIR)/db_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclientdb -lsqlite3
 	@[ "${R}" ] && ./$(BIN_DIR)/db_example$(EXE_EXT) || ( exit 0 )
 
+# ----------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------
+# Tests 
+
 # GoogleTest Cluster Dynamics Unit Tests
 cdtests:
-	g++ test/cd_tests.cpp -o $(BIN_DIR)/cd_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L./extern/googletest/lib -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamics
+	$(CC) $(CCFLAGS) test/cd_tests.cpp -o $(BIN_DIR)/cd_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L$(GTEST_LIBS) -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamics
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_tests$(EXE_EXT) || ( exit 0 )
+
+# GoogleTest Cluster Dynamics Unit Tests
+dbtests:
+	$(CC) $(CCFLAGS) test/db_tests.cpp -o $(BIN_DIR)/db_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L$(GTEST_LIBS) -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclientdb -lsqlite3
+	@[ "${R}" ] && ./$(BIN_DIR)/db_tests$(EXE_EXT) || ( exit 0 )
 
 # ----------------------------------------------------------------------------------------
 

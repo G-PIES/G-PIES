@@ -51,7 +51,7 @@ void reactors_crud()
         reactors[i].species = "G-PIES REACTOR " + std::to_string(i);
         reactor_randomize(reactors[i]);
 
-        sqlite_code = db.create_reactor(reactors[i]);
+        db.create_reactor(reactors[i], &sqlite_code);
 
         fprintf(stdout, "* CREATE %s\t-\tid = %4d\t-\tsqlite code = %4d\n",
             reactors[i].species.c_str(), reactors[i].sqlite_id, sqlite_code);
@@ -60,7 +60,7 @@ void reactors_crud()
     fprintf(stdout, "\n");
 
     std::vector<NuclearReactor> read_reactors;
-    sqlite_code = db.read_reactors(read_reactors);
+    db.read_reactors(read_reactors, &sqlite_code);
     fprintf(stdout, "* READ REACTORS - count = %4d - sqlite code = %4d\n" 
         "* EXISTING\t\t-\tREAD RESULT\n\n",
         (int)read_reactors.size(), sqlite_code);
@@ -82,10 +82,10 @@ void reactors_crud()
         reactors[i].species = "U+G-PIES REACTOR " + std::to_string(i);
         reactor_randomize(reactors[i]);
 
-        sqlite_changes = db.update_reactor(reactors[i]);
+        db.update_reactor(reactors[i], &sqlite_code);
         fprintf(stdout, "%d REACTOR(S) UPDATED\n", sqlite_changes);
 
-        sqlite_code = db.read_reactor(reactors[i].sqlite_id, read_reactors[i]);
+        db.read_reactor(reactors[i].sqlite_id, read_reactors[i], &sqlite_code);
         fprintf(stdout, "READ REACTOR\t-\tsqlite code = %4d\n", sqlite_code);
 
         reactor_cmp_print(reactors[i], read_reactors[i]);
@@ -96,7 +96,7 @@ void reactors_crud()
 
     for (int i = 0; i < VEC_SIZE; ++i)
     {
-        sqlite_changes = db.delete_reactor(reactors[i]);
+        db.delete_reactor(reactors[i], &sqlite_code);
         fprintf(stdout, "* %4d REACTOR(S) DELETED\t-\tid = %4d\n",
             sqlite_changes, reactors[i].sqlite_id);
     }

@@ -13,32 +13,34 @@ static const char* DEFAULT_CLIENT_DB_PATH = "./db/gpies.db";
 class ClientDb
 {
     public:
-    int init();
-    int clear();
+    bool init(int* = nullptr);
+    bool clear(int* = nullptr);
 
     // reactor CRUD
-    int create_reactor(NuclearReactor&);
-    int read_reactors(std::vector<NuclearReactor>&);
-    int read_reactor(const int, NuclearReactor&);
-    int update_reactor(const NuclearReactor&);
-    int delete_reactor(const NuclearReactor&);
+    bool create_reactor(NuclearReactor&, int* = nullptr);
+    bool read_reactors(std::vector<NuclearReactor>&, int* = nullptr);
+    bool read_reactor(const int, NuclearReactor&, int* = nullptr);
+    bool update_reactor(const NuclearReactor&, int* = nullptr);
+    bool delete_reactor(const NuclearReactor&, int* = nullptr);
 
     // material CRUD
 
     // simulation CRUD
 
-    int open();
-    int close();
+    bool open(int* = nullptr);
+    bool close(int* = nullptr);
 
     bool is_open();
-    bool is_sqlite_error(int);
+    static bool is_sqlite_success(const int);
+    static bool is_sqlite_error(const int);
+    static bool is_valid_sqlite_id(const int);
 
     ClientDb(const char* = DEFAULT_CLIENT_DB_PATH, const bool = true);
     ~ClientDb();
 
     private:
     sqlite3* db;
-    const std::string path;
+    std::string path;
 
     int last_insert_rowid(int&);
 
@@ -86,7 +88,7 @@ class ClientDb
 class ClientDbException : public GpiesException
 {
     public:
-    ClientDbException(const std::string& message, const std::string sqlite_errmsg = "", const int sqlite_code = -1)
+    ClientDbException(const std::string& message, const std::string& sqlite_errmsg = "", const int sqlite_code = -1)
     : GpiesException(message), sqlite_code(sqlite_code), sqlite_errmsg(sqlite_errmsg)
     {
     }

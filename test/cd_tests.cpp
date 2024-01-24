@@ -1,6 +1,5 @@
 #include "gtest/gtest.h"
 #include "cluster_dynamics.hpp"
-#include "client_db.hpp"
 
 class ClusterDynamicsTest : public ::testing::Test
 {

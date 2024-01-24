@@ -7,7 +7,7 @@
 #include "nuclear_reactor.hpp"
 #include "material.hpp"
 
-int ClientDb::init()
+bool ClientDb::init(int* sqlite_result_code)
 {
     int sqlite_code;
     char* sqlite_errmsg;
@@ -21,10 +21,11 @@ int ClientDb::init()
     if (is_sqlite_error(sqlite_code))
         throw ClientDbException("Failed to initialize database.", sqlite_errmsg, sqlite_code);
 
-    return sqlite_code;
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
 }
 
-int ClientDb::clear()
+bool ClientDb::clear(int* sqlite_result_code)
 {
     if (!db) open();
 
@@ -35,12 +36,13 @@ int ClientDb::clear()
     if (is_sqlite_error(sqlite_code))
         throw ClientDbException("Failed to clear database.", sqlite_errmsg, sqlite_code);
 
-    return sqlite_code;
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
 }
 
-int ClientDb::create_reactor(NuclearReactor& reactor)
+bool ClientDb::create_reactor(NuclearReactor& reactor, int* sqlite_result_code)
 {
-    if (reactor.sqlite_id > 0)
+    if (is_valid_sqlite_id(reactor.sqlite_id))
         throw ClientDbException("Failed to create reactor, it already exists.");
     if (!db) open();
 
@@ -54,10 +56,11 @@ int ClientDb::create_reactor(NuclearReactor& reactor)
 
     sqlite_code = create_one<NuclearReactor>(stmt, err_create_reactor, reactor);
 
-    return is_sqlite_error(sqlite_code);
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
 }
 
-int ClientDb::read_reactors(std::vector<NuclearReactor>& reactors)
+bool ClientDb::read_reactors(std::vector<NuclearReactor>& reactors, int* sqlite_result_code)
 {
     if (!db) open();
 
@@ -69,12 +72,13 @@ int ClientDb::read_reactors(std::vector<NuclearReactor>& reactors)
 
     sqlite_code = read_all<NuclearReactor>(stmt, row_read_reactor, err_read_reactors, reactors);
 
-    return sqlite_code;
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
 }
 
-int ClientDb::read_reactor(const int sqlite_id, NuclearReactor& reactor)
+bool ClientDb::read_reactor(const int sqlite_id, NuclearReactor& reactor, int* sqlite_result_code)
 {
-    if (sqlite_id < 0) 
+    if (!is_valid_sqlite_id(sqlite_id)) 
         throw ClientDbException("Failed to read reactor. Invalid id.");
 
     if (!db) open();
@@ -87,12 +91,13 @@ int ClientDb::read_reactor(const int sqlite_id, NuclearReactor& reactor)
 
     sqlite_code = read_one<NuclearReactor>(stmt, row_read_reactor, err_read_reactor, sqlite_id, reactor);
 
-    return sqlite_code;
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code) && is_valid_sqlite_id(reactor.sqlite_id);
 }
 
-int ClientDb::update_reactor(const NuclearReactor& reactor)
+bool ClientDb::update_reactor(const NuclearReactor& reactor, int* sqlite_result_code)
 {
-    if (reactor.sqlite_id < 0)
+    if (!is_valid_sqlite_id(reactor.sqlite_id))
         throw ClientDbException("Failed to update reactor. Invalid id.");
 
     if (!db) open();
@@ -105,12 +110,15 @@ int ClientDb::update_reactor(const NuclearReactor& reactor)
 
     bind_reactor(stmt, reactor);
 
-    return update_one<NuclearReactor>(stmt, err_update_reactor, reactor);
+    sqlite_code = update_one<NuclearReactor>(stmt, err_update_reactor, reactor);
+
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
 }
 
-int ClientDb::delete_reactor(const NuclearReactor& reactor)
+bool ClientDb::delete_reactor(const NuclearReactor& reactor, int* sqlite_result_code)
 {
-    if (reactor.sqlite_id < 0)
+    if (!is_valid_sqlite_id(reactor.sqlite_id))
         throw ClientDbException("Failed to delete reactor. Invalid id.");
 
     if (!db) open();
@@ -121,7 +129,10 @@ int ClientDb::delete_reactor(const NuclearReactor& reactor)
     sqlite_code = sqlite3_prepare_v2(db, db_queries::delete_reactor.c_str(), db_queries::delete_reactor.size(), &stmt, nullptr);
     if (is_sqlite_error(sqlite_code)) err_delete_reactor(db, reactor);
 
-    return delete_one<NuclearReactor>(stmt, err_delete_reactor, reactor);
+    sqlite_code = delete_one<NuclearReactor>(stmt, err_delete_reactor, reactor);
+
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
 }
 
 void ClientDb::bind_reactor(sqlite3_stmt* stmt, const NuclearReactor& reactor)
@@ -137,7 +148,7 @@ void ClientDb::bind_reactor(sqlite3_stmt* stmt, const NuclearReactor& reactor)
     sqlite3_bind_double(stmt, 9, reactor.v_tri);
     sqlite3_bind_double(stmt, 10, reactor.v_quad);
     sqlite3_bind_double(stmt, 11, reactor.dislocation_density_evolution);
-    if (reactor.sqlite_id > 0) sqlite3_bind_int(stmt, 12, reactor.sqlite_id);
+    if (is_valid_sqlite_id(reactor.sqlite_id)) sqlite3_bind_int(stmt, 12, reactor.sqlite_id);
 }
 
 template<typename T> int ClientDb::create_one(sqlite3_stmt* stmt, void (*err_callback)(sqlite3*, const T&), T& object)
@@ -232,7 +243,7 @@ template<typename T> int ClientDb::delete_one(sqlite3_stmt* stmt, void (*err_cal
     return sqlite3_changes(db);
 }
 
-int ClientDb::open()
+bool ClientDb::open(int* sqlite_result_code)
 {
     int sqlite_code;
 
@@ -240,10 +251,11 @@ int ClientDb::open()
     if (is_sqlite_error(sqlite_code))
         throw ClientDbException("Failed to open local database.", sqlite3_errmsg(db), sqlite_code);
 
-    return sqlite_code;
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
 }
 
-int ClientDb::close()
+bool ClientDb::close(int* sqlite_result_code)
 {
     if (!db) return 0;
 
@@ -254,7 +266,8 @@ int ClientDb::close()
         throw ClientDbException("Failed to close database.", sqlite3_errmsg(db), sqlite_code);
     else db = nullptr;
 
-    return sqlite_code;
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
 }
 
 bool ClientDb::is_open()
@@ -262,12 +275,25 @@ bool ClientDb::is_open()
     return db;
 }
 
-bool ClientDb::is_sqlite_error(int sqlite_code)
+bool ClientDb::is_sqlite_success(const int sqlite_code)
+{
+    // sqlite3 error handling: https://www.sqlite.org/rescode.html
+    return SQLITE_OK == sqlite_code ||
+        SQLITE_ROW == sqlite_code ||
+        SQLITE_DONE == sqlite_code;
+}
+
+bool ClientDb::is_sqlite_error(const int sqlite_code)
 {
     // sqlite3 error handling: https://www.sqlite.org/rescode.html
     return SQLITE_OK != sqlite_code &&
-        SQLITE_ROW != sqlite_code && 
+        SQLITE_ROW != sqlite_code &&
         SQLITE_DONE != sqlite_code;
+}
+
+bool ClientDb::is_valid_sqlite_id(const int sqlite_id)
+{
+    return 0 < sqlite_id;
 }
 
 int ClientDb::last_insert_rowid(int& sqlite_id)

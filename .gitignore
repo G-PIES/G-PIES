@@ -45,13 +45,14 @@ resources
 *.csv
 
 # databases
-db
+./db
+db/*.db
 
 # dev directories
-bin
-build
-lib
-out
+./bin
+./build
+./lib
+./out
 
 # gtest binaries
 !libgtest_main.a
