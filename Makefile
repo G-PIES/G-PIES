@@ -33,84 +33,90 @@ endif
 
 CC = g++
 CCFLAGS += -std=c++17
-INCLUDE_FLAGS = -I./include -I./src
-LIB_DIR = ./lib
-binary = cluster_dynamics$(EXE_EXT)
-library = lib/libclusterdynamics$(LIB_EXT)
+
+INCLUDE_FLAGS = -Iinclude
+INCLUDE_FLAGS += -Isrc
+
+BIN_DIR = bin
+BUILD_DIR = build
+DB_DIR = db
+LIB_DIR = lib
+OUT_DIR = out
+
+CD_LIB = $(LIB_DIR)/libclusterdynamics$(LIB_EXT)
+DB_LIB = $(LIB_DIR)/libclientdb$(LIB_EXT)
 
 #----------------------------------------------------------------------------------------
 # Targets
 #----------------------------------------------------------------------------------------
 
-all: software_lib software_example_frontend
+.PHONY: lib ex cuda bdirs clean cd cdlib cdcudalib dblib cdex cdcudaex dbex cdtests cdcsv
 
-.PHONY: software_lib software_example_frontend cuda_example_frontend test clean
+lib: cdlib cdcudalib dblib
 
-# Software library compilation
-software_lib:
-	mkdir -p lib
-	$(CC) $(CCFLAGS) src/cluster_dynamics.cpp -c -o libclusterdynamics.o $(INCLUDE_FLAGS)
-	ar crs $(library) libclusterdynamics.o
-	rm libclusterdynamics.o
+ex: cdex dbex
 
-db_lib:
-	mkdir -p lib
-	$(CC) $(CCFLAGS) src/client_db.cpp -c -o libclientdb.o $(INCLUDE_FLAGS)
-	ar crs lib/libclientdb$(LIB_EXT) libclientdb.o
-	rm libclientdb.o
+cuda: cdcudalib cdcudaex
 
-# CUDA library compilation
-cuda_lib:
-	mkdir -p lib
-	nvcc -O3 -c -x cu -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics.cpp -o libclusterdynamics.o $(INCLUDE_FLAGS)
-	ar crs $(library) libclusterdynamics.o
-	rm libclusterdynamics.o
+all: lib ex cuda
 
-# Example frontend compilation
-example_frontend: software_lib
-	$(CC) example/main.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics 
+# Setup Build Directories
+bdirs:
+	mkdir -p $(BIN_DIR)
+	mkdir -p $(BUILD_DIR)
+	mkdir -p $(DB_DIR)
+	mkdir -p $(LIB_DIR)
+	mkdir -p $(OUT_DIR)
+
+# Clean Development Files
+clean: 
+	rm -fr $(BIN_DIR)
+	rm -fr $(BUILD_DIR)
+	rm -fr  $(DB_DIR)/*.db
+	rm -fr $(LIB_DIR)
+	rm -fr $(OUT_DIR)
+
+cd: cdlib cdcudalib cdex
+
+# Cluster Dynamics Library Compilation
+cdlib: bdirs
+	$(CC) $(CCFLAGS) src/cluster_dynamics.cpp -c -o $(BUILD_DIR)/libclusterdynamics.o $(INCLUDE_FLAGS)
+	ar crs $(CD_LIB) $(BUILD_DIR)/libclusterdynamics.o
+
+# Cluster Dynamics CUDA Library Compilation
+cdcudalib: bdirs
+	nvcc -O3 -c -x cu -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics.cpp -o$(BUILD_DIR)/libclusterdynamics.o $(INCLUDE_FLAGS)
+	ar crs $(CD_LIB) $(BUILD_DIR)/libclusterdynamics.o
+
+# Client Database Example
+dblib: bdirs
+	$(CC) $(CCFLAGS) src/client_db.cpp -c -o $(BUILD_DIR)/libclientdb.o $(INCLUDE_FLAGS)
+	ar crs $(DB_LIB) $(BUILD_DIR)/libclientdb.o
+
+# Cluster Dynamics Example
+cdex: cdlib
+	$(CC) $(CCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics 
 
 # CUDA backend & example frontend compilation
-cuda_example_frontend: cuda_lib
-	nvcc example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
+cdcudaex: cdcudalib
+	nvcc example/cd_example.cpp -o $(BIN_DIR)/cd_cuda_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 
 # SQLite database example complication
-db_example:
-	make db_lib
-	$(CC) example/db_example.cpp -o db_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclientdb -lsqlite3
-	./db_example.out
+dbex: dblib
+	$(CC) $(CCFLAGS) example/db_example.cpp -o $(BIN_DIR)/db_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclientdb -lsqlite3
 
-test:
-	g++ ./test/tests.cpp -o test$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L./extern/googletest/lib/ -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamics
-	./test$(EXE_EXT)
+# GoogleTest Cluster Dynamics Unit Tests
+cdtests:
+	g++ ./test/cdtests.cpp -o cdtests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L./extern/googletest/lib -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamics
 
-# Compile and run example frontend
-cdr: example/main.cpp $(library)
-	$(CC) $(CCFLAGS) example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
-	./$(binary)
-
-# Example frontend w/ debug symbols
-debug:
-	$(CC) $(CCFLAGS) -g example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
-
-# Example frontend w/ verbose printing and debug symbols
 vprint:
-	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
+	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true example/*.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 
-# Example frontend w/ verbose printing, debug symbols, and run on compilation
 vprintr:
-	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
-	./$(binary)
+	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true example/*.cpp -o $(CD_BIN) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
+	./$(CD_BIN)
 
-# Build example frontend, then run and export results to cd-output.csv
-csv:
-	$(CC) $(CCFLAGS) -D CSV=true example/*.cpp -o $(binary) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
-	./$(binary) 1e-5 1 > cd-output.csv
-
-# Run the example frontend
-run:
-	./$(binary)
-
-# Remove binaries
-clean:
-	rm *$(EXE_EXT) lib/*$(LIB_EXT)
+# Cluster Dynamics Example W/ CSV Output Formatting
+cdcsv: cdlib
+	$(CC) $(CCFLAGS) -D CSV=true example/cd_example.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
+	./$(BIN_DIR)/cd_example$(EXE_EXT) 1e-5 1 > $(OUT_DIR)/cd-output.csv
