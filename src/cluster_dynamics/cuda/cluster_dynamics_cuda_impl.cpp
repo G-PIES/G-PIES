@@ -770,7 +770,7 @@ double ClusterDynamicsImpl::iv_sum_absorption(size_t nmax)
   auto self = this->self;
   return thrust::transform_reduce(indices.begin(), indices.end(), 
     [self] __CUDADECL__ (const int& idx) {
-        return self->iv_absorption(idx) * self->vacancies[idx];
+        return self->iv_absorption(idx) * self->interstitials[idx];
     }, 
     0.0, thrust::plus<double>());
 }
@@ -790,7 +790,7 @@ double ClusterDynamicsImpl::vi_sum_absorption(size_t nmax)
   auto self = this->self;
   return thrust::transform_reduce(indices.begin(), indices.end(), 
     [self] __CUDADECL__ (const int& idx) {
-        return self->vi_absorption(idx) * self->interstitials[idx];
+        return self->vi_absorption(idx) * self->vacancies[idx];
     }, 
     0.0, thrust::plus<double>());
 }

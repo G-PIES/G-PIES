@@ -828,7 +828,7 @@ TEST_F(ClusterDynamicsTest, vi_sum_absorption_test)
   ClusterDynamicsImpl cd(10, reactor, material);
   cd.run(1e-5, 1e-5);
 
-  double expected = 1.3439607634074109e-25;
+  double expected = 1.3419225537357197e-25;
   double actual = cd.vi_sum_absorption(cd.concentration_boundary - 1);
 
   EXPECT_DOUBLE_EQ(expected, actual);
@@ -839,7 +839,7 @@ TEST_F(ClusterDynamicsTest, iv_sum_absorption_test)
   ClusterDynamicsImpl cd(10, reactor, material);
   cd.run(1e-5, 1e-5);
 
-  double expected = 1.2824366959852804e-30;
+  double expected = 1.3342421786071486e-30;
   double actual = cd.iv_sum_absorption(cd.concentration_boundary - 1);
 
   EXPECT_DOUBLE_EQ(expected, actual);
