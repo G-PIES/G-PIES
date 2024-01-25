@@ -798,3 +798,58 @@ TEST_F(ClusterDynamicsTest, update_clusters_test)
   EXPECT_DOUBLE_EQ(v_expected[3], v_actual[3]);
   EXPECT_DOUBLE_EQ(v_expected[4], v_actual[4]);
 }
+
+TEST_F(ClusterDynamicsTest, mean_dislocation_cell_radius_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  double expected = 0.0059959749286123279;
+  double actual = cd.mean_dislocation_cell_radius();
+
+  EXPECT_DOUBLE_EQ(expected, actual);
+}
+
+TEST_F(ClusterDynamicsTest, ii_sum_absorption_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  double expected = 1.3439607634074109e-25;
+  double actual = cd.ii_sum_absorption(cd.concentration_boundary - 1);
+
+  EXPECT_DOUBLE_EQ(expected, actual);
+}
+
+TEST_F(ClusterDynamicsTest, vi_sum_absorption_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  double expected = 1.3439607634074109e-25;
+  double actual = cd.vi_sum_absorption(cd.concentration_boundary - 1);
+
+  EXPECT_DOUBLE_EQ(expected, actual);
+}
+
+TEST_F(ClusterDynamicsTest, iv_sum_absorption_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  double expected = 1.2824366959852804e-30;
+  double actual = cd.iv_sum_absorption(cd.concentration_boundary - 1);
+
+  EXPECT_DOUBLE_EQ(expected, actual);
+}
+
+TEST_F(ClusterDynamicsTest, vv_sum_absorption_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  double expected = 1.2824366959852804e-30;
+  double actual = cd.vv_sum_absorption(cd.concentration_boundary - 1);
+
+  EXPECT_DOUBLE_EQ(expected, actual);
+}

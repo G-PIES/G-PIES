@@ -162,7 +162,7 @@ cdtests: cdlib
 
 # GoogleTest Cluster Dynamics W/ CUDA Unit Tests
 cdcudatests: cdcudalib
-	nvcc $(CCFLAGS) -DUSE_CUDA test/cd_tests.cpp -o $(BIN_DIR)/cdcuda_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L$(GTEST_LIBS) -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamicscuda
+	nvcc $(CCFLAGS) -x cu -DUSE_CUDA test/cd_tests.cpp -o $(BIN_DIR)/cdcuda_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L$(GTEST_LIBS) -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamicscuda
 	@[ "${R}" ] && ./$(BIN_DIR)/cdcuda_tests$(EXE_EXT) || ( exit 0 )
 
 # GoogleTest Cluster Dynamics Unit Tests
