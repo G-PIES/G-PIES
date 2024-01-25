@@ -72,6 +72,214 @@ TEST_F(ClusterDynamicsTest, ResultUnchanged)
   EXPECT_NEAR(state.dislocation_density, dislocation_density_data, 1e-7);
 }
 
+TEST_F(ClusterDynamicsTest, i_clusters_delta_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  // Starts from cluster size = 2
+  double expected[5] = {
+    -1.2207353538408017e-08, 
+    1.7373139700233559e-08, 
+    5.2198489772795402e-09, 
+    1.7036092380700434e-39, 
+    0.0
+  };
+  double actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual[i] = cd.i_clusters_delta(i + 2);
+  }
+
+  EXPECT_DOUBLE_EQ(expected[0], actual[0]);
+  EXPECT_DOUBLE_EQ(expected[1], actual[1]);
+  EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+  EXPECT_DOUBLE_EQ(expected[3], actual[3]);
+  EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
+
+TEST_F(ClusterDynamicsTest, v_clusters_delta_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  // Starts from cluster size = 2
+  double expected[5] = {
+    5.2199999999999989e-09, 
+    2.6099999999999995e-09, 
+    1.7399999999999998e-09, 
+    2.2019179047621176e-44, 
+    0.0
+  };
+  double actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual[i] = cd.v_clusters_delta(i + 2);
+  }
+
+  EXPECT_DOUBLE_EQ(expected[0], actual[0]);
+  EXPECT_DOUBLE_EQ(expected[1], actual[1]);
+  EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+  EXPECT_DOUBLE_EQ(expected[3], actual[3]);
+  EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
+
+TEST_F(ClusterDynamicsTest, iemission_vabsorption_np1_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  // Starts from cluster size = 2
+  double expected[5] = {
+    155.23748555687555, 
+    2.8931555643430293, 
+    0.17853595808953046,
+    0.021470762169837978,
+    0.0039393178609528059
+  };
+  double actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual[i] = cd.iemission_vabsorption_np1(i + 3);
+  }
+
+  EXPECT_DOUBLE_EQ(expected[0], actual[0]);
+  EXPECT_DOUBLE_EQ(expected[1], actual[1]);
+  EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+  EXPECT_DOUBLE_EQ(expected[3], actual[3]);
+  EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
+
+TEST_F(ClusterDynamicsTest, vemission_iabsorption_np1_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  // Starts from cluster size = 2
+  double expected[5] = {
+    1.0555361607257486e-23, 
+    2.7892774315267963e-24, 
+    1.1170112615634063e-24,
+    5.6757451168845305e-25,
+    3.3728261913718135e-25
+  };
+  double actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual[i] = cd.vemission_iabsorption_np1(i + 3);
+  }
+
+  EXPECT_DOUBLE_EQ(expected[0], actual[0]);
+  EXPECT_DOUBLE_EQ(expected[1], actual[1]);
+  EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+  EXPECT_DOUBLE_EQ(expected[3], actual[3]);
+  EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
+
+TEST_F(ClusterDynamicsTest, iemission_vabsorption_n_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  // Starts from cluster size = 2
+  double expected[5] = {
+    128124.97669171244, 
+    155.23748555687555, 
+    2.8931555643430293, 
+    0.17853595808953046,
+    0.021470762169837978
+  };
+  double actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual[i] = cd.iemission_vabsorption_n(i + 2);
+  }
+
+  EXPECT_DOUBLE_EQ(expected[0], actual[0]);
+  EXPECT_DOUBLE_EQ(expected[1], actual[1]);
+  EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+  EXPECT_DOUBLE_EQ(expected[3], actual[3]);
+  EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
+
+TEST_F(ClusterDynamicsTest, vemission_iabsorption_n_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  // Starts from cluster size = 2
+  double expected[5] = {
+    1.0185659572393065e-22, 
+    1.0555362837093834e-23, 
+    2.7892786969968566e-24, 
+    1.117012558427398e-24,
+    5.6757583693472816e-25
+  };
+  double actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual[i] = cd.vemission_iabsorption_n(i + 2);
+  }
+
+  EXPECT_DOUBLE_EQ(expected[0], actual[0]);
+  EXPECT_DOUBLE_EQ(expected[1], actual[1]);
+  EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+  EXPECT_DOUBLE_EQ(expected[3], actual[3]);
+  EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
+
+TEST_F(ClusterDynamicsTest, iemission_vabsorption_nm1_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  // Starts from cluster size = 2
+  double expected[5] = {
+    3.2191684461937316e-26, 
+    3.2187606960398673e-26, 
+    3.2385395163510115e-26, 
+    3.2636192300192406e-26,
+    3.2903485594033312e-26
+  };
+  double actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual[i] = cd.iemission_vabsorption_nm1(i + 1);
+  }
+
+  EXPECT_DOUBLE_EQ(expected[0], actual[0]);
+  EXPECT_DOUBLE_EQ(expected[1], actual[1]);
+  EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+  EXPECT_DOUBLE_EQ(expected[3], actual[3]);
+  EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
+
+TEST_F(ClusterDynamicsTest, vemission_iabsorption_nm1_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  // Starts from cluster size = 2
+  double expected[5] = {
+    1.1324832325802889e-30, 
+    1.1875681802007069e-30, 
+    1.229836347141261e-30, 
+    1.2654700602081136e-30,
+    1.2968639916403274e-30
+  };
+  double actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual[i] = cd.vemission_iabsorption_nm1(i + 1);
+  }
+
+  EXPECT_DOUBLE_EQ(expected[0], actual[0]);
+  EXPECT_DOUBLE_EQ(expected[1], actual[1]);
+  EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+  EXPECT_DOUBLE_EQ(expected[3], actual[3]);
+  EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
+
 TEST_F(ClusterDynamicsTest, i_defect_production_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
@@ -298,22 +506,96 @@ TEST_F(ClusterDynamicsTest, v_grain_boundary_annihilation_time_test)
   EXPECT_DOUBLE_EQ(expected, actual);
 }
 
-// TEST_F(ClusterDynamicsTest, i_emission_time_test)
-// {
-//   ClusterDynamicsImpl cd(10, reactor, material);
+TEST_F(ClusterDynamicsTest, i_emission_time_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
 
-//   double expected = 1.2033063175360925e-15;
-//   double actual = cd.i_emission_time(3);
+  double expected = 2.2296462178878698e-07;
+  double actual = cd.i_emission_time(cd.concentration_boundary - 1);
 
-//   EXPECT_DOUBLE_EQ(expected, actual);
-// }
+  EXPECT_DOUBLE_EQ(expected, actual);
+}
 
-// TEST_F(ClusterDynamicsTest, v_emission_time_test)
-// {
-//   ClusterDynamicsImpl cd(10, reactor, material);
+TEST_F(ClusterDynamicsTest, v_emission_time_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
 
-//   double expected = 1.2033063175360925e-15;
-//   double actual = cd.v_emission_time(3);
+  double expected = 2.1587051805814287e-35;
+  double actual = cd.v_emission_time(cd.concentration_boundary - 1);
 
-//   EXPECT_DOUBLE_EQ(expected, actual);
-// }
+  EXPECT_DOUBLE_EQ(expected, actual);
+}
+
+TEST_F(ClusterDynamicsTest, i_absorption_time_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  double expected = 3.0078001617625039e-25;
+  double actual = cd.i_absorption_time(cd.concentration_boundary - 1);
+
+  EXPECT_DOUBLE_EQ(expected, actual);
+}
+
+TEST_F(ClusterDynamicsTest, v_absorption_time_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
+
+  double expected = 3.7491621071727177e-30;
+  double actual = cd.v_absorption_time(cd.concentration_boundary - 1);
+
+  EXPECT_DOUBLE_EQ(expected, actual);
+}
+
+TEST_F(ClusterDynamicsTest, i_bias_factor_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+
+  // Starts from cluster size = 1
+  double expected[5] = {
+    10.567277704705269, 
+    7.4712472717635334, 
+    6.1377329960200999, 
+    5.3565961679959591, 
+    4.8303246748035633
+  };
+  double actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual[i] = cd.i_bias_factor(i + 1);
+  }
+
+  EXPECT_DOUBLE_EQ(expected[0], actual[0]);
+  EXPECT_DOUBLE_EQ(expected[1], actual[1]);
+  EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+  EXPECT_DOUBLE_EQ(expected[3], actual[3]);
+  EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
+
+TEST_F(ClusterDynamicsTest, v_bias_factor_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+
+  // Starts from cluster size = 1
+  double expected[5] = {
+    5.535240702464665, 
+    4.104386828441297, 
+    3.4704950346240908, 
+    3.0926203512323323, 
+    2.8347460594319629
+  };
+  double actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual[i] = cd.v_bias_factor(i + 1);
+  }
+
+  EXPECT_DOUBLE_EQ(expected[0], actual[0]);
+  EXPECT_DOUBLE_EQ(expected[1], actual[1]);
+  EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+  EXPECT_DOUBLE_EQ(expected[3], actual[3]);
+  EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
