@@ -669,3 +669,53 @@ TEST_F(ClusterDynamicsTest, v_diffusion_test)
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
+
+TEST_F(ClusterDynamicsTest, dislocation_promotion_probability_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+
+  // Starts from cluster size = 2
+  double expected[5] = {
+    6.3739818750851983e-23, 
+    6.3739818750851924e-23, 
+    6.373981875085203e-23, 
+    6.3739818750851854e-23, 
+    6.37398187508521e-23
+  };
+  double actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual[i] = cd.dislocation_promotion_probability(i + 2);
+  }
+
+  EXPECT_DOUBLE_EQ(expected[0], actual[0]);
+  EXPECT_DOUBLE_EQ(expected[1], actual[1]);
+  EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+  EXPECT_DOUBLE_EQ(expected[3], actual[3]);
+  EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
+
+TEST_F(ClusterDynamicsTest, cluster_radius_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+
+  // Starts from cluster size = 2
+  double expected[5] = {
+    1.890135244455595e-08, 
+    2.3149334468834776e-08, 
+    2.6730548974284879e-08, 
+    2.9885662291194137e-08, 
+    3.2738102765737105e-08
+  };
+  double actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual[i] = cd.cluster_radius(i + 2);
+  }
+
+  EXPECT_DOUBLE_EQ(expected[0], actual[0]);
+  EXPECT_DOUBLE_EQ(expected[1], actual[1]);
+  EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+  EXPECT_DOUBLE_EQ(expected[3], actual[3]);
+  EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
