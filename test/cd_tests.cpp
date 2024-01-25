@@ -599,3 +599,53 @@ TEST_F(ClusterDynamicsTest, v_bias_factor_test)
   EXPECT_DOUBLE_EQ(expected[3], actual[3]);
   EXPECT_DOUBLE_EQ(expected[4], actual[4]);
 }
+
+TEST_F(ClusterDynamicsTest, i_binding_energy_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+
+  // Starts from cluster size = 2
+  double expected[5] = {
+    0.59999999999999964, 
+    0.94937403057784353, 
+    1.1567720263492856, 
+    1.3019633024687201, 
+    1.4124782726995702
+  };
+  double actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual[i] = cd.i_binding_energy(i + 2);
+  }
+
+  EXPECT_DOUBLE_EQ(expected[0], actual[0]);
+  EXPECT_DOUBLE_EQ(expected[1], actual[1]);
+  EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+  EXPECT_DOUBLE_EQ(expected[3], actual[3]);
+  EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
+
+TEST_F(ClusterDynamicsTest, v_binding_energy_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+
+  // Starts from cluster size = 2
+  double expected[5] = {
+    0.5, 
+    0.61978538191240373, 
+    0.69089326617689806, 
+    0.74067313227498988, 
+    0.7785639792112814
+  };
+  double actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    actual[i] = cd.v_binding_energy(i + 2);
+  }
+
+  EXPECT_DOUBLE_EQ(expected[0], actual[0]);
+  EXPECT_DOUBLE_EQ(expected[1], actual[1]);
+  EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+  EXPECT_DOUBLE_EQ(expected[3], actual[3]);
+  EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
