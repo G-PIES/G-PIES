@@ -334,10 +334,10 @@ TEST_F(ClusterDynamicsTest, annihilation_rate_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
 
-  double expected_annihilation_rate = 1.5282982144235406e-13;
-  double actual_annihilation_rate = cd.annihilation_rate();
+  double expected = 1.5282982144235406e-13;
+  double actual = cd.annihilation_rate();
 
-  EXPECT_DOUBLE_EQ(expected_annihilation_rate, actual_annihilation_rate);
+  EXPECT_DOUBLE_EQ(expected, actual);
 }
 
 TEST_F(ClusterDynamicsTest, ii_emission_test)
@@ -648,4 +648,24 @@ TEST_F(ClusterDynamicsTest, v_binding_energy_test)
   EXPECT_DOUBLE_EQ(expected[2], actual[2]);
   EXPECT_DOUBLE_EQ(expected[3], actual[3]);
   EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+}
+
+TEST_F(ClusterDynamicsTest, i_diffusion_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+
+  double expected = 1.7373700731336814e-07;
+  double actual = cd.i_diffusion();
+
+  EXPECT_DOUBLE_EQ(expected, actual);
+}
+
+TEST_F(ClusterDynamicsTest, v_diffusion_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+
+  double expected = 3.1465037917671854e-12;
+  double actual = cd.v_diffusion();
+
+  EXPECT_DOUBLE_EQ(expected, actual);
 }
