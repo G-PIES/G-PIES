@@ -2,6 +2,8 @@
 #include "cluster_dynamics.hpp"
 #include "cluster_dynamics_impl.hpp"
 
+#include <numeric>
+
 class ClusterDynamicsTest : public ::testing::Test
 {
   protected:
@@ -772,9 +774,9 @@ TEST_F(ClusterDynamicsTest, update_clusters_test)
     0.0
   };
   double v_expected[5] = {
-    4.3499999999999996e-13, 
-    1.7399999999999999e-13, 
     5.2199999999999995e-14, 
+    2.6099999999999997e-14, 
+    1.74e-14, 
     0.0, 
     0.0
   };
@@ -783,7 +785,7 @@ TEST_F(ClusterDynamicsTest, update_clusters_test)
   for (int i = 0; i < 5; ++i)
   {
     i_actual[i] = cd.interstitials_temp[i + 2];
-    v_actual[i] = cd.interstitials_temp[i + 2];
+    v_actual[i] = cd.vacancies_temp[i + 2];
   }
 
   EXPECT_DOUBLE_EQ(i_expected[0], i_actual[0]);
@@ -852,4 +854,58 @@ TEST_F(ClusterDynamicsTest, vv_sum_absorption_test)
   double actual = cd.vv_sum_absorption(cd.concentration_boundary - 1);
 
   EXPECT_DOUBLE_EQ(expected, actual);
+}
+
+TEST_F(ClusterDynamicsTest, step_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.step(1e-5);
+
+  // Starts from cluster size = 1
+  double i_expected[5] = {
+    2.0879999999999998e-13,
+    4.3499999999999996e-13, 
+    1.7399999999999999e-13, 
+    5.2199999999999995e-14, 
+    0.0
+  };
+  double v_expected[5] = {
+    7.7429999999999974e-13,
+    5.2199999999999995e-14, 
+    2.6099999999999997e-14, 
+    1.74e-14, 
+    0.0, 
+  };
+  double i_actual[5];
+  double v_actual[5];
+  for (int i = 0; i < 5; ++i)
+  {
+    i_actual[i] = cd.interstitials_temp[i + 1];
+    v_actual[i] = cd.vacancies_temp[i + 1];
+  }
+
+  EXPECT_DOUBLE_EQ(i_expected[0], i_actual[0]);
+  EXPECT_DOUBLE_EQ(i_expected[1], i_actual[1]);
+  EXPECT_DOUBLE_EQ(i_expected[2], i_actual[2]);
+  EXPECT_DOUBLE_EQ(i_expected[3], i_actual[3]);
+  EXPECT_DOUBLE_EQ(i_expected[4], i_actual[4]);
+
+  EXPECT_DOUBLE_EQ(v_expected[0], v_actual[0]);
+  EXPECT_DOUBLE_EQ(v_expected[1], v_actual[1]);
+  EXPECT_DOUBLE_EQ(v_expected[2], v_actual[2]);
+  EXPECT_DOUBLE_EQ(v_expected[3], v_actual[3]);
+  EXPECT_DOUBLE_EQ(v_expected[4], v_actual[4]);
+}
+
+TEST_F(ClusterDynamicsTest, validation_test)
+{
+  ClusterDynamicsImpl cd(10, reactor, material);
+  cd.interstitials_temp[1] = NAN;
+  cd.interstitials_temp[3] = INFINITY;
+  cd.interstitials_temp[4] = -1.0;
+
+  EXPECT_FALSE(cd.validate(1));
+  EXPECT_TRUE(cd.validate(2));
+  EXPECT_FALSE(cd.validate(3));
+  EXPECT_FALSE(cd.validate(4));
 }
