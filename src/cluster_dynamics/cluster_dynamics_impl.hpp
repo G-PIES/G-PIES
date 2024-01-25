@@ -85,11 +85,11 @@ public:
   __CUDADECL__ double i_grain_boundary_annihilation_time();
   __CUDADECL__ double v_grain_boundary_annihilation_time();
   __CUDADECL__ double ii_emission(size_t);
-  __CUDADECL__ double ii_absorption(size_t);
-  __CUDADECL__ double iv_absorption(size_t);
   __CUDADECL__ double vv_emission(size_t);
-  __CUDADECL__ double vv_absorption(size_t);
+  __CUDADECL__ double ii_absorption(size_t);
   __CUDADECL__ double vi_absorption(size_t);
+  __CUDADECL__ double iv_absorption(size_t);
+  __CUDADECL__ double vv_absorption(size_t);
   __CUDADECL__ double i_bias_factor(size_t);
   __CUDADECL__ double v_bias_factor(size_t);
   __CUDADECL__ double i_binding_energy(size_t);

@@ -277,14 +277,6 @@ double ClusterDynamicsImpl::i_emission_time(size_t nmax)
     return self->ii_emission(idx) * self->interstitials[idx];
   }, 0.0, thrust::plus<double>());
 
-double time = 0.;
-for (size_t in = 3; in < nmax; ++in)
-{
-        time +=
-        // (1)
-        ii_emission(in) * interstitials[in];
-}
-
   time +=
       // (2)
       4 * ii_emission(2) * interstitials[2]
@@ -650,7 +642,6 @@ double ClusterDynamicsImpl::mean_dislocation_cell_radius()
   auto self = this->self;
 
   double r_0_factor = thrust::transform_reduce(indices.begin(), indices.end(), 
-
   [self] __CUDADECL__ (const int& idx){
     return self->cluster_radius(idx) * self->interstitials[idx];
   }, 0.0, thrust::plus<double>());
@@ -715,10 +706,6 @@ __CUDADECL__ double ClusterDynamicsImpl::cluster_radius(size_t n)
 
 bool ClusterDynamicsImpl::step(double delta_time)
 {
-  #ifdef USE_CUDA
-    cudaMemcpy(thrust::raw_pointer_cast(self), this, sizeof(ClusterDynamicsImpl), cudaMemcpyHostToDevice);
-  #endif
-
   mean_dislocation_radius_val = mean_dislocation_cell_radius();
   ii_sum_absorption_val = ii_sum_absorption(concentration_boundary - 1);
   iv_sum_absorption_val = iv_sum_absorption(concentration_boundary - 1);
@@ -731,6 +718,10 @@ bool ClusterDynamicsImpl::step(double delta_time)
 
   interstitials = interstitials_temp;
   vacancies = vacancies_temp;
+
+  #ifdef USE_CUDA
+    cudaMemcpy(thrust::raw_pointer_cast(self), this, sizeof(ClusterDynamicsImpl), cudaMemcpyHostToDevice);
+  #endif
 
   return state_is_valid;
 }
@@ -779,7 +770,7 @@ double ClusterDynamicsImpl::iv_sum_absorption(size_t nmax)
   auto self = this->self;
   return thrust::transform_reduce(indices.begin(), indices.end(), 
     [self] __CUDADECL__ (const int& idx) {
-        return self->iv_absorption(idx) * self->vacancies[idx];
+        return self->iv_absorption(idx) * self->interstitials[idx];
     }, 
     0.0, thrust::plus<double>());
 }
@@ -799,7 +790,7 @@ double ClusterDynamicsImpl::vi_sum_absorption(size_t nmax)
   auto self = this->self;
   return thrust::transform_reduce(indices.begin(), indices.end(), 
     [self] __CUDADECL__ (const int& idx) {
-        return self->vi_absorption(idx) * self->interstitials[idx];
+        return self->vi_absorption(idx) * self->vacancies[idx];
     }, 
     0.0, thrust::plus<double>());
 }
@@ -840,6 +831,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, NuclearR
     ClusterDynamicsImpl* ptr;
     cudaMalloc(&ptr, sizeof(ClusterDynamicsImpl));
     self = thrust::device_ptr<ClusterDynamicsImpl>(ptr);
+    cudaMemcpy(thrust::raw_pointer_cast(self), this, sizeof(ClusterDynamicsImpl), cudaMemcpyHostToDevice);
   #else
     self = this;
   #endif
