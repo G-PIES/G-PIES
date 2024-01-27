@@ -126,6 +126,32 @@ void ClientDb::bind_reactor(sqlite3_stmt* stmt, const NuclearReactor& reactor)
     if (is_valid_sqlite_id(reactor.sqlite_id)) sqlite3_bind_int(stmt, 12, reactor.sqlite_id);
 }
 
+void ClientDb::bind_material(sqlite3_stmt* stmt, const Material& material)
+{
+    sqlite3_bind_text(stmt, 1, material.species.c_str(), material.species.length(), nullptr);
+    sqlite3_bind_double(stmt, 2, material.i_migration);
+    sqlite3_bind_double(stmt, 3, material.v_migration);
+    sqlite3_bind_double(stmt, 4, material.i_diffusion_0);
+    sqlite3_bind_double(stmt, 5, material.v_diffusion_0);
+    sqlite3_bind_double(stmt, 6, material.i_formation);
+    sqlite3_bind_double(stmt, 7, material.v_formation);
+    sqlite3_bind_double(stmt, 8, material.i_binding);
+    sqlite3_bind_double(stmt, 9, material.v_binding);
+    sqlite3_bind_double(stmt, 10, material.recombination_radius);
+    sqlite3_bind_double(stmt, 11, material.i_loop_bias);
+    sqlite3_bind_double(stmt, 12, material.i_dislocation_bias);
+    sqlite3_bind_double(stmt, 13, material.i_dislocation_bias_param);
+    sqlite3_bind_double(stmt, 14, material.v_loop_bias);
+    sqlite3_bind_double(stmt, 15, material.v_dislocation_bias);
+    sqlite3_bind_double(stmt, 16, material.v_dislocation_bias_param);
+    sqlite3_bind_double(stmt, 17, material.dislocation_density_0);
+    sqlite3_bind_double(stmt, 18, material.grain_size);
+    sqlite3_bind_double(stmt, 19, material.lattice_param);
+    sqlite3_bind_double(stmt, 20, material.burgers_vector);
+    sqlite3_bind_double(stmt, 21, material.atomic_volume);
+    if (is_valid_sqlite_id(material.sqlite_id)) sqlite3_bind_int(stmt, 22, material.sqlite_id);
+}
+
 
 // --------------------------------------------------------------------------------------------
 // ROW CALLBACKS 
@@ -147,6 +173,33 @@ void ClientDb::row_read_reactor(sqlite3_stmt* stmt, NuclearReactor& reactor)
     reactor.v_tri = (double)sqlite3_column_double(stmt, 10);
     reactor.v_quad = (double)sqlite3_column_double(stmt, 11);
     reactor.dislocation_density_evolution = (double)sqlite3_column_double(stmt, 12);
+}
+
+void ClientDb::row_read_material(sqlite3_stmt* stmt, Material& material)
+{
+    material.sqlite_id = (int)sqlite3_column_int(stmt, 0);
+    material.creation_datetime = (char*)sqlite3_column_text(stmt, 1);
+    material.species = (char*)sqlite3_column_text(stmt, 2);
+    material.i_migration = (double)sqlite3_column_double(stmt, 3);
+    material.v_migration = (double)sqlite3_column_double(stmt, 4);
+    material.i_diffusion_0 = (double)sqlite3_column_double(stmt, 5);
+    material.v_diffusion_0 = (double)sqlite3_column_double(stmt, 6);
+    material.i_formation = (double)sqlite3_column_double(stmt, 7);
+    material.v_formation = (double)sqlite3_column_double(stmt, 8);
+    material.i_binding = (double)sqlite3_column_double(stmt, 9);
+    material.v_binding = (double)sqlite3_column_double(stmt, 10);
+    material.recombination_radius = (double)sqlite3_column_double(stmt, 11);
+    material.i_loop_bias = (double)sqlite3_column_double(stmt, 12);
+    material.i_dislocation_bias = (double)sqlite3_column_double(stmt, 13);
+    material.i_dislocation_bias_param = (double)sqlite3_column_double(stmt, 14);
+    material.v_loop_bias = (double)sqlite3_column_double(stmt, 15);
+    material.v_dislocation_bias = (double)sqlite3_column_double(stmt, 16);
+    material.v_dislocation_bias_param = (double)sqlite3_column_double(stmt, 17);
+    material.dislocation_density_0 = (double)sqlite3_column_double(stmt, 18);
+    material.grain_size = (double)sqlite3_column_double(stmt, 19);
+    material.lattice_param = (double)sqlite3_column_double(stmt, 20);
+    material.burgers_vector = (double)sqlite3_column_double(stmt, 21);
+    material.atomic_volume = (double)sqlite3_column_double(stmt, 22);
 }
 
 
@@ -195,6 +248,46 @@ void ClientDb::err_delete_reactor(sqlite3_stmt* stmt, const NuclearReactor& reac
     throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db), sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
 }
 
+void ClientDb::err_create_material(sqlite3_stmt* stmt, const Material& material)
+{
+    std::string errmsg = "Failed to create material \"" + material.species + "\".";
+    sqlite3* db = sqlite3_db_handle(stmt);
+
+    throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db), sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
+}
+
+void ClientDb::err_read_materials(sqlite3_stmt* stmt)
+{
+    sqlite3* db = sqlite3_db_handle(stmt);
+    throw ClientDbException("Failed to read materials.", sqlite3_errmsg(db), sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
+}
+
+void ClientDb::err_read_material(sqlite3_stmt* stmt, const int sqlite_id)
+{
+    std::string errmsg = "Failed to read material w/ id " + std::to_string(sqlite_id) + ".";
+    sqlite3* db = sqlite3_db_handle(stmt);
+
+    throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db), sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
+}
+
+void ClientDb::err_update_material(sqlite3_stmt* stmt, const Material& material)
+{
+    std::string errmsg = "Failed to update material \"" +
+        material.species + "\" w/ id " + std::to_string(material.sqlite_id) + ".";
+    sqlite3* db = sqlite3_db_handle(stmt);
+
+    throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db), sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
+}
+
+void ClientDb::err_delete_material(sqlite3_stmt* stmt, const Material& material)
+{
+    std::string errmsg = "Failed to delete material \"" +
+        material.species + "\" w/ id " + std::to_string(material.sqlite_id) + ".";
+    sqlite3* db = sqlite3_db_handle(stmt);
+
+    throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db), sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
+}
+
 
 // --------------------------------------------------------------------------------------------
 // UTILITIES 
@@ -230,8 +323,6 @@ int ClientDb::last_insert_rowid(int& sqlite_id)
  */
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
-
-
 
 
 bool ClientDb::init(int* sqlite_result_code)
@@ -357,6 +448,101 @@ bool ClientDb::delete_reactor(const NuclearReactor& reactor, int* sqlite_result_
     if (is_sqlite_error(sqlite_code)) err_delete_reactor(stmt, reactor);
 
     sqlite_code = delete_one<NuclearReactor>(stmt, err_delete_reactor, reactor);
+
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
+}
+
+bool ClientDb::create_material(Material& material, int* sqlite_result_code)
+{
+    if (is_valid_sqlite_id(material.sqlite_id))
+        throw ClientDbException("Failed to create material, it already exists.");
+    if (!db) open();
+
+    int sqlite_code;
+    sqlite3_stmt* stmt;
+
+    sqlite_code = sqlite3_prepare_v2(db, db_queries::create_material.c_str(), db_queries::create_material.size(), &stmt, nullptr);
+    if (is_sqlite_error(sqlite_code)) err_create_material(stmt, material);
+
+    bind_material(stmt, material);
+
+    sqlite_code = create_one<Material>(stmt, err_create_material, material);
+
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
+}
+
+bool ClientDb::read_materials(std::vector<Material>& materials, int* sqlite_result_code)
+{
+    if (!db) open();
+
+    int sqlite_code;
+    sqlite3_stmt* stmt;
+
+    sqlite_code = sqlite3_prepare_v2(db, db_queries::read_materials.c_str(), db_queries::read_materials.size(), &stmt, nullptr);
+    if (is_sqlite_error(sqlite_code)) err_read_materials(stmt);
+
+    sqlite_code = read_all<Material>(stmt, row_read_material, err_read_materials, materials);
+
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
+}
+
+bool ClientDb::read_material(const int sqlite_id, Material& material, int* sqlite_result_code)
+{
+    if (!is_valid_sqlite_id(sqlite_id)) 
+        throw ClientDbException("Failed to read material. Invalid id.");
+
+    if (!db) open();
+
+    int sqlite_code;
+    sqlite3_stmt* stmt;
+
+    sqlite_code = sqlite3_prepare_v2(db, db_queries::read_material.c_str(), db_queries::read_material.size(), &stmt, nullptr);
+    if (is_sqlite_error(sqlite_code)) err_read_material(stmt, sqlite_id);
+
+    sqlite_code = read_one<Material>(stmt, row_read_material, err_read_material, sqlite_id, material);
+
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code) && is_valid_sqlite_id(material.sqlite_id);
+}
+
+bool ClientDb::update_material(const Material& material, int* sqlite_result_code)
+{
+    if (!is_valid_sqlite_id(material.sqlite_id))
+        throw ClientDbException("Failed to update material. Invalid id.");
+
+    if (!db) open();
+
+    int sqlite_code;
+    sqlite3_stmt* stmt;
+
+    sqlite_code = sqlite3_prepare_v2(db, db_queries::update_material.c_str(), db_queries::update_material.size(), &stmt, nullptr);
+    if (is_sqlite_error(sqlite_code)) err_update_material(stmt, material);
+
+    bind_material(stmt, material);
+
+    sqlite_code = update_one<Material>(stmt, err_update_material, material);
+
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
+}
+
+bool ClientDb::delete_material(const Material& material, int* sqlite_result_code)
+{
+    if (!is_valid_sqlite_id(material.sqlite_id))
+        throw ClientDbException("Failed to delete material. Invalid id.");
+
+    if (!db) open();
+
+    int sqlite_code;
+    sqlite3_stmt* stmt;
+
+    sqlite_code = sqlite3_prepare_v2(db, db_queries::delete_material.c_str(), db_queries::delete_material.size(), &stmt, nullptr);
+    if (is_sqlite_error(sqlite_code)) err_delete_material(stmt, material);
+
+    sqlite_code = delete_one<Material>(stmt, err_delete_material, material);
 
     if (sqlite_result_code) *sqlite_result_code = sqlite_code;
     return is_sqlite_success(sqlite_code);

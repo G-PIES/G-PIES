@@ -57,6 +57,32 @@ public:
 
     // --------------------------------------------------------------------------------------------
     // MATERIAL CRUD
+
+    // Creates a material in the local database, assigning a value to Material.sqlite_id.
+    // |sqlite_code| can optionally be retrieved.
+    // Returns true on success.
+    bool create_material(Material& material, int* sqlite_code = nullptr);
+
+    // Reads all materials from the local database, populating |materials|.
+    // |sqlite_code| can optionally be retrieved.
+    // Returns true on success.
+    bool read_materials(std::vector<Material>& materials, int* sqlite_code = nullptr);
+
+    // Attempts to read a single |material| from the local database, matching the specified |sqlite_id|.
+    // |sqlite_code| can optionally be retrieved.
+    // Returns true on success.
+    bool read_material(const int sqlite_id, Material& material, int* sqlite_code = nullptr);
+
+    // Attempts to update a material in the local database, matching to |material.sqlite_id|.
+    // |sqlite_code| can optionally be retrieved.
+    // Returns true on success.
+    bool update_material(const Material& material, int* sqlite_code = nullptr);
+
+    // Attempts to delete a material in the local database, matching to |material.sqlite_id|.
+    // |sqlite_code| can optionally be retrieved.
+    // Returns true on success.
+    bool delete_material(const Material& material, int* sqlite_code = nullptr);
+
     // --------------------------------------------------------------------------------------------
 
     // --------------------------------------------------------------------------------------------
@@ -128,6 +154,7 @@ private:
     */
 
     static void bind_reactor(sqlite3_stmt*, const NuclearReactor&);
+    static void bind_material(sqlite3_stmt*, const Material&);
 
     // --------------------------------------------------------------------------------------------
 
@@ -139,6 +166,7 @@ private:
     */
 
     static void row_read_reactor(sqlite3_stmt*, NuclearReactor&);
+    static void row_read_material(sqlite3_stmt*, Material&);
 
     // --------------------------------------------------------------------------------------------
 
@@ -154,6 +182,12 @@ private:
     static void err_read_reactor(sqlite3_stmt*, const int);
     static void err_update_reactor(sqlite3_stmt*, const NuclearReactor&);
     static void err_delete_reactor(sqlite3_stmt*, const NuclearReactor&);
+
+    static void err_create_material(sqlite3_stmt*, const Material&);
+    static void err_read_materials(sqlite3_stmt*);
+    static void err_read_material(sqlite3_stmt*, const int);
+    static void err_update_material(sqlite3_stmt*, const Material&);
+    static void err_delete_material(sqlite3_stmt*, const Material&);
 
     // --------------------------------------------------------------------------------------------
 
