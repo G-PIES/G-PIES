@@ -3,35 +3,42 @@
 #include <vector>
 #include <cstdint>
 
+#include "cluster_dynamics_state.hpp"
 #include "nuclear_reactor.hpp"
 #include "material.hpp"
+
+#ifdef USE_CUDA
+  #include <thrust/host_vector.h>
+  #include <thrust/transform_reduce.h>
+  #include <thrust/sequence.h>
+
+  #include <thrust/device_vector.h>
+  #include <thrust/device_malloc.h>
+  #include <thrust/device_free.h>
+#endif
 
 // Used to transform CUDA code into raw C++ for the software version
 #ifdef USE_CUDA
     #define __CUDADECL__ __device__ __host__
+
+    template<typename T>
+    using vector = thrust::device_vector<T>;
 #else
     #define __CUDADECL__
+
+    template<typename T>
+    using vector = std::vector<T>;
 #endif
 
-struct ClusterDynamicsState
-{
-    bool valid = true;
-    double time = 0.0;
-    std::vector<double> interstitials;
-    std::vector<double> vacancies;
-    double dislocation_density = 0.0;
-};
-
-class ClusterDynamics
+class ClusterDynamicsImpl
 {
 public:
   double time;
 
-  double* interstitials;
-  double* interstitials_temp;
-
-  double* vacancies;
-  double* vacancies_temp;
+  vector<double> interstitials;
+  vector<double> interstitials_temp;
+  vector<double> vacancies;
+  vector<double> vacancies_temp;
 
   size_t concentration_boundary;
   double dislocation_density;
@@ -41,11 +48,18 @@ public:
   double iv_sum_absorption_val;
   double vv_sum_absorption_val;
   double vi_sum_absorption_val;
+  double i1_val;
+  double v1_val;
 
   Material material;
   NuclearReactor reactor;
 
-
+  vector<int> indices;
+  #ifdef USE_CUDA
+    thrust::device_ptr<ClusterDynamicsImpl> self;
+  #else
+    ClusterDynamicsImpl* self;
+  #endif
 
   // Physics Model Functions
 
@@ -59,50 +73,47 @@ public:
   __CUDADECL__ double vemission_iabsorption_n(size_t);
   __CUDADECL__ double iemission_vabsorption_nm1(size_t);
   __CUDADECL__ double vemission_iabsorption_nm1(size_t);
-  __CUDADECL__ double i1_cluster_delta(size_t);
-  __CUDADECL__ double v1_cluster_delta(size_t);
-  __CUDADECL__ double i_emission_time(size_t);
-  __CUDADECL__ double v_emission_time(size_t);
-  __CUDADECL__ double i_absorption_time(size_t);
-  __CUDADECL__ double v_absorption_time(size_t);
+  double i1_cluster_delta(size_t);
+  double v1_cluster_delta(size_t);
+  double i_emission_time(size_t);
+  double v_emission_time(size_t);
+  double i_absorption_time(size_t);
+  double v_absorption_time(size_t);
   __CUDADECL__ double annihilation_rate();
   __CUDADECL__ double i_dislocation_annihilation_time();
   __CUDADECL__ double v_dislocation_annihilation_time();
   __CUDADECL__ double i_grain_boundary_annihilation_time();
   __CUDADECL__ double v_grain_boundary_annihilation_time();
-  __CUDADECL__ double ii_sum_absorption(size_t);
-  __CUDADECL__ double iv_sum_absorption(size_t);
-  __CUDADECL__ double vv_sum_absorption(size_t);
-  __CUDADECL__ double vi_sum_absorption(size_t);
   __CUDADECL__ double ii_emission(size_t);
-  __CUDADECL__ double ii_absorption(size_t);
-  __CUDADECL__ double iv_absorption(size_t);
   __CUDADECL__ double vv_emission(size_t);
-  __CUDADECL__ double vv_absorption(size_t);
+  __CUDADECL__ double ii_absorption(size_t);
   __CUDADECL__ double vi_absorption(size_t);
+  __CUDADECL__ double iv_absorption(size_t);
+  __CUDADECL__ double vv_absorption(size_t);
   __CUDADECL__ double i_bias_factor(size_t);
   __CUDADECL__ double v_bias_factor(size_t);
   __CUDADECL__ double i_binding_energy(size_t);
   __CUDADECL__ double v_binding_energy(size_t);
   __CUDADECL__ double i_diffusion();
   __CUDADECL__ double v_diffusion();
-  __CUDADECL__ double mean_dislocation_cell_radius();
   __CUDADECL__ double dislocation_promotion_probability(size_t);
-  __CUDADECL__ double dislocation_density_delta();
   __CUDADECL__ double cluster_radius(size_t);
 
-
-
-  // Simulation Control Functions
-
-  __CUDADECL__ void update_cluster_n(size_t n, double delta_time);
-  bool update_clusters(double delta_time);
-  bool software_update_clusters(double delta_time);
-  bool CUDA_update_clusters(double delta_time);
+  // Simulation Operation Functions
+  bool update_clusters_1(double);
+  bool update_clusters(double);
+  double dislocation_density_delta();
+  double mean_dislocation_cell_radius();
+  double ii_sum_absorption(size_t);
+  double iv_sum_absorption(size_t);
+  double vv_sum_absorption(size_t);
+  double vi_sum_absorption(size_t);
+  bool step(double);
   bool validate(size_t);
 
-public:
-  ClusterDynamics(size_t concentration_boundary, NuclearReactor reactor, Material material);
+  // Interface functions
+  ClusterDynamicsImpl(size_t concentration_boundary, NuclearReactor reactor, Material material);
+  ~ClusterDynamicsImpl();
     
   ClusterDynamicsState run(double delta_time, double total_time);
   Material get_material();

@@ -50,6 +50,8 @@ void print_state(ClusterDynamicsState& state)
     {
         fprintf(stdout, "%llu\t\t\t\t\t%13g\t\t\t  %15g\n\n", (unsigned long long)n, state.interstitials[n], state.vacancies[n]);
     }
+
+    fprintf(stderr, "\nDislocation Network Density: %g\n\n", state.dislocation_density);
 }
 
 void print_csv(ClusterDynamicsState& state)
@@ -66,10 +68,17 @@ void profile()
     Timer timer;
 
     ClusterDynamicsState state;
-    NuclearReactor reactor = nuclear_reactors::OSIRIS();
-    Material material = materials::SA304();
 
-    for (int n = 100; n < 40000; n += 1000)
+    NuclearReactor reactor;
+    nuclear_reactors::OSIRIS(reactor);
+
+    Material material;
+    materials::SA304(material);
+
+    ClusterDynamics cd(10, reactor, material);
+    cd.run(1e-5, 1e-5);
+
+    for (int n = 100; n < 400000; n += 10000)
     {
         fprintf(stderr, "N=%d\n", n);
         ClusterDynamics cd(n, reactor, material);
@@ -84,11 +93,11 @@ void profile()
 
 int main(int argc, char* argv[])
 {
-    profile();
-    return 0;
+    NuclearReactor reactor;
+    nuclear_reactors::OSIRIS(reactor);
 
-    NuclearReactor reactor = nuclear_reactors::OSIRIS();
-    Material material = materials::SA304();
+    Material material;
+    materials::SA304(material);
 
     // Default values
     concentration_boundary = 10;
