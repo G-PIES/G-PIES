@@ -601,6 +601,11 @@ bool ClientDb::is_valid_sqlite_id(const int sqlite_id)
     return 0 < sqlite_id;
 }
 
+int ClientDb::changes()
+{
+    return sqlite3_changes(db);
+}
+
 ClientDb::ClientDb(const char* db_path, const bool lazy)
 : path(db_path)
 {
