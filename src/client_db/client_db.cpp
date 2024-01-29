@@ -85,7 +85,7 @@ template<typename T> int ClientDb::update_one(sqlite3_stmt* stmt, void (*err_cal
     while (SQLITE_DONE != sqlite_code);
 
     sqlite3_finalize(stmt);
-    return sqlite3_changes(db);
+    return sqlite_code;
 }
 
 template<typename T> int ClientDb::delete_one(sqlite3_stmt* stmt, void (*err_callback)(sqlite3_stmt*, const T&), const T& object)
@@ -101,7 +101,7 @@ template<typename T> int ClientDb::delete_one(sqlite3_stmt* stmt, void (*err_cal
     while (SQLITE_DONE != sqlite_code);
 
     sqlite3_finalize(stmt);
-    return sqlite3_changes(db);
+    return sqlite_code;
 }
 
 
