@@ -5,23 +5,21 @@
 #include "nuclear_reactor.hpp"
 #include "material.hpp"
 #include "gpies_exception.hpp"
+#include "randomizer.hpp"
 
 #define VEC_SIZE 4
 
 double randd();
 void reactors_crud();
-void reactor_randomize(NuclearReactor&);
 void reactor_cmp_print(NuclearReactor&, NuclearReactor&);
 void materials_crud();
-void material_randomize(Material&);
 void material_cmp_print(Material&, Material&);
 
 ClientDb db;
+Randomizer randomizer;
 
 int main(int argc, char* argv[])
 {
-    srand(std::time(nullptr));
-
     try
     {
         db.clear();
@@ -56,7 +54,7 @@ void reactors_crud()
     for (int i = 0; i < VEC_SIZE; ++i)
     {
         reactors[i].species = "G-PIES REACTOR " + std::to_string(i);
-        reactor_randomize(reactors[i]);
+        randomizer.reactor_randomize(reactors[i]);
 
         db.create_reactor(reactors[i], &sqlite_code);
 
@@ -86,7 +84,7 @@ void reactors_crud()
     for (int i = 0; i < VEC_SIZE; ++i)
     {
         reactors[i].species = "U+G-PIES REACTOR " + std::to_string(i);
-        reactor_randomize(reactors[i]);
+        randomizer.reactor_randomize(reactors[i]);
 
         db.update_reactor(reactors[i], &sqlite_code);
         fprintf(stdout, "REACTOR UPDATED\n");
@@ -118,7 +116,7 @@ void materials_crud()
     for (int i = 0; i < VEC_SIZE; ++i)
     {
         materials[i].species = "G-PIES MATERIAL " + std::to_string(i);
-        material_randomize(materials[i]);
+        randomizer.material_randomize(materials[i]);
 
         db.create_material(materials[i], &sqlite_code);
 
@@ -148,7 +146,7 @@ void materials_crud()
     for (int i = 0; i < VEC_SIZE; ++i)
     {
         materials[i].species = "U+G-PIES MATERIAL " + std::to_string(i);
-        material_randomize(materials[i]);
+        randomizer.material_randomize(materials[i]);
 
         db.update_material(materials[i], &sqlite_code);
         fprintf(stdout, "MATERIAL UPDATED\n");
@@ -169,44 +167,6 @@ void materials_crud()
     }
 
     fprintf(stdout, "\n");
-}
-
-void reactor_randomize(NuclearReactor& reactor)
-{
-    reactor.flux = randd();
-    reactor.temperature = randd();
-    reactor.recombination = randd(); 
-    reactor.i_bi = randd();
-    reactor.i_tri = randd();
-    reactor.i_quad = randd();
-    reactor.v_bi = randd();
-    reactor.v_tri = randd();
-    reactor.v_quad = randd();
-    reactor.dislocation_density_evolution = randd();
-}
-
-void material_randomize(Material& material)
-{
-    material.i_migration = randd();
-    material.v_migration = randd();
-    material.i_diffusion_0 = randd();
-    material.v_diffusion_0 = randd();
-    material.i_formation = randd();
-    material.v_formation = randd();
-    material.i_binding = randd();
-    material.v_binding = randd();
-    material.recombination_radius = randd();
-    material.i_loop_bias = randd();
-    material.i_dislocation_bias = randd();
-    material.i_dislocation_bias_param = randd();
-    material.v_loop_bias = randd();
-    material.v_dislocation_bias = randd();
-    material.v_dislocation_bias_param = randd();
-    material.dislocation_density_0 = randd();
-    material.grain_size = randd();
-    material.lattice_param = randd();
-    material.burgers_vector = randd();
-    material.atomic_volume = randd();
 }
 
 void reactor_cmp_print(NuclearReactor& r1, NuclearReactor& r2)

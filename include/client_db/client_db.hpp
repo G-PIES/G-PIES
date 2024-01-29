@@ -112,6 +112,9 @@ public:
     // NOTE: This does NOT check if |sqlite_id| exists within the database.
     static bool is_valid_sqlite_id(const int sqlite_id);
 
+    // Returns the number of rows effected by the latest query.
+    int changes();
+
     // Specify the |db_path| where the SQLite database resides
     // |lazy| will wait to open the database until |init| is called.
     ClientDb(const char* db_path = DEFAULT_CLIENT_DB_PATH, const bool lazy = true);
