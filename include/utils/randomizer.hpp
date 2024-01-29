@@ -1,5 +1,5 @@
-#ifndef TEST_UTILS_HPP
-#define TEST_UTILS_HPP
+#ifndef RANDOMIZER_HPP
+#define RANDOMIZER_HPP
 
 #include "nuclear_reactor.hpp"
 #include "material.hpp"
@@ -56,4 +56,4 @@ public:
    }
 };
 
-#endif // TEST_UTILS_HPP
+#endif // RANDOMIZER_HPP
