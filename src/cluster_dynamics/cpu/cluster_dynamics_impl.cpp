@@ -256,7 +256,7 @@ double ClusterDynamicsImpl::v1_cluster_delta()
         // (4)
         - vacancies[1] * v_grain_boundary_annihilation_time()
         // (5)
-        - vacancies[1] * v_absorption_time();
+        - vacancies[1] * v_absorption_time()
         // (6)
         + v_emission_time();
 }
