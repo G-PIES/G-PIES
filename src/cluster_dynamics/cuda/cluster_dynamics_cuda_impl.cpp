@@ -3,6 +3,10 @@
 
 #include "cluster_dynamics_impl.hpp"
 
+#ifndef USE_CUDA
+  #error USE_CUDA must be defined when compiling the CUDA backend
+#endif
+
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
     The rate of production of interstital defects from the irradiation cascade for size (n) clusters.
