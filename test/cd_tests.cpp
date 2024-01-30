@@ -699,6 +699,8 @@ TEST_F(ClusterDynamicsTest, dislocation_promotion_probability_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
 
+  cd.step_init();
+
   // Starts from cluster size = 2
   double expected[5] = {
     6.3739818750851983e-23, 
@@ -707,6 +709,7 @@ TEST_F(ClusterDynamicsTest, dislocation_promotion_probability_test)
     6.3739818750851854e-23, 
     6.37398187508521e-23
   };
+
   double actual[5];
   for (int i = 0; i < 5; ++i)
   {
