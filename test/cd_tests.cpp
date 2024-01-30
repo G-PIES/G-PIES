@@ -131,9 +131,8 @@ TEST_F(ClusterDynamicsTest, i1_cluster_delta_test)
   ClusterDynamicsImpl cd(10, reactor, material);
   cd.run(1e-5, 1e-5);
 
-  // Starts from cluster size = 2
-  double expected = 2.0879999999999996e-08;
-  double actual = cd.i1_cluster_delta(2);
+  double expected = 2.4384462178878696e-07;
+  double actual = cd.i1_cluster_delta();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
@@ -144,7 +143,7 @@ TEST_F(ClusterDynamicsTest, v1_cluster_delta_test)
   cd.run(1e-5, 1e-5);
 
   double expected = 7.7429999999999973e-08;
-  double actual = cd.v1_cluster_delta(2);
+  double actual = cd.v1_cluster_delta();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
@@ -410,6 +409,7 @@ TEST_F(ClusterDynamicsTest, vv_emission_test)
 TEST_F(ClusterDynamicsTest, ii_absorption_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
 
   // Starts from cluster size = 1
   double expected[3] = {
@@ -494,6 +494,7 @@ TEST_F(ClusterDynamicsTest, vv_absorption_test)
 TEST_F(ClusterDynamicsTest, i_dislocation_annihilation_time_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
 
   double expected = 1.3898960585069451e-20;
   double actual = cd.i_dislocation_annihilation_time();
@@ -504,6 +505,7 @@ TEST_F(ClusterDynamicsTest, i_dislocation_annihilation_time_test)
 TEST_F(ClusterDynamicsTest, v_dislocation_annihilation_time_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
 
   double expected = 2.0452274646486708e-25;
   double actual = cd.v_dislocation_annihilation_time();
@@ -514,6 +516,7 @@ TEST_F(ClusterDynamicsTest, v_dislocation_annihilation_time_test)
 TEST_F(ClusterDynamicsTest, i_grain_boundary_annihilation_time_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
 
   double expected = 7.3710369608603651e-11;
   double actual = cd.i_grain_boundary_annihilation_time();
@@ -524,6 +527,7 @@ TEST_F(ClusterDynamicsTest, i_grain_boundary_annihilation_time_test)
 TEST_F(ClusterDynamicsTest, v_grain_boundary_annihilation_time_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
 
   double expected = 1.2033063175360925e-15;
   double actual = cd.v_grain_boundary_annihilation_time();
@@ -537,7 +541,7 @@ TEST_F(ClusterDynamicsTest, i_emission_time_test)
   cd.run(1e-5, 1e-5);
 
   double expected = 2.2296462178878698e-07;
-  double actual = cd.i_emission_time(cd.concentration_boundary - 1);
+  double actual = cd.i_emission_time();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
@@ -548,7 +552,7 @@ TEST_F(ClusterDynamicsTest, v_emission_time_test)
   cd.run(1e-5, 1e-5);
 
   double expected = 2.1587051805814287e-35;
-  double actual = cd.v_emission_time(cd.concentration_boundary - 1);
+  double actual = cd.v_emission_time();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
@@ -558,8 +562,8 @@ TEST_F(ClusterDynamicsTest, i_absorption_time_test)
   ClusterDynamicsImpl cd(10, reactor, material);
   cd.run(1e-5, 1e-5);
 
-  double expected = 3.0078001617625039e-25;
-  double actual = cd.i_absorption_time(cd.concentration_boundary - 1);
+  double expected = 1.4921083516796222e-25;
+  double actual = cd.i_absorption_time();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
@@ -569,8 +573,8 @@ TEST_F(ClusterDynamicsTest, v_absorption_time_test)
   ClusterDynamicsImpl cd(10, reactor, material);
   cd.run(1e-5, 1e-5);
 
-  double expected = 3.7491621071727177e-30;
-  double actual = cd.v_absorption_time(cd.concentration_boundary - 1);
+  double expected = 2.3112901377168451e-30;
+  double actual = cd.v_absorption_time();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }

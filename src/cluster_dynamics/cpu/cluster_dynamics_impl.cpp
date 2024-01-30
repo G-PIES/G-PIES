@@ -212,7 +212,7 @@ double ClusterDynamicsImpl::vemission_iabsorption_nm1(size_t nm1)
             (6)
             1 / (tEi)
 */
-double ClusterDynamicsImpl::i1_cluster_delta(size_t nmax)
+double ClusterDynamicsImpl::i1_cluster_delta()
 {
     return 
         // (1)
@@ -224,9 +224,9 @@ double ClusterDynamicsImpl::i1_cluster_delta(size_t nmax)
         // (4)
         - interstitials[1] * i_grain_boundary_annihilation_time()
         // (5)
-        - interstitials[1] * i_absorption_time(nmax)
+        - interstitials[1] * i_absorption_time()
         // (6)
-        + i_emission_time(nmax);
+        + i_emission_time();
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3a
@@ -244,7 +244,7 @@ double ClusterDynamicsImpl::i1_cluster_delta(size_t nmax)
             (6)
             1 / (tEv)
 */
-double ClusterDynamicsImpl::v1_cluster_delta(size_t nmax)
+double ClusterDynamicsImpl::v1_cluster_delta()
 {
     return 
         // (1)
@@ -256,9 +256,9 @@ double ClusterDynamicsImpl::v1_cluster_delta(size_t nmax)
         // (4)
         - vacancies[1] * v_grain_boundary_annihilation_time()
         // (5)
-        - vacancies[1] * v_absorption_time(nmax);
+        - vacancies[1] * v_absorption_time();
         // (6)
-        + v_emission_time(nmax);
+        + v_emission_time();
 }
 // --------------------------------------------------------------------------------------------
 
@@ -270,10 +270,10 @@ double ClusterDynamicsImpl::v1_cluster_delta(size_t nmax)
                 (1)                      (2)                     (3)
     tEi(n) = SUM ( E[i,i](n) * Ci(n) ) + 4 * E[i,i](2) * Ci(2) + B[i,v](2) * Cv(2) * Ci(2)
 */
-double ClusterDynamicsImpl::i_emission_time(size_t nmax)
+double ClusterDynamicsImpl::i_emission_time()
 {
    double time = 0.;
-   for (size_t in = 3; in < nmax; ++in)
+   for (size_t in = 3; in < concentration_boundary - 1; ++in)
    {
          time +=
          // (1)
@@ -296,10 +296,10 @@ double ClusterDynamicsImpl::i_emission_time(size_t nmax)
                 (1)                           (2)                     (3)
     tEv(n) = SUM[n>0] ( E[v,v](n) * Cv(n) ) + 4 * E[v,v](2) * Cv(2) + B[v,i](2) * Cv(2) * Ci(2)
 */
-double ClusterDynamicsImpl::v_emission_time(size_t nmax)
+double ClusterDynamicsImpl::v_emission_time()
 {
    double time = 0.;
-   for (size_t vn = 3; vn < nmax; ++vn)
+   for (size_t vn = 3; vn < concentration_boundary - 1; ++vn)
    {
       time += 
          // (1)
@@ -325,10 +325,10 @@ double ClusterDynamicsImpl::v_emission_time(size_t nmax)
                         (1)                              (2)
     tAi(n) = SUM[n>0] ( B[i,i](n) * Ci(n) ) + SUM[n>1] ( B[v,i](n) * Cv(n) )
 */
-double ClusterDynamicsImpl::i_absorption_time(size_t nmax)
+double ClusterDynamicsImpl::i_absorption_time()
 {
    double time = ii_absorption(1) * interstitials[1];
-   for (size_t in = 1; in < nmax; ++in)
+   for (size_t in = 2; in < concentration_boundary - 1; ++in)
    {
       time +=
          // (1)
@@ -348,10 +348,10 @@ double ClusterDynamicsImpl::i_absorption_time(size_t nmax)
                         (1)                              (2)
     tAv(n) = SUM[n>0] ( B[v,v](n) * Cv(n) ) + SUM[n>1] ( B[i,v](n) * Ci(n) )
 */
-double ClusterDynamicsImpl::v_absorption_time(size_t nmax)
+double ClusterDynamicsImpl::v_absorption_time()
 {
    double time = vv_absorption(1) * vacancies[1];
-   for (size_t vn = 1; vn < nmax; ++vn)
+   for (size_t vn = 2; vn < concentration_boundary - 1; ++vn)
    {
       time +=
          // (1)
@@ -738,8 +738,8 @@ bool ClusterDynamicsImpl::step(double delta_time)
 
 bool ClusterDynamicsImpl::update_clusters_1(double delta_time)
 {
-  interstitials_temp[1] += i1_cluster_delta(concentration_boundary - 1) * delta_time;
-  vacancies_temp[1] += v1_cluster_delta(concentration_boundary - 1) * delta_time;
+  interstitials_temp[1] += i1_cluster_delta() * delta_time;
+  vacancies_temp[1] += v1_cluster_delta() * delta_time;
   return validate(1);
 }
 
