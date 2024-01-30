@@ -73,12 +73,12 @@ public:
   __CUDADECL__ double vemission_iabsorption_n(size_t);
   __CUDADECL__ double iemission_vabsorption_nm1(size_t);
   __CUDADECL__ double vemission_iabsorption_nm1(size_t);
-  double i1_cluster_delta(size_t);
-  double v1_cluster_delta(size_t);
-  double i_emission_time(size_t);
-  double v_emission_time(size_t);
-  double i_absorption_time(size_t);
-  double v_absorption_time(size_t);
+  double i1_cluster_delta();
+  double v1_cluster_delta();
+  double i_emission_time();
+  double v_emission_time();
+  double i_absorption_time();
+  double v_absorption_time();
   __CUDADECL__ double annihilation_rate();
   __CUDADECL__ double i_dislocation_annihilation_time();
   __CUDADECL__ double v_dislocation_annihilation_time();
@@ -108,6 +108,7 @@ public:
   double iv_sum_absorption(size_t);
   double vv_sum_absorption(size_t);
   double vi_sum_absorption(size_t);
+  void step_init();
   bool step(double);
   bool validate(size_t);
 
