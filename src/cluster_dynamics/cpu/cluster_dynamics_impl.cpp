@@ -218,7 +218,7 @@ double ClusterDynamicsImpl::i1_cluster_delta(size_t nmax)
         // (1)
         i_defect_production(1)
         // (2)
-        - annihilation_rate() * interstitials[1] * vacancies[1];
+        - annihilation_rate() * interstitials[1] * vacancies[1]
         // (3)
         - interstitials[1] * i_dislocation_annihilation_time()
         // (4)
@@ -254,7 +254,7 @@ double ClusterDynamicsImpl::v1_cluster_delta(size_t nmax)
         // (3)
         - vacancies[1] * v_dislocation_annihilation_time()
         // (4)
-        //- vacancies[1] * v_grain_boundary_annihilation_time()
+        - vacancies[1] * v_grain_boundary_annihilation_time()
         // (5)
         - vacancies[1] * v_absorption_time(nmax);
         // (6)
