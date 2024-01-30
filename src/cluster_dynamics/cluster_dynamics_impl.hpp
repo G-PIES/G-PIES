@@ -108,6 +108,7 @@ public:
   double iv_sum_absorption(size_t);
   double vv_sum_absorption(size_t);
   double vi_sum_absorption(size_t);
+  void step_init();
   bool step(double);
   bool validate(size_t);
 
