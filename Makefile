@@ -38,7 +38,7 @@ endif
 # Variables
 
 CC = g++
-CCFLAGS += -std=c++17
+CCFLAGS += -std=c++17 -fno-fast-math
 
 INCLUDE_FLAGS = -Isrc/client_db -Isrc/cluster_dynamics
 INCLUDE_FLAGS += -Iinclude/client_db -Iinclude/cluster_dynamics -Iinclude/model -Iinclude/utils
