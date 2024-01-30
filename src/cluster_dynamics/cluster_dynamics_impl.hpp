@@ -63,62 +63,64 @@ public:
 
   // Physics Model Functions
 
-  __CUDADECL__ double i_defect_production(size_t);
-  __CUDADECL__ double v_defect_production(size_t);
-  __CUDADECL__ double i_clusters_delta(size_t);
-  __CUDADECL__ double v_clusters_delta(size_t);
-  __CUDADECL__ double iemission_vabsorption_np1(size_t);
-  __CUDADECL__ double vemission_iabsorption_np1(size_t);
-  __CUDADECL__ double iemission_vabsorption_n(size_t);
-  __CUDADECL__ double vemission_iabsorption_n(size_t);
-  __CUDADECL__ double iemission_vabsorption_nm1(size_t);
-  __CUDADECL__ double vemission_iabsorption_nm1(size_t);
-  double i1_cluster_delta();
-  double v1_cluster_delta();
-  double i_emission_time();
-  double v_emission_time();
-  double i_absorption_time();
-  double v_absorption_time();
-  __CUDADECL__ double annihilation_rate();
-  __CUDADECL__ double i_dislocation_annihilation_time();
-  __CUDADECL__ double v_dislocation_annihilation_time();
-  __CUDADECL__ double i_grain_boundary_annihilation_time();
-  __CUDADECL__ double v_grain_boundary_annihilation_time();
-  __CUDADECL__ double ii_emission(size_t);
-  __CUDADECL__ double vv_emission(size_t);
-  __CUDADECL__ double ii_absorption(size_t);
-  __CUDADECL__ double vi_absorption(size_t);
-  __CUDADECL__ double iv_absorption(size_t);
-  __CUDADECL__ double vv_absorption(size_t);
-  __CUDADECL__ double i_bias_factor(size_t);
-  __CUDADECL__ double v_bias_factor(size_t);
-  __CUDADECL__ double i_binding_energy(size_t);
-  __CUDADECL__ double v_binding_energy(size_t);
-  __CUDADECL__ double i_diffusion();
-  __CUDADECL__ double v_diffusion();
-  __CUDADECL__ double dislocation_promotion_probability(size_t);
-  __CUDADECL__ double cluster_radius(size_t);
+  __CUDADECL__ double i_defect_production(size_t) const;
+  __CUDADECL__ double v_defect_production(size_t) const;
+  __CUDADECL__ double iemission_vabsorption_np1(size_t) const;
+  __CUDADECL__ double vemission_iabsorption_np1(size_t) const;
+  __CUDADECL__ double iemission_vabsorption_n(size_t) const;
+  __CUDADECL__ double vemission_iabsorption_n(size_t) const;
+  __CUDADECL__ double iemission_vabsorption_nm1(size_t) const;
+  __CUDADECL__ double vemission_iabsorption_nm1(size_t) const;
+  double i1_cluster_delta() const;
+  double v1_cluster_delta() const;
+  double i_emission_time() const;
+  double v_emission_time() const;
+  double i_absorption_time() const;
+  double v_absorption_time() const;
+  __CUDADECL__ double annihilation_rate() const;
+  __CUDADECL__ double i_dislocation_annihilation_time() const;
+  __CUDADECL__ double v_dislocation_annihilation_time() const;
+  __CUDADECL__ double i_grain_boundary_annihilation_time() const;
+  __CUDADECL__ double v_grain_boundary_annihilation_time() const;
+  __CUDADECL__ double ii_emission(size_t) const;
+  __CUDADECL__ double vv_emission(size_t) const;
+  __CUDADECL__ double ii_absorption(size_t) const;
+  __CUDADECL__ double vi_absorption(size_t) const;
+  __CUDADECL__ double iv_absorption(size_t) const;
+  __CUDADECL__ double vv_absorption(size_t) const;
+  __CUDADECL__ double i_bias_factor(size_t) const;
+  __CUDADECL__ double v_bias_factor(size_t) const;
+  __CUDADECL__ double i_binding_energy(size_t) const;
+  __CUDADECL__ double v_binding_energy(size_t) const;
+  __CUDADECL__ double i_diffusion() const;
+  __CUDADECL__ double v_diffusion() const;
+  __CUDADECL__ double dislocation_promotion_probability(size_t) const;
+  __CUDADECL__ double cluster_radius(size_t) const;
+  __CUDADECL__ double i_clusters_delta(size_t) const;
+  __CUDADECL__ double v_clusters_delta(size_t) const;
+  double dislocation_density_delta() const;
+
+  // Value Precalculation Functions
+  double ii_sum_absorption(size_t) const;
+  double iv_sum_absorption(size_t) const;
+  double vv_sum_absorption(size_t) const;
+  double vi_sum_absorption(size_t) const;
+  double mean_dislocation_cell_radius() const;
 
   // Simulation Operation Functions
   bool update_clusters_1(double);
   bool update_clusters(double);
-  double dislocation_density_delta();
-  double mean_dislocation_cell_radius();
-  double ii_sum_absorption(size_t);
-  double iv_sum_absorption(size_t);
-  double vv_sum_absorption(size_t);
-  double vi_sum_absorption(size_t);
   void step_init();
   bool step(double);
-  bool validate(size_t);
+  bool validate(size_t) const;
 
   // Interface functions
   ClusterDynamicsImpl(size_t concentration_boundary, NuclearReactor reactor, Material material);
   ~ClusterDynamicsImpl();
     
   ClusterDynamicsState run(double delta_time, double total_time);
-  Material get_material();
+  Material get_material() const;
   void set_material(Material material);
-  NuclearReactor get_reactor();
+  NuclearReactor get_reactor() const;
   void set_reactor(NuclearReactor reactor);
 };

@@ -17,9 +17,9 @@ public:
   ~ClusterDynamics();
     
   ClusterDynamicsState run(double delta_time, double total_time);
-  Material get_material();
+  Material get_material() const;
   void set_material(Material material);
-  NuclearReactor get_reactor();
+  NuclearReactor get_reactor() const;
   void set_reactor(NuclearReactor reactor);
 };
 

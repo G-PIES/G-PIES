@@ -18,7 +18,7 @@ ClusterDynamicsState ClusterDynamics::run(double delta_time, double total_time)
   return _impl->run(delta_time, total_time);
 }
 
-Material ClusterDynamics::get_material()
+Material ClusterDynamics::get_material() const
 {
   return _impl->get_material();
 }
@@ -28,7 +28,7 @@ void ClusterDynamics::set_material(Material material)
   _impl->set_material(material);
 }
 
-NuclearReactor ClusterDynamics::get_reactor()
+NuclearReactor ClusterDynamics::get_reactor() const
 {
   return _impl->get_reactor();
 }
