@@ -708,13 +708,18 @@ __CUDADECL__ double ClusterDynamicsImpl::cluster_radius(size_t n)
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-bool ClusterDynamicsImpl::step(double delta_time)
+void ClusterDynamicsImpl::step_init()
 {
   mean_dislocation_radius_val = mean_dislocation_cell_radius();
   ii_sum_absorption_val = ii_sum_absorption(concentration_boundary - 1);
   iv_sum_absorption_val = iv_sum_absorption(concentration_boundary - 1);
   vi_sum_absorption_val = vi_sum_absorption(concentration_boundary - 1);
   vv_sum_absorption_val = vv_sum_absorption(concentration_boundary - 1);
+}
+
+bool ClusterDynamicsImpl::step(double delta_time)
+{
+  step_init();
 
   bool state_is_valid = update_clusters_1(delta_time);
   update_clusters(delta_time);
