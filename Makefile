@@ -38,8 +38,8 @@ endif
 # Variables
 
 CC = g++
-CCFLAGS += -std=c++17 -fno-fast-math
-NVCCFLAGS += -O3 -std=c++17 -DUSE_CUDA -x cu
+CCFLAGS += -std=c++17 -fno-fast-math -Werror -Wall -Wextra
+NVCCFLAGS += -O3 -std=c++17 -DUSE_CUDA -x cu -Werror all-warnings
 
 INCLUDE_FLAGS = -Isrc/client_db -Isrc/cluster_dynamics
 INCLUDE_FLAGS += -Iinclude/client_db -Iinclude/cluster_dynamics -Iinclude/model -Iinclude/utils

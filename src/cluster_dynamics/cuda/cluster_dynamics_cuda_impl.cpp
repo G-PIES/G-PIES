@@ -26,7 +26,7 @@ __CUDADECL__ double ClusterDynamicsImpl::i_defect_production(size_t n) const
 
     // cluster sizes > greater than 4 always zero
     return 0.;
-};
+}
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
     The rate of production of vacancy defects from the irradiation cascade for size (n) clusters.
@@ -46,7 +46,7 @@ __CUDADECL__ double ClusterDynamicsImpl::v_defect_production(size_t n) const
 
     // cluster sizes > greater than 4 always zero
     return 0.;
-};
+}
 // --------------------------------------------------------------------------------------------
 
 
@@ -260,7 +260,7 @@ double ClusterDynamicsImpl::v1_cluster_delta() const
         // (4)
         - vacancies[1] * v_grain_boundary_annihilation_time()
         // (5)
-        - vacancies[1] * v_absorption_time();
+        - vacancies[1] * v_absorption_time()
         // (6)
         + v_emission_time();
 }
@@ -827,10 +827,12 @@ bool ClusterDynamicsImpl::validate(size_t n) const
 
 // TODO - clean up the uses of random +1/+2/-1/etc throughout the code
 ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, NuclearReactor reactor, Material material)
-  : concentration_boundary(concentration_boundary), reactor(reactor), material(material),
-    interstitials(concentration_boundary + 1, 0.0), vacancies(concentration_boundary + 1, 0.0),
-    interstitials_temp(concentration_boundary + 1, 0.0), vacancies_temp(concentration_boundary + 1, 0.0),
-    indices(concentration_boundary - 1, 0.0), dislocation_density(material.dislocation_density_0), time(0.0)
+  : time(0.0),
+    interstitials(concentration_boundary + 1, 0.0), interstitials_temp(concentration_boundary + 1, 0.0),
+    vacancies(concentration_boundary + 1, 0.0), vacancies_temp(concentration_boundary + 1, 0.0),
+    concentration_boundary(concentration_boundary), dislocation_density(material.dislocation_density_0), 
+    material(material), reactor(reactor),
+    indices(concentration_boundary - 1, 0.0)
 {
   ClusterDynamicsImpl* raw_self;
   cudaMalloc(&raw_self, sizeof(ClusterDynamicsImpl));
