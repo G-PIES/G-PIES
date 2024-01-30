@@ -725,10 +725,6 @@ void ClusterDynamicsImpl::step_init()
 
 bool ClusterDynamicsImpl::step(double delta_time)
 {
-  #ifdef USE_CUDA
-    cudaMemcpy(thrust::raw_pointer_cast(self), this, sizeof(ClusterDynamicsImpl), cudaMemcpyHostToDevice);
-  #endif
-
   step_init();
 
   bool state_is_valid = update_clusters_1(delta_time);
@@ -765,9 +761,6 @@ bool ClusterDynamicsImpl::update_clusters(double delta_time)
 
 ClusterDynamicsImpl::~ClusterDynamicsImpl()
 {
-  #ifdef USE_CUDA
-    thrust::device_free(self);
-  #endif
 }
 
 double ClusterDynamicsImpl::ii_sum_absorption(size_t nmax) const
@@ -846,13 +839,6 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, NuclearR
     interstitials_temp(concentration_boundary + 1, 0.0), vacancies_temp(concentration_boundary + 1, 0.0),
     indices(concentration_boundary - 1, 0.0), dislocation_density(material.dislocation_density_0), time(0.0)
 {
-  #ifdef USE_CUDA
-    ClusterDynamicsImpl* ptr;
-    cudaMalloc(&ptr, sizeof(ClusterDynamicsImpl));
-    self = thrust::device_ptr<ClusterDynamicsImpl>(ptr);
-  #else
-    self = this;
-  #endif
 }
 
 ClusterDynamicsState ClusterDynamicsImpl::run(double delta_time, double total_time)

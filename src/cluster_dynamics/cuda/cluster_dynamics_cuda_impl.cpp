@@ -728,9 +728,7 @@ bool ClusterDynamicsImpl::step(double delta_time)
   interstitials = interstitials_temp;
   vacancies = vacancies_temp;
 
-  #ifdef USE_CUDA
-    cudaMemcpy(thrust::raw_pointer_cast(self), this, sizeof(ClusterDynamicsImpl), cudaMemcpyHostToDevice);
-  #endif
+  cudaMemcpy(thrust::raw_pointer_cast(self), this, sizeof(ClusterDynamicsImpl), cudaMemcpyHostToDevice);
 
   return state_is_valid;
 }
@@ -759,9 +757,7 @@ bool ClusterDynamicsImpl::update_clusters(double delta_time)
 
 ClusterDynamicsImpl::~ClusterDynamicsImpl()
 {
-  #ifdef USE_CUDA
-    thrust::device_free(self);
-  #endif
+  thrust::device_free(self);
 }
 
 double ClusterDynamicsImpl::ii_sum_absorption(size_t nmax) const
@@ -836,14 +832,10 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, NuclearR
     interstitials_temp(concentration_boundary + 1, 0.0), vacancies_temp(concentration_boundary + 1, 0.0),
     indices(concentration_boundary - 1, 0.0), dislocation_density(material.dislocation_density_0), time(0.0)
 {
-  #ifdef USE_CUDA
-    ClusterDynamicsImpl* ptr;
-    cudaMalloc(&ptr, sizeof(ClusterDynamicsImpl));
-    self = thrust::device_ptr<ClusterDynamicsImpl>(ptr);
-    cudaMemcpy(thrust::raw_pointer_cast(self), this, sizeof(ClusterDynamicsImpl), cudaMemcpyHostToDevice);
-  #else
-    self = this;
-  #endif
+  ClusterDynamicsImpl* raw_self;
+  cudaMalloc(&raw_self, sizeof(ClusterDynamicsImpl));
+  cudaMemcpy(raw_self, this, sizeof(ClusterDynamicsImpl), cudaMemcpyHostToDevice);
+  self = thrust::device_ptr<ClusterDynamicsImpl>(raw_self);
   thrust::sequence(indices.begin(), indices.end(), 1);
 }
 

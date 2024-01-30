@@ -93,7 +93,7 @@ namespace lattice_params
 namespace materials
 {
 
-static void SA304(Material& material) 
+static inline void SA304(Material& material) 
 {
     double lattice_param = lattice_params::fcc_nickel;
 

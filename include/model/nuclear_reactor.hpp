@@ -46,7 +46,7 @@ struct NuclearReactor
 namespace nuclear_reactors
 {
 
-static void OSIRIS(NuclearReactor& reactor)
+static inline void OSIRIS(NuclearReactor& reactor)
 {
     reactor.species = "OSIRIS";
     reactor.flux = 2.9e-7;
