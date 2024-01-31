@@ -370,7 +370,7 @@ __CUDADECL__ double ClusterDynamicsImpl::annihilation_rate() const
         // (1)
         4. * M_PI * 
         // (2)
-        (i_diffusion() + v_diffusion()) *
+        (i_diffusion_val + v_diffusion_val) *
         // (3)
         material.recombination_radius;
 }
@@ -390,7 +390,7 @@ __CUDADECL__ double ClusterDynamicsImpl::i_dislocation_annihilation_time() const
         // (1)
         dislocation_density *
         // (2)
-        i_diffusion() *
+        i_diffusion_val *
         // (3)
         material.i_dislocation_bias;
 }
@@ -407,7 +407,7 @@ __CUDADECL__ double ClusterDynamicsImpl::v_dislocation_annihilation_time() const
         // (1)
         dislocation_density *
         // (2)
-        v_diffusion() *
+        v_diffusion_val *
         // (3)
         material.v_dislocation_bias;
 }
@@ -425,7 +425,7 @@ __CUDADECL__ double ClusterDynamicsImpl::i_grain_boundary_annihilation_time() co
 {
     return
         // (1)
-        6. * i_diffusion() *
+        6. * i_diffusion_val *
         sqrt
         (
             // (2)
@@ -450,7 +450,7 @@ __CUDADECL__ double ClusterDynamicsImpl::v_grain_boundary_annihilation_time() co
 {
     return
         // (1)
-        6. * v_diffusion() *
+        6. * v_diffusion_val *
         sqrt
         (
             // (2)
@@ -474,7 +474,7 @@ __CUDADECL__ double ClusterDynamicsImpl::ii_emission(size_t n) const
     return 
         2. * M_PI * cluster_radius(n) *
         i_bias_factor(n) *
-        i_diffusion() / material.atomic_volume *
+        i_diffusion_val / material.atomic_volume *
         exp
         (
             -i_binding_energy(n) /
@@ -491,7 +491,7 @@ __CUDADECL__ double ClusterDynamicsImpl::ii_absorption(size_t n) const
     return 
         2. * M_PI * cluster_radius(n) *
         i_bias_factor(n) *
-        i_diffusion();
+        i_diffusion_val;
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4c
@@ -502,7 +502,7 @@ __CUDADECL__ double ClusterDynamicsImpl::iv_absorption(size_t n) const
     return 
         2. * M_PI * cluster_radius(n) *
         v_bias_factor(n) *
-        v_diffusion();
+        v_diffusion_val;
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4d
@@ -513,7 +513,7 @@ __CUDADECL__ double ClusterDynamicsImpl::vv_emission(size_t n) const
     return 
         2. * M_PI * cluster_radius(n) *
         v_bias_factor(n) *
-        v_diffusion() *
+        v_diffusion_val *
         exp
         (
             -v_binding_energy(n) /
@@ -529,7 +529,7 @@ __CUDADECL__ double ClusterDynamicsImpl::vv_absorption(size_t n) const
     return 
         2. * M_PI * cluster_radius(n) *
         v_bias_factor(n) *
-        v_diffusion();
+        v_diffusion_val;
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4f
@@ -540,7 +540,7 @@ __CUDADECL__ double ClusterDynamicsImpl::vi_absorption(size_t n) const
     return 
         2. * M_PI * cluster_radius(n) *
         i_bias_factor(n) *
-        i_diffusion();
+        i_diffusion_val;
 }
 // --------------------------------------------------------------------------------------------
 
@@ -710,6 +710,8 @@ __CUDADECL__ double ClusterDynamicsImpl::cluster_radius(size_t n) const
 
 void ClusterDynamicsImpl::step_init()
 {
+  i_diffusion_val = i_diffusion();
+  v_diffusion_val = v_diffusion();
   mean_dislocation_radius_val = mean_dislocation_cell_radius();
   ii_sum_absorption_val = ii_sum_absorption(concentration_boundary - 1);
   iv_sum_absorption_val = iv_sum_absorption(concentration_boundary - 1);

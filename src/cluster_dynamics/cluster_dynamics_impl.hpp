@@ -48,8 +48,8 @@ public:
   double iv_sum_absorption_val;
   double vv_sum_absorption_val;
   double vi_sum_absorption_val;
-  double i1_val;
-  double v1_val;
+  double i_diffusion_val;
+  double v_diffusion_val;
 
   Material material;
   NuclearReactor reactor;
@@ -85,15 +85,13 @@ public:
   __CUDADECL__ double ii_emission(size_t) const;
   __CUDADECL__ double vv_emission(size_t) const;
   __CUDADECL__ double ii_absorption(size_t) const;
-  __CUDADECL__ double vi_absorption(size_t) const;
   __CUDADECL__ double iv_absorption(size_t) const;
+  __CUDADECL__ double vi_absorption(size_t) const;
   __CUDADECL__ double vv_absorption(size_t) const;
   __CUDADECL__ double i_bias_factor(size_t) const;
   __CUDADECL__ double v_bias_factor(size_t) const;
   __CUDADECL__ double i_binding_energy(size_t) const;
   __CUDADECL__ double v_binding_energy(size_t) const;
-  __CUDADECL__ double i_diffusion() const;
-  __CUDADECL__ double v_diffusion() const;
   __CUDADECL__ double dislocation_promotion_probability(size_t) const;
   __CUDADECL__ double cluster_radius(size_t) const;
   __CUDADECL__ double i_clusters_delta(size_t) const;
@@ -101,6 +99,8 @@ public:
   double dislocation_density_delta() const;
 
   // Value Precalculation Functions
+  double i_diffusion() const;
+  double v_diffusion() const;
   double ii_sum_absorption(size_t) const;
   double iv_sum_absorption(size_t) const;
   double vv_sum_absorption(size_t) const;

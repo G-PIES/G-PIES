@@ -357,6 +357,7 @@ TEST_F(ClusterDynamicsTest, v_defect_production_test)
 TEST_F(ClusterDynamicsTest, annihilation_rate_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
+  cd.step_init();
 
   double expected = 1.5282982144235406e-13;
   double actual = cd.annihilation_rate();
@@ -367,6 +368,7 @@ TEST_F(ClusterDynamicsTest, annihilation_rate_test)
 TEST_F(ClusterDynamicsTest, ii_emission_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
+  cd.step_init();
 
   // Starts from cluster size = 1
   double expected[3] = {
@@ -388,6 +390,7 @@ TEST_F(ClusterDynamicsTest, ii_emission_test)
 TEST_F(ClusterDynamicsTest, vv_emission_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
+  cd.step_init();
 
   // Starts from cluster size = 1
   double expected[3] = {
@@ -431,6 +434,7 @@ TEST_F(ClusterDynamicsTest, ii_absorption_test)
 TEST_F(ClusterDynamicsTest, vi_absorption_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
 
   // Starts from cluster size = 1
   double expected[3] = {
@@ -452,6 +456,7 @@ TEST_F(ClusterDynamicsTest, vi_absorption_test)
 TEST_F(ClusterDynamicsTest, iv_absorption_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
 
   // Starts from cluster size = 1
   double expected[3] = {
@@ -473,6 +478,7 @@ TEST_F(ClusterDynamicsTest, iv_absorption_test)
 TEST_F(ClusterDynamicsTest, vv_absorption_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
+  cd.run(1e-5, 1e-5);
 
   // Starts from cluster size = 1
   double expected[3] = {
