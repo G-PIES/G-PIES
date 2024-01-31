@@ -306,11 +306,7 @@ double ClusterDynamicsImpl::v_emission_time() const
 
   time +=
       // (2)
-<<<<<<< HEAD
-      4 * vv_emission(2) * host_vacancies[2]
-=======
-      4. * vv_emission(2) * vacancies[2]
->>>>>>> 94e804e92ef6ff0d82275bbde87feed58c317c88
+      4. * vv_emission(2) * host_vacancies[2]
       // (3)
       + vi_absorption(2) * host_vacancies[2] * host_interstitials[2];
 
