@@ -222,13 +222,13 @@ double ClusterDynamicsImpl::i1_cluster_delta() const
         // (1)
         i_defect_production(1)
         // (2)
-        - annihilation_rate() * interstitials[1] * vacancies[1]
+        - annihilation_rate() * host_interstitials[1] * host_vacancies[1]
         // (3)
-        - interstitials[1] * i_dislocation_annihilation_time()
+        - host_interstitials[1] * i_dislocation_annihilation_time()
         // (4)
-        - interstitials[1] * i_grain_boundary_annihilation_time()
+        - host_interstitials[1] * i_grain_boundary_annihilation_time()
         // (5)
-        - interstitials[1] * i_absorption_time()
+        - host_interstitials[1] * i_absorption_time()
         // (6)
         + i_emission_time();
 }
@@ -254,13 +254,13 @@ double ClusterDynamicsImpl::v1_cluster_delta() const
         // (1)
         v_defect_production(1)
         // (2)
-        - annihilation_rate() * interstitials[1] * vacancies[1]
+        - annihilation_rate() * host_interstitials[1] * host_vacancies[1]
         // (3)
-        - vacancies[1] * v_dislocation_annihilation_time()
+        - host_vacancies[1] * v_dislocation_annihilation_time()
         // (4)
-        - vacancies[1] * v_grain_boundary_annihilation_time()
+        - host_vacancies[1] * v_grain_boundary_annihilation_time()
         // (5)
-        - vacancies[1] * v_absorption_time()
+        - host_vacancies[1] * v_absorption_time()
         // (6)
         + v_emission_time();
 }
@@ -283,9 +283,9 @@ double ClusterDynamicsImpl::i_emission_time() const
 
   time +=
       // (2)
-      4 * ii_emission(2) * interstitials[2]
+      4 * ii_emission(2) * host_interstitials[2]
       // (3)
-      + iv_absorption(2) * vacancies[2] * interstitials[2];
+      + iv_absorption(2) * host_vacancies[2] * host_interstitials[2];
 
   return time;
 }
@@ -306,9 +306,9 @@ double ClusterDynamicsImpl::v_emission_time() const
 
   time +=
       // (2)
-      4 * vv_emission(2) * vacancies[2]
+      4 * vv_emission(2) * host_vacancies[2]
       // (3)
-      + vi_absorption(2) * vacancies[2] * interstitials[2];
+      + vi_absorption(2) * host_vacancies[2] * host_interstitials[2];
 
   return time;
 }
@@ -326,7 +326,7 @@ double ClusterDynamicsImpl::v_emission_time() const
 double ClusterDynamicsImpl::i_absorption_time() const
 {
   auto self = this->self;
-  double time = ii_absorption(1) * interstitials[1];
+  double time = ii_absorption(1) * host_interstitials[1];
   time += thrust::transform_reduce( indices.begin() + 1, indices.end(), 
   [self] __CUDADECL__ (const int& idx) {
     return self->ii_absorption(idx) * self->interstitials[idx] + self->vi_absorption(idx) * self->vacancies[idx];
@@ -347,7 +347,7 @@ double ClusterDynamicsImpl::i_absorption_time() const
 double ClusterDynamicsImpl::v_absorption_time() const
 {
   auto self = this->self;
-  double time = vv_absorption(1) * vacancies[1];
+  double time = vv_absorption(1) * host_vacancies[1];
   time += thrust::transform_reduce(indices.begin() + 1, indices.end(), [self] __CUDADECL__ (const int& idx) {
     return self->vv_absorption(idx) * self->vacancies[idx] + self->iv_absorption(idx) * self->interstitials[idx];
   }, 0.0, thrust::plus<double>());
@@ -832,7 +832,8 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, NuclearR
     vacancies(concentration_boundary + 1, 0.0), vacancies_temp(concentration_boundary + 1, 0.0),
     concentration_boundary(concentration_boundary), dislocation_density(material.dislocation_density_0), 
     material(material), reactor(reactor),
-    indices(concentration_boundary - 1, 0.0)
+    indices(concentration_boundary - 1, 0.0),
+    host_interstitials(concentration_boundary + 1, 0.0), host_vacancies(concentration_boundary + 1, 0.0)
 {
   ClusterDynamicsImpl* raw_self;
   cudaMalloc(&raw_self, sizeof(ClusterDynamicsImpl));
@@ -851,15 +852,15 @@ ClusterDynamicsState ClusterDynamicsImpl::run(double delta_time, double total_ti
         if (!state_is_valid) break;
     }
 
-    thrust::host_vector<double> is(interstitials);
-    thrust::host_vector<double> vs(vacancies);
+    host_interstitials = interstitials;
+    host_vacancies = vacancies;
 
     return ClusterDynamicsState 
     {
         .valid = state_is_valid,
         .time = time,
-        .interstitials = std::vector<double>(is.begin(), is.end() - 1),
-        .vacancies = std::vector<double>(vs.begin(), vs.end() - 1),
+        .interstitials = std::vector<double>(host_interstitials.begin(), host_interstitials.end() - 1),
+        .vacancies = std::vector<double>(host_vacancies.begin(), host_vacancies.end() - 1),
         .dislocation_density = dislocation_density
     };
 }

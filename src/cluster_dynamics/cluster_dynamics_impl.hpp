@@ -57,6 +57,8 @@ public:
   vector<int> indices;
   #ifdef USE_CUDA
     thrust::device_ptr<ClusterDynamicsImpl> self;
+    thrust::host_vector<double> host_interstitials;
+    thrust::host_vector<double> host_vacancies;
   #endif
 
   // Physics Model Functions

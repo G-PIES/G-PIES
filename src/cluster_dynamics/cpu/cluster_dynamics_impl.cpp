@@ -853,15 +853,12 @@ ClusterDynamicsState ClusterDynamicsImpl::run(double delta_time, double total_ti
         if (!state_is_valid) break;
     }
 
-    vector<double> is(interstitials);
-    vector<double> vs(vacancies);
-
     return ClusterDynamicsState 
     {
         .valid = state_is_valid,
         .time = time,
-        .interstitials = std::vector<double>(is.begin(), is.end() - 1),
-        .vacancies = std::vector<double>(vs.begin(), vs.end() - 1),
+        .interstitials = std::vector<double>(interstitials.begin(), interstitials.end() - 1),
+        .vacancies = std::vector<double>(vacancies.begin(), vacancies.end() - 1),
         .dislocation_density = dislocation_density
     };
 }
