@@ -4,14 +4,29 @@
 #include "cluster_dynamics_impl.hpp"
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
+/*  C. Pokor / Journal of Nuclear Materials 326 (2004), Equations 1a-1e
     The rate of production of interstital defects from the irradiation cascade for size (n) clusters.
+*/
+/** @brief The rate of production of interstital defects from the irradiation cascade for size (n) clusters in units of [TODO].
+ * 
+ * <hr>
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
+ * 
+ * \f$
+ * \dwn{G_i(1)=}\ann{1}{\eta} \ann{2}{G_{dpa}}\dwn{(1-}\ann{3}{f_{i2}}\dwn{-}\ann{4}{f_{i3}}\dwn{-}\ann{5}{f_{i4})}\\
+ * G_i(2)=\eta G_{dpa}f_{i2}\\
+ * G_i(3)=\eta G_{dpa}f_{i3}\\
+ * G_i(4)=\eta G_{dpa}f_{i4}
+ * \f$
 */
 double ClusterDynamicsImpl::i_defect_production(size_t n) const
 {
     switch (n)
     {
+        //             (1)                     (2)
         case 1: return reactor.recombination * reactor.flux *
+                       //    (3)            (4)             (5)
                        (1. - reactor.i_bi - reactor.i_tri - reactor.i_quad);
         case 2: return reactor.recombination * reactor.flux * reactor.i_bi;
         case 3: return reactor.recombination * reactor.flux * reactor.i_tri;
@@ -23,15 +38,35 @@ double ClusterDynamicsImpl::i_defect_production(size_t n) const
     // cluster sizes > greater than 4 always zero
     return 0.;
 }
+// --------------------------------------------------------------------------------------------
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
-    The rate of production of vacancy defects from the irradiation cascade for size (n) clusters.
+
+
+/** @brief The rate of production of vacancies defects from the irradiation cascade for size (n) clusters in units of [TODO].
+ * 
+ * <hr>
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
+ * 
+ * \f$
+ * \dwn{G_v(1)=}\ann{1}{\eta} \ann{2}{G_{dpa}}\dwn{(1-}\ann{3}{f_{v2}}\dwn{-}\ann{4}{f_{v3}}\dwn{-}\ann{5}{f_{v4})}\\
+ * G_v(2)=\eta G_{dpa}f_{v2}\\
+ * G_v(3)=\eta G_{dpa}f_{v3}\\
+ * G_v(4)=\eta G_{dpa}f_{v4}
+ * \f$
+ * 
+ * <b>Notes</b>
+ * 
+ * These equations are only implicitly provided in the Pokor paper. The equations for interstitial
+ * generation are given followed by the line 'A similar expression is written for \f$G_v(n)\f$.'
 */
 double ClusterDynamicsImpl::v_defect_production(size_t n) const
 {
     switch (n)
     {
+        //             (1)                     (2)
         case 1: return reactor.recombination * reactor.flux *
+                       //    (3)            (4)             (5)
                        (1. - reactor.v_bi - reactor.v_tri - reactor.v_quad);
         case 2: return reactor.recombination * reactor.flux * reactor.v_bi;
         case 3: return reactor.recombination * reactor.flux * reactor.v_tri;
@@ -46,31 +81,53 @@ double ClusterDynamicsImpl::v_defect_production(size_t n) const
 // --------------------------------------------------------------------------------------------
 
 
-// --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2a
-    The number of clusters that contain (in) interstitials per unit volume.
 
-                  (1)     (2)                    (3)              (4)
-    dCi(n) / dt = Gi(n) + a[i,n+1] * Ci(n + 1) - b[i,n] * Ci(n) + c[i,n-1] * Ci(n-1)
+/** @brief The rate of change of the concentration of size `n` interstitial clusters.
+ * 
+ * <hr>
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 2a
+ * 
+ * \f$
+ * \frac{dC_i(n)}{dt} = 
+ * \ann{1}{G_i(n)}\dwn{+}
+ * \ann{2}{a_{i,n+1}C_i(n+1)}\dwn{-}
+ * \ann{3}{b_{i,n}C_i(n)}\dwn{+}
+ * \ann{4}{c_{i,n-1}C_i(n-1)}
+ * \f$
 */
-double ClusterDynamicsImpl::i_clusters_delta(size_t in) const
+double ClusterDynamicsImpl::i_clusters_delta(size_t n) const
 {
     return
         // (1)
-        i_defect_production(in)
+        i_defect_production(n)
         // (2)
-        + iemission_vabsorption_np1(in + 1) * interstitials[in + 1]
+        + iemission_vabsorption_np1(n + 1) * interstitials[n + 1]
         // // (3)
-        - iemission_vabsorption_n(in) * interstitials[in]
+        - iemission_vabsorption_n(n) * interstitials[n]
         // // (4)
-        + iemission_vabsorption_nm1(in - 1) * interstitials[in - 1];
+        + iemission_vabsorption_nm1(n - 1) * interstitials[n - 1];
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2a
-    The number of clusters that contain (vn) vacancies per unit volume.
-
-                  (1)     (2)                    (3)              (4)
-    dCv(n) / dt = Gv(n) + a[v,n+1] * Cv(n + 1) - b[v,n] * Cv(n) + c[v,n-1] * Cv(n-1)
+/** @brief The rate of change of the concentration of size `n` vacancy clusters.
+ * 
+ * <hr>
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 2a
+ * 
+ * \f$
+ * \frac{dC_v(n)}{dt} = 
+ * \ann{1}{G_v(n)}\dwn{+}
+ * \ann{2}{a_{v,n+1}C_v(n+1)}\dwn{-}
+ * \ann{3}{b_{v,n}C_v(n)}\dwn{+}
+ * \ann{4}{c_{v,n-1}C_v(n-1)}
+ * \f$
+ * 
+ * <b>Notes</b>
+ * 
+ * The Pokor paper's equation 2a only defines the derivative of interstitial cluster concentrations. However, the
+ * paper implies that it also works for vacancy clusters in the line immediately preceding
+ * the definition of 2a.
 */
 double ClusterDynamicsImpl::v_clusters_delta(size_t vn) const
 {
@@ -366,11 +423,19 @@ double ClusterDynamicsImpl::v_absorption_time() const
 
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3d
-    Annihilation rate of vacancies and insterstitals.
 
-          (1)      (2)         (3)
-    Riv = 4 * PI * (Di + Dv) * riv
+#define ANNOTATE(num, expr) \overset{\color{#8F0000}num}{\mathstrut{expr}}
+
+/** @brief Returns the annihilation rate of single vacancies and insterstitals in units of [TODO].
+ *  <hr>
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3d
+ *  
+ *  \f$
+ *  \Large R_{iv} =
+ *  \ann{1}{4\pi}
+ *  \ann{2}{(D_i + D_v)}
+ *  \ann{3}{r_{iv}}
+ *  \f$
 */
 double ClusterDynamicsImpl::annihilation_rate() const
 {
@@ -385,12 +450,19 @@ double ClusterDynamicsImpl::annihilation_rate() const
 // --------------------------------------------------------------------------------------------
 
 
-// --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3e
-    Characteristic time for annihilation of interstitials on dislocations.
 
-           (1)   (2)    (3)
-    tAdi = p  *  Di  *  Zi
+/** @brief Returns the 1 over the characteristic time for annihilation of interstitials on dislocations in units of [TODO].
+ * 
+ * <hr>
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3e
+ * 
+ * \f$
+ * \Large \ann{}{\frac{1}{\tau^a_{d,i}} =}
+ * \ann{1}{\rho}
+ * \ann{2}{D_i}
+ * \ann{3}{Z_i}
+ * \f$
 */
 double ClusterDynamicsImpl::i_dislocation_annihilation_time() const
 {
@@ -403,11 +475,24 @@ double ClusterDynamicsImpl::i_dislocation_annihilation_time() const
         material.i_dislocation_bias;
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3e
-    Characteristic time for annihilation of vacancies on dislocations.
 
-           (1)   (2)    (3)
-    tAdv = p  *  Dv  *  Zv
+
+/** @brief Returns the 1 over the characteristic time for annihilation of vacancies on dislocations in units of [TODO].
+ * 
+ * <hr>
+ * 
+ * This equation is based on an altered version of Equation 3e in the Pokor paper which uses the vacancy version of each variable.
+ * See the line in the Pokor paper following this equation's definition for some justification.
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3e
+ * 
+ * \f$\LARGE\frac{1}{\tau^a_{d,v}} = \rho D_v Z_v\f$
+ * 
+ * (1) \f$\rho\f$ 🡆 `dislocation_density`
+ * 
+ * (2) \f$D_v\f$ 🡆 `v_diffusion_val`
+ * 
+ * (3) \f$Z_v\f$ 🡆 `material.v_dislocation_bias`
 */
 double ClusterDynamicsImpl::v_dislocation_annihilation_time() const
 {
@@ -423,11 +508,23 @@ double ClusterDynamicsImpl::v_dislocation_annihilation_time() const
 
 
 // --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3f
-    Characteristic time for annihilation of interstitials on grain boundaries.
-
-           (1)            (2)      (3)                            (4)                              (5)
-    tAdi = 6 * Di * sqrt( p * Zi + SUM[n] ( B[i,i](n) * Ci(n) ) + SUM[n] ( B[v,i](n) * Cv(n) ) ) / d
+/** @brief Returns 1 over the characteristic time for annihilation of interstitials on grain boundaries
+ *  in units of [TODO]
+ * 
+ *  <hr>
+ *  
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3f
+ *  
+ *  \f$
+ *  \LARGE\frac{1}{\tau^a_{gb,i}} = 
+ *  \frac
+ *    {\ann{1}{6D_i}\sqrt{
+ *      \ann{2}{\rho Z_i} \ann{}{+} 
+ *      \ann{3}{\sum_n \beta_{i,i}(N) C_i(n)} \ann{}{+} 
+ *      \ann{4}{\sum_n \beta_{v,i}(N) C_v(n)}}}
+ *    {\ann{5}{d}}
+ *  \f$
+ * 
 */
 double ClusterDynamicsImpl::i_grain_boundary_annihilation_time() const
 {
@@ -448,11 +545,24 @@ double ClusterDynamicsImpl::i_grain_boundary_annihilation_time() const
         material.grain_size;
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3f
-    Characteristic time for annihilation of interstitials on grain boundaries.
 
-           (1)            (2)      (3)                            (4)                              (5)
-    tAdv = 6 * Di * sqrt( p * Zv + SUM[n] ( B[v,v](n) * Cv(n) ) + SUM[n] ( B[i,v](n) * Ci(n) ) ) / d
+// --------------------------------------------------------------------------------------------
+/** @brief Returns 1 over the characteristic time for annihilation of vacancies on grain boundaries
+ *  in units of [TODO]
+ * 
+ *  <hr>
+ *  
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3f
+ *  
+ *  \f$
+ *  \LARGE\frac{1}{\tau^a_{gb,v}} = 
+ *  \frac
+ *    {\ann{1}{6D_v}\sqrt{
+ *      \ann{2}{\rho Z_v} \ann{}{+} 
+ *      \ann{3}{\sum_n \beta_{v,v}(N) C_v(n)} \ann{}{+} 
+ *      \ann{4}{\sum_n \beta_{i,v}(N) C_i(n)}}}
+ *    {\ann{5}{d}}
+ *  \f$
 */
 double ClusterDynamicsImpl::v_grain_boundary_annihilation_time() const
 {

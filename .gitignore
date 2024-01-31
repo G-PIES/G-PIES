@@ -53,6 +53,8 @@ db/*.db
 ./build
 ./lib
 ./out
+./docs/html
+./docs/latex
 
 # gtest binaries
 !libgtest_main.a

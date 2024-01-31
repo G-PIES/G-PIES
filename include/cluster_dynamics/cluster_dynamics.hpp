@@ -8,10 +8,14 @@
 
 class ClusterDynamicsImpl;
 
+/// Class which defines a cluster dynamics simulation.
+/** 
+ * 
+ * */
 class ClusterDynamics
 {
 private:
-  std::unique_ptr<ClusterDynamicsImpl> _impl;
+  std::unique_ptr<ClusterDynamicsImpl> _impl; //< Pointer to a backend implementation class.
 public:
   ClusterDynamics(size_t concentration_boundary, NuclearReactor reactor, Material material);
   ~ClusterDynamics();
