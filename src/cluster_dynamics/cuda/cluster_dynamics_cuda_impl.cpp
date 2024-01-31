@@ -645,10 +645,14 @@ double ClusterDynamicsImpl::mean_dislocation_cell_radius() const
 {
   auto self = this->self;
 
-  double r_0_factor = thrust::transform_reduce(indices.begin(), indices.end(), 
-  [self] __CUDADECL__ (const int& idx){
-    return self->cluster_radius(idx) * self->interstitials[idx];
-  }, 0.0, thrust::plus<double>());
+  double r_0_factor = thrust::transform_reduce(
+    indices.begin(), indices.end(), 
+    [self] __CUDADECL__ (const int& idx)
+    {
+      return self->cluster_radius(idx) * self->interstitials[idx];
+    }, 
+    0.0, thrust::plus<double>()
+  );
 
   return 1 / std::sqrt((2. * M_PI * M_PI / material.atomic_volume) * r_0_factor + M_PI * dislocation_density);
 }
@@ -673,10 +677,13 @@ double ClusterDynamicsImpl::dislocation_density_delta() const
 {
   auto self = this->self;
   double gain = thrust::transform_reduce(
-    indices.begin(), indices.end(), [self] __CUDADECL__ (const int& idx){
+    indices.begin(), indices.end(), 
+    [self] __CUDADECL__ (const int& idx)
+    {
       return self->cluster_radius(idx) * self->dislocation_promotion_probability(idx) * self->ii_absorption(idx) * self->interstitials[idx];
     }, 
-    0.0, thrust::plus<double>());
+    0.0, thrust::plus<double>()
+  );
 
   gain *= 2. * M_PI / material.atomic_volume;
 
@@ -745,14 +752,22 @@ bool ClusterDynamicsImpl::update_clusters_1(double delta_time)
 bool ClusterDynamicsImpl::update_clusters(double delta_time)
 {
   auto self = this->self;
-  thrust::transform(indices.begin() + 1, indices.end(), interstitials_temp.begin() + 2, 
-    [self, delta_time] __CUDADECL__ (const int& idx){
+
+  thrust::transform(
+    indices.begin() + 1, indices.end(), interstitials_temp.begin() + 2, 
+    [self, delta_time] __CUDADECL__ (const int& idx)
+    {
       return self->interstitials[idx] + self->i_clusters_delta(idx) * delta_time;
-    });
-  thrust::transform(indices.begin() + 1, indices.end(), vacancies_temp.begin() + 2, 
-    [self, delta_time] __CUDADECL__ (const int& idx){
+    }
+  );
+
+  thrust::transform(
+    indices.begin() + 1, indices.end(), vacancies_temp.begin() + 2, 
+    [self, delta_time] __CUDADECL__ (const int& idx)
+    {
       return self->vacancies[idx] + self->v_clusters_delta(idx) * delta_time;
-    });
+    }
+  );
 
   return true; // TODO - Validate results
 }
@@ -765,41 +780,53 @@ ClusterDynamicsImpl::~ClusterDynamicsImpl()
 double ClusterDynamicsImpl::ii_sum_absorption(size_t nmax) const
 {
   auto self = this->self;
-  return thrust::transform_reduce(indices.begin(), indices.end(),
-    [self] __CUDADECL__ (const int& idx) { 
+  return thrust::transform_reduce(
+    indices.begin(), indices.end(),
+    [self] __CUDADECL__ (const int& idx) 
+    { 
       return self->ii_absorption(idx) * self->interstitials[idx];
     }, 
-    0.0, thrust::plus<double>());
+    0.0, thrust::plus<double>()
+  );
 }
 
 double ClusterDynamicsImpl::iv_sum_absorption(size_t nmax) const
 {
   auto self = this->self;
-  return thrust::transform_reduce(indices.begin(), indices.end(), 
-    [self] __CUDADECL__ (const int& idx) {
+  return thrust::transform_reduce(
+    indices.begin(), indices.end(), 
+    [self] __CUDADECL__ (const int& idx) 
+    {
         return self->iv_absorption(idx) * self->interstitials[idx];
     }, 
-    0.0, thrust::plus<double>());
+    0.0, thrust::plus<double>()
+  );
 }
 
 double ClusterDynamicsImpl::vv_sum_absorption(size_t nmax) const
 {
   auto self = this->self;
-  return thrust::transform_reduce(indices.begin(), indices.end(), 
-    [self] __CUDADECL__ (const int& idx) {
-        return self->vv_absorption(idx) * self->vacancies[idx];
+  return thrust::transform_reduce(
+    indices.begin(), indices.end(), 
+    [self] __CUDADECL__ (const int& idx) 
+    {
+      return self->vv_absorption(idx) * self->vacancies[idx];
     }, 
-    0.0, thrust::plus<double>());
+    0.0, thrust::plus<double>()
+  );
 }
 
 double ClusterDynamicsImpl::vi_sum_absorption(size_t nmax) const
 {
   auto self = this->self;
-  return thrust::transform_reduce(indices.begin(), indices.end(), 
-    [self] __CUDADECL__ (const int& idx) {
+  return thrust::transform_reduce(
+    indices.begin(), indices.end(), 
+    [self] __CUDADECL__ (const int& idx) 
+    {
         return self->vi_absorption(idx) * self->vacancies[idx];
     }, 
-    0.0, thrust::plus<double>());
+    0.0, thrust::plus<double>()
+  );
 }
 
 bool ClusterDynamicsImpl::validate(size_t n) const
