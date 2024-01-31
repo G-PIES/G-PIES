@@ -96,7 +96,7 @@ double ClusterDynamicsImpl::v_defect_production(size_t n) const
  * \ann{4}{c_{i,n-1}C_i(n-1)}
  * \f$
 */
-double ClusterDynamicsImpl::i_clusters_delta(size_t n) const
+double ClusterDynamicsImpl::i_concentration_derivative(size_t n) const
 {
     return
         // (1)
@@ -129,7 +129,7 @@ double ClusterDynamicsImpl::i_clusters_delta(size_t n) const
  * paper implies that it also works for vacancy clusters in the line immediately preceding
  * the definition of 2a.
 */
-double ClusterDynamicsImpl::v_clusters_delta(size_t vn) const
+double ClusterDynamicsImpl::v_concentration_derivative(size_t vn) const
 {
     return
         // (1)
@@ -269,7 +269,7 @@ double ClusterDynamicsImpl::vemission_iabsorption_nm1(size_t nm1) const
             (6)
             1 / (tEi)
 */
-double ClusterDynamicsImpl::i1_cluster_delta() const
+double ClusterDynamicsImpl::i1_concentration_derivative() const
 {
     return 
         // (1)
@@ -301,7 +301,7 @@ double ClusterDynamicsImpl::i1_cluster_delta() const
             (6)
             1 / (tEv)
 */
-double ClusterDynamicsImpl::v1_cluster_delta() const
+double ClusterDynamicsImpl::v1_concentration_derivative() const
 {
     return 
         // (1)
@@ -851,8 +851,8 @@ bool ClusterDynamicsImpl::step(double delta_time)
 
 bool ClusterDynamicsImpl::update_clusters_1(double delta_time)
 {
-  interstitials_temp[1] += i1_cluster_delta() * delta_time;
-  vacancies_temp[1] += v1_cluster_delta() * delta_time;
+  interstitials_temp[1] += i1_concentration_derivative() * delta_time;
+  vacancies_temp[1] += v1_concentration_derivative() * delta_time;
   return validate(1);
 }
 
@@ -862,8 +862,8 @@ bool ClusterDynamicsImpl::update_clusters(double delta_time)
 
    for (size_t n = 2; n < concentration_boundary; ++n)
    {
-      interstitials_temp[n] += i_clusters_delta(n) * delta_time;
-      vacancies_temp[n] += v_clusters_delta(n) * delta_time;
+      interstitials_temp[n] += i_concentration_derivative(n) * delta_time;
+      vacancies_temp[n] += v_concentration_derivative(n) * delta_time;
 
       state_is_valid = state_is_valid && validate(n);
    }

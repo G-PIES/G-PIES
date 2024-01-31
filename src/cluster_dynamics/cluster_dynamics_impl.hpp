@@ -63,6 +63,10 @@ public:
 
   // Physics Model Functions
 
+  __CUDADECL__ double i_concentration_derivative(size_t) const;
+  __CUDADECL__ double v_concentration_derivative(size_t) const;
+  double i1_concentration_derivative() const;
+  double v1_concentration_derivative() const;
   __CUDADECL__ double i_defect_production(size_t) const;
   __CUDADECL__ double v_defect_production(size_t) const;
   __CUDADECL__ double iemission_vabsorption_np1(size_t) const;
@@ -71,8 +75,6 @@ public:
   __CUDADECL__ double vemission_iabsorption_n(size_t) const;
   __CUDADECL__ double iemission_vabsorption_nm1(size_t) const;
   __CUDADECL__ double vemission_iabsorption_nm1(size_t) const;
-  double i1_cluster_delta() const;
-  double v1_cluster_delta() const;
   double i_emission_time() const;
   double v_emission_time() const;
   double i_absorption_time() const;
@@ -94,8 +96,6 @@ public:
   __CUDADECL__ double v_binding_energy(size_t) const;
   __CUDADECL__ double dislocation_promotion_probability(size_t) const;
   __CUDADECL__ double cluster_radius(size_t) const;
-  __CUDADECL__ double i_clusters_delta(size_t) const;
-  __CUDADECL__ double v_clusters_delta(size_t) const;
   double dislocation_density_delta() const;
 
   // Value Precalculation Functions
