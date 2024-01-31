@@ -624,14 +624,14 @@ __CUDADECL__ double ClusterDynamicsImpl::v_binding_energy(size_t vn) const
 // --------------------------------------------------------------------------------------------
 /*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg 193, 4.59
 */  
-__CUDADECL__ double ClusterDynamicsImpl::i_diffusion() const
+double ClusterDynamicsImpl::i_diffusion() const
 {
     return material.i_diffusion_0 * std::exp(-material.i_migration / (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
 
 /*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg 193, 4.59
 */  
-__CUDADECL__ double ClusterDynamicsImpl::v_diffusion() const
+double ClusterDynamicsImpl::v_diffusion() const
 {
     return material.v_diffusion_0 * std::exp(-material.v_migration / (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
