@@ -112,8 +112,10 @@ int main(int argc, char* argv[])
     {
         case 4:
             concentration_boundary = strtod(argv[3], NULL);
+            // fall through
         case 3:
             simulation_time = strtod(argv[2], NULL);
+            // fall through
         case 2:
             delta_time = strtod(argv[1], NULL);
         default:

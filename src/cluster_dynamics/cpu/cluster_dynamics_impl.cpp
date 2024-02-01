@@ -1188,7 +1188,7 @@ bool ClusterDynamicsImpl::step(double delta_time)
 
   bool state_is_valid = update_clusters_1(delta_time);
   update_clusters(delta_time);
-  dislocation_density += dislocation_density_delta() * delta_time;
+  dislocation_density += dislocation_density_derivative() * delta_time;
 
   interstitials = interstitials_temp;
   vacancies = vacancies_temp;
