@@ -11,7 +11,10 @@
 #define BOLTZMANN_EV_KELVIN 8.6173e-5 // (eV / Kelvin)
 #endif
 
-// C. Pokor / Journal of Nuclear Materials 326 (2004), Table 6
+/** @brief A class which represents the material property parameters for a ClusterDynamics simulation. 
+ * 
+ * Based loosely on: C. Pokor / Journal of Nuclear Materials 326 (2004), Table 6
+ * */ 
 struct Material
 {
     Material() : sqlite_id(-1) 
@@ -20,57 +23,42 @@ struct Material
     }
 
     int sqlite_id;
-    std::string creation_datetime;
+    std::string creation_datetime; //!< Timestamp of when this Material was first instantiated.
 
-    std::string species;
+    std::string species; //!< A name for what kind of material this data represents.
 
-    // migration energy (eV)
-    double i_migration;
-    double v_migration;
+    double i_migration; //!< Single interstitial migration energy in eV.
+    double v_migration; //!< Single vacancy migration energy in eV.
 
-    // diffusion coefficients (pre-exponential) (cm^2 / s)
-    double i_diffusion_0;
-    double v_diffusion_0;
+    double i_diffusion_0; //!< Single interstitial preexponential diffusion constant in cm^2/s.
+    double v_diffusion_0; //!< Single vacancy preexponential diffusion constant in cm^2/s.
 
-    // formation energy (eV)
-    double i_formation;
-    double v_formation;
+    double i_formation; //!< Interstitial formation energy in eV.
+    double v_formation; //!< Vacancy formation energy in eV.
 
-    // binding energy for bi-interstitials and bi-vacancies (eV)
-    double i_binding;
-    double v_binding;
+    double i_binding; //!< Binding energy for size 2 interstitials in eV.
+    double v_binding; //!< Binding energy for size 2 interstitials in eV.
 
-    // recombination radius between defects (cm)
-    double recombination_radius;
+    double recombination_radius; //!< Recombination radius of point defects in cm.
 
-    // bias factor of the loops for interstitials
-    double i_loop_bias;
+    // TODO - Get better descriptions for the bias factors
+    double i_loop_bias; //!< Interstitial loop bias factor.
+    double i_dislocation_bias; //!< Interstitial dislocation bias factor.
+    double i_dislocation_bias_param; //!< Interstitial dislocation bias parameter.
 
-    // bias factor of dislocations for interstitial
-    double i_dislocation_bias;
-    double i_dislocation_bias_param;
+    double v_loop_bias; //!< Vacancy loop bias factor.
+    double v_dislocation_bias; //!< Vacancy dislocation bias factor.
+    double v_dislocation_bias_param; //!< Vacancy dislocation bias parameter.
 
-    // bias factor of the loops for vacancies
-    double v_loop_bias;
+    double dislocation_density_0; //!< Initial dislocation network density in cm^-2.
 
-    // bias factor of dislocations for vacancies 
-    double v_dislocation_bias;
-    double v_dislocation_bias_param;
+    double grain_size; //!< Grain size in cm.
 
-    // (cm^2)
-    double dislocation_density_0;
+    double lattice_param; //!< Lattice parameter in cm.
 
-    // grain size (cm)
-    double grain_size;
+    double burgers_vector; //!< The magnitude of the burgers vector.
 
-    // lattice parameter (cm)
-    double lattice_param;
-
-    // burgers vector magnitude
-    double burgers_vector;
-
-    // average volume of a single atom in the lattice
-    double atomic_volume;
+    double atomic_volume; //!< The average volume of a single atom in the material lattice.
 };
 
 
@@ -93,6 +81,10 @@ namespace lattice_params
 namespace materials
 {
 
+/** @brief A function which fills a Material object with parameters that roughly correspond to
+ *  the properties of SA304 steel.
+ *  @param reactor A reference to the Material object to be populated with data.
+*/
 static inline void SA304(Material& material) 
 {
     double lattice_param = lattice_params::fcc_nickel;

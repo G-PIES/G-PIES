@@ -5,7 +5,11 @@
 #include "conversions.hpp"
 #include "datetime.hpp"
 
-// C. Pokor / Journal of Nuclear Materials 326 (2004), Table 5
+/** @brief A class which represents the radiation environment 
+ *  parameters for a ClusterDynamics simulation.
+ * 
+ *  Based loosely on: C. Pokor / Journal of Nuclear Materials 326 (2004), Table 5
+*/
 struct NuclearReactor
 {
     NuclearReactor() : sqlite_id(-1) 
@@ -14,38 +18,35 @@ struct NuclearReactor
     }
 
     int sqlite_id;
-    std::string creation_datetime;
+    std::string creation_datetime; //!< Timestamp of when this Material was first instantiated.
 
-    std::string species;
+    std::string species; //!< A name for what kind of material this data represents.
 
-    // neutron flux inside of the nuclear reactor (cm^2 / s)
-    double flux;
+    double flux; //!< Neutron flux through the material in dpa/s
 
-    // (Kelvin) 
-    double temperature;
+    double temperature; //!< Temperature in Kelvin
 
-    // recombination in the cascades
-    double recombination; 
+    double recombination;  //!< Recombination factor for collision cascades.
 
-    // interstitials in the cascades
-    double i_bi;
-    double i_tri;
-    double i_quad;
+    double i_bi; //!< The fraction of generated interstitial clusters which are size 2.
+    double i_tri; //!< The fraction of generated interstitial clusters which are size 3.
+    double i_quad; //!< The fraction of generated interstitial clusters which are size 4.
 
-    // vacancies in the cascades
-    double v_bi;
-    double v_tri;
-    double v_quad;
+    double v_bi; //!< The fraction of generated vacancy clusters which are size 2.
+    double v_tri; //!< The fraction of generated vacancy clusters which are size 2.
+    double v_quad; //!< The fraction of generated vacancy clusters which are size 2.
 
-    // factor of dislocation density evolution
-    double dislocation_density_evolution;
+    double dislocation_density_evolution; //!< Parameter which affects the evolution of the dislocation network.
 };
 
 // --------------------------------------------------------------------------------------------
 // REACTOR DEFINITIONS
 namespace nuclear_reactors
 {
-
+/** @brief A function which fills a NuclearReactor object with parameters that roughly correspond to
+ *  the French OSIRIS reactor.
+ *  @param reactor A reference to the NuclearReactor object to be populated with data.
+*/
 static inline void OSIRIS(NuclearReactor& reactor)
 {
     reactor.species = "OSIRIS";

@@ -17,8 +17,8 @@ private:
 public:
   /** @brief Constructs and initializes a new cluster dynamics simulation.
    *  @param concentration_boundary The number of cluster sizes that the simulation will track.
-   *  @param reactor A Reactor object containing the reactor data the simulation will use.
-   *  @param material A Material object containing the material data the simulation will use.
+   *  @param reactor A NuclearReactor object containing the reactor parameters the simulation will use.
+   *  @param material A Material object containing the material parameters the simulation will use.
   */
   ClusterDynamics(size_t concentration_boundary, NuclearReactor reactor, Material material);
   ~ClusterDynamics();
@@ -32,26 +32,26 @@ public:
   */
   ClusterDynamicsState run(double delta_time, double total_time);
 
-  /** @brief Returns the Material data that the simulation currently has set.
+  /** @brief Returns the Material parameters that the simulation currently has set.
   */
   Material get_material() const;
   
-  /** @brief Sets the Material data for the simulation to use.
-   *  @param material A Material object containing the new material data.
+  /** @brief Sets the Material parameters for the simulation to use.
+   *  @param material A Material object containing the new material parameters.
    * 
-   *  It is okay to change the material data even if the simulation 
+   *  It is okay to change the material parameters even if the simulation 
    *  has already been run() for some time.
   */
   void set_material(Material material);
 
-  /** @brief Returns the Reactor data that the simulation currently has set.
+  /** @brief Returns the NuclearReactor parameters that the simulation currently has set.
   */
   NuclearReactor get_reactor() const;
 
-  /** @brief Sets the Reactor data for the simulation to use.
-   *  @param reactor A Reactor object containing the new reactor data.
+  /** @brief Sets the NuclearReactor parameters for the simulation to use.
+   *  @param reactor A NuclearReactor object containing the new reactor parameters.
    * 
-   *  It is okay to change the reactor data even if the simulation 
+   *  It is okay to change the reactor parameters even if the simulation 
    *  has already been run() for some time.
   */
   void set_reactor(NuclearReactor reactor);
