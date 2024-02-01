@@ -57,7 +57,7 @@ __CUDADECL__ double ClusterDynamicsImpl::v_defect_production(size_t n) const
                   (1)     (2)                    (3)              (4)
     dCi(n) / dt = Gi(n) + a[i,n+1] * Ci(n + 1) - b[i,n] * Ci(n) + c[i,n-1] * Ci(n-1)
 */
-__CUDADECL__ double ClusterDynamicsImpl::i_clusters_delta(size_t in) const
+__CUDADECL__ double ClusterDynamicsImpl::i_concentration_derivative(size_t in) const
 {
     return
         // (1)
@@ -76,7 +76,7 @@ __CUDADECL__ double ClusterDynamicsImpl::i_clusters_delta(size_t in) const
                   (1)     (2)                    (3)              (4)
     dCv(n) / dt = Gv(n) + a[v,n+1] * Cv(n + 1) - b[v,n] * Cv(n) + c[v,n-1] * Cv(n-1)
 */
-__CUDADECL__ double ClusterDynamicsImpl::v_clusters_delta(size_t vn) const
+__CUDADECL__ double ClusterDynamicsImpl::v_concentration_derivative(size_t vn) const
 {
     return
         // (1)
@@ -216,7 +216,7 @@ __CUDADECL__ double ClusterDynamicsImpl::vemission_iabsorption_nm1(size_t nm1) c
             (6)
             1 / (tEi)
 */
-double ClusterDynamicsImpl::i1_cluster_delta() const
+double ClusterDynamicsImpl::i1_concentration_derivative() const
 {
     return 
         // (1)
@@ -248,7 +248,7 @@ double ClusterDynamicsImpl::i1_cluster_delta() const
             (6)
             1 / (tEv)
 */
-double ClusterDynamicsImpl::v1_cluster_delta() const
+double ClusterDynamicsImpl::v1_concentration_derivative() const
 {
     return 
         // (1)
@@ -744,8 +744,8 @@ bool ClusterDynamicsImpl::step(double delta_time)
 
 bool ClusterDynamicsImpl::update_clusters_1(double delta_time)
 {
-  interstitials_temp[1] += i1_cluster_delta() * delta_time;
-  vacancies_temp[1] += v1_cluster_delta() * delta_time;
+  interstitials_temp[1] += i1_concentration_derivative() * delta_time;
+  vacancies_temp[1] += v1_concentration_derivative() * delta_time;
   return validate(1);
 }
 
@@ -757,7 +757,7 @@ bool ClusterDynamicsImpl::update_clusters(double delta_time)
     indices.begin() + 1, indices.end(), interstitials_temp.begin() + 2, 
     [self, delta_time] __CUDADECL__ (const int& idx)
     {
-      return self->interstitials[idx] + self->i_clusters_delta(idx) * delta_time;
+      return self->interstitials[idx] + self->i_concentration_derivative(idx) * delta_time;
     }
   );
 
@@ -765,7 +765,7 @@ bool ClusterDynamicsImpl::update_clusters(double delta_time)
     indices.begin() + 1, indices.end(), vacancies_temp.begin() + 2, 
     [self, delta_time] __CUDADECL__ (const int& idx)
     {
-      return self->vacancies[idx] + self->v_clusters_delta(idx) * delta_time;
+      return self->vacancies[idx] + self->v_concentration_derivative(idx) * delta_time;
     }
   );
 

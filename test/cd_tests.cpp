@@ -74,7 +74,7 @@ TEST_F(ClusterDynamicsTest, ResultUnchanged)
   EXPECT_NEAR(state.dislocation_density, dislocation_density_data, 1e-7);
 }
 
-TEST_F(ClusterDynamicsTest, i_clusters_delta_test)
+TEST_F(ClusterDynamicsTest, i_concentration_derivative_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
   cd.run(1e-5, 1e-5);
@@ -90,7 +90,7 @@ TEST_F(ClusterDynamicsTest, i_clusters_delta_test)
   double actual[5];
   for (int i = 0; i < 5; ++i)
   {
-    actual[i] = cd.i_clusters_delta(i + 2);
+    actual[i] = cd.i_concentration_derivative(i + 2);
   }
 
   EXPECT_DOUBLE_EQ(expected[0], actual[0]);
@@ -100,7 +100,7 @@ TEST_F(ClusterDynamicsTest, i_clusters_delta_test)
   EXPECT_DOUBLE_EQ(expected[4], actual[4]);
 }
 
-TEST_F(ClusterDynamicsTest, v_clusters_delta_test)
+TEST_F(ClusterDynamicsTest, v_concentration_derivative_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
   cd.run(1e-5, 1e-5);
@@ -116,7 +116,7 @@ TEST_F(ClusterDynamicsTest, v_clusters_delta_test)
   double actual[5];
   for (int i = 0; i < 5; ++i)
   {
-    actual[i] = cd.v_clusters_delta(i + 2);
+    actual[i] = cd.v_concentration_derivative(i + 2);
   }
 
   EXPECT_DOUBLE_EQ(expected[0], actual[0]);
@@ -126,24 +126,24 @@ TEST_F(ClusterDynamicsTest, v_clusters_delta_test)
   EXPECT_DOUBLE_EQ(expected[4], actual[4]);
 }
 
-TEST_F(ClusterDynamicsTest, i1_cluster_delta_test)
+TEST_F(ClusterDynamicsTest, i1_concentration_derivative_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
   cd.run(1e-5, 1e-5);
 
   double expected = 2.4384462178878696e-07;
-  double actual = cd.i1_cluster_delta();
+  double actual = cd.i1_concentration_derivative();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
 
-TEST_F(ClusterDynamicsTest, v1_cluster_delta_test)
+TEST_F(ClusterDynamicsTest, v1_concentration_derivative_test)
 {
   ClusterDynamicsImpl cd(10, reactor, material);
   cd.run(1e-5, 1e-5);
 
   double expected = 7.7429999999999973e-08;
-  double actual = cd.v1_cluster_delta();
+  double actual = cd.v1_concentration_derivative();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }

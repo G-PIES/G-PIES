@@ -3,11 +3,10 @@
 
 #include "cluster_dynamics_impl.hpp"
 
-// --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), Equations 1a-1e
-    The rate of production of interstital defects from the irradiation cascade for size (n) clusters.
-*/
-/** @brief The rate of production of interstital defects from the irradiation cascade for size (n) clusters in units of [TODO].
+
+
+/** @brief Returns the rate of production of interstital defects from the irradiation cascade for 
+ * size (n) clusters in units of [TODO].
  * 
  * <hr>
  * 
@@ -38,11 +37,11 @@ double ClusterDynamicsImpl::i_defect_production(size_t n) const
     // cluster sizes > greater than 4 always zero
     return 0.;
 }
-// --------------------------------------------------------------------------------------------
 
 
 
-/** @brief The rate of production of vacancies defects from the irradiation cascade for size (n) clusters in units of [TODO].
+/** @brief Returns the rate of production of vacancies defects from the irradiation cascade for 
+ *  size (n) clusters in units of [TODO].
  * 
  * <hr>
  * 
@@ -78,11 +77,11 @@ double ClusterDynamicsImpl::v_defect_production(size_t n) const
     // cluster sizes > greater than 4 always zero
     return 0.;
 }
-// --------------------------------------------------------------------------------------------
 
 
 
-/** @brief The rate of change of the concentration of size `n` interstitial clusters.
+/** @brief Returns the rate of change of the concentration of size `n` interstitial clusters
+ *  in units of [TODO].
  * 
  * <hr>
  * 
@@ -109,7 +108,10 @@ double ClusterDynamicsImpl::i_concentration_derivative(size_t n) const
         + iemission_vabsorption_nm1(n - 1) * interstitials[n - 1];
 }
 
-/** @brief The rate of change of the concentration of size `n` vacancy clusters.
+
+
+/** @brief Returns the rate of change of the concentration of size `n` vacancy clusters
+ *  in units of [TODO].
  * 
  * <hr>
  * 
@@ -141,16 +143,21 @@ double ClusterDynamicsImpl::v_concentration_derivative(size_t vn) const
         // (4)
         + vemission_iabsorption_nm1(vn - 1) * vacancies[vn - 1];
 }
-// --------------------------------------------------------------------------------------------
 
 
-// --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2b
-    The combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (np1),
-    both events leading to an interstitial loop of size n.
 
-               (1)             (2)     (3)
-    a[i,n+1] = B[i,v](n + 1) * Cv(1) + E[i,i](n + 1)
+/** @brief Returns the combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (np1)
+ * in units of [TODO], both events leading to an interstitial loop of size n.
+ * 
+ * <hr>
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 2b
+ * 
+ * \f$
+ *  \dwn{a_{i,n-1} = } 
+ *  \ann{1}{\beta_{i,v}(n+1)}\ann{2}{C_v(1)}\dwn{+}
+ *  \ann{3}{\alpha_{i,i}(n+1)}
+ * \f$
 */
 double ClusterDynamicsImpl::iemission_vabsorption_np1(size_t np1) const
 {
@@ -163,12 +170,20 @@ double ClusterDynamicsImpl::iemission_vabsorption_np1(size_t np1) const
         ii_emission(np1);
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2b
-    The combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (np1),
-    both events leading to an interstitial loop of size n.
 
-               (1)             (2)     (3)
-    a[v,n+1] = B[v,i](n + 1) * Ci(1) + E[v,v](n + 1)
+
+/** @brief Returns the combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (np1)
+ *  in units of [TODO], both events leading to an interstitial loop of size n.
+ * 
+ * <hr>
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 2b
+ * 
+ * \f$
+ *  \dwn{a_{v,n-1} = }
+ *  \ann{1}{\beta_{v,i}(n+1)}\ann{2}{C_i(1)}\dwn{+}
+ *  \ann{3}{\alpha_{v,v}(n+1)}
+ * \f$
 */
 double ClusterDynamicsImpl::vemission_iabsorption_np1(size_t np1) const
 {
@@ -181,13 +196,34 @@ double ClusterDynamicsImpl::vemission_iabsorption_np1(size_t np1) const
         vv_emission(np1);
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2c
-    The rate that a loop of size n can evolve toward a loop of size
-    n + 1 absorbing an interstitial, or toward a loop of size
-    n - 1 absorbing a vacancy or emitting an interstitial.
 
-             (1)                 (2)                 (3)
-    b[i,n] = B[i,v](n) * Cv(1) + B[i,i](n) * Ci(1) + E[i,i](n)
+
+/** @brief Returns the rate that an interstitial cluster of size n can evolve toward a cluster of size
+ *  n + 1 absorbing an interstitial, or toward a cluster of size
+ *  n - 1 absorbing a vacancy or emitting an interstitial,
+ *  in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 2c
+ *  N. Sakaguchi / Acta Materialia 1131 (2001), Equation 3.14
+ * 
+ *  \f$
+ *    \dwn{b_{i,n} =}
+ *    \ann{1}{\beta_{i,v}(n)C_v(1)}\dwn{+}
+ *    \ann{2}{\beta_{i,i}(n)C_i(1)}
+ *    \ann{3}{(1-P_{unf}(n))}\dwn{+}
+ *    \ann{4}{\alpha_{i,i}(n)}
+ *  \f$
+ * 
+ *  <b>Notes</b>
+ * 
+ *  This equation uses the cluster evolution equations from the Pokor paper
+ *  modified to accomodate the dislocation network evolution model of the Sakaguchi paper. 
+ *  \f$K_{1(j)}\f$ from the Sakaguchi paper corresponds to \f$\beta_{i,i}(n)C_i(1)\f$
+ *  in the Pokor paper, both being the rate of promotion to the next cluster size.
+ *  Dr. Chen suggested using \f$P_{unf}(n)\f$, in a similar way to the Sakaguchi paper
+ *  to determine what percentage of promoted clusters become part of the dislocation network.
 */
 double ClusterDynamicsImpl::iemission_vabsorption_n(size_t n) const
 {
@@ -195,18 +231,31 @@ double ClusterDynamicsImpl::iemission_vabsorption_n(size_t n) const
         // (1)
         iv_absorption(n) * vacancies[1]
         // (2)
-        + ii_absorption(n) * interstitials[1] * (1 - dislocation_promotion_probability(n))
+        + ii_absorption(n) * interstitials[1] 
         // (3)
+        * (1 - dislocation_promotion_probability(n))
+        // (4)
         + ii_emission(n);
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2c
-    The rate that a loop of size n can evolve toward a loop of size
-    n + 1 absorbing an vacancy, or toward a loop of size
-    n - 1 absorbing an interstitial or emitting a vacancy.
 
-             (1)                 (2)                 (3)
-    b[v,n] = B[v,i](n) * Ci(1) + B[v,v](n) * Cv(1) + E[v,v](n)
+
+/** @brief Returns the rate that a vacancy cluster of size n can evolve toward a cluster of size
+ *  n + 1 absorbing a vacancy, or toward a cluster of size
+ *  n - 1 absorbing an interstitial or emitting an vacancy,
+ *  in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 2c
+ *  N. Sakaguchi / Acta Materialia 1131 (2001), Equation 3.14
+ * 
+ *  \f$
+ *    \dwn{b_{v,n} =}
+ *    \ann{1}{\beta_{v,i}(n)C_i(1)}\dwn{+}
+ *    \ann{2}{\beta_{v,v}(n)C_v(1)}
+ *    \ann{3}{\alpha_{v,v}(n)}
+ *  \f$
 */
 double ClusterDynamicsImpl::vemission_iabsorption_n(size_t n) const
 {
@@ -219,12 +268,21 @@ double ClusterDynamicsImpl::vemission_iabsorption_n(size_t n) const
         + vv_emission(n);
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2d
-    The rate that an interstitial loop of size n - 1 can evolve into a
-    loop of size n by absorbing an interstitial.
 
-               (1)           (2)
-    c[i,n-1] = B[i,i](n-1) * Ci(1)
+
+/** @brief Returns the rate that an interstitial cluster of size n - 1 can evolve into a
+ *  cluster of size n by absorbing an interstitial, in units of [TODO].
+ * 
+ * <hr>
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 2d
+ * 
+ * \f$
+ *   \dwn{c_{i,n-1} =}
+ *   \ann{1}{\beta_{i,i}(n-1)}\dwn{*}
+ *   \ann{2}{C_i(1)}
+ * \f$
+ * 
 */
 double ClusterDynamicsImpl::iemission_vabsorption_nm1(size_t nm1) const
 {
@@ -235,12 +293,21 @@ double ClusterDynamicsImpl::iemission_vabsorption_nm1(size_t nm1) const
         interstitials[1];
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2d
-    The rate that a vacancy loop of size n - 1 can evolve into a
-    loop of size n by absorbing a vacancy.
 
-               (1)           (2)
-    c[v,n-1] = B[v,v](n-1) * Cv(1)
+
+/** @brief Returns the rate that a vacancy cluster of size n - 1 can evolve into a
+ *  cluster of size n by absorbing a vacancy, in units of [TODO].
+ * 
+ * <hr>
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 2d
+ * 
+ * \f$
+ *   \dwn{c_{i,n-1} =}
+ *   \ann{1}{\beta_{v,v}(n-1)}\dwn{*}
+ *   \ann{2}{C_v(1)}
+ * \f$
+ * 
 */
 double ClusterDynamicsImpl::vemission_iabsorption_nm1(size_t nm1) const
 {
@@ -250,24 +317,25 @@ double ClusterDynamicsImpl::vemission_iabsorption_nm1(size_t nm1) const
         // (2)
         vacancies[1];
 }
-// --------------------------------------------------------------------------------------------
 
 
-// --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3a
-    Point defects concentrations per unit volume given a cluster size (in).
-    ** in is only used in characteristic time calculations which rely on cluster sizes up to (in).
 
-                (1)     (2)
-    dCi(1)/dt = Gi(1) - Riv * Ci(1) * Cv(1) - 
-            (3)
-            Ci(1) / (tAdi) - 
-            (4)
-            Ci(1) / (tAgb) -
-            (5)
-            Ci(1) / (tAi) +
-            (6)
-            1 / (tEi)
+/** @brief Returns the rate of change in the concentration of size 1 interstitial clusters,
+ *  in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3a
+ * 
+ *  \f$
+ *    \dwn{\frac{dC_i(1)}{dt} =}
+ *    \ann{1}{G_i(1)}\dwn{-}
+ *    \ann{2}{R_{iv}C_i(1)C_v(1)}\dwn{-}
+ *    \ann{3}{\frac{C_i(1)}{\tau^a_{d,i}}}\dwn{-}
+ *    \ann{4}{\frac{C_i(1)}{\tau^a_{gb,i}}}\dwn{+}
+ *    \ann{5}{\frac{C_i(1)}{\tau^a_i}}\dwn{+}
+ *    \ann{6}{\frac{1}{\tau^e_i}}
+ *  \f$
 */
 double ClusterDynamicsImpl::i1_concentration_derivative() const
 {
@@ -286,20 +354,24 @@ double ClusterDynamicsImpl::i1_concentration_derivative() const
         + i_emission_time();
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3a
-    Point defects concentrations per unit volume given a cluster size (vn).
-    ** vn is only used in characteristic time calculations which rely on cluster sizes up to (vn).
 
-            (1)     (2)
-    Cv(1) = Gv(1) - Riv * Ci(1) * Cv(1) - 
-            (3)
-            Cv(1) / (tAdv) - 
-            (4)
-            Cv(1) / (tAgb) -
-            (5)
-            Cv(1) / (tAv) +
-            (6)
-            1 / (tEv)
+
+/** @brief Returns the rate of change in the concentration of size 1 vacancy clusters,
+ *  in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3a
+ * 
+ *  \f$
+ *    \dwn{\frac{dC_v(1)}{dt} =}
+ *    \ann{1}{G_v(1)}\dwn{-}
+ *    \ann{2}{R_{iv}C_i(1)C_v(1)}\dwn{-}
+ *    \ann{3}{\frac{C_v(1)}{\tau^a_{d,v}}}\dwn{-}
+ *    \ann{4}{\frac{C_v(1)}{\tau^a_{gb,v}}}\dwn{+}
+ *    \ann{5}{\frac{C_v(1)}{\tau^a_v}}\dwn{+}
+ *    \ann{6}{\frac{1}{\tau^e_v}}
+ *  \f$
 */
 double ClusterDynamicsImpl::v1_concentration_derivative() const
 {
@@ -317,15 +389,34 @@ double ClusterDynamicsImpl::v1_concentration_derivative() const
         // (6)
         + v_emission_time();
 }
-// --------------------------------------------------------------------------------------------
 
-// --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3b
-    Characteristic time for emitting an interstitial by the population of interstital or vacancy
-    clusters of size up to (nmax).
 
-                (1)                      (2)                     (3)
-    tEi(n) = SUM ( E[i,i](n) * Ci(n) ) + 4 * E[i,i](2) * Ci(2) + B[i,v](2) * Cv(2) * Ci(2)
+
+/** @brief Returns one over the characteristic time for emitting an interstitial by 
+ *  the population of interstital or vacancy clusters, in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3b
+ *  
+ *  \f$
+ *    \dwn{\frac{1}{\tau^e_i(n)} = }
+ *    \ann{1}{\sum_{n>2} \alpha_{i,i}(n) C_i(n)}\dwn{+}
+ *    \ann{2}{4 \alpha_{i,i}(2) C_i(2)}
+ *    \ann{3}{\beta_{i,v}(2) C_v(2) C_i(2)}
+ *  \f$
+ * 
+ *  <b>Notes</b>
+ * 
+ *  There is a bug where if you let a concentration of larger clusters just sit and emit,
+ *  the end concentration  of size 1 clusters will be double what it should be. For example,
+ *  if you have a concentration of 0.2 for clusters of size 2, instead of ending up with 0.4
+ *  once they all break up,
+ *  the end result is 0.8. Suspiciously, if you turn the 4 in Equation 3b into a 2, 
+ *  the issue goes away. It's an open conspiracy theory that this number directly represents 
+ *  the number of size 1 clusters that result when a size 2 cluster does an emission,
+ *  in which case 2 would be the correct coefficient. Dr. Chen couldn't refute this conspiracy theory,
+ *  but hasn't yet had time to look into it.
 */
 double ClusterDynamicsImpl::i_emission_time() const
 {
@@ -346,12 +437,25 @@ double ClusterDynamicsImpl::i_emission_time() const
   return time;
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3b
-    Characteristic time for emitting a vacancy by the population of interstital or vacancy
-    clusters of size up to (nmax).
 
-                (1)                           (2)                     (3)
-    tEv(n) = SUM[n>0] ( E[v,v](n) * Cv(n) ) + 4 * E[v,v](2) * Cv(2) + B[v,i](2) * Cv(2) * Ci(2)
+
+/** @brief Returns one over the characteristic time for emitting an vacancy by 
+ *  the population of interstital or vacancy clusters, in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3b
+ *  
+ *  \f$
+ *    \dwn{\frac{1}{\tau^e_v(n)} = }
+ *    \ann{1}{\sum_{n>2} \alpha_{v,v}(n) C_v(n)}\dwn{+}
+ *    \ann{2}{4 \alpha_{v,v}(2) C_v(2)}
+ *    \ann{3}{\beta_{v,i}(2) C_v(2) C_i(2)}
+ *  \f$
+ * 
+ *  <b>Notes</b>
+ * 
+ *  There is a bug that seems to be related to this equation. See i_emission_time().
 */
 double ClusterDynamicsImpl::v_emission_time() const
 {
@@ -371,16 +475,21 @@ double ClusterDynamicsImpl::v_emission_time() const
 
    return time;
 }
-// --------------------------------------------------------------------------------------------
 
 
-// --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3c
-    Characteristic time for absorbing an interstitial by the population of interstital or vacancy
-    clusters of size up to (nmax).
 
-                        (1)                              (2)
-    tAi(n) = SUM[n>0] ( B[i,i](n) * Ci(n) ) + SUM[n>1] ( B[v,i](n) * Cv(n) )
+/** @brief Returns 1 over the characteristic time for absorbing an interstitial by 
+ *  the population of interstital or vacancy clusters, in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3c
+ * 
+ *  \f$
+ *    \dwn{\frac{1}{\tau^a_i(n)} =}
+ *    \ann{1}{\sum_{n>0} \beta_{i,i}(n) C_i(n)}\dwn{+}
+ *    \ann{2}{\sum_{n>1} \beta_{v,i}(n) C_v(n)}
+ *  \f$
 */
 double ClusterDynamicsImpl::i_absorption_time() const
 {
@@ -405,6 +514,22 @@ double ClusterDynamicsImpl::i_absorption_time() const
                         (1)                              (2)
     tAv(n) = SUM[n>0] ( B[v,v](n) * Cv(n) ) + SUM[n>1] ( B[i,v](n) * Ci(n) )
 */
+
+
+
+/** @brief Returns 1 over the characteristic time for absorbing a vacancy by 
+ *  the population of interstital or vacancy clusters, in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3c
+ * 
+ *  \f$
+ *    \dwn{\frac{1}{\tau^a_v(n)} =}
+ *    \ann{1}{\sum_{n>0} \beta_{v,v}(n) C_v(n)}\dwn{+}
+ *    \ann{2}{\sum_{n>1} \beta_{i,v}(n) C_i(n)}
+ *  \f$
+*/
 double ClusterDynamicsImpl::v_absorption_time() const
 {
    double time = vv_absorption(1) * vacancies[1];
@@ -423,8 +548,6 @@ double ClusterDynamicsImpl::v_absorption_time() const
 
 
 // --------------------------------------------------------------------------------------------
-
-#define ANNOTATE(num, expr) \overset{\color{#8F0000}num}{\mathstrut{expr}}
 
 /** @brief Returns the annihilation rate of single vacancies and insterstitals in units of [TODO].
  *  <hr>
