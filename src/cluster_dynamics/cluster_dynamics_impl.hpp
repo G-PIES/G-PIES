@@ -67,6 +67,8 @@ public:
   __CUDADECL__ double v_concentration_derivative(size_t) const;
   double i1_concentration_derivative() const;
   double v1_concentration_derivative() const;
+  double dislocation_density_derivative() const;
+
   __CUDADECL__ double i_defect_production(size_t) const;
   __CUDADECL__ double v_defect_production(size_t) const;
   __CUDADECL__ double iemission_vabsorption_np1(size_t) const;
@@ -96,7 +98,6 @@ public:
   __CUDADECL__ double v_binding_energy(size_t) const;
   __CUDADECL__ double dislocation_promotion_probability(size_t) const;
   __CUDADECL__ double cluster_radius(size_t) const;
-  double dislocation_density_delta() const;
 
   // Value Precalculation Functions
   double i_diffusion() const;

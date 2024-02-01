@@ -24,8 +24,8 @@ public:
   ~ClusterDynamics();
     
   /** @brief Runs the simulation and returns the end simulation state as a ClusterDynamicsState object.
-   *  @param delta_time The time step for the simulation.
-   *  @param total_time The length of time that should be simulated.
+   *  @param delta_time The time step for the simulation in seconds.
+   *  @param total_time The length of time that should be simulated in seconds.
    * 
    *  run() can be called multiple times, and the simulation will resume from where it stopped 
    *  after the last time run() was called.

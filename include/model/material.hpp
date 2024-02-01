@@ -41,7 +41,7 @@ struct Material
 
     double recombination_radius; //!< Recombination radius of point defects in cm.
 
-    // TODO - Get better descriptions for the bias factors
+    //!< \todo Get better descriptions for the bias factors
     double i_loop_bias; //!< Interstitial loop bias factor.
     double i_dislocation_bias; //!< Interstitial dislocation bias factor.
     double i_dislocation_bias_param; //!< Interstitial dislocation bias parameter.

@@ -19,7 +19,7 @@ struct ClusterDynamicsState
     double time = 0.0;
 
     /** @brief The current concentration of each size of interstitial cluster
-     * in units of [TODO].
+     * in \todo UNITS
      * 
      * The concentration of clusters of size `n` will be found at interstitials[n].
      * The 0th element is always 0. The size of this data is determined by the
@@ -29,7 +29,7 @@ struct ClusterDynamicsState
     std::vector<double> interstitials;
 
     /** @brief The current concentration of each size of vacancy cluster
-     *  in units of [TODO].
+     *  in \todo UNITS
      * 
      * The concentration of clusters of size `n` will be found at interstitials[n].
      * The 0th element is always 0. The size of this data is determined by the
@@ -38,7 +38,7 @@ struct ClusterDynamicsState
     */
     std::vector<double> vacancies;
 
-    /** @brief The current density of the dislocation network in units of [TODO].
+    /** @brief The current density of the dislocation network in \todo UNITS
     */
     double dislocation_density = 0.0;
 };

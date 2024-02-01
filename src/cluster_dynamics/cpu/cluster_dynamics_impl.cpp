@@ -6,7 +6,7 @@
 
 
 /** @brief Returns the rate of production of interstital defects from the irradiation cascade for 
- * size (n) clusters in units of [TODO].
+ * size (n) clusters. \todo Document units
  * 
  * <hr>
  * 
@@ -41,7 +41,7 @@ double ClusterDynamicsImpl::i_defect_production(size_t n) const
 
 
 /** @brief Returns the rate of production of vacancies defects from the irradiation cascade for 
- *  size (n) clusters in units of [TODO].
+ *  size (n) clusters. \todo Document units
  * 
  * <hr>
  * 
@@ -81,7 +81,7 @@ double ClusterDynamicsImpl::v_defect_production(size_t n) const
 
 
 /** @brief Returns the rate of change of the concentration of size `n` interstitial clusters
- *  in units of [TODO].
+ * . \todo Document units
  * 
  * <hr>
  * 
@@ -111,7 +111,7 @@ double ClusterDynamicsImpl::i_concentration_derivative(size_t n) const
 
 
 /** @brief Returns the rate of change of the concentration of size `n` vacancy clusters
- *  in units of [TODO].
+ * . \todo Document units
  * 
  * <hr>
  * 
@@ -147,7 +147,7 @@ double ClusterDynamicsImpl::v_concentration_derivative(size_t vn) const
 
 
 /** @brief Returns the combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (np1)
- * in units of [TODO], both events leading to an interstitial loop of size n.
+ *. \todo Document units, both events leading to an interstitial loop of size n.
  * 
  * <hr>
  * 
@@ -173,7 +173,7 @@ double ClusterDynamicsImpl::iemission_vabsorption_np1(size_t np1) const
 
 
 /** @brief Returns the combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (np1)
- *  in units of [TODO], both events leading to an interstitial loop of size n.
+ * . \todo Document units, both events leading to an interstitial loop of size n.
  * 
  * <hr>
  * 
@@ -201,7 +201,7 @@ double ClusterDynamicsImpl::vemission_iabsorption_np1(size_t np1) const
 /** @brief Returns the rate that an interstitial cluster of size n can evolve toward a cluster of size
  *  n + 1 absorbing an interstitial, or toward a cluster of size
  *  n - 1 absorbing a vacancy or emitting an interstitial,
- *  in units of [TODO].
+ * . \todo Document units
  * 
  *  <hr>
  * 
@@ -243,7 +243,7 @@ double ClusterDynamicsImpl::iemission_vabsorption_n(size_t n) const
 /** @brief Returns the rate that a vacancy cluster of size n can evolve toward a cluster of size
  *  n + 1 absorbing a vacancy, or toward a cluster of size
  *  n - 1 absorbing an interstitial or emitting an vacancy,
- *  in units of [TODO].
+ * . \todo Document units
  * 
  *  <hr>
  * 
@@ -271,7 +271,7 @@ double ClusterDynamicsImpl::vemission_iabsorption_n(size_t n) const
 
 
 /** @brief Returns the rate that an interstitial cluster of size n - 1 can evolve into a
- *  cluster of size n by absorbing an interstitial, in units of [TODO].
+ *  cluster of size n by absorbing an interstitial,. \todo Document units
  * 
  * <hr>
  * 
@@ -296,7 +296,7 @@ double ClusterDynamicsImpl::iemission_vabsorption_nm1(size_t nm1) const
 
 
 /** @brief Returns the rate that a vacancy cluster of size n - 1 can evolve into a
- *  cluster of size n by absorbing a vacancy, in units of [TODO].
+ *  cluster of size n by absorbing a vacancy,. \todo Document units
  * 
  * <hr>
  * 
@@ -321,7 +321,7 @@ double ClusterDynamicsImpl::vemission_iabsorption_nm1(size_t nm1) const
 
 
 /** @brief Returns the rate of change in the concentration of size 1 interstitial clusters,
- *  in units of [TODO].
+ * . \todo Document units
  * 
  *  <hr>
  * 
@@ -357,7 +357,7 @@ double ClusterDynamicsImpl::i1_concentration_derivative() const
 
 
 /** @brief Returns the rate of change in the concentration of size 1 vacancy clusters,
- *  in units of [TODO].
+ * . \todo Document units
  * 
  *  <hr>
  * 
@@ -393,7 +393,7 @@ double ClusterDynamicsImpl::v1_concentration_derivative() const
 
 
 /** @brief Returns one over the characteristic time for emitting an interstitial by 
- *  the population of interstital or vacancy clusters, in units of [TODO].
+ *  the population of interstital or vacancy clusters,. \todo Document units
  * 
  *  <hr>
  * 
@@ -440,7 +440,7 @@ double ClusterDynamicsImpl::i_emission_time() const
 
 
 /** @brief Returns one over the characteristic time for emitting an vacancy by 
- *  the population of interstital or vacancy clusters, in units of [TODO].
+ *  the population of interstital or vacancy clusters,. \todo Document units
  * 
  *  <hr>
  * 
@@ -479,7 +479,7 @@ double ClusterDynamicsImpl::v_emission_time() const
 
 
 /** @brief Returns 1 over the characteristic time for absorbing an interstitial by 
- *  the population of interstital or vacancy clusters, in units of [TODO].
+ *  the population of interstital or vacancy clusters,. \todo Document units
  * 
  *  <hr>
  * 
@@ -509,7 +509,7 @@ double ClusterDynamicsImpl::i_absorption_time() const
 
 
 /** @brief Returns 1 over the characteristic time for absorbing a vacancy by 
- *  the population of interstital or vacancy clusters, in units of [TODO].
+ *  the population of interstital or vacancy clusters,. \todo Document units
  * 
  *  <hr>
  * 
@@ -539,7 +539,7 @@ double ClusterDynamicsImpl::v_absorption_time() const
 
 // --------------------------------------------------------------------------------------------
 
-/** @brief Returns the annihilation rate of single vacancies and insterstitals in units of [TODO].
+/** @brief Returns the annihilation rate of single vacancies and insterstitals. \todo Document units
  *  <hr>
  *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3d
  *  
@@ -564,7 +564,7 @@ double ClusterDynamicsImpl::annihilation_rate() const
 
 
 
-/** @brief Returns the 1 over the characteristic time for annihilation of interstitials on dislocations in units of [TODO].
+/** @brief Returns the 1 over the characteristic time for annihilation of interstitials on dislocations. \todo Document units
  * 
  * <hr>
  * 
@@ -590,7 +590,7 @@ double ClusterDynamicsImpl::i_dislocation_annihilation_time() const
 
 
 
-/** @brief Returns the 1 over the characteristic time for annihilation of vacancies on dislocations in units of [TODO].
+/** @brief Returns the 1 over the characteristic time for annihilation of vacancies on dislocations. \todo Document units
  * 
  * <hr>
  * 
@@ -622,7 +622,7 @@ double ClusterDynamicsImpl::v_dislocation_annihilation_time() const
 
 // --------------------------------------------------------------------------------------------
 /** @brief Returns 1 over the characteristic time for annihilation of interstitials on grain boundaries
- *  in units of [TODO]
+ * . \todo Document units
  * 
  *  <hr>
  *  
@@ -661,7 +661,7 @@ double ClusterDynamicsImpl::i_grain_boundary_annihilation_time() const
 
 // --------------------------------------------------------------------------------------------
 /** @brief Returns 1 over the characteristic time for annihilation of vacancies on grain boundaries
- *  in units of [TODO]
+ * . \todo Document units
  * 
  *  <hr>
  *  
@@ -699,7 +699,7 @@ double ClusterDynamicsImpl::v_grain_boundary_annihilation_time() const
 
 
 /** @brief Returns the rate of emission of an interstitial by an interstital cluster of size (n)
- *  in units of [TODO].
+ * . \todo Document units
  * 
  *  <hr>
  * 
@@ -733,7 +733,7 @@ double ClusterDynamicsImpl::ii_emission(size_t n) const
 
 
 /** @brief Returns the rate of absorption of an interstitial by an interstital cluster of size (n),
- * in units of [TODO].
+ *. \todo Document units
  * 
  * <hr>
  * 
@@ -760,7 +760,7 @@ double ClusterDynamicsImpl::ii_absorption(size_t n) const
 
 
 /** @brief Returns the rate of absorption of an interstitial by an vacancy cluster of size (n),
- * in units of [TODO].
+ *. \todo Document units
  * 
  * <hr>
  * 
@@ -787,7 +787,7 @@ double ClusterDynamicsImpl::iv_absorption(size_t n) const
 
 
 /** @brief Returns the rate of emission of an interstitial by an interstital cluster of size (n)
- *  in units of [TODO].
+ * . \todo Document units
  * 
  *  <hr>
  * 
@@ -821,7 +821,7 @@ double ClusterDynamicsImpl::vv_emission(size_t n) const
 
 
 /** @brief Returns the rate of absorption of a vacancy by a vacancy loop of size (n),
- *  in units of [TODO].
+ * . \todo Document units
  * 
  *  <hr>
  * 
@@ -848,7 +848,7 @@ double ClusterDynamicsImpl::vv_absorption(size_t n) const
 
 
 /** @brief Returns the rate of absorption of an vacancy by an interstitial cluster of size (n),
- * in units of [TODO].
+ *. \todo Document units
  * 
  * <hr>
  * 
@@ -872,7 +872,7 @@ double ClusterDynamicsImpl::vi_absorption(size_t n) const
 
 
 /** @brief Returns the bias factor for an interstitial cluster of size (n) 
- *  in units of [TODO]
+ * . \todo Document units
  * 
  * <hr>
  * 
@@ -916,7 +916,7 @@ double ClusterDynamicsImpl::i_bias_factor(size_t n) const
 
 
 /** @brief Returns the bias factor of a vacancy cluster of size (n)
- *  in units of [TODO]
+ * . \todo Document units
  * 
  * <hr>
  * 
@@ -955,7 +955,7 @@ double ClusterDynamicsImpl::v_bias_factor(size_t n) const
 
 
 /** @brief Returnst the binding energy for an interstitial cluster of size (n)
- *  in units of [TODO].
+ * . \todo Document units
  * 
  *  <hr>
  * 
@@ -982,7 +982,7 @@ double ClusterDynamicsImpl::i_binding_energy(size_t n) const
 
 
 /** @brief Returnst the binding energy for a vacancy cluster of size (n)
- *  in units of [TODO].
+ * . \todo Document units
  * 
  *  <hr>
  * 
@@ -1008,7 +1008,7 @@ double ClusterDynamicsImpl::v_binding_energy(size_t n) const
 
 
 
-/** @brief Returns the diffusion coefficient for single interstitials in units of [TODO].
+/** @brief Returns the diffusion coefficient for single interstitials. \todo Document units
  * 
  *  <hr>
  * 
@@ -1028,7 +1028,7 @@ double ClusterDynamicsImpl::i_diffusion() const
 
 
 
-/** @brief Returns the diffusion coefficient for single vacancies in units of [TODO].
+/** @brief Returns the diffusion coefficient for single vacancies. \todo Document units
  * 
  *  <hr>
  * 
@@ -1048,7 +1048,7 @@ double ClusterDynamicsImpl::v_diffusion() const
 
 
 
-/** Returns the mean dislocation cell radius of the system in units of [TODO].
+/** Returns the mean dislocation cell radius of the system. \todo Document units
  * 
  * <hr>
  * 
@@ -1079,7 +1079,7 @@ double ClusterDynamicsImpl::mean_dislocation_cell_radius() const
 /*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.12
 */
 /** @brief Returns the probability that an interstitial cluster of size n will unfurl to join the dislocation
- *  network when it grows to size n + 1, in units of [TODO].
+ *  network when it grows to size n + 1,. \todo Document units
  * 
  *  <hr>
  * 
@@ -1101,13 +1101,31 @@ double ClusterDynamicsImpl::dislocation_promotion_probability(size_t n) const
    //    (3)                                       (4)
       / (M_PI * mean_dislocation_radius_val / 2. - std::pow(cluster_radius(n), 2.)); 
 }
-// --------------------------------------------------------------------------------------------
 
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 8
 */
-double ClusterDynamicsImpl::dislocation_density_delta() const
+/** @brief Returns the rate of change of the density of the dislocation network. \todo Document units
+ * 
+ *  <hr>
+ * 
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 8
+ *  N. Sakaguchi / Acta Materialia 1131 (2001), Equation 3.14
+ * 
+ *  \f$
+ *    \dwn{\frac{d\rho}{dt}=}
+ *    \ann{1}{Gain \vphantom{\rho^{3/2}}}\dwn{-}
+ *    \ann{2}{Kb^2\rho^{3/2}}
+ *  \f$
+ * 
+ * <b>Notes</b>
+ * 
+ * The gain term comes from the Sakaguchi paper's model of dislocation network evolution. Every time an
+ * interstitial cluster grows by absorbing a size 1 interstitial, it has a \f$P_{unf}(n)\f$ probability of
+ * becoming part of the dislocation network instead.
+*/
+double ClusterDynamicsImpl::dislocation_density_derivative() const
 {
    double gain = 0.0;
    for (size_t n = 1; n < concentration_boundary; ++n)
@@ -1118,16 +1136,24 @@ double ClusterDynamicsImpl::dislocation_density_delta() const
    gain *= 2. * M_PI / material.atomic_volume;
 
    return 
+    // (1)
       gain
-      - reactor.dislocation_density_evolution * 
-      std::pow(material.burgers_vector, 2.) *
-      std::pow(dislocation_density, 3. / 2.);
+    // (2)
+      - reactor.dislocation_density_evolution * std::pow(material.burgers_vector, 2.) * std::pow(dislocation_density, 3. / 2.);
 }
 
 // --------------------------------------------------------------------------------------------
-
-// --------------------------------------------------------------------------------------------
-/*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg. 346, 7.63
+/*  
+*/
+/** @brief Returns the cluster radius of a cluster of size (n) in cm.
+ *  
+ * <hr>
+ * 
+ * G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg. 346, Equation 7.63
+ * 
+ * \f$ 
+ * r_i = (\frac{\sqrt{3}a^2n}{4 \pi})^{-1/2}
+ * \f$
 */
 double ClusterDynamicsImpl::cluster_radius(size_t n) const
 {
@@ -1265,7 +1291,7 @@ bool ClusterDynamicsImpl::validate(size_t n) const
 
 
 
-// TODO - clean up the uses of random +1/+2/-1/etc throughout the code
+//!< \todo Clean up the uses of random +1/+2/-1/etc throughout the code
 ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, NuclearReactor reactor, Material material)
   : time(0.0),
     interstitials(concentration_boundary + 1, 0.0), interstitials_temp(concentration_boundary + 1, 0.0),
