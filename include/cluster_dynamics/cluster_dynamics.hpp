@@ -8,22 +8,52 @@
 
 class ClusterDynamicsImpl;
 
-/// Class which defines a cluster dynamics simulation.
-/** 
- * 
- * */
+/** @brief Class which defines a cluster dynamics simulation. 
+ **/
 class ClusterDynamics
 {
 private:
   std::unique_ptr<ClusterDynamicsImpl> _impl; //< Pointer to a backend implementation class.
 public:
+  /** @brief Constructs and initializes a new cluster dynamics simulation.
+   *  @param concentration_boundary The number of cluster sizes that the simulation will track.
+   *  @param reactor A Reactor object containing the reactor data the simulation will use.
+   *  @param material A Material object containing the material data the simulation will use.
+  */
   ClusterDynamics(size_t concentration_boundary, NuclearReactor reactor, Material material);
   ~ClusterDynamics();
     
+  /** @brief Runs the simulation and returns the end simulation state as a ClusterDynamicsState object.
+   *  @param delta_time The time step for the simulation.
+   *  @param total_time The length of time that should be simulated.
+   * 
+   *  run() can be called multiple times, and the simulation will resume from where it stopped 
+   *  after the last time run() was called.
+  */
   ClusterDynamicsState run(double delta_time, double total_time);
+
+  /** @brief Returns the Material data that the simulation currently has set.
+  */
   Material get_material() const;
+  
+  /** @brief Sets the Material data for the simulation to use.
+   *  @param material A Material object containing the new material data.
+   * 
+   *  It is okay to change the material data even if the simulation 
+   *  has already been run() for some time.
+  */
   void set_material(Material material);
+
+  /** @brief Returns the Reactor data that the simulation currently has set.
+  */
   NuclearReactor get_reactor() const;
+
+  /** @brief Sets the Reactor data for the simulation to use.
+   *  @param reactor A Reactor object containing the new reactor data.
+   * 
+   *  It is okay to change the reactor data even if the simulation 
+   *  has already been run() for some time.
+  */
   void set_reactor(NuclearReactor reactor);
 };
 
