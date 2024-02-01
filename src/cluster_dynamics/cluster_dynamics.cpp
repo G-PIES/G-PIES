@@ -13,9 +13,9 @@ ClusterDynamics::~ClusterDynamics()
   // https://stackoverflow.com/questions/34072862/why-is-error-invalid-application-of-sizeof-to-an-incomplete-type-using-uniqu
 }
 
-ClusterDynamicsState ClusterDynamics::run(double delta_time, double total_time)
+ClusterDynamicsState ClusterDynamics::run(double delta_time, double total_time, double delta_x)
 {
-  return _impl->run(delta_time, total_time);
+  return _impl->run(delta_time, total_time, delta_x);
 }
 
 Material ClusterDynamics::get_material()
