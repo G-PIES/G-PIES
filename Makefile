@@ -54,6 +54,7 @@ OUT_DIR = out
 # Libraries
 CD_LIB = $(LIB_DIR)/libclusterdynamics$(LIB_EXT)
 CDCUDA_LIB = $(LIB_DIR)/libclusterdynamicscuda$(LIB_EXT)
+CDMETAL_LIB = $(LIB_DIR)/libclusterdynamicsmetal$(LIB_EXT)
 DB_LIB = $(LIB_DIR)/libclientdb$(LIB_EXT)
 
 # ----------------------------------------------------------------------------------------
@@ -113,6 +114,11 @@ cdcudalib: bdirs
 	nvcc $(NVCCFLAGS) -c --expt-extended-lambda  src/cluster_dynamics/cuda/*.cpp -o $(BUILD_DIR)/clusterdynamicscudaimpl.o $(INCLUDE_FLAGS)
 	ar crs $(CDCUDA_LIB) $(BUILD_DIR)/clusterdynamicscuda.o $(BUILD_DIR)/clusterdynamicscudaimpl.o
 
+cdmetallib: bdirs
+	$(CC) $(CCFLAGS) src/cluster_dynamics/cluster_dynamics.cpp -c -o $(BUILD_DIR)/clusterdynamics.o $(INCLUDE_FLAGS)
+	$(CC) $(CCFLAGS) src/cluster_dynamics/metal/*.cpp -c -o $(BUILD_DIR)/clusterdynamicsmetalimpl.o -Iextern/metal-cpp $(INCLUDE_FLAGS)
+	ar crs $(CDMETAL_LIB) $(BUILD_DIR)/clusterdynamicsmetalimpl.o $(BUILD_DIR)/clusterdynamicsmetalimpl.o
+
 # Client Database Example
 dblib: bdirs
 	$(CC) $(CCFLAGS) src/client_db/*.cpp -c -o $(BUILD_DIR)/clientdb.o $(INCLUDE_FLAGS)
@@ -144,6 +150,11 @@ cdcsv: cdlib
 cdcudaex: cdcudalib
 	nvcc $(NVCCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cd_cuda_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamicscuda
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_cuda_example$(EXE_EXT) || ( exit 0 )
+
+# Cluster Dynamics W/ Metal Example
+cdmetalex: cdmetallib
+	$(CC) $(CCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cd_metal_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
+	@[ "${R}" ] && ./$(BIN_DIR)/cd_metal_example$(EXE_EXT) || ( exit 0 )
 
 # Database Example
 dbex: dblib
