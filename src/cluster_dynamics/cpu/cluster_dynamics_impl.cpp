@@ -507,15 +507,6 @@ double ClusterDynamicsImpl::i_absorption_time() const
 }
 
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3c
-    Characteristic time for absorbing a vacancy by the population of interstital or vacancy
-    clusters of size up to (nmax).
-
-                        (1)                              (2)
-    tAv(n) = SUM[n>0] ( B[v,v](n) * Cv(n) ) + SUM[n>1] ( B[i,v](n) * Ci(n) )
-*/
-
-
 
 /** @brief Returns 1 over the characteristic time for absorbing a vacancy by 
  *  the population of interstital or vacancy clusters, in units of [TODO].
@@ -544,7 +535,6 @@ double ClusterDynamicsImpl::v_absorption_time() const
 
    return time;
 }
-// --------------------------------------------------------------------------------------------
 
 
 // --------------------------------------------------------------------------------------------
@@ -554,7 +544,7 @@ double ClusterDynamicsImpl::v_absorption_time() const
  *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3d
  *  
  *  \f$
- *  \Large R_{iv} =
+ *  \dwn{R_{iv} =}
  *  \ann{1}{4\pi}
  *  \ann{2}{(D_i + D_v)}
  *  \ann{3}{r_{iv}}
@@ -706,16 +696,33 @@ double ClusterDynamicsImpl::v_grain_boundary_annihilation_time() const
         material.grain_size;
 }
 
-// --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4a
-    Rate of emission of an interstitial by an interstital loop of size (n).
+
+
+/** @brief Returns the rate of emission of an interstitial by an interstital cluster of size (n)
+ *  in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 4a
+ * 
+ *  \f$
+ *    \dwn{a_{i,i}(n) = }
+ *    \ann{1}{2 \pi r_i(n)\vphantom{\frac{Z_t}{Z_t}}}
+ *    \ann{2}{Z_{ic}\vphantom{\frac{Z_t}{Z_t}}}
+ *    \ann{3}{\frac{D_i}{V_{at}}}
+ *    \ann{4}{exp(-\frac{E_bi(n)}{kT})}
+ *  \f$
 */
 double ClusterDynamicsImpl::ii_emission(size_t n) const
 {
     return 
+        // (1)
         2. * M_PI * cluster_radius(n) *
+        // (2)
         i_bias_factor(n) *
+        // (3)
         i_diffusion_val / material.atomic_volume *
+        // (4)
         exp
         (
             -i_binding_energy(n) /
@@ -724,37 +731,86 @@ double ClusterDynamicsImpl::ii_emission(size_t n) const
 }
 
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4b
-    Rate of absorption of an interstitial by an interstital loop of size (n).
+
+/** @brief Returns the rate of absorption of an interstitial by an interstital cluster of size (n),
+ * in units of [TODO].
+ * 
+ * <hr>
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 4b
+ * 
+ * \f$
+ *     \dwn{\beta_{i,i} =}
+ *     \ann{1}{2 \pi r_i(n)}
+ *     \ann{2}{Z_ic}
+ *     \ann{3}{D_i}
+ * \f$
 */
 double ClusterDynamicsImpl::ii_absorption(size_t n) const
 {
     return 
+        // (1)
         2. * M_PI * cluster_radius(n) *
+        // (2)
         i_bias_factor(n) *
+        // (3)
         i_diffusion_val;
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4c
-    Rate of absorption of an interstitial by a vacancy loop of size (n).
+
+
+/** @brief Returns the rate of absorption of an interstitial by an vacancy cluster of size (n),
+ * in units of [TODO].
+ * 
+ * <hr>
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 4c
+ * 
+ * \f$
+ *     \dwn{\beta_{i,v} =}
+ *     \ann{1}{2 \pi r_i(n)}
+ *     \ann{2}{Z_vc}
+ *     \ann{3}{D_v}
+ * \f$
 */
 double ClusterDynamicsImpl::iv_absorption(size_t n) const
 {
     return 
+        // (1)
         2. * M_PI * cluster_radius(n) *
+        // (2)
         v_bias_factor(n) *
+        // (3)
         v_diffusion_val;
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4d
-    Rate of emission of a vacancy by a vacancy loop of size (n).
+
+
+/** @brief Returns the rate of emission of an interstitial by an interstital cluster of size (n)
+ *  in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 4a
+ * 
+ *  \f$
+ *    \dwn{a_{v,v}(n) = }
+ *    \ann{1}{2 \pi r_v(n)\vphantom{\frac{Z_t}{Z_t}}}
+ *    \ann{2}{Z_{vc}\vphantom{\frac{Z_t}{Z_t}}}
+ *    \ann{3}{\frac{D_v}{V_{at}}}
+ *    \ann{4}{exp(-\frac{E_bv(n)}{kT})}
+ *  \f$
 */
 double ClusterDynamicsImpl::vv_emission(size_t n) const
 {
     return 
+        // (1)
         2. * M_PI * cluster_radius(n) *
+        // (2)
         v_bias_factor(n) *
+        // (3)
         v_diffusion_val *
+        // (4)
         exp
         (
             -v_binding_energy(n) /
@@ -762,19 +818,48 @@ double ClusterDynamicsImpl::vv_emission(size_t n) const
         );
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4e
-    Rate of absorption of a vacancy by a vacancy loop of size (n).
+
+
+/** @brief Returns the rate of absorption of a vacancy by a vacancy loop of size (n),
+ *  in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 4e
+ * 
+ * \f$
+ *     \dwn{\beta_{v,v} =}
+ *     \ann{1}{2 \pi r_v(n)}
+ *     \ann{2}{Z_vc}
+ *     \ann{3}{D_v}
+ *  \f$
 */
 double ClusterDynamicsImpl::vv_absorption(size_t n) const
 {
     return 
+        // (1)
         2. * M_PI * cluster_radius(n) *
+        // (2)
         v_bias_factor(n) *
+        // (3)
         v_diffusion_val;
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4f
-    Rate of absorption of a vacancy by an interstitial loop of size (n).
+
+
+/** @brief Returns the rate of absorption of an vacancy by an interstitial cluster of size (n),
+ * in units of [TODO].
+ * 
+ * <hr>
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 4f
+ * 
+ * \f$
+ *     \dwn{\beta_{v,i} =}
+ *     \ann{1}{2 \pi r_v(n)}
+ *     \ann{2}{Z_ic}
+ *     \ann{3}{D_i}
+ * \f$
 */
 double ClusterDynamicsImpl::vi_absorption(size_t n) const
 {
@@ -783,38 +868,70 @@ double ClusterDynamicsImpl::vi_absorption(size_t n) const
         i_bias_factor(n) *
         i_diffusion_val;
 }
-// --------------------------------------------------------------------------------------------
 
 
-// --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 5
-    Interstitial bias factor.
+
+/** @brief Returns the bias factor for an interstitial cluster of size (n) 
+ *  in units of [TODO]
+ * 
+ * <hr>
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 5
+ *
+ * \f$
+ *    \dwn{Z_{ic} =}
+ *    \ann{1}{Z_i\vphantom{\sqrt{\frac{b}{b}}}}\dwn{+(}
+ *    \ann{2}{\sqrt{\frac{b}{8 \pi a}}}
+ *    \ann{3}{Z_{li}\vphantom{\sqrt{\frac{b}{b}}}}\dwn{-}
+ *    \ann{4}{Z_i\vphantom{\sqrt{\frac{b}{b}}}}\dwn{)}
+ *    \ann{5}{n^{-a_{li}/2}\vphantom{\sqrt{\frac{b}{b}}}}
+ * \f$ 
 */
-double ClusterDynamicsImpl::i_bias_factor(size_t in) const
+double ClusterDynamicsImpl::i_bias_factor(size_t n) const
 {
     return 
+        // (1)
         material.i_dislocation_bias +
         (
+            // (2)
             std::sqrt
             (
                     material.burgers_vector /
                     (8. * M_PI * material.lattice_param)
             ) *
+            // (3)
             material.i_loop_bias -
+            // (4)
             material.i_dislocation_bias
         ) *
+        // (5)
         1. /
         std::pow
         (
-            (double)in,
+            (double)n,
             material.i_dislocation_bias_param / 2.
         );
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 5
-    Vacancy bias factor.
+
+
+/** @brief Returns the bias factor of a vacancy cluster of size (n)
+ *  in units of [TODO]
+ * 
+ * <hr>
+ * 
+ * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 5
+ *
+ * \f$
+ *    \dwn{Z_{vc} =}
+ *    \ann{1}{Z_i\vphantom{\sqrt{\frac{b}{b}}}}\dwn{+(}
+ *    \ann{2}{\sqrt{\frac{b}{8 \pi a}}}
+ *    \ann{3}{Z_{lv}\vphantom{\sqrt{\frac{b}{b}}}}\dwn{-}
+ *    \ann{4}{Z_v\vphantom{\sqrt{\frac{b}{b}}}}\dwn{)}
+ *    \ann{5}{n^{-a_{lv}/2}\vphantom{\sqrt{\frac{b}{b}}}}
+ * \f$ 
 */
-double ClusterDynamicsImpl::v_bias_factor(size_t vn) const
+double ClusterDynamicsImpl::v_bias_factor(size_t n) const
 {
     return 
         material.v_dislocation_bias +
@@ -830,77 +947,158 @@ double ClusterDynamicsImpl::v_bias_factor(size_t vn) const
         1. /
         std::pow
         (
-            (double)vn,
+            (double)n,
             material.v_dislocation_bias_param / 2.
         );
 }
-// --------------------------------------------------------------------------------------------
 
 
-// --------------------------------------------------------------------------------------------
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 6
-    Interstitial binding energy.
+
+/** @brief Returnst the binding energy for an interstitial cluster of size (n)
+ *  in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 6
+ *  
+ *  \f$
+ *    \dwn{E_{bi}(n) = }
+ *    \ann{1}{E_{fi} \vphantom{\frac{E_f}{2^8.}} }\dwn{+}
+ *    \ann{2}{\frac{E_{b2i}-E_{fi}}{2^{0.8}-1}}
+ *    \ann{3}{n^{0.8}-(n-1)^{0.8} \vphantom{\frac{E_f}{2^8.}}}
+ *  \f$
 */
-double ClusterDynamicsImpl::i_binding_energy(size_t in) const
+double ClusterDynamicsImpl::i_binding_energy(size_t n) const
 {
     return
+        // (1)
         material.i_formation
+        // (2)
         + (material.i_binding - material.i_formation) / (std::pow(2., .8) - 1.) *
-        (std::pow((double)in, .8) - std::pow((double)in - 1., .8));
+        // (3)
+        (std::pow((double)n, .8) - std::pow((double)n - 1., .8));
 }
 
-/*  C. Pokor / Journal of Nuclear Materials 326 (2004), 6
-    Vacancy binding energy.
+
+
+/** @brief Returnst the binding energy for a vacancy cluster of size (n)
+ *  in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 6
+ *  
+ *  \f$
+ *    \dwn{E_{bv}(n) = }
+ *    \ann{1}{E_{fv} \vphantom{\frac{E_f}{2^8.}} }\dwn{+}
+ *    \ann{2}{\frac{E_{b2v}-E_{fv}}{2^{0.8}-1}}
+ *    \ann{3}{n^{0.8}-(n-1)^{0.8} \vphantom{\frac{E_f}{2^8.}}}
+ *  \f$
 */
-double ClusterDynamicsImpl::v_binding_energy(size_t vn) const
+double ClusterDynamicsImpl::v_binding_energy(size_t n) const
 {
     return
+        // (1)
         material.v_formation
+        // (2)
         + (material.v_binding - material.v_formation) / (std::pow(2., .8) - 1) *
-        (std::pow((double)vn, .8) - std::pow((double)vn - 1., .8));
+        // (3)
+        (std::pow((double)n, .8) - std::pow((double)n - 1., .8));
 }
-// --------------------------------------------------------------------------------------------
 
 
-// --------------------------------------------------------------------------------------------
-/*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg 193, 4.59
-*/  
+
+/** @brief Returns the diffusion coefficient for single interstitials in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg 193, Equation 4.59
+ * 
+ *  \f$
+ *    \dwn{D_i =}
+ *    \ann{1}{D_{i0} \vphantom{\frac{-E_{mi}}{(kT)}} }
+ *    \ann{2}{exp(\frac{-E_{mi}}{(kT)}) }
+ *  \f$
+*/
 double ClusterDynamicsImpl::i_diffusion() const
 {
+    //     (1)                      (2)
     return material.i_diffusion_0 * std::exp(-material.i_migration / (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
 
-/*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg 193, 4.59
+
+
+/** @brief Returns the diffusion coefficient for single vacancies in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017), pg 193, Equation 4.59
+ * 
+ *  \f$
+ *    \dwn{D_v =}
+ *    \ann{1}{D_{v0} \vphantom{\frac{-E_{mv}}{(kT)}} }
+ *    \ann{2}{exp(\frac{-E_{mv}}{(kT)}) }
+ *  \f$
 */  
 double ClusterDynamicsImpl::v_diffusion() const
 {
+   //     (1)                      (2)
    return material.v_diffusion_0 * std::exp(-material.v_migration / (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
-// --------------------------------------------------------------------------------------------
 
 
-// --------------------------------------------------------------------------------------------
-/*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.10
+
+/** Returns the mean dislocation cell radius of the system in units of [TODO].
+ * 
+ * <hr>
+ * 
+ * N. Sakaguchi / Acta Materialia 1131 (2001), Equation 3.10
+ * 
+ * \f$
+ *   \dwn{r_0 = (}
+ *       \ann{1}{\frac{2 \pi ^ 2}{\Omega}}
+ *       \ann{2}{\vphantom{\frac{2^2}{\Omega}} \sum_{n>0} r_i(n) C_i(n)}\dwn{+}
+ *       \ann{3}{\vphantom{\frac{2^2}{\Omega}} \pi \rho}
+ *    \dwn{)^{-1/2}}
+ * \f$
 */
 double ClusterDynamicsImpl::mean_dislocation_cell_radius() const
 {
+   // (2)
    double r_0_factor = 0.;
    for (size_t i = 1; i < concentration_boundary; ++i)
    {
       r_0_factor += cluster_radius(i) * interstitials[i];
    }
 
+                     // (1)                                                        (3)                       
    return 1 / std::sqrt((2. * M_PI * M_PI / material.atomic_volume) * r_0_factor + M_PI * dislocation_density);
 }
 
 // --------------------------------------------------------------------------------------------
 /*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.12
 */
+/** @brief Returns the probability that an interstitial cluster of size n will unfurl to join the dislocation
+ *  network when it grows to size n + 1, in units of [TODO].
+ * 
+ *  <hr>
+ * 
+ *  N. Sakaguchi / Acta Materialia 1131 (2001), Equation 3.12
+ * 
+ *  \f$
+ *    \dwn{P_{unf}(n) =}
+ *    \frac
+ *       {\ann{1}{2r_i(n)(r_i(n+1) \dwn{-} r_i(n))} \dwn{+} \ann{2}{(r_i(n+1)-r_i)^2}}
+ *       {\ann{3}{(\pi r_0 / 2)^2} \dwn{-} \ann{4}{r_i(n)^2}}
+ *  \f$
+*/
 double ClusterDynamicsImpl::dislocation_promotion_probability(size_t n) const
 {
    double dr = cluster_radius(n + 1) - cluster_radius(n);
 
+   //      (1)                           (2)
    return (2. * cluster_radius(n) * dr + std::pow(dr, 2.)) 
+   //    (3)                                       (4)
       / (M_PI * mean_dislocation_radius_val / 2. - std::pow(cluster_radius(n), 2.)); 
 }
 // --------------------------------------------------------------------------------------------
