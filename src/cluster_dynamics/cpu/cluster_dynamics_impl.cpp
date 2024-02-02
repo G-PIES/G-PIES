@@ -581,7 +581,7 @@ double ClusterDynamicsImpl::i_dislocation_annihilation_time() const
 {
     return
         // (1)
-        dislocation_density *
+        (*dislocation_density)*
         // (2)
         i_diffusion_val *
         // (3)
@@ -611,7 +611,7 @@ double ClusterDynamicsImpl::v_dislocation_annihilation_time() const
 {
     return
         // (1)
-        dislocation_density *
+        (*dislocation_density)*
         // (2)
         v_diffusion_val *
         // (3)
@@ -647,7 +647,7 @@ double ClusterDynamicsImpl::i_grain_boundary_annihilation_time() const
         sqrt
         (
             // (2)
-            dislocation_density * 
+            (*dislocation_density)* 
             material.i_dislocation_bias
             // (3)
             + ii_sum_absorption_val
@@ -685,7 +685,7 @@ double ClusterDynamicsImpl::v_grain_boundary_annihilation_time() const
         sqrt
         (
             // (2)
-            dislocation_density *
+            (*dislocation_density)*
             material.v_dislocation_bias
             // (3)
             + vv_sum_absorption_val
@@ -1072,7 +1072,7 @@ double ClusterDynamicsImpl::mean_dislocation_cell_radius() const
    }
 
                      // (1)                                                        (3)                       
-   return 1 / std::sqrt((2. * M_PI * M_PI / material.atomic_volume) * r_0_factor + M_PI * dislocation_density);
+   return 1 / std::sqrt((2. * M_PI * M_PI / material.atomic_volume) * r_0_factor + M_PI * (*dislocation_density));
 }
 
 // --------------------------------------------------------------------------------------------
@@ -1139,7 +1139,7 @@ double ClusterDynamicsImpl::dislocation_density_derivative() const
     // (1)
       gain
     // (2)
-      - reactor.dislocation_density_evolution * std::pow(material.burgers_vector, 2.) * std::pow(dislocation_density, 3. / 2.);
+      - reactor.dislocation_density_evolution * std::pow(material.burgers_vector, 2.) * std::pow((*dislocation_density), 3. / 2.);
 }
 
 // --------------------------------------------------------------------------------------------
@@ -1180,42 +1180,6 @@ void ClusterDynamicsImpl::step_init()
   vi_sum_absorption_val = vi_sum_absorption(concentration_boundary - 1);
   vv_sum_absorption_val = vv_sum_absorption(concentration_boundary - 1);
   mean_dislocation_radius_val = mean_dislocation_cell_radius();
-}
-
-bool ClusterDynamicsImpl::step(double delta_time)
-{
-  step_init();
-
-  bool state_is_valid = update_clusters_1(delta_time);
-  update_clusters(delta_time);
-  dislocation_density += dislocation_density_derivative() * delta_time;
-
-  interstitials = interstitials_temp;
-  vacancies = vacancies_temp;
-
-  return state_is_valid;
-}
-
-bool ClusterDynamicsImpl::update_clusters_1(double delta_time)
-{
-  interstitials_temp[1] += i1_concentration_derivative() * delta_time;
-  vacancies_temp[1] += v1_concentration_derivative() * delta_time;
-  return validate(1);
-}
-
-bool ClusterDynamicsImpl::update_clusters(double delta_time)
-{
-   bool state_is_valid = true;
-
-   for (size_t n = 2; n < concentration_boundary; ++n)
-   {
-      interstitials_temp[n] += i_concentration_derivative(n) * delta_time;
-      vacancies_temp[n] += v_concentration_derivative(n) * delta_time;
-
-      state_is_valid = state_is_valid && validate(n);
-   }
-
-   return state_is_valid;
 }
 
 ClusterDynamicsImpl::~ClusterDynamicsImpl()
@@ -1277,7 +1241,20 @@ bool ClusterDynamicsImpl::validate(size_t n) const
         !(vacancies_temp[n] < 0);
 }
 
-
+void ClusterDynamicsImpl::system(const vector<double>& initial_state, vector<double>& state_derivatives, const double t)
+{
+  state_derivatives[1] = i1_concentration_derivative();
+  for (int i = 2; i < concentration_boundary + 1; ++i)
+  {
+    state_derivatives[i] = i_concentration_derivative(i);
+  }
+  state_derivatives[concentration_boundary + 2 + 1] = v1_concentration_derivative();
+  for (int i = 2; i < concentration_boundary + 1; ++i)
+  {
+    state_derivatives[concentration_boundary + 2 + i] = v_concentration_derivative(i);
+  }
+  state_derivatives[2 * (concentration_boundary + 1) + 2] = dislocation_density_derivative();
+}
 
 
 
@@ -1293,32 +1270,40 @@ bool ClusterDynamicsImpl::validate(size_t n) const
 
 //!< \todo Clean up the uses of random +1/+2/-1/etc throughout the code
 ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, NuclearReactor reactor, Material material)
-  : time(0.0),
-    interstitials(concentration_boundary + 1, 0.0), interstitials_temp(concentration_boundary + 1, 0.0),
-    vacancies(concentration_boundary + 1, 0.0), vacancies_temp(concentration_boundary + 1, 0.0),
-    concentration_boundary(concentration_boundary), dislocation_density(material.dislocation_density_0), 
-    material(material), reactor(reactor),
-    indices(concentration_boundary - 1, 0.0)
+  : time(0.0), state(2 * (concentration_boundary + 1) + 4, 0.0),
+    concentration_boundary(concentration_boundary), 
+    material(material), reactor(reactor)
 {
+  interstitials = state.data();
+  vacancies = state.data() + concentration_boundary + 2;
+  dislocation_density = &(*(state.end() - 1));
+  *dislocation_density = material.dislocation_density_0;
 }
 
 ClusterDynamicsState ClusterDynamicsImpl::run(double delta_time, double total_time)
 {
     bool state_is_valid = true;
 
-    for (double endtime = time + total_time; time < endtime; time += delta_time)
-    {
-        state_is_valid = step(delta_time);
-        if (!state_is_valid) break;
-    }
+    odeint::integrate_const(stepper, 
+      [&](const vector<double>& initial_state, vector<double>& state_derivatives, const double t)
+        {
+          this->step_init();
+          return this->system(initial_state, state_derivatives, t);
+        }, 
+      state, time, time + total_time, delta_time,
+      [&](const vector<double>& state, double t)
+        {
+          this->time = t;
+        }
+      );
 
     return ClusterDynamicsState 
     {
         .valid = state_is_valid,
         .time = time,
-        .interstitials = std::vector<double>(interstitials.begin(), interstitials.end() - 1),
-        .vacancies = std::vector<double>(vacancies.begin(), vacancies.end() - 1),
-        .dislocation_density = dislocation_density
+        .interstitials = std::vector<double>(interstitials, interstitials + concentration_boundary),
+        .vacancies = std::vector<double>(vacancies, vacancies + concentration_boundary),
+        .dislocation_density = *dislocation_density
     };
 }
 

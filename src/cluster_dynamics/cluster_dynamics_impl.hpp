@@ -3,9 +3,13 @@
 #include <vector>
 #include <cstdint>
 
+#include <boost/numeric/odeint.hpp>
+
 #include "cluster_dynamics_state.hpp"
 #include "nuclear_reactor.hpp"
 #include "material.hpp"
+
+#define odeint boost::numeric::odeint 
 
 #ifdef USE_CUDA
   #include <thrust/host_vector.h>
@@ -35,13 +39,16 @@ class ClusterDynamicsImpl
 public:
   double time;
 
-  vector<double> interstitials;
   vector<double> interstitials_temp;
-  vector<double> vacancies;
   vector<double> vacancies_temp;
 
+  odeint::runge_kutta4<vector<double>> stepper;
+  vector<double> state;
+  double* interstitials;
+  double* vacancies;
+  double* dislocation_density;
+
   size_t concentration_boundary;
-  double dislocation_density;
 
   double mean_dislocation_radius_val;
   double ii_sum_absorption_val;
@@ -54,8 +61,8 @@ public:
   Material material;
   NuclearReactor reactor;
 
-  vector<int> indices;
   #ifdef USE_CUDA
+    vector<int> indices;
     thrust::device_ptr<ClusterDynamicsImpl> self;
     thrust::host_vector<double> host_interstitials;
     thrust::host_vector<double> host_vacancies;
@@ -112,8 +119,9 @@ public:
   bool update_clusters_1(double);
   bool update_clusters(double);
   void step_init();
-  bool step(double);
   bool validate(size_t) const;
+
+  void system(const vector<double>& initial_state, vector<double>& state_derivatives, const double t);
 
   // Interface functions
   ClusterDynamicsImpl(size_t concentration_boundary, NuclearReactor reactor, Material material);

@@ -38,11 +38,12 @@ endif
 # Variables
 
 CC = g++
-CCFLAGS += -std=c++17 -fno-fast-math -Werror -Wall -Wextra
+CCFLAGS += -std=c++17 -fno-fast-math
 NVCCFLAGS += -std=c++17 -DUSE_CUDA -x cu -Werror all-warnings
 
 INCLUDE_FLAGS = -Isrc/client_db -Isrc/cluster_dynamics
 INCLUDE_FLAGS += -Iinclude/client_db -Iinclude/cluster_dynamics -Iinclude/model -Iinclude/utils
+INCLUDE_FLAGS += -Iextern/boost/numeric -Iextern
 
 # Directories
 BIN_DIR = bin
@@ -131,7 +132,7 @@ cdex: cdlib
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_example$(EXE_EXT) || ( exit 0 )
 
 # Cluster Dynamics Example W/ Verbose Printing
-cdv:
+cdv: cdlib
 	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true example/cd_example.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_example$(EXE_EXT) || ( exit 0 )
 

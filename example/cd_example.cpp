@@ -93,8 +93,6 @@ void profile()
 
 int main(int argc, char* argv[])
 {
-  profile();
-  return 0;
     NuclearReactor reactor;
     nuclear_reactors::OSIRIS(reactor);
 
@@ -105,7 +103,6 @@ int main(int argc, char* argv[])
     concentration_boundary = 10;
     simulation_time = 1.0;
     delta_time = 1e-5;
-    sample_interval = delta_time;
 
     // Override default values with CLI arguments
     switch (argc)
@@ -121,6 +118,8 @@ int main(int argc, char* argv[])
         default:
             break;
     }
+    
+    sample_interval = delta_time;
 
     ClusterDynamics cd(concentration_boundary, reactor, material);
 
