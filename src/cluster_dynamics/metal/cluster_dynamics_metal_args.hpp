@@ -15,20 +15,20 @@ struct ClusterDynamicsMetalArgs
     __METALDECL__ MaterialImpl* material;
     __METALDECL__ NuclearReactorImpl* reactor;
 
-    __METALDECL__ float* interstitials;
-    __METALDECL__ float* vacancies;
+    __METALDECL__ gp_float* interstitials;
+    __METALDECL__ gp_float* vacancies;
 
     uint64_t concentration_boundary;
-    float dislocation_density;
-    float delta_time;
+    gp_float dislocation_density;
+    gp_float delta_time;
 
-    float mean_dislocation_radius_val;
-    float ii_sum_absorption_val;
-    float iv_sum_absorption_val;
-    float vv_sum_absorption_val;
-    float vi_sum_absorption_val;
-    float i1_val;
-    float v1_val;
+    gp_float mean_dislocation_radius_val;
+    gp_float ii_sum_absorption_val;
+    gp_float iv_sum_absorption_val;
+    gp_float vv_sum_absorption_val;
+    gp_float vi_sum_absorption_val;
+    gp_float i1_val;
+    gp_float v1_val;
 };
 
 #endif // CLUSTER_DYNAMICS_METAL_IMPL_ARGS_HPP
