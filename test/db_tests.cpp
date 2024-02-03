@@ -52,16 +52,16 @@ TEST_F(ClientDbTest, NuclearReactorCRUD)
    ASSERT_EQ(reactor.sqlite_id, reactor_cpy.sqlite_id);
    ASSERT_EQ(reactor.creation_datetime, reactor_cpy.creation_datetime);
    ASSERT_EQ(reactor.species, reactor_cpy.species);
-   ASSERT_EQ(reactor.flux, reactor_cpy.flux);
-   ASSERT_EQ(reactor.temperature, reactor_cpy.temperature);
-   ASSERT_EQ(reactor.recombination, reactor_cpy.recombination);
-   ASSERT_EQ(reactor.i_bi, reactor_cpy.i_bi);
-   ASSERT_EQ(reactor.i_tri, reactor_cpy.i_tri);
-   ASSERT_EQ(reactor.i_quad, reactor_cpy.i_quad);
-   ASSERT_EQ(reactor.v_bi, reactor_cpy.v_bi);
-   ASSERT_EQ(reactor.v_tri, reactor_cpy.v_tri);
-   ASSERT_EQ(reactor.v_quad, reactor_cpy.v_quad);
-   ASSERT_EQ(reactor.dislocation_density_evolution, reactor_cpy.dislocation_density_evolution);
+   ASSERT_EQ(reactor.get_flux(), reactor_cpy.get_flux());
+   ASSERT_EQ(reactor.get_temperature(), reactor_cpy.get_temperature());
+   ASSERT_EQ(reactor.get_recombination(), reactor_cpy.get_recombination());
+   ASSERT_EQ(reactor.get_i_bi(), reactor_cpy.get_i_bi());
+   ASSERT_EQ(reactor.get_i_tri(), reactor_cpy.get_i_tri());
+   ASSERT_EQ(reactor.get_i_quad(), reactor_cpy.get_i_quad());
+   ASSERT_EQ(reactor.get_v_bi(), reactor_cpy.get_v_bi());
+   ASSERT_EQ(reactor.get_v_tri(), reactor_cpy.get_v_tri());
+   ASSERT_EQ(reactor.get_v_quad(), reactor_cpy.get_v_quad());
+   ASSERT_EQ(reactor.get_dislocation_density_evolution(), reactor_cpy.get_dislocation_density_evolution());
 
    // read one id not found, sql success
    reactor_cpy.sqlite_id = -1;
@@ -74,16 +74,16 @@ TEST_F(ClientDbTest, NuclearReactorCRUD)
    // object equality after failed reads
    ASSERT_EQ(reactor.creation_datetime, reactor_cpy.creation_datetime);
    ASSERT_EQ(reactor.species, reactor_cpy.species);
-   ASSERT_EQ(reactor.flux, reactor_cpy.flux);
-   ASSERT_EQ(reactor.temperature, reactor_cpy.temperature);
-   ASSERT_EQ(reactor.recombination, reactor_cpy.recombination);
-   ASSERT_EQ(reactor.i_bi, reactor_cpy.i_bi);
-   ASSERT_EQ(reactor.i_tri, reactor_cpy.i_tri);
-   ASSERT_EQ(reactor.i_quad, reactor_cpy.i_quad);
-   ASSERT_EQ(reactor.v_bi, reactor_cpy.v_bi);
-   ASSERT_EQ(reactor.v_tri, reactor_cpy.v_tri);
-   ASSERT_EQ(reactor.v_quad, reactor_cpy.v_quad);
-   ASSERT_EQ(reactor.dislocation_density_evolution, reactor_cpy.dislocation_density_evolution);
+   ASSERT_EQ(reactor.get_flux(), reactor_cpy.get_flux());
+   ASSERT_EQ(reactor.get_temperature(), reactor_cpy.get_temperature());
+   ASSERT_EQ(reactor.get_recombination(), reactor_cpy.get_recombination());
+   ASSERT_EQ(reactor.get_i_bi(), reactor_cpy.get_i_bi());
+   ASSERT_EQ(reactor.get_i_tri(), reactor_cpy.get_i_tri());
+   ASSERT_EQ(reactor.get_i_quad(), reactor_cpy.get_i_quad());
+   ASSERT_EQ(reactor.get_v_bi(), reactor_cpy.get_v_bi());
+   ASSERT_EQ(reactor.get_v_tri(), reactor_cpy.get_v_tri());
+   ASSERT_EQ(reactor.get_v_quad(), reactor_cpy.get_v_quad());
+   ASSERT_EQ(reactor.get_dislocation_density_evolution(), reactor_cpy.get_dislocation_density_evolution());
 
    // update one
    randomizer.reactor_randomize(reactor);
@@ -99,16 +99,16 @@ TEST_F(ClientDbTest, NuclearReactorCRUD)
    ASSERT_EQ(reactor.sqlite_id, reactor_cpy.sqlite_id);
    ASSERT_EQ(reactor.creation_datetime, reactor_cpy.creation_datetime);
    ASSERT_EQ(reactor.species, reactor_cpy.species);
-   ASSERT_EQ(reactor.flux, reactor_cpy.flux);
-   ASSERT_EQ(reactor.temperature, reactor_cpy.temperature);
-   ASSERT_EQ(reactor.recombination, reactor_cpy.recombination);
-   ASSERT_EQ(reactor.i_bi, reactor_cpy.i_bi);
-   ASSERT_EQ(reactor.i_tri, reactor_cpy.i_tri);
-   ASSERT_EQ(reactor.i_quad, reactor_cpy.i_quad);
-   ASSERT_EQ(reactor.v_bi, reactor_cpy.v_bi);
-   ASSERT_EQ(reactor.v_tri, reactor_cpy.v_tri);
-   ASSERT_EQ(reactor.v_quad, reactor_cpy.v_quad);
-   ASSERT_EQ(reactor.dislocation_density_evolution, reactor_cpy.dislocation_density_evolution);
+   ASSERT_EQ(reactor.get_flux(), reactor_cpy.get_flux());
+   ASSERT_EQ(reactor.get_temperature(), reactor_cpy.get_temperature());
+   ASSERT_EQ(reactor.get_recombination(), reactor_cpy.get_recombination());
+   ASSERT_EQ(reactor.get_i_bi(), reactor_cpy.get_i_bi());
+   ASSERT_EQ(reactor.get_i_tri(), reactor_cpy.get_i_tri());
+   ASSERT_EQ(reactor.get_i_quad(), reactor_cpy.get_i_quad());
+   ASSERT_EQ(reactor.get_v_bi(), reactor_cpy.get_v_bi());
+   ASSERT_EQ(reactor.get_v_tri(), reactor_cpy.get_v_tri());
+   ASSERT_EQ(reactor.get_v_quad(), reactor_cpy.get_v_quad());
+   ASSERT_EQ(reactor.get_dislocation_density_evolution(), reactor_cpy.get_dislocation_density_evolution());
 
    // update one invalid sql id
    reactor_cpy.sqlite_id = -1;

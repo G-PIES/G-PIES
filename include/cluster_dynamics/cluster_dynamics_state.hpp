@@ -1,12 +1,16 @@
-#pragma once
+#ifndef CLUSTER_DYNAMICS_STATE_HPP
+#define CLUSTER_DYNAMICS_STATE_HPP
 
+#include "types.hpp"
 #include <vector>
 
 struct ClusterDynamicsState
 {
     bool valid = true;
-    double time = 0.0;
-    std::vector<double> interstitials;
-    std::vector<double> vacancies;
-    double dislocation_density = 0.0;
+    gp_float time = 0.0;
+    std::vector<gp_float> interstitials;
+    std::vector<gp_float> vacancies;
+    gp_float dislocation_density = 0.0;
 };
+
+#endif // CLUSTER_DYNAMICS_STATE_HPP

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <sqlite3.h>
+#include "types.hpp"
 #include "gpies_exception.hpp"
 
 class NuclearReactor;

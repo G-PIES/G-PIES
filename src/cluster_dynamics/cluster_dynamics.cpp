@@ -1,7 +1,14 @@
 #include "cluster_dynamics.hpp"
-#include "cluster_dynamics_impl.hpp"
 
-ClusterDynamics::ClusterDynamics(size_t concentration_boundary, NuclearReactor reactor, Material material)
+#if defined(USE_CUDA)
+    #include "cluster_dynamics_cuda_impl.hpp"
+#elif defined(USE_METAL)
+    #include "cluster_dynamics_metal_impl.hpp"
+#else
+    #include "cluster_dynamics_impl.hpp"
+#endif
+
+ClusterDynamics::ClusterDynamics(size_t concentration_boundary, const NuclearReactor& reactor, const Material& material)
 {
   _impl = std::make_unique<ClusterDynamicsImpl>(concentration_boundary, reactor, material);
 }
@@ -13,7 +20,7 @@ ClusterDynamics::~ClusterDynamics()
   // https://stackoverflow.com/questions/34072862/why-is-error-invalid-application-of-sizeof-to-an-incomplete-type-using-uniqu
 }
 
-ClusterDynamicsState ClusterDynamics::run(double delta_time, double total_time)
+ClusterDynamicsState ClusterDynamics::run(gp_float delta_time, gp_float total_time)
 {
   return _impl->run(delta_time, total_time);
 }
@@ -23,7 +30,7 @@ Material ClusterDynamics::get_material()
   return _impl->get_material();
 }
 
-void ClusterDynamics::set_material(Material material)
+void ClusterDynamics::set_material(const Material& material)
 {
   _impl->set_material(material);
 }
@@ -33,7 +40,7 @@ NuclearReactor ClusterDynamics::get_reactor()
   return _impl->get_reactor();
 }
 
-void ClusterDynamics::set_reactor(NuclearReactor reactor)
+void ClusterDynamics::set_reactor(const NuclearReactor& reactor)
 {
   _impl->set_reactor(reactor);
 }

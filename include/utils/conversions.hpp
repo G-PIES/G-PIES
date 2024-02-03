@@ -1,3 +1,6 @@
+#ifndef CONVERSION_HPP
+#define CONVERSION_HPP
+
 // celcius to kevlin conversion
 #define CELCIUS_KELVIN_CONV(c) (c + 273.15)
 
@@ -9,3 +12,5 @@
 
 // picometer to centimeter conversion
 #define PM_CM_CONV(pm) (pm * 1e-10)
+
+#endif // CONVERSION_HPP

@@ -113,42 +113,42 @@ template<typename T> int ClientDb::delete_one(sqlite3_stmt* stmt, void (*err_cal
 void ClientDb::bind_reactor(sqlite3_stmt* stmt, const NuclearReactor& reactor)
 {
     sqlite3_bind_text(stmt, 1, reactor.species.c_str(), reactor.species.length(), nullptr);
-    sqlite3_bind_double(stmt, 2, reactor.flux);
-    sqlite3_bind_double(stmt, 3, reactor.temperature);
-    sqlite3_bind_double(stmt, 4, reactor.recombination);
-    sqlite3_bind_double(stmt, 5, reactor.i_bi);
-    sqlite3_bind_double(stmt, 6, reactor.i_tri);
-    sqlite3_bind_double(stmt, 7, reactor.i_quad);
-    sqlite3_bind_double(stmt, 8, reactor.v_bi);
-    sqlite3_bind_double(stmt, 9, reactor.v_tri);
-    sqlite3_bind_double(stmt, 10, reactor.v_quad);
-    sqlite3_bind_double(stmt, 11, reactor.dislocation_density_evolution);
+    sqlite3_bind_double(stmt, 2, reactor.get_flux());
+    sqlite3_bind_double(stmt, 3, reactor.get_temperature());
+    sqlite3_bind_double(stmt, 4, reactor.get_recombination());
+    sqlite3_bind_double(stmt, 5, reactor.get_i_bi());
+    sqlite3_bind_double(stmt, 6, reactor.get_i_tri());
+    sqlite3_bind_double(stmt, 7, reactor.get_i_quad());
+    sqlite3_bind_double(stmt, 8, reactor.get_v_bi());
+    sqlite3_bind_double(stmt, 9, reactor.get_v_tri());
+    sqlite3_bind_double(stmt, 10, reactor.get_v_quad());
+    sqlite3_bind_double(stmt, 11, reactor.get_dislocation_density_evolution());
     if (is_valid_sqlite_id(reactor.sqlite_id)) sqlite3_bind_int(stmt, 12, reactor.sqlite_id);
 }
 
 void ClientDb::bind_material(sqlite3_stmt* stmt, const Material& material)
 {
     sqlite3_bind_text(stmt, 1, material.species.c_str(), material.species.length(), nullptr);
-    sqlite3_bind_double(stmt, 2, material.i_migration);
-    sqlite3_bind_double(stmt, 3, material.v_migration);
-    sqlite3_bind_double(stmt, 4, material.i_diffusion_0);
-    sqlite3_bind_double(stmt, 5, material.v_diffusion_0);
-    sqlite3_bind_double(stmt, 6, material.i_formation);
-    sqlite3_bind_double(stmt, 7, material.v_formation);
-    sqlite3_bind_double(stmt, 8, material.i_binding);
-    sqlite3_bind_double(stmt, 9, material.v_binding);
-    sqlite3_bind_double(stmt, 10, material.recombination_radius);
-    sqlite3_bind_double(stmt, 11, material.i_loop_bias);
-    sqlite3_bind_double(stmt, 12, material.i_dislocation_bias);
-    sqlite3_bind_double(stmt, 13, material.i_dislocation_bias_param);
-    sqlite3_bind_double(stmt, 14, material.v_loop_bias);
-    sqlite3_bind_double(stmt, 15, material.v_dislocation_bias);
-    sqlite3_bind_double(stmt, 16, material.v_dislocation_bias_param);
-    sqlite3_bind_double(stmt, 17, material.dislocation_density_0);
-    sqlite3_bind_double(stmt, 18, material.grain_size);
-    sqlite3_bind_double(stmt, 19, material.lattice_param);
-    sqlite3_bind_double(stmt, 20, material.burgers_vector);
-    sqlite3_bind_double(stmt, 21, material.atomic_volume);
+    sqlite3_bind_double(stmt, 2, material.get_i_migration());
+    sqlite3_bind_double(stmt, 3, material.get_v_migration());
+    sqlite3_bind_double(stmt, 4, material.get_i_diffusion_0());
+    sqlite3_bind_double(stmt, 5, material.get_v_diffusion_0());
+    sqlite3_bind_double(stmt, 6, material.get_i_formation());
+    sqlite3_bind_double(stmt, 7, material.get_v_formation());
+    sqlite3_bind_double(stmt, 8, material.get_i_binding());
+    sqlite3_bind_double(stmt, 9, material.get_v_binding());
+    sqlite3_bind_double(stmt, 10, material.get_recombination_radius());
+    sqlite3_bind_double(stmt, 11, material.get_i_loop_bias());
+    sqlite3_bind_double(stmt, 12, material.get_i_dislocation_bias());
+    sqlite3_bind_double(stmt, 13, material.get_i_dislocation_bias_param());
+    sqlite3_bind_double(stmt, 14, material.get_v_loop_bias());
+    sqlite3_bind_double(stmt, 15, material.get_v_dislocation_bias());
+    sqlite3_bind_double(stmt, 16, material.get_v_dislocation_bias_param());
+    sqlite3_bind_double(stmt, 17, material.get_dislocation_density_0());
+    sqlite3_bind_double(stmt, 18, material.get_grain_size());
+    sqlite3_bind_double(stmt, 19, material.get_lattice_param());
+    sqlite3_bind_double(stmt, 20, material.get_burgers_vector());
+    sqlite3_bind_double(stmt, 21, material.get_atomic_volume());
     if (is_valid_sqlite_id(material.sqlite_id)) sqlite3_bind_int(stmt, 22, material.sqlite_id);
 }
 
@@ -163,16 +163,16 @@ void ClientDb::row_read_reactor(sqlite3_stmt* stmt, NuclearReactor& reactor)
     reactor.sqlite_id = (int)sqlite3_column_int(stmt, 0);
     reactor.creation_datetime = (char*)sqlite3_column_text(stmt, 1);
     reactor.species = (char*)sqlite3_column_text(stmt, 2);
-    reactor.flux = (double)sqlite3_column_double(stmt, 3);
-    reactor.temperature = (double)sqlite3_column_double(stmt, 4);
-    reactor.recombination = (double)sqlite3_column_double(stmt, 5);
-    reactor.i_bi = (double)sqlite3_column_double(stmt, 6);
-    reactor.i_tri = (double)sqlite3_column_double(stmt, 7);
-    reactor.i_quad = (double)sqlite3_column_double(stmt, 8);
-    reactor.v_bi = (double)sqlite3_column_double(stmt, 9);
-    reactor.v_tri = (double)sqlite3_column_double(stmt, 10);
-    reactor.v_quad = (double)sqlite3_column_double(stmt, 11);
-    reactor.dislocation_density_evolution = (double)sqlite3_column_double(stmt, 12);
+    reactor.set_flux((gp_float)sqlite3_column_double(stmt, 3));
+    reactor.set_temperature((gp_float)sqlite3_column_double(stmt, 4));
+    reactor.set_recombination((gp_float)sqlite3_column_double(stmt, 5));
+    reactor.set_i_bi((gp_float)sqlite3_column_double(stmt, 6));
+    reactor.set_i_tri((gp_float)sqlite3_column_double(stmt, 7));
+    reactor.set_i_quad((gp_float)sqlite3_column_double(stmt, 8));
+    reactor.set_v_bi((gp_float)sqlite3_column_double(stmt, 9));
+    reactor.set_v_tri((gp_float)sqlite3_column_double(stmt, 10));
+    reactor.set_v_quad((gp_float)sqlite3_column_double(stmt, 11));
+    reactor.set_dislocation_density_evolution((gp_float)sqlite3_column_double(stmt, 12));
 }
 
 void ClientDb::row_read_material(sqlite3_stmt* stmt, Material& material)
@@ -180,26 +180,26 @@ void ClientDb::row_read_material(sqlite3_stmt* stmt, Material& material)
     material.sqlite_id = (int)sqlite3_column_int(stmt, 0);
     material.creation_datetime = (char*)sqlite3_column_text(stmt, 1);
     material.species = (char*)sqlite3_column_text(stmt, 2);
-    material.i_migration = (double)sqlite3_column_double(stmt, 3);
-    material.v_migration = (double)sqlite3_column_double(stmt, 4);
-    material.i_diffusion_0 = (double)sqlite3_column_double(stmt, 5);
-    material.v_diffusion_0 = (double)sqlite3_column_double(stmt, 6);
-    material.i_formation = (double)sqlite3_column_double(stmt, 7);
-    material.v_formation = (double)sqlite3_column_double(stmt, 8);
-    material.i_binding = (double)sqlite3_column_double(stmt, 9);
-    material.v_binding = (double)sqlite3_column_double(stmt, 10);
-    material.recombination_radius = (double)sqlite3_column_double(stmt, 11);
-    material.i_loop_bias = (double)sqlite3_column_double(stmt, 12);
-    material.i_dislocation_bias = (double)sqlite3_column_double(stmt, 13);
-    material.i_dislocation_bias_param = (double)sqlite3_column_double(stmt, 14);
-    material.v_loop_bias = (double)sqlite3_column_double(stmt, 15);
-    material.v_dislocation_bias = (double)sqlite3_column_double(stmt, 16);
-    material.v_dislocation_bias_param = (double)sqlite3_column_double(stmt, 17);
-    material.dislocation_density_0 = (double)sqlite3_column_double(stmt, 18);
-    material.grain_size = (double)sqlite3_column_double(stmt, 19);
-    material.lattice_param = (double)sqlite3_column_double(stmt, 20);
-    material.burgers_vector = (double)sqlite3_column_double(stmt, 21);
-    material.atomic_volume = (double)sqlite3_column_double(stmt, 22);
+    material.set_i_migration((gp_float)sqlite3_column_double(stmt, 3));
+    material.set_v_migration((gp_float)sqlite3_column_double(stmt, 4));
+    material.set_i_diffusion_0((gp_float)sqlite3_column_double(stmt, 5));
+    material.set_v_diffusion_0((gp_float)sqlite3_column_double(stmt, 6));
+    material.set_i_formation((gp_float)sqlite3_column_double(stmt, 7));
+    material.set_v_formation((gp_float)sqlite3_column_double(stmt, 8));
+    material.set_i_binding((gp_float)sqlite3_column_double(stmt, 9));
+    material.set_v_binding((gp_float)sqlite3_column_double(stmt, 10));
+    material.set_recombination_radius((gp_float)sqlite3_column_double(stmt, 11));
+    material.set_i_loop_bias((gp_float)sqlite3_column_double(stmt, 12));
+    material.set_i_dislocation_bias((gp_float)sqlite3_column_double(stmt, 13));
+    material.set_i_dislocation_bias_param((gp_float)sqlite3_column_double(stmt, 14));
+    material.set_v_loop_bias((gp_float)sqlite3_column_double(stmt, 15));
+    material.set_v_dislocation_bias((gp_float)sqlite3_column_double(stmt, 16));
+    material.set_v_dislocation_bias_param((gp_float)sqlite3_column_double(stmt, 17));
+    material.set_dislocation_density_0((gp_float)sqlite3_column_double(stmt, 18));
+    material.set_grain_size((gp_float)sqlite3_column_double(stmt, 19));
+    material.set_lattice_param((gp_float)sqlite3_column_double(stmt, 20));
+    material.set_burgers_vector((gp_float)sqlite3_column_double(stmt, 21));
+    material.set_atomic_volume((gp_float)sqlite3_column_double(stmt, 22));
 }
 
 

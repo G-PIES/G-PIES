@@ -39,9 +39,10 @@ endif
 
 CC = g++
 CCFLAGS += -std=c++17 -fno-fast-math
-NVCCFLAGS += -O3 -std=c++17 -DUSE_CUDA -x cu
+NVCCFLAGS += -O3 -std=c++17 -x cu -DUSE_CUDA
+CLANGFLAGS = $(CCFLAGS) -DUSE_METAL
 
-INCLUDE_FLAGS = -Isrc/client_db -Isrc/cluster_dynamics
+INCLUDE_FLAGS = -Isrc/client_db -Isrc/cluster_dynamics/cpu -Isrc/cluster_dynamics/cuda -Isrc/cluster_dynamics/metal
 INCLUDE_FLAGS += -Iinclude/client_db -Iinclude/cluster_dynamics -Iinclude/model -Iinclude/utils
 
 # Directories
@@ -50,6 +51,7 @@ BUILD_DIR = build
 DB_DIR = db
 LIB_DIR = lib
 OUT_DIR = out
+SHADER_DIR = shader
 
 # Libraries
 CD_LIB = $(LIB_DIR)/libclusterdynamics$(LIB_EXT)
@@ -104,20 +106,22 @@ cd: cdlib cdcudalib cdex
 
 # Cluster Dynamics Library
 cdlib: bdirs
-	$(CC) $(CCFLAGS) src/cluster_dynamics/cluster_dynamics.cpp -c -o $(BUILD_DIR)/clusterdynamics.o $(INCLUDE_FLAGS)
+	$(CC) $(CCFLAGS) src/cluster_dynamics/*.cpp -c -o $(BUILD_DIR)/clusterdynamics.o $(INCLUDE_FLAGS)
 	$(CC) $(CCFLAGS) src/cluster_dynamics/cpu/*.cpp -c -o $(BUILD_DIR)/clusterdynamicsimpl.o $(INCLUDE_FLAGS)
 	ar crs $(CD_LIB) $(BUILD_DIR)/clusterdynamics.o $(BUILD_DIR)/clusterdynamicsimpl.o
 
 # Cluster Dynamics CUDA Library
 cdcudalib: bdirs
-	nvcc $(NVCCFLAGS) src/cluster_dynamics/cluster_dynamics.cpp -c -o $(BUILD_DIR)/clusterdynamicscuda.o $(INCLUDE_FLAGS)
+	nvcc $(NVCCFLAGS) src/cluster_dynamics/*.cpp -c -o $(BUILD_DIR)/clusterdynamicscuda.o $(INCLUDE_FLAGS)
 	nvcc $(NVCCFLAGS) -c --expt-extended-lambda  src/cluster_dynamics/cuda/*.cpp -o $(BUILD_DIR)/clusterdynamicscudaimpl.o $(INCLUDE_FLAGS)
 	ar crs $(CDCUDA_LIB) $(BUILD_DIR)/clusterdynamicscuda.o $(BUILD_DIR)/clusterdynamicscudaimpl.o
 
 cdmetallib: bdirs
-	$(CC) $(CCFLAGS) src/cluster_dynamics/cluster_dynamics.cpp -c -o $(BUILD_DIR)/clusterdynamics.o $(INCLUDE_FLAGS)
-	$(CC) $(CCFLAGS) src/cluster_dynamics/metal/*.cpp -c -o $(BUILD_DIR)/clusterdynamicsmetalimpl.o -Iextern/metal-cpp $(INCLUDE_FLAGS)
-	ar crs $(CDMETAL_LIB) $(BUILD_DIR)/clusterdynamicsmetalimpl.o $(BUILD_DIR)/clusterdynamicsmetalimpl.o
+	xcrun -sdk macosx metal -DGP_FLOAT=float $(SHADER_DIR)/metal/cluster_dynamics.metal -c -o $(BUILD_DIR)/cluster_dynamics.ir $(INCLUDE_FLAGS)
+	xcrun -sdk macosx metallib -o $(LIB_DIR)/cluster_dynamics.metallib $(BUILD_DIR)/cluster_dynamics.ir
+	clang++ $(CLANGFLAGS) -DGP_FLOAT=float src/cluster_dynamics/*.cpp -c -o $(BUILD_DIR)/clusterdynamicsmetal.o -Iextern/metal-cpp $(INCLUDE_FLAGS)
+	clang++ $(CLANGFLAGS) -DGP_FLOAT=float -DMETALLIB_PATH=\"${CURDIR}/$(LIB_DIR)/cluster_dynamics.metallib\" src/cluster_dynamics/metal/*.cpp -c -o $(BUILD_DIR)/clusterdynamicsmetalimpl.o -Iextern/metal-cpp $(INCLUDE_FLAGS)
+	ar crs $(CDMETAL_LIB) $(BUILD_DIR)/clusterdynamicsmetal.o $(BUILD_DIR)/clusterdynamicsmetalimpl.o
 
 # Client Database Example
 dblib: bdirs
@@ -153,7 +157,7 @@ cdcudaex: cdcudalib
 
 # Cluster Dynamics W/ Metal Example
 cdmetalex: cdmetallib
-	$(CC) $(CCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cd_metal_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
+	$(CC) $(CCFLAGS) -DGP_FLOAT=float example/cd_example.cpp -o $(BIN_DIR)/cd_metal_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamicsmetal -framework Metal -framework QuartzCore -framework Foundation
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_metal_example$(EXE_EXT) || ( exit 0 )
 
 # Database Example
