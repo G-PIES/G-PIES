@@ -41,7 +41,8 @@ endif
 # Variables
 
 CC = g++
-CCFLAGS += -std=c++17
+CCFLAGS += -std=c++17 -fno-fast-math
+NVCCFLAGS += -O3 -std=c++17 -DUSE_CUDA -x cu
 
 INCLUDE_FLAGS = -Isrc/client_db -Isrc/cluster_dynamics
 INCLUDE_FLAGS += -Iinclude/client_db -Iinclude/cluster_dynamics -Iinclude/model -Iinclude/utils
@@ -111,8 +112,8 @@ cdlib: bdirs
 
 # Cluster Dynamics CUDA Library
 cdcudalib: bdirs
-	nvcc -O3 $(CCFLAGS) -DUSE_CUDA src/cluster_dynamics/cluster_dynamics.cpp -c -o $(BUILD_DIR)/clusterdynamicscuda.o $(INCLUDE_FLAGS)
-	nvcc -c -x cu --expt-extended-lambda -DUSE_CUDA $(CCFLAGS) src/cluster_dynamics/cuda/*.cpp -o $(BUILD_DIR)/clusterdynamicscudaimpl.o $(INCLUDE_FLAGS)
+	nvcc $(NVCCFLAGS) src/cluster_dynamics/cluster_dynamics.cpp -c -o $(BUILD_DIR)/clusterdynamicscuda.o $(INCLUDE_FLAGS)
+	nvcc $(NVCCFLAGS) -c --expt-extended-lambda  src/cluster_dynamics/cuda/*.cpp -o $(BUILD_DIR)/clusterdynamicscudaimpl.o $(INCLUDE_FLAGS)
 	ar crs $(CDCUDA_LIB) $(BUILD_DIR)/clusterdynamicscuda.o $(BUILD_DIR)/clusterdynamicscudaimpl.o
 
 # Client Database Example
@@ -144,7 +145,7 @@ cdcsv: cdlib
 
 # Cluster Dynamics W/ CUDA Example
 cdcudaex: cdcudalib
-	nvcc example/cd_example.cpp -o $(BIN_DIR)/cd_cuda_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamicscuda
+	nvcc $(NVCCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cd_cuda_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamicscuda
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_cuda_example$(EXE_EXT) || ( exit 0 )
 
 # Database Example
@@ -165,7 +166,7 @@ cdtests: cdlib
 
 # GoogleTest Cluster Dynamics W/ CUDA Unit Tests
 cdcudatests: cdcudalib
-	nvcc $(CCFLAGS) -x cu -DUSE_CUDA test/cd_tests.cpp -o $(BIN_DIR)/cdcuda_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L$(GTEST_LIBS) -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamicscuda
+	nvcc $(NVCCFLAGS) test/cd_tests.cpp -o $(BIN_DIR)/cdcuda_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L$(GTEST_LIBS) -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamicscuda
 	@[ "${R}" ] && ./$(BIN_DIR)/cdcuda_tests$(EXE_EXT) || ( exit 0 )
 
 # GoogleTest Database Unit Tests
