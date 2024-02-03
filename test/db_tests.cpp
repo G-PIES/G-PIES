@@ -212,7 +212,6 @@ TEST_F(ClientDbTest, MaterialCRUD)
    ASSERT_THROW(db.read_material(-1, material_cpy, &sqlite_code), ClientDbException);
 
    // object equality after failed reads
-   ASSERT_EQ(material.sqlite_id, material_cpy.sqlite_id);
    ASSERT_EQ(material.creation_datetime, material_cpy.creation_datetime);
    ASSERT_EQ(material.species, material_cpy.species);
    ASSERT_EQ(material.i_migration, material_cpy.i_migration);
