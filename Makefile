@@ -5,10 +5,13 @@ ifeq ($(OS), Windows_NT)
 	EXE_EXT := .exe
 	ifeq ($(PROCESSOR_ARCHITEW6432), AMD64)
 		CCFLAGS += -D AMD64
+		GTEST_LIBS = ./extern/googletest/lib/windows
 	else ifeq ($(PROCESSOR_ARCHITECTURE), AMD64)
 		CCFLAGS += -D AMD64
+		GTEST_LIBS = ./extern/googletest/lib/windows
 	else ifeq ($(PROCESSOR_ARCHITECTURE), x86)
 		CCFLAGS += -D IA32
+		GTEST_LIBS = ./extern/googletest/lib/windows
 	endif
 else
 	LIB_EXT := .a
@@ -165,7 +168,7 @@ cdcudatests: cdcudalib
 	nvcc $(CCFLAGS) -x cu -DUSE_CUDA test/cd_tests.cpp -o $(BIN_DIR)/cdcuda_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L$(GTEST_LIBS) -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamicscuda
 	@[ "${R}" ] && ./$(BIN_DIR)/cdcuda_tests$(EXE_EXT) || ( exit 0 )
 
-# GoogleTest Cluster Dynamics Unit Tests
+# GoogleTest Database Unit Tests
 dbtests: dblib
 	$(CC) $(CCFLAGS) test/db_tests.cpp -o $(BIN_DIR)/db_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L$(GTEST_LIBS) -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclientdb -lsqlite3
 	@[ "${R}" ] && ./$(BIN_DIR)/db_tests$(EXE_EXT) || ( exit 0 )
