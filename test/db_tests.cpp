@@ -165,3 +165,163 @@ TEST_F(ClientDbTest, NuclearReactorManyCRUD)
        ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
    }
 }
+
+TEST_F(ClientDbTest, MaterialCRUD)
+{
+   // create one 
+   ASSERT_TRUE(db.create_material(material, &sqlite_code));
+   ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
+   ASSERT_EQ(1, material.sqlite_id);
+
+   // read one
+   Material material_cpy;
+   ASSERT_TRUE(db.read_material(material.sqlite_id, material_cpy, &sqlite_code));
+   ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
+
+   // read one equality
+   ASSERT_EQ(material.sqlite_id, material_cpy.sqlite_id);
+   ASSERT_EQ(material.creation_datetime, material_cpy.creation_datetime);
+   ASSERT_EQ(material.species, material_cpy.species);
+   ASSERT_EQ(material.i_migration, material_cpy.i_migration);
+   ASSERT_EQ(material.v_migration, material_cpy.v_migration);
+   ASSERT_EQ(material.i_diffusion_0, material_cpy.i_diffusion_0);
+   ASSERT_EQ(material.v_diffusion_0, material_cpy.v_diffusion_0);
+   ASSERT_EQ(material.i_formation, material_cpy.i_formation);
+   ASSERT_EQ(material.v_formation, material_cpy.v_formation);
+   ASSERT_EQ(material.i_binding, material_cpy.i_binding);
+   ASSERT_EQ(material.v_binding, material_cpy.v_binding);
+   ASSERT_EQ(material.recombination_radius, material_cpy.recombination_radius);
+   ASSERT_EQ(material.i_loop_bias, material_cpy.i_loop_bias);
+   ASSERT_EQ(material.i_dislocation_bias, material_cpy.i_dislocation_bias);
+   ASSERT_EQ(material.i_dislocation_bias_param, material_cpy.i_dislocation_bias_param);
+   ASSERT_EQ(material.v_loop_bias, material_cpy.v_loop_bias);
+   ASSERT_EQ(material.v_dislocation_bias, material_cpy.v_dislocation_bias);
+   ASSERT_EQ(material.v_dislocation_bias_param, material_cpy.v_dislocation_bias_param);
+   ASSERT_EQ(material.dislocation_density_0, material_cpy.dislocation_density_0);
+   ASSERT_EQ(material.grain_size, material_cpy.grain_size);
+   ASSERT_EQ(material.lattice_param, material_cpy.lattice_param);
+   ASSERT_EQ(material.burgers_vector, material_cpy.burgers_vector);
+   ASSERT_EQ(material.atomic_volume, material_cpy.atomic_volume);
+
+   // read one id not found, sql success
+   material_cpy.sqlite_id = -1;
+   ASSERT_FALSE(db.read_material(10, material_cpy, &sqlite_code));
+   ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
+
+   // read one invalid sql id
+   ASSERT_THROW(db.read_material(-1, material_cpy, &sqlite_code), ClientDbException);
+
+   // object equality after failed reads
+   ASSERT_EQ(material.creation_datetime, material_cpy.creation_datetime);
+   ASSERT_EQ(material.species, material_cpy.species);
+   ASSERT_EQ(material.i_migration, material_cpy.i_migration);
+   ASSERT_EQ(material.v_migration, material_cpy.v_migration);
+   ASSERT_EQ(material.i_diffusion_0, material_cpy.i_diffusion_0);
+   ASSERT_EQ(material.v_diffusion_0, material_cpy.v_diffusion_0);
+   ASSERT_EQ(material.i_formation, material_cpy.i_formation);
+   ASSERT_EQ(material.v_formation, material_cpy.v_formation);
+   ASSERT_EQ(material.i_binding, material_cpy.i_binding);
+   ASSERT_EQ(material.v_binding, material_cpy.v_binding);
+   ASSERT_EQ(material.recombination_radius, material_cpy.recombination_radius);
+   ASSERT_EQ(material.i_loop_bias, material_cpy.i_loop_bias);
+   ASSERT_EQ(material.i_dislocation_bias, material_cpy.i_dislocation_bias);
+   ASSERT_EQ(material.i_dislocation_bias_param, material_cpy.i_dislocation_bias_param);
+   ASSERT_EQ(material.v_loop_bias, material_cpy.v_loop_bias);
+   ASSERT_EQ(material.v_dislocation_bias, material_cpy.v_dislocation_bias);
+   ASSERT_EQ(material.v_dislocation_bias_param, material_cpy.v_dislocation_bias_param);
+   ASSERT_EQ(material.dislocation_density_0, material_cpy.dislocation_density_0);
+   ASSERT_EQ(material.grain_size, material_cpy.grain_size);
+   ASSERT_EQ(material.lattice_param, material_cpy.lattice_param);
+   ASSERT_EQ(material.burgers_vector, material_cpy.burgers_vector);
+   ASSERT_EQ(material.atomic_volume, material_cpy.atomic_volume);
+
+   // update one
+   randomizer.material_randomize(material);
+   ASSERT_TRUE(db.update_material(material, &sqlite_code));
+   ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
+   ASSERT_EQ(1, db.changes());
+
+   // read one after update
+   ASSERT_TRUE(db.read_material(material.sqlite_id, material_cpy, &sqlite_code));
+   ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
+
+   // read one equality after update
+   ASSERT_EQ(material.sqlite_id, material_cpy.sqlite_id);
+   ASSERT_EQ(material.creation_datetime, material_cpy.creation_datetime);
+   ASSERT_EQ(material.species, material_cpy.species);
+   ASSERT_EQ(material.i_migration, material_cpy.i_migration);
+   ASSERT_EQ(material.v_migration, material_cpy.v_migration);
+   ASSERT_EQ(material.i_diffusion_0, material_cpy.i_diffusion_0);
+   ASSERT_EQ(material.v_diffusion_0, material_cpy.v_diffusion_0);
+   ASSERT_EQ(material.i_formation, material_cpy.i_formation);
+   ASSERT_EQ(material.v_formation, material_cpy.v_formation);
+   ASSERT_EQ(material.i_binding, material_cpy.i_binding);
+   ASSERT_EQ(material.v_binding, material_cpy.v_binding);
+   ASSERT_EQ(material.recombination_radius, material_cpy.recombination_radius);
+   ASSERT_EQ(material.i_loop_bias, material_cpy.i_loop_bias);
+   ASSERT_EQ(material.i_dislocation_bias, material_cpy.i_dislocation_bias);
+   ASSERT_EQ(material.i_dislocation_bias_param, material_cpy.i_dislocation_bias_param);
+   ASSERT_EQ(material.v_loop_bias, material_cpy.v_loop_bias);
+   ASSERT_EQ(material.v_dislocation_bias, material_cpy.v_dislocation_bias);
+   ASSERT_EQ(material.v_dislocation_bias_param, material_cpy.v_dislocation_bias_param);
+   ASSERT_EQ(material.dislocation_density_0, material_cpy.dislocation_density_0);
+   ASSERT_EQ(material.grain_size, material_cpy.grain_size);
+   ASSERT_EQ(material.lattice_param, material_cpy.lattice_param);
+   ASSERT_EQ(material.burgers_vector, material_cpy.burgers_vector);
+   ASSERT_EQ(material.atomic_volume, material_cpy.atomic_volume);
+
+   // update one invalid sql id
+   material_cpy.sqlite_id = -1;
+   ASSERT_THROW(db.update_material(material_cpy, &sqlite_code), ClientDbException);
+
+   // delete one
+   ASSERT_TRUE(db.delete_material(material, &sqlite_code));
+   ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
+   ASSERT_EQ(1, db.changes());
+   
+   // delete one not found
+   ASSERT_TRUE(db.delete_material(material, &sqlite_code));
+   ASSERT_EQ(0, db.changes());
+
+   // delete one invalid sql id
+   material_cpy.sqlite_id = -1;
+   ASSERT_THROW(db.delete_material(material_cpy, &sqlite_code), ClientDbException);
+}
+
+TEST_F(ClientDbTest, MaterialManyCRUD)
+{
+   std::vector<Material> materials;
+
+   // create 20 materials
+   for (int i = 0; i < 20; ++i)
+   {
+       Material material;
+       randomizer.material_randomize(material);
+       ASSERT_TRUE(db.create_material(material, &sqlite_code));
+       ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
+       ASSERT_EQ(1 + i, material.sqlite_id);
+       materials.push_back(material);
+   }
+
+   // read 20 materials
+   std::vector<Material> material_reads;
+   ASSERT_TRUE(db.read_materials(material_reads, &sqlite_code));
+   ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
+   ASSERT_EQ(20, material_reads.size());
+   ASSERT_EQ(materials.size(), material_reads.size());
+
+   // update 20 materials
+   for (int i = 0; i < 20; ++i)
+   {
+       randomizer.material_randomize(materials[i]);
+       ASSERT_TRUE(db.update_material(materials[i], &sqlite_code));
+       ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
+   }
+
+   // delete 20 materials
+   for (int i = 0; i < 20; ++i)
+   {
+       ASSERT_TRUE(db.delete_material(materials[i], &sqlite_code));
+       ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
+   }
+}
