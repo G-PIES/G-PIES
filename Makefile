@@ -58,6 +58,7 @@ OUT_DIR = out
 CD_LIB = $(LIB_DIR)/libclusterdynamics$(LIB_EXT)
 CDCUDA_LIB = $(LIB_DIR)/libclusterdynamicscuda$(LIB_EXT)
 DB_LIB = $(LIB_DIR)/libclientdb$(LIB_EXT)
+PY_LIB = `python3 -m pybind11 --includes`
 
 # ----------------------------------------------------------------------------------------
 
@@ -121,6 +122,9 @@ dblib: bdirs
 	$(CC) $(CCFLAGS) src/client_db/*.cpp -c -o $(BUILD_DIR)/clientdb.o $(INCLUDE_FLAGS)
 	ar crs $(DB_LIB) $(BUILD_DIR)/clientdb.o
 
+# Python Library
+pylib: cdlib
+	g++ -O3 -Wall -shared $(CCFLAGS) -fPIC $(PY_LIB) src/ui/wrapper.cpp -o $(LIB_DIR)/pyclusterdynamics.so $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 # ----------------------------------------------------------------------------------------
 
 
