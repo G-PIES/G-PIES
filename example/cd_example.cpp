@@ -93,8 +93,6 @@ void profile()
 
 int main(int argc, char* argv[])
 {
-  profile();
-  return 0;
     NuclearReactor reactor;
     nuclear_reactors::OSIRIS(reactor);
 

@@ -21,7 +21,7 @@ public:
    *  @param reactor A NuclearReactor object containing the reactor parameters the simulation will use.
    *  @param material A Material object containing the material parameters the simulation will use.
   */
-  ClusterDynamics(size_t concentration_boundary, NuclearReactor reactor, Material material);
+  ClusterDynamics(size_t concentration_boundary, const NuclearReactor& reactor, const Material& material);
   ~ClusterDynamics();
     
   /** @brief Runs the simulation and returns the end simulation state as a ClusterDynamicsState object.
@@ -43,7 +43,7 @@ public:
    *  It is okay to change the material parameters even if the simulation 
    *  has already been run() for some time.
   */
-  void set_material(Material material);
+  void set_material(const Material& material);
 
   /** @brief Returns the NuclearReactor parameters that the simulation currently has set.
   */
@@ -55,7 +55,7 @@ public:
    *  It is okay to change the reactor parameters even if the simulation 
    *  has already been run() for some time.
   */
-  void set_reactor(NuclearReactor reactor);
+  void set_reactor(const NuclearReactor& reactor);
 };
 
 #endif // CLUSTER_DYNAMICS_HPP
