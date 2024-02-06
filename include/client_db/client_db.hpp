@@ -3,8 +3,10 @@
 
 #include <vector>
 #include <sqlite3.h>
+
 #include "types.hpp"
 #include "gpies_exception.hpp"
+#include "simulation_model.hpp"
 
 class NuclearReactor;
 class Material;
@@ -88,6 +90,32 @@ public:
 
     // --------------------------------------------------------------------------------------------
     // SIMULATION CRUD
+
+    // Creates a simulation in the local database, assigning a value to simulation.sqlite_id.
+    // |sqlite_code| can optionally be retrieved.
+    // Returns true on success.
+    bool create_simulation(SimulationModel& simulation, int* sqlite_code = nullptr);
+
+    // Reads all simulations from the local database, populating |simulations|.
+    // |sqlite_code| can optionally be retrieved.
+    // Returns true on success.
+    bool read_simulations(std::vector<SimulationModel>& simulations, int* sqlite_code = nullptr);
+
+    // Attempts to read a single |simulation| from the local database, matching the specified |sqlite_id|.
+    // |sqlite_code| can optionally be retrieved.
+    // Returns true on success.
+    bool read_simulation(const int sqlite_id, SimulationModel& simulation, int* sqlite_code = nullptr);
+
+    // Attempts to update a simulation in the local database, matching to |simulation.sqlite_id|.
+    // |sqlite_code| can optionally be retrieved.
+    // Returns true on success.
+    bool update_simulation(const SimulationModel& simulation, int* sqlite_code = nullptr);
+
+    // Attempts to delete a simulation in the local database, matching to |simulation.sqlite_id|.
+    // |sqlite_code| can optionally be retrieved.
+    // Returns true on success.
+    bool delete_simulation(const SimulationModel& simulation, int* sqlite_code = nullptr);
+
     // --------------------------------------------------------------------------------------------
 
     // |sqlite_code| can optionally be retrieved.
@@ -159,6 +187,7 @@ private:
 
     static void bind_reactor(sqlite3_stmt*, const NuclearReactor&);
     static void bind_material(sqlite3_stmt*, const Material&);
+    static void bind_simulation(sqlite3_stmt*, const SimulationModel&);
 
     // --------------------------------------------------------------------------------------------
 
@@ -171,6 +200,7 @@ private:
 
     static void row_read_reactor(sqlite3_stmt*, NuclearReactor&);
     static void row_read_material(sqlite3_stmt*, Material&);
+    static void row_read_simulation(sqlite3_stmt*, SimulationModel&);
 
     // --------------------------------------------------------------------------------------------
 
@@ -192,6 +222,12 @@ private:
     static void err_read_material(sqlite3_stmt*, const int);
     static void err_update_material(sqlite3_stmt*, const Material&);
     static void err_delete_material(sqlite3_stmt*, const Material&);
+
+    static void err_create_simulation(sqlite3_stmt*, const SimulationModel&);
+    static void err_read_simulations(sqlite3_stmt*);
+    static void err_read_simulation(sqlite3_stmt*, const int);
+    static void err_update_simulation(sqlite3_stmt*, const SimulationModel&);
+    static void err_delete_simulation(sqlite3_stmt*, const SimulationModel&);
 
     // --------------------------------------------------------------------------------------------
 
