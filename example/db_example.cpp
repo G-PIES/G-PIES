@@ -4,6 +4,7 @@
 #include "client_db.hpp"
 #include "nuclear_reactor.hpp"
 #include "material.hpp"
+#include "simulation_model.hpp"
 #include "gpies_exception.hpp"
 #include "randomizer.hpp"
 
@@ -14,6 +15,8 @@ void reactors_crud();
 void reactor_cmp_print(NuclearReactor&, NuclearReactor&);
 void materials_crud();
 void material_cmp_print(Material&, Material&);
+void simulations_crud();
+void simulation_cmp_print(SimulationModel&, SimulationModel&);
 
 ClientDb db;
 Randomizer randomizer;
@@ -30,6 +33,9 @@ int main(int argc, char* argv[])
 
         std::cout << "\nMATERIALS CRUD ----------------------------------\n";
         materials_crud();
+
+        std::cout << "\nSIMULATIONS CRUD --------------------------------\n";
+        simulations_crud();
     }
     catch(const ClientDbException& e)
     {
@@ -169,6 +175,62 @@ void materials_crud()
     fprintf(stdout, "\n");
 }
 
+void simulations_crud()
+{
+    int sqlite_code = -1;
+
+    std::vector<SimulationModel> simulations(VEC_SIZE, SimulationModel());
+    for (int i = 0; i < VEC_SIZE; ++i)
+    {
+        randomizer.simulation_randomize(simulations[i]);
+        db.create_simulation(simulations[i], &sqlite_code);
+
+        fprintf(stdout, "* CREATE id = %4d\t-\tsqlite code = %4d\n", simulations[i].sqlite_id, sqlite_code);
+    }
+
+    fprintf(stdout, "\n");
+    std::vector<SimulationModel> read_simulations;
+    db.read_simulations(read_simulations, &sqlite_code);
+    fprintf(stdout, "* READ SIMULATIONS - count = %4d - sqlite code = %4d\n" 
+        "* EXISTING\t\t-\tREAD RESULT\n\n",
+        (int)read_simulations.size(), sqlite_code);
+
+    SimulationModel* existing;
+    SimulationModel* read;
+
+    for (int i = 0; i < VEC_SIZE; ++i)
+    {
+        simulation_cmp_print(simulations[i], read_simulations[i]);
+        fprintf(stdout, "\n");
+    }
+
+    fprintf(stdout, "* UPDATE / READ SIMULATIONS\n\n");
+
+    for (int i = 0; i < VEC_SIZE; ++i)
+    {
+        randomizer.simulation_randomize(simulations[i]);
+
+        db.update_simulation(simulations[i], &sqlite_code);
+        fprintf(stdout, "SIMULATION UPDATED\n");
+
+        db.read_simulation(simulations[i].sqlite_id, read_simulations[i], &sqlite_code);
+        fprintf(stdout, "READ SIMULATION\t-\tsqlite code = %4d\n", sqlite_code);
+
+        simulation_cmp_print(simulations[i], read_simulations[i]);
+        fprintf(stdout, "\n");
+    }
+
+    fprintf(stdout, "* DELETE SIMULATIONS\n\n");
+
+    for (int i = 0; i < VEC_SIZE; ++i)
+    {
+        db.delete_simulation(simulations[i], &sqlite_code);
+        fprintf(stdout, "* SIMULATION DELETED\t-\tid = %4d\n", simulations[i].sqlite_id);
+    }
+
+    fprintf(stdout, "\n");
+}
+
 void reactor_cmp_print(NuclearReactor& r1, NuclearReactor& r2)
 {
     fprintf(stdout, "%s\t-\t%s\n", r1.species.c_str(), r2.species.c_str());
@@ -209,4 +271,19 @@ void material_cmp_print(Material& r1, Material& r2)
     fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_lattice_param(), r2.get_lattice_param());
     fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_burgers_vector(), r2.get_burgers_vector());
     fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_atomic_volume(), r2.get_atomic_volume());
+}
+
+void simulation_cmp_print(SimulationModel& r1, SimulationModel& r2)
+{
+    fprintf(stdout, "%s\t-\t%s\n", r1.creation_datetime.c_str(), r2.creation_datetime.c_str());
+    fprintf(stdout, "%d\t\t\t\t\t\t-\t%d\n", r1.id_reactor, r2.id_reactor);
+    fprintf(stdout, "%d\t\t\t\t\t\t-\t%d\n", r1.id_material, r2.id_material);
+    fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.cd_state.time, r2.cd_state.time);
+    fprintf(stdout, "%zu [%g, %g, %g, %g,...]\t-\t%zu [%g, %g, %g, %g,...]\n", r1.cd_state.interstitials.size(), r1.cd_state.interstitials[0], 
+        r1.cd_state.interstitials[1], r1.cd_state.interstitials[2], r1.cd_state.interstitials[3], r2.cd_state.interstitials.size(),
+        r2.cd_state.interstitials[0], r2.cd_state.interstitials[1], r2.cd_state.interstitials[2], r2.cd_state.interstitials[3]);
+    fprintf(stdout, "%zu [%g, %g, %g, %g,...]\t-\t%zu [%g, %g, %g, %g,...]\n", r1.cd_state.vacancies.size(), r1.cd_state.vacancies[0], 
+        r1.cd_state.vacancies[1], r1.cd_state.vacancies[2], r1.cd_state.vacancies[3], r2.cd_state.vacancies.size(),
+        r2.cd_state.vacancies[0], r2.cd_state.vacancies[1], r2.cd_state.vacancies[2], r2.cd_state.vacancies[3]);
+    fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.cd_state.dislocation_density, r2.cd_state.dislocation_density);
 }
