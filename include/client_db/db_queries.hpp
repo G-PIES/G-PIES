@@ -15,7 +15,7 @@ namespace db_queries
 std::string init =
     "CREATE TABLE IF NOT EXISTS reactors"
     "("
-        "id_reactor INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "id_reactor INTEGER PRIMARY KEY,"
         "creation_datetime TEXT DEFAULT current_timestamp,"
         "species text NOT NULL DEFAULT '',"
         "flux float DEFAULT 0.0,"
@@ -62,16 +62,11 @@ std::string init =
         "id_simulation INTEGER PRIMARY KEY,"
         "creation_datetime TEXT DEFAULT current_timestamp,"
         "id_reactor INTEGER,"
-        "simulation_time FLOAT DEFAULT 0.0,"
-        "time_delta FLOAT DEFAULT 0.0,"
-        "data TEXT"
-    ");"
-
-    "CREATE TABLE IF NOT EXISTS simulation_materials"
-    "("
-        "id_simulation NOT NULL,"
-        "id_material NOT NULL,"
-        "PRIMARY KEY (id_simulation, id_material)"
+        "id_material INTEGER,"
+        "simulation_time float DEFAULT 0.0,"
+        "interstitials BLOB,"
+        "vacancies BLOB,"
+        "dislocation_density float DEFAULT 0.0"
     ");";
 
 std::string clear =
