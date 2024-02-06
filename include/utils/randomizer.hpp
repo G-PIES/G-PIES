@@ -3,6 +3,7 @@
 
 #include "nuclear_reactor.hpp"
 #include "material.hpp"
+#include "simulation_model.hpp"
 
 class Randomizer
 {
@@ -53,6 +54,22 @@ public:
       material.set_lattice_param(randd());
       material.set_burgers_vector(randd());
       material.set_atomic_volume(randd());
+   }
+
+   void simulation_randomize(SimulationModel& simulation)
+   {
+      simulation.id_reactor = rand() % 10;
+      simulation.id_material = rand() % 10;
+      simulation.cd_state.time = randd();
+
+      int vec_size = rand() % 100000 + 4;
+      for (int i = 0; i < vec_size; ++i) 
+      {
+         simulation.cd_state.interstitials.push_back(randd());
+         simulation.cd_state.vacancies.push_back(randd());
+      }
+
+      simulation.cd_state.dislocation_density = randd();
    }
 };
 
