@@ -34,6 +34,8 @@ public:
     MTL::CommandQueue* mtl_command_queue;
 
     // metal buffers
+    MTL::Buffer* mtl_interstitials_in;
+    MTL::Buffer* mtl_vacancies_in;
     MTL::Buffer* mtl_interstitials_out;
     MTL::Buffer* mtl_vacancies_out;
 

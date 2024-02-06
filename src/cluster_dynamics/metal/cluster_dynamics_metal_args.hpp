@@ -5,7 +5,7 @@
 #include "nuclear_reactor_impl.hpp"
 
 #if defined(__METAL__)
-    #define __METALDECL__ device 
+    #define __METALDECL__ device
 #else
     #define __METALDECL__
 #endif

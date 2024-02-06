@@ -736,8 +736,13 @@ bool ClusterDynamicsImpl::step(gp_float delta_time)
     step_init();
     update_clusters_1(delta_time);
 
-    mtl_args.interstitials = interstitials.data();
-    mtl_args.vacancies = interstitials.data();
+    gp_float* interstitials_in = (gp_float*)mtl_interstitials_in->contents();
+    gp_float* vacancies_in = (gp_float*)mtl_vacancies_in->contents();
+    interstitials_in = interstitials.data();
+    vacancies_in = vacancies.data();
+
+    //mtl_args.interstitials = interstitials.data();
+    //mtl_args.vacancies = interstitials.data();
 
     mtl_send_command();
 
@@ -749,16 +754,16 @@ bool ClusterDynamicsImpl::step(gp_float delta_time)
     interstitials_out[1] = interstitials[1];
     vacancies_out[1] = vacancies[1];
 
-    /*
-    for (int i = 1; i < concentration_boundary; ++i)
-    {
-        fprintf(stdout, "%g - %g\n", interstitials_out[i], vacancies_out[i]);
-        fgetc(stdin);
-    }
-    */
-
     interstitials = std::vector<gp_float>{interstitials_out, interstitials_out + concentration_boundary + 1};
     vacancies = std::vector<gp_float>{vacancies_out, vacancies_out + concentration_boundary + 1};
+
+    /*
+    for (int i = 0; i < concentration_boundary; ++i)
+    {
+        fprintf(stdout, "%g\t:\t%g\n\n", interstitials[i], vacancies[i]);
+    }
+    fgetc(stdin);
+    */
 
     return true; // TODO - exception handling
 }
@@ -934,8 +939,6 @@ void ClusterDynamicsImpl::mtl_init_lib()
 
 void ClusterDynamicsImpl::mtl_init_args()
 {
-    mtl_args.material = material.impl();
-    mtl_args.reactor = reactor.impl();
     mtl_args.concentration_boundary = concentration_boundary;
 }
 
@@ -943,6 +946,8 @@ void ClusterDynamicsImpl::mtl_init_buffers()
 {
     size_t mtl_buf_size = (concentration_boundary + 1) * sizeof(gp_float);
 
+    mtl_interstitials_in = mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
+    mtl_vacancies_in = mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
     mtl_interstitials_out = mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
     mtl_vacancies_out = mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
 }
@@ -974,8 +979,12 @@ void ClusterDynamicsImpl::mtl_encode_command(MTL::ComputeCommandEncoder* mtl_com
     mtl_compute_encoder->setComputePipelineState(mtl_compute_pipeline_state);
 
     mtl_compute_encoder->setBytes(&mtl_args, sizeof(ClusterDynamicsMetalArgs), 0);
-    mtl_compute_encoder->setBuffer(mtl_interstitials_out, 0, 1);
-    mtl_compute_encoder->setBuffer(mtl_vacancies_out, 0, 2);
+    mtl_compute_encoder->setBytes(reactor.impl(), sizeof(NuclearReactorImpl), 1);
+    mtl_compute_encoder->setBytes(material.impl(), sizeof(MaterialImpl), 2);
+    mtl_compute_encoder->setBuffer(mtl_interstitials_in, 0, 3);
+    mtl_compute_encoder->setBuffer(mtl_vacancies_in, 0, 4);
+    mtl_compute_encoder->setBuffer(mtl_interstitials_out, 0, 5);
+    mtl_compute_encoder->setBuffer(mtl_vacancies_out, 0, 6);
     
     MTL::Size mtl_grid_size = MTL::Size(concentration_boundary + 1, 1, 1);
  
