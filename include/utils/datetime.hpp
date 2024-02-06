@@ -8,7 +8,7 @@
 
 namespace datetime
 {
-    static void utc_now(std::string& str)
+    [[maybe_unused]] static void utc_now(std::string& str)
     {
         std::time_t time = std::time(nullptr);
         char datetime_str[21] = "yyyy-mm-ddThh:mm:ssZ";

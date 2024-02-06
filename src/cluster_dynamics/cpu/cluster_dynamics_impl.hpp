@@ -2,10 +2,12 @@
 #define CLUSTER_DYNAMICS_IMPL_HPP
 
 #include <vector>
+#include <cmath>
 
 #include "cluster_dynamics_state.hpp"
-#include "nuclear_reactor.hpp"
-#include "material.hpp"
+#include "constants.hpp"
+#include "material_impl.hpp"
+#include "nuclear_reactor_impl.hpp"
 
 class ClusterDynamicsImpl
 {
@@ -28,8 +30,8 @@ public:
   gp_float i_diffusion_val;
   gp_float v_diffusion_val;
 
-  Material material;
-  NuclearReactor reactor;
+  MaterialImpl material;
+  NuclearReactorImpl reactor;
 
   // Physics Model Functions
   gp_float i_concentration_derivative(size_t) const;
@@ -84,14 +86,14 @@ public:
   bool validate(size_t) const;
 
   // Interface functions
-  ClusterDynamicsImpl(size_t concentration_boundary, const NuclearReactor& reactor, const Material& material);
+  ClusterDynamicsImpl(size_t concentration_boundary, const NuclearReactorImpl& reactor, const MaterialImpl& material);
   ~ClusterDynamicsImpl();
     
   ClusterDynamicsState run(gp_float delta_time, gp_float total_time);
-  Material get_material() const;
-  void set_material(const Material& material);
-  NuclearReactor get_reactor() const;
-  void set_reactor(const NuclearReactor& reactor);
+  MaterialImpl get_material() const;
+  void set_material(const MaterialImpl& material);
+  NuclearReactorImpl get_reactor() const;
+  void set_reactor(const NuclearReactorImpl& reactor);
 };
 
 #endif // CLUSTER_DYNAMICS_IMPL_HPP

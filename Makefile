@@ -45,7 +45,7 @@ CCFLAGS += -std=c++17 -fno-fast-math -Werror -Wall -Wextra
 NVCCFLAGS += -std=c++17 -DUSE_CUDA -x cu -Werror all-warnings
 CLANGFLAGS = $(CCFLAGS) -DUSE_METAL
 
-INCLUDE_FLAGS = -Isrc/client_db -Isrc/cluster_dynamics/cpu -Isrc/cluster_dynamics/cuda -Isrc/cluster_dynamics/metal
+INCLUDE_FLAGS =  -Isrc/ -Isrc/client_db -Isrc/cluster_dynamics/cpu -Isrc/cluster_dynamics/cuda -Isrc/cluster_dynamics/metal
 INCLUDE_FLAGS += -Iinclude/client_db -Iinclude/cluster_dynamics -Iinclude/model -Iinclude/utils
 
 # Directories
@@ -109,15 +109,19 @@ cd: cdlib cdcudalib cdex
 
 # Cluster Dynamics Library
 cdlib: bdirs
-	$(CC) $(CCFLAGS) src/cluster_dynamics/*.cpp -c -o $(BUILD_DIR)/clusterdynamics.o $(INCLUDE_FLAGS)
+	$(CC) $(CCFLAGS) src/cluster_dynamics/cluster_dynamics.cpp -c -o $(BUILD_DIR)/clusterdynamics.o $(INCLUDE_FLAGS)
+	$(CC) $(CCFLAGS) src/material.cpp -c -o $(BUILD_DIR)/material.o $(INCLUDE_FLAGS)
+	$(CC) $(CCFLAGS) src/nuclear_reactor.cpp -c -o $(BUILD_DIR)/nuclear_reactor.o $(INCLUDE_FLAGS)
 	$(CC) $(CCFLAGS) src/cluster_dynamics/cpu/*.cpp -c -o $(BUILD_DIR)/clusterdynamicsimpl.o $(INCLUDE_FLAGS)
-	ar crs $(CD_LIB) $(BUILD_DIR)/clusterdynamics.o $(BUILD_DIR)/clusterdynamicsimpl.o
+	ar crs $(CD_LIB) $(BUILD_DIR)/clusterdynamics.o $(BUILD_DIR)/material.o $(BUILD_DIR)/nuclear_reactor.o $(BUILD_DIR)/clusterdynamicsimpl.o
 
 # Cluster Dynamics CUDA Library
 cdcudalib: bdirs
-	nvcc $(NVCCFLAGS) src/cluster_dynamics/*.cpp -c -o $(BUILD_DIR)/clusterdynamicscuda.o $(INCLUDE_FLAGS)
+	nvcc $(NVCCFLAGS) src/cluster_dynamics/cluster_dynamics.cpp -c -o $(BUILD_DIR)/clusterdynamicscuda.o $(INCLUDE_FLAGS)
+	nvcc $(NVCCFLAGS) src/material.cpp -c -o $(BUILD_DIR)/material.o $(INCLUDE_FLAGS)
+	nvcc $(NVCCFLAGS) src/nuclear_reactor.cpp -c -o $(BUILD_DIR)/nuclear_reactor.o $(INCLUDE_FLAGS)
 	nvcc $(NVCCFLAGS) -c --expt-extended-lambda  src/cluster_dynamics/cuda/*.cpp -o $(BUILD_DIR)/clusterdynamicscudaimpl.o $(INCLUDE_FLAGS)
-	ar crs $(CDCUDA_LIB) $(BUILD_DIR)/clusterdynamicscuda.o $(BUILD_DIR)/clusterdynamicscudaimpl.o
+	ar crs $(CDCUDA_LIB) $(BUILD_DIR)/clusterdynamicscuda.o $(BUILD_DIR)/material.o $(BUILD_DIR)/nuclear_reactor.o $(BUILD_DIR)/clusterdynamicscudaimpl.o
 
 cdmetallib: bdirs
 	xcrun -sdk macosx metal -DGP_FLOAT=float $(SHADER_DIR)/metal/cluster_dynamics.metal -c -o $(BUILD_DIR)/cluster_dynamics.ir $(INCLUDE_FLAGS)

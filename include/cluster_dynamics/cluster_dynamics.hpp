@@ -15,6 +15,9 @@ class ClusterDynamics
 {
 private:
   std::unique_ptr<ClusterDynamicsImpl> _impl; //< Pointer to a backend implementation class.
+
+  Material material; //< Current set material parameters.
+  NuclearReactor reactor; //< Current set reactor parameters.
 public:
   /** @brief Constructs and initializes a new cluster dynamics simulation.
    *  @param concentration_boundary The number of cluster sizes that the simulation will track.

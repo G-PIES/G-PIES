@@ -12,8 +12,9 @@
 #include <vector>
 
 #include "cluster_dynamics_state.hpp"
-#include "nuclear_reactor.hpp"
-#include "material.hpp"
+#include "constants.hpp"
+#include "nuclear_reactor_impl.hpp"
+#include "material_impl.hpp"
 #include "cluster_dynamics_metal_args.hpp"
 
 class ClusterDynamicsImpl
@@ -55,8 +56,8 @@ public:
     gp_float i1_val;
     gp_float v1_val;
 
-    Material material;
-    NuclearReactor reactor;
+    MaterialImpl material;
+    NuclearReactorImpl reactor;
 
     gp_float i_defect_production(size_t);
     gp_float v_defect_production(size_t);
@@ -107,14 +108,14 @@ public:
     bool validate(size_t);
 
     // Interface functions
-    ClusterDynamicsImpl(size_t concentration_boundary, const NuclearReactor& reactor, const Material& material);
+    ClusterDynamicsImpl(size_t concentration_boundary, const NuclearReactorImpl& reactor, const MaterialImpl& material);
     ~ClusterDynamicsImpl();
         
     ClusterDynamicsState run(gp_float delta_time, gp_float total_time);
-    Material get_material();
-    void set_material(const Material& material);
-    NuclearReactor get_reactor();
-    void set_reactor(const NuclearReactor& reactor);
+    MaterialImpl get_material();
+    void set_material(const MaterialImpl& material);
+    NuclearReactorImpl get_reactor();
+    void set_reactor(const NuclearReactorImpl& reactor);
 
 private:
     // metal shader routines 

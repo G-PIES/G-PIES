@@ -2,10 +2,12 @@
 #define CLUSTER_DYNAMICS_CUDA_IMPL_HPP
 
 #include <vector>
+#include <cmath>
 
 #include "cluster_dynamics_state.hpp"
-#include "nuclear_reactor.hpp"
-#include "material.hpp"
+#include "constants.hpp"
+#include "nuclear_reactor_impl.hpp"
+#include "material_impl.hpp"
 
 #include <thrust/host_vector.h>
 #include <thrust/transform_reduce.h>
@@ -35,14 +37,16 @@ public:
   gp_float iv_sum_absorption_val;
   gp_float vv_sum_absorption_val;
   gp_float vi_sum_absorption_val;
-  gp_float i1_val;
-  gp_float v1_val;
+  gp_float i_diffusion_val;
+  gp_float v_diffusion_val;
 
-  Material material;
-  NuclearReactor reactor;
+  MaterialImpl material;
+  NuclearReactorImpl reactor;
 
   thrust::device_vector<int> indices;
   thrust::device_ptr<ClusterDynamicsImpl> self;
+  thrust::host_vector<double> host_interstitials;
+  thrust::host_vector<double> host_vacancies;
 
   // Physics Model Functions
 
@@ -98,14 +102,14 @@ public:
   bool validate(size_t) const;
 
   // Interface functions
-  ClusterDynamicsImpl(size_t concentration_boundary, const NuclearReactor& reactor, const Material& material);
+  ClusterDynamicsImpl(size_t concentration_boundary, const NuclearReactorImpl& reactor, const MaterialImpl& material);
   ~ClusterDynamicsImpl();
     
   ClusterDynamicsState run(gp_float delta_time, gp_float total_time);
-  Material get_material();
-  void set_material(const Material& material);
-  NuclearReactor get_reactor();
-  void set_reactor(const NuclearReactor& reactor);
+  MaterialImpl get_material() const;
+  void set_material(const MaterialImpl& material);
+  NuclearReactorImpl get_reactor() const;
+  void set_reactor(const NuclearReactorImpl& reactor);
 };
 
 #endif // CLUSTER_DYNAMICS_CUDA_IMPL_HPP
