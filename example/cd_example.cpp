@@ -22,9 +22,9 @@
 #endif
 
 size_t concentration_boundary;
-double simulation_time;
-double delta_time;
-double sample_interval; // How often (in seconds) to record the state
+gp_float simulation_time;
+gp_float delta_time;
+gp_float sample_interval; // How often (in seconds) to record the state
 
 void print_start_message()
 {
@@ -64,7 +64,7 @@ void print_csv(ClusterDynamicsState& state)
 
 void profile()
 {
-    std::vector<double> times;
+    std::vector<gp_float> times;
     Timer timer;
 
     ClusterDynamicsState state;
@@ -85,7 +85,7 @@ void profile()
 
         timer.Start();
         state = cd.run(1e-5, 1e-5);
-        double time = timer.Stop();
+        gp_float time = timer.Stop();
 
         fprintf(stdout, "\n%g", time);
     }
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 
     // Default values
     concentration_boundary = 10;
-    simulation_time = 1.0;
+    simulation_time = 1.;
     delta_time = 1e-5;
     sample_interval = delta_time;
 
@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
 
     // --------------------------------------------------------------------------------------------
     // main simulation loop
-    for (double t = 0; t < simulation_time; t = state.time)
+    for (gp_float t = 0; t < simulation_time; t = state.time)
     {
         // run simulation for this time slice
         state = cd.run(delta_time, sample_interval);
