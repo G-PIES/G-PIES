@@ -18,7 +18,7 @@ void material_cmp_print(Material&, Material&);
 ClientDb db;
 Randomizer randomizer;
 
-int main(int argc, char* argv[])
+int main()
 {
     try
     {
@@ -69,9 +69,6 @@ void reactors_crud()
     fprintf(stdout, "* READ REACTORS - count = %4d - sqlite code = %4d\n" 
         "* EXISTING\t\t-\tREAD RESULT\n\n",
         (int)read_reactors.size(), sqlite_code);
-
-    NuclearReactor* existing;
-    NuclearReactor* read;
 
     for (int i = 0; i < VEC_SIZE; ++i)
     {
@@ -131,9 +128,6 @@ void materials_crud()
     fprintf(stdout, "* READ MATERIALS - count = %4d - sqlite code = %4d\n" 
         "* EXISTING\t\t-\tREAD RESULT\n\n",
         (int)read_materials.size(), sqlite_code);
-
-    Material* existing;
-    Material* read;
 
     for (int i = 0; i < VEC_SIZE; ++i)
     {
