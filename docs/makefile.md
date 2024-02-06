@@ -14,7 +14,8 @@ The following commands are present in our Makefile:
 
 Library Targets
   - **cdlib** Builds the cluster dynamics library. Outputs `lib/libclusterdynamics.a`.  
-  - **cdcudalib** Builds the CUDA implementation of the cluster dynamics library. Outputs `lib/libcudaclusterdynamics.a`.  
+  - **cdcudalib** Builds the CUDA implementation of the cluster dynamics library. Outputs `lib/libclusterdynamicscuda.a`.  
+  - **cdmetallib** Builds the Metal implementation of the cluster dynamics library. Outputs `lib/libclusterdynamicsmetal.a`.
   - **dblib** Builds the database library. Outputs `lib/libclientdb.a`.  
 
 Test Targets  
@@ -29,7 +30,8 @@ Example Executable Targets
          each step of the simulation instead of just the last one.  
   - **cdcsv** Same as **cdex** but with csv output enabled, which will disable normal output and only print out csv rows
            of the simulation data.  
-  - **cdcudaex** Similar to **cdex** except using the CUDA cluster dynamics backend library. Outputs `bin/cd_cuda_example.out`.
+  - **cdcudaex** Similar to **cdex** except using the CUDA cluster dynamics backend library. Outputs `bin/cd_cuda_example.out`.  
+  - **cdmetalex** Similar to **cdex** except using the Metal cluster dynamics backend library. Outputs `bin/cd_metal_example.out`.  
   - **dbex** Builds an example usage of the database library. Outputs `bin/db_example.out`.  
 
 CI Targets
