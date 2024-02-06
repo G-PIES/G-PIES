@@ -133,7 +133,9 @@ cdmetallib: bdirs
 # Client Database Example
 dblib: bdirs
 	$(CC) $(CCFLAGS) src/client_db/*.cpp -c -o $(BUILD_DIR)/clientdb.o $(INCLUDE_FLAGS)
-	ar crs $(DB_LIB) $(BUILD_DIR)/clientdb.o
+	$(CC) $(CCFLAGS) src/cluster_dynamics/material.cpp -c -o $(BUILD_DIR)/material.o $(INCLUDE_FLAGS)
+	$(CC) $(CCFLAGS) src/cluster_dynamics/nuclear_reactor.cpp -c -o $(BUILD_DIR)/nuclear_reactor.o $(INCLUDE_FLAGS)
+	ar crs $(DB_LIB) $(BUILD_DIR)/material.o $(BUILD_DIR)/nuclear_reactor.o $(BUILD_DIR)/clientdb.o
 
 # ----------------------------------------------------------------------------------------
 
