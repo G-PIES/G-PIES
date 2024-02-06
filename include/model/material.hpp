@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <string>
+#include <memory>
 
 #include "constants.hpp"
 #include "conversions.hpp"

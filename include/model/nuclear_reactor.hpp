@@ -2,6 +2,7 @@
 #define NUCLEAR_REACTOR_HPP 
 
 #include <string>
+#include <memory>
 
 #include "conversions.hpp"
 #include "datetime.hpp"
