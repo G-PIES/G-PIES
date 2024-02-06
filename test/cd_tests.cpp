@@ -61,7 +61,7 @@ TEST_F(ClusterDynamicsTest, ResultUnchanged)
   // Data generated with delta_time = 1e-5, total_time=1e-3, concentration_boundary=10
 
   const gp_float interstitials_data[10] = {
-    0, 
+    -1, 
     1.99812e-10, 3.58921e-13, 1.61354e-11, 
     5.21253e-12, 5.28622e-38, 3.1901e-64, 
     1.36573e-90, 4.51776e-117, 1.2146e-143
