@@ -9,7 +9,7 @@
 
 #define VEC_SIZE 4
 
-double randd();
+gp_float randd();
 void reactors_crud();
 void reactor_cmp_print(NuclearReactor&, NuclearReactor&);
 void materials_crud();
@@ -40,9 +40,9 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-double randd()
+gp_float randd()
 {
-    return static_cast<double>(rand()) / (static_cast<double>(RAND_MAX / 100));
+    return static_cast<gp_float>(rand()) / (static_cast<gp_float>(RAND_MAX / 100));
 }
 
 void reactors_crud()
@@ -173,40 +173,40 @@ void reactor_cmp_print(NuclearReactor& r1, NuclearReactor& r2)
 {
     fprintf(stdout, "%s\t-\t%s\n", r1.species.c_str(), r2.species.c_str());
     fprintf(stdout, "%s\t-\t%s\n", r1.creation_datetime.c_str(), r2.creation_datetime.c_str());
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.flux, r2.flux);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.temperature, r2.temperature);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.recombination, r2.recombination);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.i_bi, r2.i_bi);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.i_tri, r2.i_tri);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.i_quad, r2.i_quad);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.v_bi, r2.v_bi);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.v_tri, r2.v_tri);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.v_quad, r2.v_quad);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.dislocation_density_evolution, r2.dislocation_density_evolution);
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_flux(), r2.get_flux());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_temperature(), r2.get_temperature());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_recombination(), r2.get_recombination());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_i_bi(), r2.get_i_bi());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_i_tri(), r2.get_i_tri());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_i_quad(), r2.get_i_quad());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_v_bi(), r2.get_v_bi());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_v_tri(), r2.get_v_tri());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_v_quad(), r2.get_v_quad());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_dislocation_density_evolution(), r2.get_dislocation_density_evolution());
 }
 
 void material_cmp_print(Material& r1, Material& r2)
 {
     fprintf(stdout, "%s\t-\t%s\n", r1.species.c_str(), r2.species.c_str());
     fprintf(stdout, "%s\t-\t%s\n", r1.creation_datetime.c_str(), r2.creation_datetime.c_str());
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.i_migration, r2.i_migration);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.v_migration, r2.v_migration);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.i_diffusion_0, r2.i_diffusion_0);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.v_diffusion_0, r2.v_diffusion_0);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.i_formation, r2.i_formation);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.v_formation, r2.v_formation);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.i_binding, r2.i_binding);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.v_binding, r2.v_binding);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.recombination_radius, r2.recombination_radius);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.i_loop_bias, r2.i_loop_bias);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.i_dislocation_bias, r2.i_dislocation_bias);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.i_dislocation_bias_param, r2.i_dislocation_bias_param);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.v_loop_bias, r2.v_loop_bias);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.v_dislocation_bias, r2.v_dislocation_bias);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.v_dislocation_bias_param, r2.v_dislocation_bias_param);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.dislocation_density_0, r2.dislocation_density_0);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.grain_size, r2.grain_size);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.lattice_param, r2.lattice_param);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.burgers_vector, r2.burgers_vector);
-    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.atomic_volume, r2.atomic_volume);
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_i_migration(), r2.get_i_migration());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_v_migration(), r2.get_v_migration());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_i_diffusion_0(), r2.get_i_diffusion_0());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_v_diffusion_0(), r2.get_v_diffusion_0());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_i_formation(), r2.get_i_formation());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_v_formation(), r2.get_v_formation());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_i_binding(), r2.get_i_binding());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_v_binding(), r2.get_v_binding());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_recombination_radius(), r2.get_recombination_radius());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_i_loop_bias(), r2.get_i_loop_bias());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_i_dislocation_bias(), r2.get_i_dislocation_bias());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_i_dislocation_bias_param(), r2.get_i_dislocation_bias_param());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_v_loop_bias(), r2.get_v_loop_bias());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_v_dislocation_bias(), r2.get_v_dislocation_bias());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_v_dislocation_bias_param(), r2.get_v_dislocation_bias_param());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_dislocation_density_0(), r2.get_dislocation_density_0());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_grain_size(), r2.get_grain_size());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_lattice_param(), r2.get_lattice_param());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_burgers_vector(), r2.get_burgers_vector());
+    fprintf(stdout, "%g\t\t\t-\t%g\n", r1.get_atomic_volume(), r2.get_atomic_volume());
 }

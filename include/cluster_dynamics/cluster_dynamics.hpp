@@ -2,6 +2,7 @@
 #define CLUSTER_DYNAMICS_HPP
 
 #include <memory>
+#include "types.hpp"
 #include "cluster_dynamics_state.hpp"
 #include "material.hpp"
 #include "nuclear_reactor.hpp"
@@ -30,7 +31,7 @@ public:
    *  run() can be called multiple times, and the simulation will resume from where it stopped 
    *  after the last time run() was called.
   */
-  ClusterDynamicsState run(double delta_time, double total_time);
+  ClusterDynamicsState run(gp_float delta_time, gp_float total_time);
 
   /** @brief Returns the Material parameters that the simulation currently has set.
   */

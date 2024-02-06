@@ -1,5 +1,7 @@
-#pragma once
+#ifndef CLUSTER_DYNAMICS_STATE_HPP
+#define CLUSTER_DYNAMICS_STATE_HPP
 
+#include "types.hpp"
 #include <vector>
 
 /** @brief Class which contains information about the state of a ClusterDynamics simulation.
@@ -16,7 +18,7 @@ struct ClusterDynamicsState
 
     /** Marks how much time in seconds has been simulated to create this state.
     */
-    double time = 0.0;
+    gp_float time = 0.0;
 
     /** @brief The current concentration of each size of interstitial cluster
      * in \todo UNITS
@@ -26,7 +28,7 @@ struct ClusterDynamicsState
      * `concentration_boundary` that the ClusterDynamics simulation was constructed
      * with.
     */
-    std::vector<double> interstitials;
+    std::vector<gp_float> interstitials;
 
     /** @brief The current concentration of each size of vacancy cluster
      *  in \todo UNITS
@@ -36,9 +38,11 @@ struct ClusterDynamicsState
      * `concentration_boundary` that the ClusterDynamics simulation was constructed
      * with.
     */
-    std::vector<double> vacancies;
+    std::vector<gp_float> vacancies;
 
     /** @brief The current density of the dislocation network in \todo UNITS
     */
-    double dislocation_density = 0.0;
+    gp_float dislocation_density = 0.0;
 };
+
+#endif // CLUSTER_DYNAMICS_STATE_HPP
