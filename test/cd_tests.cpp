@@ -53,7 +53,6 @@ TEST_F(ClusterDynamicsTest, CorrectEndtime)
   // The real runtime may be greater than the provided one, but not by more than one delta_time
   ASSERT_GE(state.time, total_time);
   EXPECT_NEAR(state.time, total_time, delta_time);
-  ASSERT_TRUE(false);
 }
 
 TEST_F(ClusterDynamicsTest, ResultUnchanged)
