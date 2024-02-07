@@ -348,7 +348,7 @@ bool ClientDb::clear(int* sqlite_result_code)
     if (!db) open();
 
     int sqlite_code;
-    char* sqlite_errmsg;
+    char* sqlite_errmsg = nullptr;
 
     sqlite_code = sqlite3_exec(db, db_queries::clear.c_str(), nullptr, nullptr, nullptr);
     if (is_sqlite_error(sqlite_code))

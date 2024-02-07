@@ -110,8 +110,10 @@ int main(int argc, char* argv[])
     {
         case 4:
             concentration_boundary = strtod(argv[3], NULL);
+            // fall through
         case 3:
             simulation_time = strtod(argv[2], NULL);
+            // fall through
         case 2:
             delta_time = strtod(argv[1], NULL);
         default:
@@ -126,7 +128,6 @@ int main(int argc, char* argv[])
     fprintf(stdout, "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
     #endif
 
-    Timer timer;
     ClusterDynamicsState state;
 
     // --------------------------------------------------------------------------------------------

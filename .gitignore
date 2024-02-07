@@ -53,6 +53,10 @@ db/*.db
 ./build
 ./lib
 ./out
+docs/html
+docs/latex
+
+#Documentatino files
 
 # gtest binaries
 !libgtest_main.a

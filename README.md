@@ -2,19 +2,23 @@
 
 ### GPU-Parallelized Irradiation Environment Simulator
 
-## CD CUDA
-**Usage:** `make`
+Our cluster dynamics simulation can utilize CUDA for GPU acceleration to
+model the evolution of defects in materials that are exposed to high 
+levels of neutron radiation inside of a nuclear reactor.  
 
-Program will return a `ClusterDynamicsState` which reflects the result of the simulation.
+Our model can be run on Linux, MacOS, or Windows. However the CUDA-enabled
+version will only work on a Linux or Windows machine which has a compatible 
+Nvidia graphics card.  
 
-### Variables
+[Makefile Documentation](./docs/makefile.md)  
 
-`interstitials`: This array at index 1 is the concentration of interstitial clusters of size one, index 2 is the concentration of interstitial clusters of size two, and so on. Zeroeth element does not hold a meaningful value and serves only to help the indices match the cluster sizes.
+**Doxygen**  
 
-`vacancies`: This array at index 1 is the concentration of vacancy clusters of size one, index 2 is the concentration of vacancy clusters of size two, and so on. Zeroeth element does not hold a meaningful value and serves only to help the indices match the cluster sizes.
+We've currently got Doxygen set up to serve most of our documentation.  
 
-`delta_time`: Size of the time step between samples
-
-`time`: Total time for the simulation to run. Returns the sum of all runs.
-
-`valid`: Returns false if the simulation ended in an invalid state, otherwise returns true
+To view our full documentation, do the following:  
+  1. Install [doxygen](https://www.doxygen.nl/download.html)  
+  2. Run either `doxygen InterfaceDoxyfile` or `doxygen BackendDoxyfile`. 
+     The former only documents the interface of the cluster dynamics library.
+     The latter includes documentation for the backend.
+  3. Open `docs/html/index.html` in a browser.

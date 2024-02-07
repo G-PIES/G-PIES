@@ -147,7 +147,7 @@ TEST_F(ClientDbTest, NuclearReactorManyCRUD)
    std::vector<NuclearReactor> reactor_reads;
    ASSERT_TRUE(db.read_reactors(reactor_reads, &sqlite_code));
    ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
-   ASSERT_EQ(20, reactor_reads.size());
+   ASSERT_EQ(20u, reactor_reads.size());
    ASSERT_EQ(reactors.size(), reactor_reads.size());
 
    // update 20 reactors
@@ -307,7 +307,7 @@ TEST_F(ClientDbTest, MaterialManyCRUD)
    std::vector<Material> material_reads;
    ASSERT_TRUE(db.read_materials(material_reads, &sqlite_code));
    ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
-   ASSERT_EQ(20, material_reads.size());
+   ASSERT_EQ(20u, material_reads.size());
    ASSERT_EQ(materials.size(), material_reads.size());
 
    // update 20 materials

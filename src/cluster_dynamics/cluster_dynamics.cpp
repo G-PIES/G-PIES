@@ -10,14 +10,15 @@
 
 ClusterDynamics::ClusterDynamics(size_t concentration_boundary, const NuclearReactor& reactor, const Material& material)
 {
-  _impl = std::make_unique<ClusterDynamicsImpl>(concentration_boundary, reactor, material);
+  _impl = std::make_unique<ClusterDynamicsImpl>(concentration_boundary, *reactor._impl, *material._impl);
 }
 
+/** We cannot use the default destructor that the header would've defined
+ * because unique_ptr needs to know how to delete the type it contains:
+ * \n https://stackoverflow.com/questions/34072862/why-is-error-invalid-application-of-sizeof-to-an-incomplete-type-using-uniqu
+*/
 ClusterDynamics::~ClusterDynamics()
 {
-  // We cannot use the default destructor that the header would've defined.
-  // unique_ptr needs to know how to delete the type it tends.
-  // https://stackoverflow.com/questions/34072862/why-is-error-invalid-application-of-sizeof-to-an-incomplete-type-using-uniqu
 }
 
 ClusterDynamicsState ClusterDynamics::run(gp_float delta_time, gp_float total_time)
@@ -25,22 +26,24 @@ ClusterDynamicsState ClusterDynamics::run(gp_float delta_time, gp_float total_ti
   return _impl->run(delta_time, total_time);
 }
 
-Material ClusterDynamics::get_material()
+Material ClusterDynamics::get_material() const
 {
-  return _impl->get_material();
+  return material;
 }
 
 void ClusterDynamics::set_material(const Material& material)
 {
-  _impl->set_material(material);
+  this->material = material;
+  _impl->set_material(*material._impl);
 }
 
-NuclearReactor ClusterDynamics::get_reactor()
+NuclearReactor ClusterDynamics::get_reactor() const
 {
-  return _impl->get_reactor();
+  return reactor;
 }
 
 void ClusterDynamics::set_reactor(const NuclearReactor& reactor)
 {
-  _impl->set_reactor(reactor);
+  this->reactor = reactor;
+  _impl->set_reactor(*reactor._impl);
 }

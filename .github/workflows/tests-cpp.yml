@@ -24,10 +24,14 @@ jobs:
         run: make client_db
       - name: Build client_db
         run: make client_db
+      - name: Build Cluster Dynamics Tests
+        run: make cdtests
       - name: Run Cluster Dynamics Tests
-        run: make cdtests R=1
+        run: ./bin/cd_tests.out
+      - name: Build Client Database Tests
+        run: make dbtests
       - name: Run Client Database Tests
-        run: make dbtests R=1
+        run: ./bin/db_tests.out
 
       - name: Upload Cluster Dynamics Executable
         uses: actions/upload-artifact@v2
