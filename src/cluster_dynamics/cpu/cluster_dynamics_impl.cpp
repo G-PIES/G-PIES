@@ -13,7 +13,7 @@
  * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 2a
  * 
  * \f$
- * \frac{dC_i(n)}{dt} = 
+ * \dwn{\frac{dC_i(n)}{dt} =} 
  * \ann{1}{G_i(n)}\dwn{+}
  * \ann{2}{a_{i,n+1}C_i(n+1)}\dwn{-}
  * \ann{3}{b_{i,n}C_i(n)}\dwn{+}
@@ -43,7 +43,7 @@ gp_float ClusterDynamicsImpl::i_concentration_derivative(size_t n) const
  * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 2a
  * 
  * \f$
- * \frac{dC_v(n)}{dt} = 
+ * \dwn{\frac{dC_v(n)}{dt} =} 
  * \ann{1}{G_v(n)}\dwn{+}
  * \ann{2}{a_{v,n+1}C_v(n+1)}\dwn{-}
  * \ann{3}{b_{v,n}C_v(n)}\dwn{+}
@@ -812,8 +812,8 @@ gp_float ClusterDynamicsImpl::ii_absorption(size_t n) const
 
 
 
-/** @brief Returns the rate of absorption of an interstitial by an vacancy cluster of size (n),
- *. \todo Document units
+/** @brief Returns the rate of absorption of a vacancy by an interstitial cluster of size (n).
+ * \todo Document units
  * 
  * <hr>
  * 
@@ -839,8 +839,8 @@ gp_float ClusterDynamicsImpl::iv_absorption(size_t n) const
 
 
 
-/** @brief Returns the rate of emission of an interstitial by an interstital cluster of size (n)
- * . \todo Document units
+/** @brief Returns the rate of emission of an interstitial by an interstital cluster of size (n).
+ *  \todo Document units
  * 
  *  <hr>
  * 
@@ -873,8 +873,8 @@ gp_float ClusterDynamicsImpl::vv_emission(size_t n) const
 
 
 
-/** @brief Returns the rate of absorption of a vacancy by a vacancy loop of size (n),
- * . \todo Document units
+/** @brief Returns the rate of absorption of a vacancy by a vacancy cluster of size (n).
+ *  \todo Document units
  * 
  *  <hr>
  * 
@@ -900,8 +900,8 @@ gp_float ClusterDynamicsImpl::vv_absorption(size_t n) const
 
 
 
-/** @brief Returns the rate of absorption of an vacancy by an interstitial cluster of size (n),
- *. \todo Document units
+/** @brief Returns the rate of absorption of an interstitial by a vacancy cluster of size (n).
+ *  \todo Document units
  * 
  * <hr>
  * 
@@ -924,8 +924,8 @@ gp_float ClusterDynamicsImpl::vi_absorption(size_t n) const
 
 
 
-/** @brief Returns the bias factor for an interstitial cluster of size (n) 
- * . \todo Document units
+/** @brief Returns the bias factor for an interstitial cluster of size (n).
+ *  \todo Document units
  * 
  * <hr>
  * 
@@ -968,8 +968,8 @@ gp_float ClusterDynamicsImpl::i_bias_factor(size_t n) const
 
 
 
-/** @brief Returns the bias factor of a vacancy cluster of size (n)
- * . \todo Document units
+/** @brief Returns the bias factor of a vacancy cluster of size (n).
+ *  \todo Document units
  * 
  * <hr>
  * 
@@ -1007,8 +1007,8 @@ gp_float ClusterDynamicsImpl::v_bias_factor(size_t n) const
 
 
 
-/** @brief Returnst the binding energy for an interstitial cluster of size (n)
- * . \todo Document units
+/** @brief Returnst the binding energy for an interstitial cluster of size (n).
+ *  \todo Document units
  * 
  *  <hr>
  * 
@@ -1034,8 +1034,8 @@ gp_float ClusterDynamicsImpl::i_binding_energy(size_t n) const
 
 
 
-/** @brief Returnst the binding energy for a vacancy cluster of size (n)
- * . \todo Document units
+/** @brief Returnst the binding energy for a vacancy cluster of size (n).
+ *  \todo Document units
  * 
  *  <hr>
  * 
@@ -1061,7 +1061,8 @@ gp_float ClusterDynamicsImpl::v_binding_energy(size_t n) const
 
 
 
-/** @brief Returns the diffusion coefficient for single interstitials. \todo Document units
+/** @brief Returns the diffusion coefficient for single interstitials. 
+ *  \todo Document units
  * 
  *  <hr>
  * 
@@ -1069,7 +1070,7 @@ gp_float ClusterDynamicsImpl::v_binding_energy(size_t n) const
  * 
  *  \f$
  *    \dwn{D_i =}
- *    \ann{1}{D_{i0} \vphantom{\frac{-E_{mi}}{(kT)}} }
+ *    \ann{1}{D_{i0} \vphantom{\frac{-E_{mi}}{kT}} }
  *    \ann{2}{exp(\frac{-E_{mi}}{(kT)}) }
  *  \f$
 */
@@ -1081,7 +1082,8 @@ gp_float ClusterDynamicsImpl::i_diffusion() const
 
 
 
-/** @brief Returns the diffusion coefficient for single vacancies. \todo Document units
+/** @brief Returns the diffusion coefficient for single vacancies. 
+ *  \todo Document units
  * 
  *  <hr>
  * 
@@ -1089,7 +1091,7 @@ gp_float ClusterDynamicsImpl::i_diffusion() const
  * 
  *  \f$
  *    \dwn{D_v =}
- *    \ann{1}{D_{v0} \vphantom{\frac{-E_{mv}}{(kT)}} }
+ *    \ann{1}{D_{v0} \vphantom{\frac{-E_{mv}}{kT}} }
  *    \ann{2}{exp(\frac{-E_{mv}}{(kT)}) }
  *  \f$
 */  
@@ -1101,7 +1103,8 @@ gp_float ClusterDynamicsImpl::v_diffusion() const
 
 
 
-/** Returns the mean dislocation cell radius of the system. \todo Document units
+/** Returns the mean dislocation cell radius of the system. 
+ *  \todo Document units
  * 
  * <hr>
  * 
