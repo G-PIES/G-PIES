@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['clusterdynamics_82',['ClusterDynamics',['../classClusterDynamics.html#a999201737784547b78f9567e36770b68',1,'ClusterDynamics']]]
+  ['annihilation_5frate_267',['annihilation_rate',['../classClusterDynamicsImpl.html#a3fde6d7356149681a1b18f9385db004f',1,'ClusterDynamicsImpl::annihilation_rate() const'],['../classClusterDynamicsImpl.html#a3fde6d7356149681a1b18f9385db004f',1,'ClusterDynamicsImpl::annihilation_rate() const']]]
 ];

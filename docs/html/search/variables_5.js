@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['vacancies_152',['vacancies',['../structClusterDynamicsState.html#ad87db339b84dbc937548c6fbbf93b980',1,'ClusterDynamicsState']]],
-  ['valid_153',['valid',['../structClusterDynamicsState.html#a4abc24a344e929d88391e4214be3c557',1,'ClusterDynamicsState']]]
+  ['fcc_5fnickel_408',['fcc_nickel',['../namespacelattice__params.html#abb5841494d0f7797e58c5961e0cb95ac',1,'lattice_params']]],
+  ['flux_409',['flux',['../structNuclearReactorImpl.html#a98b44e176025d3faf843eb74227c690d',1,'NuclearReactorImpl']]]
 ];

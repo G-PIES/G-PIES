@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['clusterdynamics_78',['ClusterDynamics',['../classClusterDynamics.html',1,'']]],
-  ['clusterdynamicsstate_79',['ClusterDynamicsState',['../structClusterDynamicsState.html',1,'']]]
+  ['clusterdynamics_231',['ClusterDynamics',['../classClusterDynamics.html',1,'']]],
+  ['clusterdynamicsimpl_232',['ClusterDynamicsImpl',['../classClusterDynamicsImpl.html',1,'']]],
+  ['clusterdynamicsstate_233',['ClusterDynamicsState',['../structClusterDynamicsState.html',1,'']]]
 ];

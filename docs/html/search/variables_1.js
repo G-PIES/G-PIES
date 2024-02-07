@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['dislocation_5fdensity_148',['dislocation_density',['../structClusterDynamicsState.html#a96d9bef83ee6511cdd163ff0269fa8f3',1,'ClusterDynamicsState']]]
+  ['atomic_5fvolume_399',['atomic_volume',['../structMaterialImpl.html#ad3870e748c5d3dda2513f3c38bb94e98',1,'MaterialImpl']]]
 ];

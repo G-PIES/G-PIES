@@ -12,6 +12,21 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    ann: ["{\\begin{array}{l} \\color{##8A0000}{\\normalsize\\vphantom{(G)}#1} \\\\[-2cm] \\vphantom{(G)}#2 \\end{array}}",2],
+    dwn: ["{\\begin{array}{l} {} \\\\[-2cm] \\vphantom{(D)}#1 \\end{array}}",1],
+  } }
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -68,8 +83,8 @@ $(function() {
 
 <p>This is the complete list of members for <a class="el" href="structNuclearReactor.html">NuclearReactor</a>, including all inherited members.</p>
 <table class="directory">
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>_impl</b> (defined in <a class="el" href="structNuclearReactor.html">NuclearReactor</a>)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>copy</b>(const NuclearReactor &amp;other) (defined in <a class="el" href="structNuclearReactor.html">NuclearReactor</a>)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structNuclearReactor.html#ac59238a112687260136baa18ae4c1b95">_impl</a></td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="structNuclearReactor.html#abf9cfb187f2487d8402fb66782619974">copy</a>(const NuclearReactor &amp;other)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structNuclearReactor.html#a198e7bcc273626d46676bc107d31e4b7">creation_datetime</a></td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="structNuclearReactor.html#a2bb91f32fd273352731b694ca4cc8799">get_dislocation_density_evolution</a>() const</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structNuclearReactor.html#ace57d66365262e9ac301cabda544e6fa">get_flux</a>() const</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
@@ -81,10 +96,10 @@ $(function() {
   <tr class="even"><td class="entry"><a class="el" href="structNuclearReactor.html#a938d557e7ba7b621db0cbdf497ab3519">get_v_bi</a>() const</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="structNuclearReactor.html#a03e14d57522246a87aada02e9c6daff6">get_v_quad</a>() const</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structNuclearReactor.html#a7fb0e5f15790003a77828c3da0261840">get_v_tri</a>() const</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>impl</b>() (defined in <a class="el" href="structNuclearReactor.html">NuclearReactor</a>)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>NuclearReactor</b>() (defined in <a class="el" href="structNuclearReactor.html">NuclearReactor</a>)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>NuclearReactor</b>(const NuclearReactor &amp;other) (defined in <a class="el" href="structNuclearReactor.html">NuclearReactor</a>)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>operator=</b>(const NuclearReactor &amp;other) (defined in <a class="el" href="structNuclearReactor.html">NuclearReactor</a>)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="structNuclearReactor.html#acd53cf357d77ea57d8290bec08c62607">impl</a>()</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structNuclearReactor.html#a5a690354554fd671e0415e1d87498f9c">NuclearReactor</a>()</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="structNuclearReactor.html#adfe3cede94edddd628e849e492aa6929">NuclearReactor</a>(const NuclearReactor &amp;other)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structNuclearReactor.html#a4e65805b9be17cfe1fe607b1f803c648">operator=</a>(const NuclearReactor &amp;other)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="structNuclearReactor.html#a6899d43bba636192e24618c2ca21e7a8">set_dislocation_density_evolution</a>(const gp_float val)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structNuclearReactor.html#a04998ae09393741488548be8b308c767">set_flux</a>(const gp_float val)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="structNuclearReactor.html#a23f3ebbf2cd43cab6fc97c6b8ffce7e5">set_i_bi</a>(const gp_float val)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
@@ -96,8 +111,8 @@ $(function() {
   <tr><td class="entry"><a class="el" href="structNuclearReactor.html#aea42c7d4805514af51e180ef57d5f0d5">set_v_quad</a>(const gp_float val)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structNuclearReactor.html#ad8f5810a04f922555ba8656a34e8821c">set_v_tri</a>(const gp_float val)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="structNuclearReactor.html#a17190bdfe6e2004452617b7537fd18f0">species</a></td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>sqlite_id</b> (defined in <a class="el" href="structNuclearReactor.html">NuclearReactor</a>)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>~NuclearReactor</b>() (defined in <a class="el" href="structNuclearReactor.html">NuclearReactor</a>)</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structNuclearReactor.html#aa3b8e5ad6a41e23ca12be483c794ca19">sqlite_id</a></td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="structNuclearReactor.html#a9716888db3ce236b2b990d5c3db429a4">~NuclearReactor</a>()</td><td class="entry"><a class="el" href="structNuclearReactor.html">NuclearReactor</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

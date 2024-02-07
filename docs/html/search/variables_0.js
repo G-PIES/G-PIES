@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['creation_5fdatetime_147',['creation_datetime',['../structMaterial.html#a146c03d68345f2393ff077a95b218c23',1,'Material::creation_datetime()'],['../structNuclearReactor.html#a198e7bcc273626d46676bc107d31e4b7',1,'NuclearReactor::creation_datetime()']]]
+  ['_5fimpl_398',['_impl',['../structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3',1,'Material::_impl()'],['../structNuclearReactor.html#ac59238a112687260136baa18ae4c1b95',1,'NuclearReactor::_impl()']]]
 ];

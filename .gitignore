@@ -53,9 +53,9 @@ db/*.db
 ./build
 ./lib
 ./out
-docs/latex
 
-#Documentatino files
+#Documentation files
+docs/latex
 
 # gtest binaries
 !libgtest_main.a

@@ -12,6 +12,21 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    ann: ["{\\begin{array}{l} \\color{##8A0000}{\\normalsize\\vphantom{(G)}#1} \\\\[-2cm] \\vphantom{(G)}#2 \\end{array}}",2],
+    dwn: ["{\\begin{array}{l} {} \\\\[-2cm] \\vphantom{(D)}#1 \\end{array}}",1],
+  } }
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -74,7 +89,7 @@ $(function() {
   <tr><td class="entry"><a class="el" href="classClusterDynamics.html#a49cbdf82021c1fffe698a69c0e80edd3">run</a>(gp_float delta_time, gp_float total_time)</td><td class="entry"><a class="el" href="classClusterDynamics.html">ClusterDynamics</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classClusterDynamics.html#af18645b6d2b6026f3e76351c39a38fa1">set_material</a>(const Material &amp;material)</td><td class="entry"><a class="el" href="classClusterDynamics.html">ClusterDynamics</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classClusterDynamics.html#ac6d22d3bfe2b5208cf69fb3e0c06be1b">set_reactor</a>(const NuclearReactor &amp;reactor)</td><td class="entry"><a class="el" href="classClusterDynamics.html">ClusterDynamics</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>~ClusterDynamics</b>() (defined in <a class="el" href="classClusterDynamics.html">ClusterDynamics</a>)</td><td class="entry"><a class="el" href="classClusterDynamics.html">ClusterDynamics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classClusterDynamics.html#a7df828702125315f14199b87d70acebb">~ClusterDynamics</a>()</td><td class="entry"><a class="el" href="classClusterDynamics.html">ClusterDynamics</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

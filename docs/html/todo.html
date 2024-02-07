@@ -12,6 +12,21 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    ann: ["{\\begin{array}{l} \\color{##8A0000}{\\normalsize\\vphantom{(G)}#1} \\\\[-2cm] \\vphantom{(G)}#2 \\end{array}}",2],
+    dwn: ["{\\begin{array}{l} {} \\\\[-2cm] \\vphantom{(D)}#1 \\end{array}}",1],
+  } }
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -66,6 +81,80 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><dl class="reflist">
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a3fde6d7356149681a1b18f9385db004f">ClusterDynamicsImpl::annihilation_rate</a>  () const</dt>
+<dd><a class="anchor" id="_todo000024"></a>Document units  </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#ac62f9cd823e545f8fc44e05121cce8ad">ClusterDynamicsImpl::ClusterDynamicsImpl</a>  (size_t concentration_boundary, const <a class="el" href="structNuclearReactorImpl.html">NuclearReactorImpl</a> &amp;reactor, const <a class="el" href="structMaterialImpl.html">MaterialImpl</a> &amp;material)</dt>
+<dd><a class="anchor" id="_todo000043"></a>Clean up the uses of random +1/+2/-1/etc throughout the code  </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#aa4a363d05cee1fbe3245ef320f9c9cf6">ClusterDynamicsImpl::dislocation_density_derivative</a>  () const</dt>
+<dd><a class="anchor" id="_todo000011"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a346a4241e1f0b3cec80e7079e30073e4">ClusterDynamicsImpl::dislocation_promotion_probability</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000042"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#afc90a5b343b2bb5de6b3fabec264987a">ClusterDynamicsImpl::i1_concentration_derivative</a>  () const</dt>
+<dd><a class="anchor" id="_todo000009"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#acd1f1d552d3dc9ed6acde3ebca08f638">ClusterDynamicsImpl::i_absorption_time</a>  () const</dt>
+<dd><a class="anchor" id="_todo000022"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a275709d8de18ff33c8a633f8f18ffb31">ClusterDynamicsImpl::i_bias_factor</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000035"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#ab9aee431a014237cc16bb709863400c4">ClusterDynamicsImpl::i_binding_energy</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000037"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a2770696ca22c3b3932ad0953ca34722c">ClusterDynamicsImpl::i_concentration_derivative</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000007"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a26812d199759bcff45abc41e3b079668">ClusterDynamicsImpl::i_defect_production</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000012"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#ad8ad81a9be11d957bf9a7fe4592a5909">ClusterDynamicsImpl::i_diffusion</a>  () const</dt>
+<dd><a class="anchor" id="_todo000039"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a42c885ea36933e8d83394407ca519c7a">ClusterDynamicsImpl::i_dislocation_annihilation_time</a>  () const</dt>
+<dd><a class="anchor" id="_todo000025"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a3a1bc8a21e7b8f277f5357cfbb1a7b35">ClusterDynamicsImpl::i_emission_time</a>  () const</dt>
+<dd><a class="anchor" id="_todo000020"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a718f4696c4476be36d22e22bdc793d61">ClusterDynamicsImpl::i_grain_boundary_annihilation_time</a>  () const</dt>
+<dd><a class="anchor" id="_todo000027"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#ae813e939717a1028f393d92a69cc7eba">ClusterDynamicsImpl::iemission_vabsorption_n</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000016"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a11dbf6905d67693fd35235484e139f14">ClusterDynamicsImpl::iemission_vabsorption_nm1</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000018"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#ab5a3008ab16f20222dba5ebc4e2cc1d8">ClusterDynamicsImpl::iemission_vabsorption_np1</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000014"></a>Document units, both events leading to an interstitial loop of size n. </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#acea136bf2deb833397048ada57241481">ClusterDynamicsImpl::ii_absorption</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000030"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#ae384f5a75458a89b7ce1bbce09bad2b9">ClusterDynamicsImpl::ii_emission</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000029"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a1bcdfe7d4faad305411434a3724ad51b">ClusterDynamicsImpl::iv_absorption</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000031"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#afdcc4e1411cbad90d12be00c791cf604">ClusterDynamicsImpl::mean_dislocation_cell_radius</a>  () const</dt>
+<dd><a class="anchor" id="_todo000041"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#ac27e746c911e7bc6a85de07a35b6f68b">ClusterDynamicsImpl::v1_concentration_derivative</a>  () const</dt>
+<dd><a class="anchor" id="_todo000010"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a1a60839d8d70df2212aa2a7a6332de73">ClusterDynamicsImpl::v_absorption_time</a>  () const</dt>
+<dd><a class="anchor" id="_todo000023"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#af169152f09c6f70e992112c49ce8e1a5">ClusterDynamicsImpl::v_bias_factor</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000036"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#adb68efe6db0e286add727067d50cf7c2">ClusterDynamicsImpl::v_binding_energy</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000038"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a5eef0e07166b3091dcee72b29568b4b1">ClusterDynamicsImpl::v_concentration_derivative</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000008"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a5586b9fe34e8243668aec70666c77a85">ClusterDynamicsImpl::v_defect_production</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000013"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a06bc890c134ae3cb2c3c70f5a4e77fb0">ClusterDynamicsImpl::v_diffusion</a>  () const</dt>
+<dd><a class="anchor" id="_todo000040"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a283e2733d739a012dcf5bcc58c87d4e5">ClusterDynamicsImpl::v_dislocation_annihilation_time</a>  () const</dt>
+<dd><a class="anchor" id="_todo000026"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a72bb99dfbe216ad67f033ef23baa7a00">ClusterDynamicsImpl::v_emission_time</a>  () const</dt>
+<dd><a class="anchor" id="_todo000021"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a24f08c0e3a65171c88ec56e116b1f7bc">ClusterDynamicsImpl::v_grain_boundary_annihilation_time</a>  () const</dt>
+<dd><a class="anchor" id="_todo000028"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#af329cc52e7d9058e7cc35a25285e8704">ClusterDynamicsImpl::vemission_iabsorption_n</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000017"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a969ed55a73cd7db914c4ec684f89e515">ClusterDynamicsImpl::vemission_iabsorption_nm1</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000019"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a84e95265e501682dc881e5e4b9ef8ec6">ClusterDynamicsImpl::vemission_iabsorption_np1</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000015"></a>Document units, both events leading to an interstitial loop of size n. </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#af8913c07ff23ed67bb086801e5fbcbc7">ClusterDynamicsImpl::vi_absorption</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000034"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#ad861b43cd02cfb44c53cc796674f7122">ClusterDynamicsImpl::vv_absorption</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000033"></a>Document units </dd>
+<dt>Member <a class="el" href="classClusterDynamicsImpl.html#a22230a361df045888dc86808a005336c">ClusterDynamicsImpl::vv_emission</a>  (size_t) const</dt>
+<dd><a class="anchor" id="_todo000032"></a>Document units </dd>
 <dt>Member <a class="el" href="structClusterDynamicsState.html#a96d9bef83ee6511cdd163ff0269fa8f3">ClusterDynamicsState::dislocation_density</a>  </dt>
 <dd><a class="anchor" id="_todo000003"></a>UNITS  </dd>
 <dt>Member <a class="el" href="structClusterDynamicsState.html#a9c0545df3eaa8a6581ca5a424a711f72">ClusterDynamicsState::interstitials</a>  </dt>
@@ -73,7 +162,9 @@ $(function() {
 <dt>Member <a class="el" href="structClusterDynamicsState.html#ad87db339b84dbc937548c6fbbf93b980">ClusterDynamicsState::vacancies</a>  </dt>
 <dd><a class="anchor" id="_todo000002"></a>UNITS </dd>
 <dt>Member <a class="el" href="structMaterial.html#a4bdd36d7638a96096fb8b1a4af4685a6">Material::set_i_loop_bias</a>  (const gp_float val)</dt>
-<dd><a class="anchor" id="_todo000004"></a>Get better descriptions for the bias factors </dd>
+<dd><a class="anchor" id="_todo000004"></a>Get better descriptions for the bias factors  </dd>
+<dt>Class <a class="el" href="structMaterialImpl.html">MaterialImpl</a>  </dt>
+<dd><a class="anchor" id="_todo000006"></a>Get better descriptions for the bias factors </dd>
 </dl>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

@@ -12,6 +12,21 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    ann: ["{\\begin{array}{l} \\color{##8A0000}{\\normalsize\\vphantom{(G)}#1} \\\\[-2cm] \\vphantom{(G)}#2 \\end{array}}",2],
+    dwn: ["{\\begin{array}{l} {} \\\\[-2cm] \\vphantom{(D)}#1 \\end{array}}",1],
+  } }
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -68,8 +83,8 @@ $(function() {
 
 <p>This is the complete list of members for <a class="el" href="structMaterial.html">Material</a>, including all inherited members.</p>
 <table class="directory">
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>_impl</b> (defined in <a class="el" href="structMaterial.html">Material</a>)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>copy</b>(const Material &amp;other) (defined in <a class="el" href="structMaterial.html">Material</a>)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a></td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="structMaterial.html#ac82536c1fd847e78eecd48217782cb1d">copy</a>(const Material &amp;other)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structMaterial.html#a146c03d68345f2393ff077a95b218c23">creation_datetime</a></td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="structMaterial.html#ad0b8b981345a63ffa1deb772e0d73773">get_atomic_volume</a>() const</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structMaterial.html#ac01c3a39c8609b79909bbd89bc2e8b56">get_burgers_vector</a>() const</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
@@ -77,7 +92,7 @@ $(function() {
   <tr class="even"><td class="entry"><a class="el" href="structMaterial.html#afc78843fe9d28be93a0c967b97808df1">get_grain_size</a>() const</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="structMaterial.html#a840a42c7af2bf4d5e06aff3c2980c6f0">get_i_binding</a>() const</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structMaterial.html#aaea5c80ac437e38a6fae7c98f750ef51">get_i_diffusion_0</a>() const</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>get_i_dislocation_bias</b>() const (defined in <a class="el" href="structMaterial.html">Material</a>)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="structMaterial.html#ac071478d7876047df34fcc6a5830aba0">get_i_dislocation_bias</a>() const</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structMaterial.html#a9ae3d28b4231a42c2904c228163d17b8">get_i_dislocation_bias_param</a>() const</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="structMaterial.html#afbd3bdba9a2625d2cbb0685d3db4752a">get_i_formation</a>() const</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structMaterial.html#a121525d98fc5edae3d97d9cacdfd1952">get_i_loop_bias</a>() const</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
@@ -91,10 +106,10 @@ $(function() {
   <tr class="even"><td class="entry"><a class="el" href="structMaterial.html#a775acb786185f019e4178b5941fed61c">get_v_formation</a>() const</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="structMaterial.html#a5f41e5fa5d9e81d6b996e2cceb5a01b8">get_v_loop_bias</a>() const</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structMaterial.html#abe7096ec8e7802db674beb08704baf4a">get_v_migration</a>() const</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>impl</b>() (defined in <a class="el" href="structMaterial.html">Material</a>)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>Material</b>() (defined in <a class="el" href="structMaterial.html">Material</a>)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>Material</b>(const Material &amp;other) (defined in <a class="el" href="structMaterial.html">Material</a>)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>operator=</b>(const Material &amp;other) (defined in <a class="el" href="structMaterial.html">Material</a>)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="structMaterial.html#ad17080342c8a44bfb1cebae5f5b46c73">impl</a>()</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structMaterial.html#a137e987401b63eb7c6c27c3e38bc74b5">Material</a>()</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="structMaterial.html#ac9b027e9c501776e7d08589a52e9d795">Material</a>(const Material &amp;other)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structMaterial.html#adda8ef2133493986e1fe8d4ba85e1e8e">operator=</a>(const Material &amp;other)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="structMaterial.html#ad7e6f98c0b1fb07cce17c58d69281d39">set_atomic_volume</a>(const gp_float val)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structMaterial.html#a830b59638091c83510cb86722d9689dd">set_burgers_vector</a>(const gp_float val)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="structMaterial.html#a2a03adbe67e9f704776688330ba14ca1">set_dislocation_density_0</a>(const gp_float val)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
@@ -116,8 +131,8 @@ $(function() {
   <tr><td class="entry"><a class="el" href="structMaterial.html#ac1c0d124607c79d0c04f5783ee53e2e8">set_v_loop_bias</a>(const gp_float val)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structMaterial.html#a28d7df6541a2f7f42886a16cd067798b">set_v_migration</a>(const gp_float val)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd">species</a></td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>sqlite_id</b> (defined in <a class="el" href="structMaterial.html">Material</a>)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>~Material</b>() (defined in <a class="el" href="structMaterial.html">Material</a>)</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structMaterial.html#aa7a7678eb5bafe799dd8eddfd50565fc">sqlite_id</a></td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="structMaterial.html#a2c19452d71f54075df8f5405b03129f4">~Material</a>()</td><td class="entry"><a class="el" href="structMaterial.html">Material</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

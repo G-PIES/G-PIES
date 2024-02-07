@@ -12,6 +12,21 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    ann: ["{\\begin{array}{l} \\color{##8A0000}{\\normalsize\\vphantom{(G)}#1} \\\\[-2cm] \\vphantom{(G)}#2 \\end{array}}",2],
+    dwn: ["{\\begin{array}{l} {} \\\\[-2cm] \\vphantom{(D)}#1 \\end{array}}",1],
+  } }
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -77,289 +92,283 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac9b027e9c501776e7d08589a52e9d795"><td class="memItemLeft" align="right" valign="top"><a id="ac9b027e9c501776e7d08589a52e9d795"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Material</b> (const <a class="el" href="structMaterial.html">Material</a> &amp;other)</td></tr>
+<tr class="memitem:a137e987401b63eb7c6c27c3e38bc74b5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a137e987401b63eb7c6c27c3e38bc74b5">Material</a> ()</td></tr>
+<tr class="separator:a137e987401b63eb7c6c27c3e38bc74b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b027e9c501776e7d08589a52e9d795"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ac9b027e9c501776e7d08589a52e9d795">Material</a> (const <a class="el" href="structMaterial.html">Material</a> &amp;other)</td></tr>
 <tr class="separator:ac9b027e9c501776e7d08589a52e9d795"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5721359addb58547b13a7d91ab3c72e5"><td class="memItemLeft" align="right" valign="top"><a id="a5721359addb58547b13a7d91ab3c72e5"></a>
-<a class="el" href="structMaterial.html">Material</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="structMaterial.html">Material</a> &amp;other)</td></tr>
-<tr class="separator:a5721359addb58547b13a7d91ab3c72e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac82536c1fd847e78eecd48217782cb1d"><td class="memItemLeft" align="right" valign="top"><a id="ac82536c1fd847e78eecd48217782cb1d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>copy</b> (const <a class="el" href="structMaterial.html">Material</a> &amp;other)</td></tr>
+<tr class="memitem:a2c19452d71f54075df8f5405b03129f4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a2c19452d71f54075df8f5405b03129f4">~Material</a> ()</td></tr>
+<tr class="separator:a2c19452d71f54075df8f5405b03129f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adda8ef2133493986e1fe8d4ba85e1e8e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structMaterial.html">Material</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#adda8ef2133493986e1fe8d4ba85e1e8e">operator=</a> (const <a class="el" href="structMaterial.html">Material</a> &amp;other)</td></tr>
+<tr class="separator:adda8ef2133493986e1fe8d4ba85e1e8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac82536c1fd847e78eecd48217782cb1d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ac82536c1fd847e78eecd48217782cb1d">copy</a> (const <a class="el" href="structMaterial.html">Material</a> &amp;other)</td></tr>
 <tr class="separator:ac82536c1fd847e78eecd48217782cb1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4fbca25caceec95e727ce030b5cd40f7"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a4fbca25caceec95e727ce030b5cd40f7">get_i_migration</a> () const</td></tr>
+<tr class="memitem:a4fbca25caceec95e727ce030b5cd40f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a4fbca25caceec95e727ce030b5cd40f7">get_i_migration</a> () const</td></tr>
+<tr class="memdesc:a4fbca25caceec95e727ce030b5cd40f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the single interstitial migration energy in eV.  <a href="structMaterial.html#a4fbca25caceec95e727ce030b5cd40f7">More...</a><br /></td></tr>
 <tr class="separator:a4fbca25caceec95e727ce030b5cd40f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af5ce5579433ac4ca95f372b453f14eb7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#af5ce5579433ac4ca95f372b453f14eb7">set_i_migration</a> (const gp_float val)</td></tr>
+<tr class="memitem:af5ce5579433ac4ca95f372b453f14eb7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#af5ce5579433ac4ca95f372b453f14eb7">set_i_migration</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:af5ce5579433ac4ca95f372b453f14eb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the single interstitial migration energy.  <a href="structMaterial.html#af5ce5579433ac4ca95f372b453f14eb7">More...</a><br /></td></tr>
 <tr class="separator:af5ce5579433ac4ca95f372b453f14eb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe7096ec8e7802db674beb08704baf4a"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#abe7096ec8e7802db674beb08704baf4a">get_v_migration</a> () const</td></tr>
+<tr class="memitem:abe7096ec8e7802db674beb08704baf4a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#abe7096ec8e7802db674beb08704baf4a">get_v_migration</a> () const</td></tr>
+<tr class="memdesc:abe7096ec8e7802db674beb08704baf4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the single vacancy migration energy in eV.  <a href="structMaterial.html#abe7096ec8e7802db674beb08704baf4a">More...</a><br /></td></tr>
 <tr class="separator:abe7096ec8e7802db674beb08704baf4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28d7df6541a2f7f42886a16cd067798b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a28d7df6541a2f7f42886a16cd067798b">set_v_migration</a> (const gp_float val)</td></tr>
+<tr class="memitem:a28d7df6541a2f7f42886a16cd067798b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a28d7df6541a2f7f42886a16cd067798b">set_v_migration</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:a28d7df6541a2f7f42886a16cd067798b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the single vacancy migration energy.  <a href="structMaterial.html#a28d7df6541a2f7f42886a16cd067798b">More...</a><br /></td></tr>
 <tr class="separator:a28d7df6541a2f7f42886a16cd067798b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaea5c80ac437e38a6fae7c98f750ef51"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#aaea5c80ac437e38a6fae7c98f750ef51">get_i_diffusion_0</a> () const</td></tr>
+<tr class="memitem:aaea5c80ac437e38a6fae7c98f750ef51"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#aaea5c80ac437e38a6fae7c98f750ef51">get_i_diffusion_0</a> () const</td></tr>
+<tr class="memdesc:aaea5c80ac437e38a6fae7c98f750ef51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the single interstitial preexponential diffusion constant in cm^2/s.  <a href="structMaterial.html#aaea5c80ac437e38a6fae7c98f750ef51">More...</a><br /></td></tr>
 <tr class="separator:aaea5c80ac437e38a6fae7c98f750ef51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0c5407256087e7296418febcb021093"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ac0c5407256087e7296418febcb021093">set_i_diffusion_0</a> (const gp_float val)</td></tr>
+<tr class="memitem:ac0c5407256087e7296418febcb021093"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ac0c5407256087e7296418febcb021093">set_i_diffusion_0</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:ac0c5407256087e7296418febcb021093"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the single interstitial preexponential diffusion constant.  <a href="structMaterial.html#ac0c5407256087e7296418febcb021093">More...</a><br /></td></tr>
 <tr class="separator:ac0c5407256087e7296418febcb021093"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab546e1753f443f5ba4bafffa8b8df606"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ab546e1753f443f5ba4bafffa8b8df606">get_v_diffusion_0</a> () const</td></tr>
+<tr class="memitem:ab546e1753f443f5ba4bafffa8b8df606"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ab546e1753f443f5ba4bafffa8b8df606">get_v_diffusion_0</a> () const</td></tr>
+<tr class="memdesc:ab546e1753f443f5ba4bafffa8b8df606"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the single vacancy preexponential diffusion constant in cm^2/s.  <a href="structMaterial.html#ab546e1753f443f5ba4bafffa8b8df606">More...</a><br /></td></tr>
 <tr class="separator:ab546e1753f443f5ba4bafffa8b8df606"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a64576040ea519edd4fe8f6011357e847"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a64576040ea519edd4fe8f6011357e847">set_v_diffusion_0</a> (const gp_float val)</td></tr>
+<tr class="memitem:a64576040ea519edd4fe8f6011357e847"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a64576040ea519edd4fe8f6011357e847">set_v_diffusion_0</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:a64576040ea519edd4fe8f6011357e847"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the single vacancy preexponential diffusion constant.  <a href="structMaterial.html#a64576040ea519edd4fe8f6011357e847">More...</a><br /></td></tr>
 <tr class="separator:a64576040ea519edd4fe8f6011357e847"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afbd3bdba9a2625d2cbb0685d3db4752a"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#afbd3bdba9a2625d2cbb0685d3db4752a">get_i_formation</a> () const</td></tr>
+<tr class="memitem:afbd3bdba9a2625d2cbb0685d3db4752a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#afbd3bdba9a2625d2cbb0685d3db4752a">get_i_formation</a> () const</td></tr>
+<tr class="memdesc:afbd3bdba9a2625d2cbb0685d3db4752a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the interstitial formation energy in eV.  <a href="structMaterial.html#afbd3bdba9a2625d2cbb0685d3db4752a">More...</a><br /></td></tr>
 <tr class="separator:afbd3bdba9a2625d2cbb0685d3db4752a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a034a26c84e3070c4af1a778e2008fea1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a034a26c84e3070c4af1a778e2008fea1">set_i_formation</a> (const gp_float val)</td></tr>
+<tr class="memitem:a034a26c84e3070c4af1a778e2008fea1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a034a26c84e3070c4af1a778e2008fea1">set_i_formation</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:a034a26c84e3070c4af1a778e2008fea1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the the interstitial formation energy.  <a href="structMaterial.html#a034a26c84e3070c4af1a778e2008fea1">More...</a><br /></td></tr>
 <tr class="separator:a034a26c84e3070c4af1a778e2008fea1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a775acb786185f019e4178b5941fed61c"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a775acb786185f019e4178b5941fed61c">get_v_formation</a> () const</td></tr>
+<tr class="memitem:a775acb786185f019e4178b5941fed61c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a775acb786185f019e4178b5941fed61c">get_v_formation</a> () const</td></tr>
+<tr class="memdesc:a775acb786185f019e4178b5941fed61c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the vacancy formation energy in eV.  <a href="structMaterial.html#a775acb786185f019e4178b5941fed61c">More...</a><br /></td></tr>
 <tr class="separator:a775acb786185f019e4178b5941fed61c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39d7267175cf5dc25aa7039cf9a2202f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a39d7267175cf5dc25aa7039cf9a2202f">set_v_formation</a> (const gp_float val)</td></tr>
+<tr class="memitem:a39d7267175cf5dc25aa7039cf9a2202f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a39d7267175cf5dc25aa7039cf9a2202f">set_v_formation</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:a39d7267175cf5dc25aa7039cf9a2202f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the the vacancy formation energy.  <a href="structMaterial.html#a39d7267175cf5dc25aa7039cf9a2202f">More...</a><br /></td></tr>
 <tr class="separator:a39d7267175cf5dc25aa7039cf9a2202f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a840a42c7af2bf4d5e06aff3c2980c6f0"><td class="memItemLeft" align="right" valign="top"><a id="a840a42c7af2bf4d5e06aff3c2980c6f0"></a>
-gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a840a42c7af2bf4d5e06aff3c2980c6f0">get_i_binding</a> () const</td></tr>
-<tr class="memdesc:a840a42c7af2bf4d5e06aff3c2980c6f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binding energy for size 2 interstitials in eV. <br /></td></tr>
+<tr class="memitem:a840a42c7af2bf4d5e06aff3c2980c6f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a840a42c7af2bf4d5e06aff3c2980c6f0">get_i_binding</a> () const</td></tr>
+<tr class="memdesc:a840a42c7af2bf4d5e06aff3c2980c6f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binding energy for size 2 interstitials in eV.  <a href="structMaterial.html#a840a42c7af2bf4d5e06aff3c2980c6f0">More...</a><br /></td></tr>
 <tr class="separator:a840a42c7af2bf4d5e06aff3c2980c6f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae14ad766d8759c2f8e40b27e479603b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ae14ad766d8759c2f8e40b27e479603b9">set_i_binding</a> (const gp_float val)</td></tr>
+<tr class="memitem:ae14ad766d8759c2f8e40b27e479603b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ae14ad766d8759c2f8e40b27e479603b9">set_i_binding</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:ae14ad766d8759c2f8e40b27e479603b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the the vacancy formation energy.  <a href="structMaterial.html#ae14ad766d8759c2f8e40b27e479603b9">More...</a><br /></td></tr>
 <tr class="separator:ae14ad766d8759c2f8e40b27e479603b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ba3b351882571485a2b9c37f0bf93ac"><td class="memItemLeft" align="right" valign="top"><a id="a8ba3b351882571485a2b9c37f0bf93ac"></a>
-gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a8ba3b351882571485a2b9c37f0bf93ac">get_v_binding</a> () const</td></tr>
-<tr class="memdesc:a8ba3b351882571485a2b9c37f0bf93ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binding energy for size 2 vacancies in eV. <br /></td></tr>
+<tr class="memitem:a8ba3b351882571485a2b9c37f0bf93ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a8ba3b351882571485a2b9c37f0bf93ac">get_v_binding</a> () const</td></tr>
+<tr class="memdesc:a8ba3b351882571485a2b9c37f0bf93ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binding energy for size 2 vacancies in eV.  <a href="structMaterial.html#a8ba3b351882571485a2b9c37f0bf93ac">More...</a><br /></td></tr>
 <tr class="separator:a8ba3b351882571485a2b9c37f0bf93ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a233f29ae98247adcf855184d118b1d4f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a233f29ae98247adcf855184d118b1d4f">set_v_binding</a> (const gp_float val)</td></tr>
+<tr class="memitem:a233f29ae98247adcf855184d118b1d4f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a233f29ae98247adcf855184d118b1d4f">set_v_binding</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:a233f29ae98247adcf855184d118b1d4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the the binding energy for size 2 vacancies.  <a href="structMaterial.html#a233f29ae98247adcf855184d118b1d4f">More...</a><br /></td></tr>
 <tr class="separator:a233f29ae98247adcf855184d118b1d4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ef6936640a955623911a072c8e46e12"><td class="memItemLeft" align="right" valign="top"><a id="a6ef6936640a955623911a072c8e46e12"></a>
-gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a6ef6936640a955623911a072c8e46e12">get_recombination_radius</a> () const</td></tr>
-<tr class="memdesc:a6ef6936640a955623911a072c8e46e12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recombination radius of point defects in cm. <br /></td></tr>
+<tr class="memitem:a6ef6936640a955623911a072c8e46e12"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a6ef6936640a955623911a072c8e46e12">get_recombination_radius</a> () const</td></tr>
+<tr class="memdesc:a6ef6936640a955623911a072c8e46e12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recombination radius of point defects in cm.  <a href="structMaterial.html#a6ef6936640a955623911a072c8e46e12">More...</a><br /></td></tr>
 <tr class="separator:a6ef6936640a955623911a072c8e46e12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad3d1c72165356599ea2c91098a17fc42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ad3d1c72165356599ea2c91098a17fc42">set_recombination_radius</a> (const gp_float val)</td></tr>
+<tr class="memitem:ad3d1c72165356599ea2c91098a17fc42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ad3d1c72165356599ea2c91098a17fc42">set_recombination_radius</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:ad3d1c72165356599ea2c91098a17fc42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recombination radius of point defects.  <a href="structMaterial.html#ad3d1c72165356599ea2c91098a17fc42">More...</a><br /></td></tr>
 <tr class="separator:ad3d1c72165356599ea2c91098a17fc42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a121525d98fc5edae3d97d9cacdfd1952"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a121525d98fc5edae3d97d9cacdfd1952">get_i_loop_bias</a> () const</td></tr>
+<tr class="memitem:a121525d98fc5edae3d97d9cacdfd1952"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a121525d98fc5edae3d97d9cacdfd1952">get_i_loop_bias</a> () const</td></tr>
+<tr class="memdesc:a121525d98fc5edae3d97d9cacdfd1952"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the interstitial loop bias factor.  <a href="structMaterial.html#a121525d98fc5edae3d97d9cacdfd1952">More...</a><br /></td></tr>
 <tr class="separator:a121525d98fc5edae3d97d9cacdfd1952"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4bdd36d7638a96096fb8b1a4af4685a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a4bdd36d7638a96096fb8b1a4af4685a6">set_i_loop_bias</a> (const gp_float val)</td></tr>
+<tr class="memitem:a4bdd36d7638a96096fb8b1a4af4685a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a4bdd36d7638a96096fb8b1a4af4685a6">set_i_loop_bias</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:a4bdd36d7638a96096fb8b1a4af4685a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the interstitial loop bias factor.  <a href="structMaterial.html#a4bdd36d7638a96096fb8b1a4af4685a6">More...</a><br /></td></tr>
 <tr class="separator:a4bdd36d7638a96096fb8b1a4af4685a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac071478d7876047df34fcc6a5830aba0"><td class="memItemLeft" align="right" valign="top"><a id="ac071478d7876047df34fcc6a5830aba0"></a>
-gp_float&#160;</td><td class="memItemRight" valign="bottom"><b>get_i_dislocation_bias</b> () const</td></tr>
+<tr class="memitem:ac071478d7876047df34fcc6a5830aba0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ac071478d7876047df34fcc6a5830aba0">get_i_dislocation_bias</a> () const</td></tr>
 <tr class="separator:ac071478d7876047df34fcc6a5830aba0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a844a47ccaae70036c80854ef6f1dcd1b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a844a47ccaae70036c80854ef6f1dcd1b">set_i_dislocation_bias</a> (const gp_float val)</td></tr>
+<tr class="memitem:a844a47ccaae70036c80854ef6f1dcd1b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a844a47ccaae70036c80854ef6f1dcd1b">set_i_dislocation_bias</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:a844a47ccaae70036c80854ef6f1dcd1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the interstitial dislocation bias factor.  <a href="structMaterial.html#a844a47ccaae70036c80854ef6f1dcd1b">More...</a><br /></td></tr>
 <tr class="separator:a844a47ccaae70036c80854ef6f1dcd1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ae3d28b4231a42c2904c228163d17b8"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a9ae3d28b4231a42c2904c228163d17b8">get_i_dislocation_bias_param</a> () const</td></tr>
+<tr class="memitem:a9ae3d28b4231a42c2904c228163d17b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a9ae3d28b4231a42c2904c228163d17b8">get_i_dislocation_bias_param</a> () const</td></tr>
+<tr class="memdesc:a9ae3d28b4231a42c2904c228163d17b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the interstitial dislocation bias parameter.  <a href="structMaterial.html#a9ae3d28b4231a42c2904c228163d17b8">More...</a><br /></td></tr>
 <tr class="separator:a9ae3d28b4231a42c2904c228163d17b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18f35526aed4ca1fec32cc2c97e4da48"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a18f35526aed4ca1fec32cc2c97e4da48">set_i_dislocation_bias_param</a> (const gp_float val)</td></tr>
+<tr class="memitem:a18f35526aed4ca1fec32cc2c97e4da48"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a18f35526aed4ca1fec32cc2c97e4da48">set_i_dislocation_bias_param</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:a18f35526aed4ca1fec32cc2c97e4da48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the interstitial dislocation bias parameter.  <a href="structMaterial.html#a18f35526aed4ca1fec32cc2c97e4da48">More...</a><br /></td></tr>
 <tr class="separator:a18f35526aed4ca1fec32cc2c97e4da48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f41e5fa5d9e81d6b996e2cceb5a01b8"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a5f41e5fa5d9e81d6b996e2cceb5a01b8">get_v_loop_bias</a> () const</td></tr>
+<tr class="memitem:a5f41e5fa5d9e81d6b996e2cceb5a01b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a5f41e5fa5d9e81d6b996e2cceb5a01b8">get_v_loop_bias</a> () const</td></tr>
+<tr class="memdesc:a5f41e5fa5d9e81d6b996e2cceb5a01b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the vacancy loop bias factor.  <a href="structMaterial.html#a5f41e5fa5d9e81d6b996e2cceb5a01b8">More...</a><br /></td></tr>
 <tr class="separator:a5f41e5fa5d9e81d6b996e2cceb5a01b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1c0d124607c79d0c04f5783ee53e2e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ac1c0d124607c79d0c04f5783ee53e2e8">set_v_loop_bias</a> (const gp_float val)</td></tr>
+<tr class="memitem:ac1c0d124607c79d0c04f5783ee53e2e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ac1c0d124607c79d0c04f5783ee53e2e8">set_v_loop_bias</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:ac1c0d124607c79d0c04f5783ee53e2e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the vacancy loop bias factor.  <a href="structMaterial.html#ac1c0d124607c79d0c04f5783ee53e2e8">More...</a><br /></td></tr>
 <tr class="separator:ac1c0d124607c79d0c04f5783ee53e2e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d9ffe539449bf8124c762f821f220b3"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a1d9ffe539449bf8124c762f821f220b3">get_v_dislocation_bias</a> () const</td></tr>
+<tr class="memitem:a1d9ffe539449bf8124c762f821f220b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a1d9ffe539449bf8124c762f821f220b3">get_v_dislocation_bias</a> () const</td></tr>
+<tr class="memdesc:a1d9ffe539449bf8124c762f821f220b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the vacancy dislocation bias factor.  <a href="structMaterial.html#a1d9ffe539449bf8124c762f821f220b3">More...</a><br /></td></tr>
 <tr class="separator:a1d9ffe539449bf8124c762f821f220b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6e3577bf254c313f1e57b1fa772f9bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ac6e3577bf254c313f1e57b1fa772f9bb">set_v_dislocation_bias</a> (const gp_float val)</td></tr>
+<tr class="memitem:ac6e3577bf254c313f1e57b1fa772f9bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ac6e3577bf254c313f1e57b1fa772f9bb">set_v_dislocation_bias</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:ac6e3577bf254c313f1e57b1fa772f9bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the vacancy dislocation bias factor.  <a href="structMaterial.html#ac6e3577bf254c313f1e57b1fa772f9bb">More...</a><br /></td></tr>
 <tr class="separator:ac6e3577bf254c313f1e57b1fa772f9bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9dc61a7d63e15d1568a3ba957e77d64"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ad9dc61a7d63e15d1568a3ba957e77d64">get_v_dislocation_bias_param</a> () const</td></tr>
+<tr class="memitem:ad9dc61a7d63e15d1568a3ba957e77d64"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ad9dc61a7d63e15d1568a3ba957e77d64">get_v_dislocation_bias_param</a> () const</td></tr>
+<tr class="memdesc:ad9dc61a7d63e15d1568a3ba957e77d64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the vacancy dislocation bias parameter.  <a href="structMaterial.html#ad9dc61a7d63e15d1568a3ba957e77d64">More...</a><br /></td></tr>
 <tr class="separator:ad9dc61a7d63e15d1568a3ba957e77d64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a554d6289003d34f8060827315cff77dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a554d6289003d34f8060827315cff77dd">set_v_dislocation_bias_param</a> (const gp_float val)</td></tr>
+<tr class="memitem:a554d6289003d34f8060827315cff77dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a554d6289003d34f8060827315cff77dd">set_v_dislocation_bias_param</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:a554d6289003d34f8060827315cff77dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the vacancy dislocation bias parameter.  <a href="structMaterial.html#a554d6289003d34f8060827315cff77dd">More...</a><br /></td></tr>
 <tr class="separator:a554d6289003d34f8060827315cff77dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5343f729a37f99bb9643302a3b975b0a"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a5343f729a37f99bb9643302a3b975b0a">get_dislocation_density_0</a> () const</td></tr>
+<tr class="memitem:a5343f729a37f99bb9643302a3b975b0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a5343f729a37f99bb9643302a3b975b0a">get_dislocation_density_0</a> () const</td></tr>
+<tr class="memdesc:a5343f729a37f99bb9643302a3b975b0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the initial dislocation network density in cm^-2.  <a href="structMaterial.html#a5343f729a37f99bb9643302a3b975b0a">More...</a><br /></td></tr>
 <tr class="separator:a5343f729a37f99bb9643302a3b975b0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a03adbe67e9f704776688330ba14ca1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a2a03adbe67e9f704776688330ba14ca1">set_dislocation_density_0</a> (const gp_float val)</td></tr>
+<tr class="memitem:a2a03adbe67e9f704776688330ba14ca1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a2a03adbe67e9f704776688330ba14ca1">set_dislocation_density_0</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:a2a03adbe67e9f704776688330ba14ca1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the initial dislocation network density.  <a href="structMaterial.html#a2a03adbe67e9f704776688330ba14ca1">More...</a><br /></td></tr>
 <tr class="separator:a2a03adbe67e9f704776688330ba14ca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc78843fe9d28be93a0c967b97808df1"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#afc78843fe9d28be93a0c967b97808df1">get_grain_size</a> () const</td></tr>
+<tr class="memitem:afc78843fe9d28be93a0c967b97808df1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#afc78843fe9d28be93a0c967b97808df1">get_grain_size</a> () const</td></tr>
+<tr class="memdesc:afc78843fe9d28be93a0c967b97808df1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the grain size in cm.  <a href="structMaterial.html#afc78843fe9d28be93a0c967b97808df1">More...</a><br /></td></tr>
 <tr class="separator:afc78843fe9d28be93a0c967b97808df1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5aee66ac6630f3b3f0956262ba3d4da3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a5aee66ac6630f3b3f0956262ba3d4da3">set_grain_size</a> (const gp_float val)</td></tr>
+<tr class="memitem:a5aee66ac6630f3b3f0956262ba3d4da3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a5aee66ac6630f3b3f0956262ba3d4da3">set_grain_size</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:a5aee66ac6630f3b3f0956262ba3d4da3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the grain size.  <a href="structMaterial.html#a5aee66ac6630f3b3f0956262ba3d4da3">More...</a><br /></td></tr>
 <tr class="separator:a5aee66ac6630f3b3f0956262ba3d4da3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3620bc39a9bbe031fdd32f4c83fcdf53"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a3620bc39a9bbe031fdd32f4c83fcdf53">get_lattice_param</a> () const</td></tr>
+<tr class="memitem:a3620bc39a9bbe031fdd32f4c83fcdf53"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a3620bc39a9bbe031fdd32f4c83fcdf53">get_lattice_param</a> () const</td></tr>
+<tr class="memdesc:a3620bc39a9bbe031fdd32f4c83fcdf53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the lattice parameter in cm.  <a href="structMaterial.html#a3620bc39a9bbe031fdd32f4c83fcdf53">More...</a><br /></td></tr>
 <tr class="separator:a3620bc39a9bbe031fdd32f4c83fcdf53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9bbe49a78d4ba862ddef708498601861"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a9bbe49a78d4ba862ddef708498601861">set_lattice_param</a> (const gp_float val)</td></tr>
+<tr class="memitem:a9bbe49a78d4ba862ddef708498601861"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a9bbe49a78d4ba862ddef708498601861">set_lattice_param</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:a9bbe49a78d4ba862ddef708498601861"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the lattice parameter.  <a href="structMaterial.html#a9bbe49a78d4ba862ddef708498601861">More...</a><br /></td></tr>
 <tr class="separator:a9bbe49a78d4ba862ddef708498601861"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac01c3a39c8609b79909bbd89bc2e8b56"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ac01c3a39c8609b79909bbd89bc2e8b56">get_burgers_vector</a> () const</td></tr>
+<tr class="memitem:ac01c3a39c8609b79909bbd89bc2e8b56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ac01c3a39c8609b79909bbd89bc2e8b56">get_burgers_vector</a> () const</td></tr>
+<tr class="memdesc:ac01c3a39c8609b79909bbd89bc2e8b56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the magnitude of the burgers vector.  <a href="structMaterial.html#ac01c3a39c8609b79909bbd89bc2e8b56">More...</a><br /></td></tr>
 <tr class="separator:ac01c3a39c8609b79909bbd89bc2e8b56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a830b59638091c83510cb86722d9689dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a830b59638091c83510cb86722d9689dd">set_burgers_vector</a> (const gp_float val)</td></tr>
+<tr class="memitem:a830b59638091c83510cb86722d9689dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a830b59638091c83510cb86722d9689dd">set_burgers_vector</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:a830b59638091c83510cb86722d9689dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the magnitude of the burgers vector.  <a href="structMaterial.html#a830b59638091c83510cb86722d9689dd">More...</a><br /></td></tr>
 <tr class="separator:a830b59638091c83510cb86722d9689dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0b8b981345a63ffa1deb772e0d73773"><td class="memItemLeft" align="right" valign="top">gp_float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ad0b8b981345a63ffa1deb772e0d73773">get_atomic_volume</a> () const</td></tr>
+<tr class="memitem:ad0b8b981345a63ffa1deb772e0d73773"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ad0b8b981345a63ffa1deb772e0d73773">get_atomic_volume</a> () const</td></tr>
+<tr class="memdesc:ad0b8b981345a63ffa1deb772e0d73773"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the average volume of a single atom in the material lattice in cm^3.  <a href="structMaterial.html#ad0b8b981345a63ffa1deb772e0d73773">More...</a><br /></td></tr>
 <tr class="separator:ad0b8b981345a63ffa1deb772e0d73773"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7e6f98c0b1fb07cce17c58d69281d39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ad7e6f98c0b1fb07cce17c58d69281d39">set_atomic_volume</a> (const gp_float val)</td></tr>
+<tr class="memitem:ad7e6f98c0b1fb07cce17c58d69281d39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ad7e6f98c0b1fb07cce17c58d69281d39">set_atomic_volume</a> (const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> val)</td></tr>
 <tr class="memdesc:ad7e6f98c0b1fb07cce17c58d69281d39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the average volume of a single atom in the material lattice.  <a href="structMaterial.html#ad7e6f98c0b1fb07cce17c58d69281d39">More...</a><br /></td></tr>
 <tr class="separator:ad7e6f98c0b1fb07cce17c58d69281d39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebd39060bd7033d25290d26d3f5951ee"><td class="memItemLeft" align="right" valign="top"><a id="aebd39060bd7033d25290d26d3f5951ee"></a>
-MaterialImpl *&#160;</td><td class="memItemRight" valign="bottom"><b>impl</b> ()</td></tr>
-<tr class="separator:aebd39060bd7033d25290d26d3f5951ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad17080342c8a44bfb1cebae5f5b46c73"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structMaterialImpl.html">MaterialImpl</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#ad17080342c8a44bfb1cebae5f5b46c73">impl</a> ()</td></tr>
+<tr class="memdesc:ad17080342c8a44bfb1cebae5f5b46c73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a raw pointer to the underlying <a class="el" href="structMaterialImpl.html">MaterialImpl</a> object.  <a href="structMaterial.html#ad17080342c8a44bfb1cebae5f5b46c73">More...</a><br /></td></tr>
+<tr class="separator:ad17080342c8a44bfb1cebae5f5b46c73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:aa7a7678eb5bafe799dd8eddfd50565fc"><td class="memItemLeft" align="right" valign="top"><a id="aa7a7678eb5bafe799dd8eddfd50565fc"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>sqlite_id</b></td></tr>
+<tr class="memitem:aa7a7678eb5bafe799dd8eddfd50565fc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#aa7a7678eb5bafe799dd8eddfd50565fc">sqlite_id</a></td></tr>
 <tr class="separator:aa7a7678eb5bafe799dd8eddfd50565fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a146c03d68345f2393ff077a95b218c23"><td class="memItemLeft" align="right" valign="top"><a id="a146c03d68345f2393ff077a95b218c23"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a146c03d68345f2393ff077a95b218c23">creation_datetime</a></td></tr>
-<tr class="memdesc:a146c03d68345f2393ff077a95b218c23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timestamp of when this <a class="el" href="structMaterial.html" title="A class which represents the material property parameters for a ClusterDynamics simulation.">Material</a> was first instantiated. <br /></td></tr>
+<tr class="memitem:a146c03d68345f2393ff077a95b218c23"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a146c03d68345f2393ff077a95b218c23">creation_datetime</a></td></tr>
+<tr class="memdesc:a146c03d68345f2393ff077a95b218c23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timestamp of when this <a class="el" href="structMaterial.html" title="A class which represents the material property parameters for a ClusterDynamics simulation.">Material</a> was first instantiated.  <a href="structMaterial.html#a146c03d68345f2393ff077a95b218c23">More...</a><br /></td></tr>
 <tr class="separator:a146c03d68345f2393ff077a95b218c23"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1467b74d319e6bf387cb51f4dc08c5dd"><td class="memItemLeft" align="right" valign="top"><a id="a1467b74d319e6bf387cb51f4dc08c5dd"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd">species</a></td></tr>
-<tr class="memdesc:a1467b74d319e6bf387cb51f4dc08c5dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">A name for what kind of material this data represents. <br /></td></tr>
+<tr class="memitem:a1467b74d319e6bf387cb51f4dc08c5dd"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd">species</a></td></tr>
+<tr class="memdesc:a1467b74d319e6bf387cb51f4dc08c5dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">A name for what kind of material this data represents.  <a href="structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd">More...</a><br /></td></tr>
 <tr class="separator:a1467b74d319e6bf387cb51f4dc08c5dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa258782eff9eb88048edb4c8aecac3f3"><td class="memItemLeft" align="right" valign="top"><a id="aa258782eff9eb88048edb4c8aecac3f3"></a>
-std::unique_ptr&lt; MaterialImpl &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_impl</b></td></tr>
+<tr class="memitem:aa258782eff9eb88048edb4c8aecac3f3"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="structMaterialImpl.html">MaterialImpl</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a></td></tr>
 <tr class="separator:aa258782eff9eb88048edb4c8aecac3f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class which represents the material property parameters for a <a class="el" href="classClusterDynamics.html" title="Class which defines a cluster dynamics simulation.">ClusterDynamics</a> simulation. </p>
 <p>Based loosely on: C. Pokor / Journal of Nuclear Materials 326 (2004), Table 6 </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad0b8b981345a63ffa1deb772e0d73773"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad0b8b981345a63ffa1deb772e0d73773">&#9670;&nbsp;</a></span>get_atomic_volume()</h2>
+
+<p class="definition">Definition at line <a class="el" href="material_8hpp_source.html#l00018">18</a> of file <a class="el" href="material_8hpp_source.html">material.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a137e987401b63eb7c6c27c3e38bc74b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a137e987401b63eb7c6c27c3e38bc74b5">&#9670;&nbsp;</a></span>Material() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">gp_float Material::get_atomic_volume </td>
+          <td class="memname">Material::Material </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Theaverage volume of a single atom in the material lattice in cm^3. </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00005">5</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;                   : <a class="code" href="structMaterial.html#aa7a7678eb5bafe799dd8eddfd50565fc">sqlite_id</a>(-1) </div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;{</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    datetime::utc_now(<a class="code" href="structMaterial.html#a146c03d68345f2393ff077a95b218c23">creation_datetime</a>);</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a> = std::make_unique&lt;MaterialImpl&gt;();</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
-<a id="ac01c3a39c8609b79909bbd89bc2e8b56"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac01c3a39c8609b79909bbd89bc2e8b56">&#9670;&nbsp;</a></span>get_burgers_vector()</h2>
+<a id="ac9b027e9c501776e7d08589a52e9d795"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9b027e9c501776e7d08589a52e9d795">&#9670;&nbsp;</a></span>Material() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">gp_float Material::get_burgers_vector </td>
+          <td class="memname">Material::Material </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td class="paramtype">const <a class="el" href="structMaterial.html">Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Themagnitude of the burgers vector. </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00011">11</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;                                        :</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <a class="code" href="structMaterial.html#aa7a7678eb5bafe799dd8eddfd50565fc">sqlite_id</a>(other.<a class="code" href="structMaterial.html#aa7a7678eb5bafe799dd8eddfd50565fc">sqlite_id</a>),</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <a class="code" href="structMaterial.html#a146c03d68345f2393ff077a95b218c23">creation_datetime</a>(other.<a class="code" href="structMaterial.html#a146c03d68345f2393ff077a95b218c23">creation_datetime</a>),</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <a class="code" href="structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd">species</a>(other.<a class="code" href="structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd">species</a>)</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;{</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a> = std::make_unique&lt;MaterialImpl&gt;(*other.<a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>.get());</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
-<a id="a5343f729a37f99bb9643302a3b975b0a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5343f729a37f99bb9643302a3b975b0a">&#9670;&nbsp;</a></span>get_dislocation_density_0()</h2>
+<a id="a2c19452d71f54075df8f5405b03129f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c19452d71f54075df8f5405b03129f4">&#9670;&nbsp;</a></span>~Material()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">gp_float Material::get_dislocation_density_0 </td>
+          <td class="memname">Material::~Material </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Theinitial dislocation network density in cm^-2. </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00019">19</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                    {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
-<a id="afc78843fe9d28be93a0c967b97808df1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afc78843fe9d28be93a0c967b97808df1">&#9670;&nbsp;</a></span>get_grain_size()</h2>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="adda8ef2133493986e1fe8d4ba85e1e8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adda8ef2133493986e1fe8d4ba85e1e8e">&#9670;&nbsp;</a></span>operator=()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">gp_float Material::get_grain_size </td>
+          <td class="memname"><a class="el" href="structMaterial.html">Material</a> &amp; Material::operator= </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td class="paramtype">const <a class="el" href="structMaterial.html">Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Thegrain size in cm. </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00023">23</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;{</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">this</span> != &amp;other) <a class="code" href="structMaterial.html#ac82536c1fd847e78eecd48217782cb1d">copy</a>(other);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
-<a id="aaea5c80ac437e38a6fae7c98f750ef51"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaea5c80ac437e38a6fae7c98f750ef51">&#9670;&nbsp;</a></span>get_i_diffusion_0()</h2>
+<a id="ac82536c1fd847e78eecd48217782cb1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac82536c1fd847e78eecd48217782cb1d">&#9670;&nbsp;</a></span>copy()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">gp_float Material::get_i_diffusion_0 </td>
+          <td class="memname">void Material::copy </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td class="paramtype">const <a class="el" href="structMaterial.html">Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Thesingle interstitial preexponential diffusion constant in cm^2/s. </dd></dl>
 
-</div>
-</div>
-<a id="a9ae3d28b4231a42c2904c228163d17b8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9ae3d28b4231a42c2904c228163d17b8">&#9670;&nbsp;</a></span>get_i_dislocation_bias_param()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">gp_float Material::get_i_dislocation_bias_param </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Theinterstitial dislocation bias parameter. </dd></dl>
-
-</div>
-</div>
-<a id="afbd3bdba9a2625d2cbb0685d3db4752a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afbd3bdba9a2625d2cbb0685d3db4752a">&#9670;&nbsp;</a></span>get_i_formation()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">gp_float Material::get_i_formation </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Theinterstitial formation energy in eV. </dd></dl>
-
-</div>
-</div>
-<a id="a121525d98fc5edae3d97d9cacdfd1952"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a121525d98fc5edae3d97d9cacdfd1952">&#9670;&nbsp;</a></span>get_i_loop_bias()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">gp_float Material::get_i_loop_bias </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Theinterstitial loop bias factor. </dd></dl>
-
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00030">30</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;{</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="structMaterial.html#aa7a7678eb5bafe799dd8eddfd50565fc">sqlite_id</a> = other.<a class="code" href="structMaterial.html#aa7a7678eb5bafe799dd8eddfd50565fc">sqlite_id</a>;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <a class="code" href="structMaterial.html#a146c03d68345f2393ff077a95b218c23">creation_datetime</a> = other.<a class="code" href="structMaterial.html#a146c03d68345f2393ff077a95b218c23">creation_datetime</a>;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd">species</a> = other.<a class="code" href="structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd">species</a>;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>.release();</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a> = std::make_unique&lt;MaterialImpl&gt;(*other.<a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>.get());</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a4fbca25caceec95e727ce030b5cd40f7"></a>
@@ -369,403 +378,21 @@ std::unique_ptr&lt; MaterialImpl &gt;&#160;</td><td class="memItemRight" valign=
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">gp_float Material::get_i_migration </td>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_i_migration </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Thesingle interstitial migration energy in eV. </dd></dl>
 
-</div>
-</div>
-<a id="a3620bc39a9bbe031fdd32f4c83fcdf53"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3620bc39a9bbe031fdd32f4c83fcdf53">&#9670;&nbsp;</a></span>get_lattice_param()</h2>
+<p>Returns the single interstitial migration energy in eV. </p>
 
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">gp_float Material::get_lattice_param </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Thelattice parameter in cm. </dd></dl>
-
-</div>
-</div>
-<a id="ab546e1753f443f5ba4bafffa8b8df606"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab546e1753f443f5ba4bafffa8b8df606">&#9670;&nbsp;</a></span>get_v_diffusion_0()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">gp_float Material::get_v_diffusion_0 </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Thesingle vacancy preexponential diffusion constant in cm^2/s. </dd></dl>
-
-</div>
-</div>
-<a id="a1d9ffe539449bf8124c762f821f220b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d9ffe539449bf8124c762f821f220b3">&#9670;&nbsp;</a></span>get_v_dislocation_bias()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">gp_float Material::get_v_dislocation_bias </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Thevacancy dislocation bias factor. </dd></dl>
-
-</div>
-</div>
-<a id="ad9dc61a7d63e15d1568a3ba957e77d64"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad9dc61a7d63e15d1568a3ba957e77d64">&#9670;&nbsp;</a></span>get_v_dislocation_bias_param()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">gp_float Material::get_v_dislocation_bias_param </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Thevacancy dislocation bias parameter. </dd></dl>
-
-</div>
-</div>
-<a id="a775acb786185f019e4178b5941fed61c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a775acb786185f019e4178b5941fed61c">&#9670;&nbsp;</a></span>get_v_formation()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">gp_float Material::get_v_formation </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Thevacancy formation energy in eV. </dd></dl>
-
-</div>
-</div>
-<a id="a5f41e5fa5d9e81d6b996e2cceb5a01b8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5f41e5fa5d9e81d6b996e2cceb5a01b8">&#9670;&nbsp;</a></span>get_v_loop_bias()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">gp_float Material::get_v_loop_bias </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Thevacancy loop bias factor. </dd></dl>
-
-</div>
-</div>
-<a id="abe7096ec8e7802db674beb08704baf4a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abe7096ec8e7802db674beb08704baf4a">&#9670;&nbsp;</a></span>get_v_migration()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">gp_float Material::get_v_migration </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Thesingle vacancy migration energy in eV. </dd></dl>
-
-</div>
-</div>
-<a id="ad7e6f98c0b1fb07cce17c58d69281d39"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad7e6f98c0b1fb07cce17c58d69281d39">&#9670;&nbsp;</a></span>set_atomic_volume()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_atomic_volume </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the average volume of a single atom in the material lattice. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Atomic volume in cm^3. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a830b59638091c83510cb86722d9689dd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a830b59638091c83510cb86722d9689dd">&#9670;&nbsp;</a></span>set_burgers_vector()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_burgers_vector </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the magnitude of the burgers vector. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Magnitude of the burgers vector. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a2a03adbe67e9f704776688330ba14ca1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2a03adbe67e9f704776688330ba14ca1">&#9670;&nbsp;</a></span>set_dislocation_density_0()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_dislocation_density_0 </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the initial dislocation network density. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Initial dislocation network density in cm^-2. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a5aee66ac6630f3b3f0956262ba3d4da3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5aee66ac6630f3b3f0956262ba3d4da3">&#9670;&nbsp;</a></span>set_grain_size()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_grain_size </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the grain size. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Grain size in cm. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ae14ad766d8759c2f8e40b27e479603b9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae14ad766d8759c2f8e40b27e479603b9">&#9670;&nbsp;</a></span>set_i_binding()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_i_binding </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the the vacancy formation energy. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Binding energy in units of eV. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ac0c5407256087e7296418febcb021093"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac0c5407256087e7296418febcb021093">&#9670;&nbsp;</a></span>set_i_diffusion_0()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_i_diffusion_0 </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the single interstitial preexponential diffusion constant. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Preexponential diffusion constant in units of cm^2/s. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a844a47ccaae70036c80854ef6f1dcd1b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a844a47ccaae70036c80854ef6f1dcd1b">&#9670;&nbsp;</a></span>set_i_dislocation_bias()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_i_dislocation_bias </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the interstitial dislocation bias factor. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Interstitial dislocation bias factor. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a18f35526aed4ca1fec32cc2c97e4da48"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a18f35526aed4ca1fec32cc2c97e4da48">&#9670;&nbsp;</a></span>set_i_dislocation_bias_param()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_i_dislocation_bias_param </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the interstitial dislocation bias parameter. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Interstitial dislocation bias parameter. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a034a26c84e3070c4af1a778e2008fea1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a034a26c84e3070c4af1a778e2008fea1">&#9670;&nbsp;</a></span>set_i_formation()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_i_formation </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the the interstitial formation energy. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Formation energy in units of eV. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a4bdd36d7638a96096fb8b1a4af4685a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4bdd36d7638a96096fb8b1a4af4685a6">&#9670;&nbsp;</a></span>set_i_loop_bias()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_i_loop_bias </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the interstitial loop bias factor. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Interstitial loop bias factor. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Get better descriptions for the bias factors </dd></dl>
-<dl class="section return"><dt>Returns</dt><dd>Theinterstitial dislocation bias factor. </dd></dl>
-
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00041">41</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;{</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;i_migration;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="af5ce5579433ac4ca95f372b453f14eb7"></a>
@@ -777,7 +404,7 @@ std::unique_ptr&lt; MaterialImpl &gt;&#160;</td><td class="memItemRight" valign=
         <tr>
           <td class="memname">void Material::set_i_migration </td>
           <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
           <td class="paramname"><em>val</em></td><td>)</td>
           <td></td>
         </tr>
@@ -792,214 +419,35 @@ std::unique_ptr&lt; MaterialImpl &gt;&#160;</td><td class="memItemRight" valign=
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00049">49</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;{</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;i_migration = val;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
-<a id="a9bbe49a78d4ba862ddef708498601861"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9bbe49a78d4ba862ddef708498601861">&#9670;&nbsp;</a></span>set_lattice_param()</h2>
+<a id="abe7096ec8e7802db674beb08704baf4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe7096ec8e7802db674beb08704baf4a">&#9670;&nbsp;</a></span>get_v_migration()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Material::set_lattice_param </td>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_v_migration </td>
           <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Sets the lattice parameter. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Lattice parameter in cm. </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Returns the single vacancy migration energy in eV. </p>
 
-</div>
-</div>
-<a id="ad3d1c72165356599ea2c91098a17fc42"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad3d1c72165356599ea2c91098a17fc42">&#9670;&nbsp;</a></span>set_recombination_radius()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_recombination_radius </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the recombination radius of point defects. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Recombination radius in units of cm </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a233f29ae98247adcf855184d118b1d4f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a233f29ae98247adcf855184d118b1d4f">&#9670;&nbsp;</a></span>set_v_binding()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_v_binding </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the the binding energy for size 2 vacancies. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Binding energy in units of eV. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a64576040ea519edd4fe8f6011357e847"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a64576040ea519edd4fe8f6011357e847">&#9670;&nbsp;</a></span>set_v_diffusion_0()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_v_diffusion_0 </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the single vacancy preexponential diffusion constant. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Preexponential diffusion constant in units of cm^2/s. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ac6e3577bf254c313f1e57b1fa772f9bb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac6e3577bf254c313f1e57b1fa772f9bb">&#9670;&nbsp;</a></span>set_v_dislocation_bias()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_v_dislocation_bias </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the vacancy dislocation bias factor. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Dislocation bias factor. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a554d6289003d34f8060827315cff77dd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a554d6289003d34f8060827315cff77dd">&#9670;&nbsp;</a></span>set_v_dislocation_bias_param()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_v_dislocation_bias_param </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the vacancy dislocation bias parameter. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Vacancy dislocation bias parameter. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a39d7267175cf5dc25aa7039cf9a2202f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a39d7267175cf5dc25aa7039cf9a2202f">&#9670;&nbsp;</a></span>set_v_formation()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_v_formation </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the the vacancy formation energy. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Formation energy in units of eV. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ac1c0d124607c79d0c04f5783ee53e2e8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac1c0d124607c79d0c04f5783ee53e2e8">&#9670;&nbsp;</a></span>set_v_loop_bias()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Material::set_v_loop_bias </td>
-          <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
-          <td class="paramname"><em>val</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the vacancy loop bias factor. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">val</td><td>Vacancy loop bias factor. </td></tr>
-  </table>
-  </dd>
-</dl>
-
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00055">55</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;{</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;v_migration;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a28d7df6541a2f7f42886a16cd067798b"></a>
@@ -1011,7 +459,7 @@ std::unique_ptr&lt; MaterialImpl &gt;&#160;</td><td class="memItemRight" valign=
         <tr>
           <td class="memname">void Material::set_v_migration </td>
           <td>(</td>
-          <td class="paramtype">const gp_float&#160;</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
           <td class="paramname"><em>val</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1026,12 +474,1101 @@ std::unique_ptr&lt; MaterialImpl &gt;&#160;</td><td class="memItemRight" valign=
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00063">63</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;{</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;v_migration = val;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<a id="aaea5c80ac437e38a6fae7c98f750ef51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaea5c80ac437e38a6fae7c98f750ef51">&#9670;&nbsp;</a></span>get_i_diffusion_0()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_i_diffusion_0 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the single interstitial preexponential diffusion constant in cm^2/s. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00069">69</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;{</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;i_diffusion_0;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac0c5407256087e7296418febcb021093"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0c5407256087e7296418febcb021093">&#9670;&nbsp;</a></span>set_i_diffusion_0()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_i_diffusion_0 </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the single interstitial preexponential diffusion constant. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Preexponential diffusion constant in units of cm^2/s. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00077">77</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;{</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;i_diffusion_0 = val;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab546e1753f443f5ba4bafffa8b8df606"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab546e1753f443f5ba4bafffa8b8df606">&#9670;&nbsp;</a></span>get_v_diffusion_0()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_v_diffusion_0 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the single vacancy preexponential diffusion constant in cm^2/s. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00084">84</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;{</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;v_diffusion_0;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a64576040ea519edd4fe8f6011357e847"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64576040ea519edd4fe8f6011357e847">&#9670;&nbsp;</a></span>set_v_diffusion_0()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_v_diffusion_0 </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the single vacancy preexponential diffusion constant. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Preexponential diffusion constant in units of cm^2/s. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00092">92</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;{</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;v_diffusion_0 = val;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="afbd3bdba9a2625d2cbb0685d3db4752a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbd3bdba9a2625d2cbb0685d3db4752a">&#9670;&nbsp;</a></span>get_i_formation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_i_formation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the interstitial formation energy in eV. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00098">98</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;{</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;i_formation;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a034a26c84e3070c4af1a778e2008fea1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a034a26c84e3070c4af1a778e2008fea1">&#9670;&nbsp;</a></span>set_i_formation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_i_formation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the the interstitial formation energy. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Formation energy in units of eV. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00106">106</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;{</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;i_formation = val;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a775acb786185f019e4178b5941fed61c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a775acb786185f019e4178b5941fed61c">&#9670;&nbsp;</a></span>get_v_formation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_v_formation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the vacancy formation energy in eV. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00112">112</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;{</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;v_formation;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a39d7267175cf5dc25aa7039cf9a2202f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39d7267175cf5dc25aa7039cf9a2202f">&#9670;&nbsp;</a></span>set_v_formation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_v_formation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the the vacancy formation energy. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Formation energy in units of eV. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00120">120</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;{</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;v_formation = val;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a840a42c7af2bf4d5e06aff3c2980c6f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a840a42c7af2bf4d5e06aff3c2980c6f0">&#9670;&nbsp;</a></span>get_i_binding()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_i_binding </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Binding energy for size 2 interstitials in eV. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00126">126</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;{</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;i_binding;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae14ad766d8759c2f8e40b27e479603b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae14ad766d8759c2f8e40b27e479603b9">&#9670;&nbsp;</a></span>set_i_binding()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_i_binding </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the the vacancy formation energy. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Binding energy in units of eV. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00135">135</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;{</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;i_binding = val;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8ba3b351882571485a2b9c37f0bf93ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ba3b351882571485a2b9c37f0bf93ac">&#9670;&nbsp;</a></span>get_v_binding()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_v_binding </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Binding energy for size 2 vacancies in eV. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00141">141</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;{</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;v_binding;</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a233f29ae98247adcf855184d118b1d4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a233f29ae98247adcf855184d118b1d4f">&#9670;&nbsp;</a></span>set_v_binding()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_v_binding </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the the binding energy for size 2 vacancies. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Binding energy in units of eV. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00149">149</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;{</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;v_binding = val;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6ef6936640a955623911a072c8e46e12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ef6936640a955623911a072c8e46e12">&#9670;&nbsp;</a></span>get_recombination_radius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_recombination_radius </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Recombination radius of point defects in cm. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00156">156</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;{</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;recombination_radius;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad3d1c72165356599ea2c91098a17fc42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3d1c72165356599ea2c91098a17fc42">&#9670;&nbsp;</a></span>set_recombination_radius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_recombination_radius </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the recombination radius of point defects. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Recombination radius in units of cm </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00162">162</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;{</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;recombination_radius = val;</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a121525d98fc5edae3d97d9cacdfd1952"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a121525d98fc5edae3d97d9cacdfd1952">&#9670;&nbsp;</a></span>get_i_loop_bias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_i_loop_bias </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the interstitial loop bias factor. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00168">168</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;{</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;i_loop_bias;</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4bdd36d7638a96096fb8b1a4af4685a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bdd36d7638a96096fb8b1a4af4685a6">&#9670;&nbsp;</a></span>set_i_loop_bias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_i_loop_bias </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the interstitial loop bias factor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Interstitial loop bias factor. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Get better descriptions for the bias factors </dd></dl>
+<p>Returns the interstitial dislocation bias factor. </p>
+
+</div>
+</div>
+<a id="ac071478d7876047df34fcc6a5830aba0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac071478d7876047df34fcc6a5830aba0">&#9670;&nbsp;</a></span>get_i_dislocation_bias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_i_dislocation_bias </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00182">182</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;{</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;i_dislocation_bias;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a844a47ccaae70036c80854ef6f1dcd1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a844a47ccaae70036c80854ef6f1dcd1b">&#9670;&nbsp;</a></span>set_i_dislocation_bias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_i_dislocation_bias </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the interstitial dislocation bias factor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Interstitial dislocation bias factor. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00189">189</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;{</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;i_dislocation_bias = val;</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9ae3d28b4231a42c2904c228163d17b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ae3d28b4231a42c2904c228163d17b8">&#9670;&nbsp;</a></span>get_i_dislocation_bias_param()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_i_dislocation_bias_param </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the interstitial dislocation bias parameter. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00195">195</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;{</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;i_dislocation_bias_param;</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a18f35526aed4ca1fec32cc2c97e4da48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18f35526aed4ca1fec32cc2c97e4da48">&#9670;&nbsp;</a></span>set_i_dislocation_bias_param()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_i_dislocation_bias_param </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the interstitial dislocation bias parameter. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Interstitial dislocation bias parameter. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00202">202</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;{</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;i_dislocation_bias_param = val;</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5f41e5fa5d9e81d6b996e2cceb5a01b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f41e5fa5d9e81d6b996e2cceb5a01b8">&#9670;&nbsp;</a></span>get_v_loop_bias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_v_loop_bias </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the vacancy loop bias factor. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00208">208</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;{</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;v_loop_bias;</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac1c0d124607c79d0c04f5783ee53e2e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1c0d124607c79d0c04f5783ee53e2e8">&#9670;&nbsp;</a></span>set_v_loop_bias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_v_loop_bias </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the vacancy loop bias factor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Vacancy loop bias factor. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00215">215</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;{</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;v_loop_bias = val;</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1d9ffe539449bf8124c762f821f220b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d9ffe539449bf8124c762f821f220b3">&#9670;&nbsp;</a></span>get_v_dislocation_bias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_v_dislocation_bias </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the vacancy dislocation bias factor. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00221">221</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;{</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;v_dislocation_bias;</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac6e3577bf254c313f1e57b1fa772f9bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6e3577bf254c313f1e57b1fa772f9bb">&#9670;&nbsp;</a></span>set_v_dislocation_bias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_v_dislocation_bias </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the vacancy dislocation bias factor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Dislocation bias factor. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00228">228</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;{</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;v_dislocation_bias = val;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad9dc61a7d63e15d1568a3ba957e77d64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9dc61a7d63e15d1568a3ba957e77d64">&#9670;&nbsp;</a></span>get_v_dislocation_bias_param()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_v_dislocation_bias_param </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the vacancy dislocation bias parameter. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00234">234</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;{</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;v_dislocation_bias_param;</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a554d6289003d34f8060827315cff77dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a554d6289003d34f8060827315cff77dd">&#9670;&nbsp;</a></span>set_v_dislocation_bias_param()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_v_dislocation_bias_param </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the vacancy dislocation bias parameter. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Vacancy dislocation bias parameter. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00241">241</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;{</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;v_dislocation_bias_param = val;</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5343f729a37f99bb9643302a3b975b0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5343f729a37f99bb9643302a3b975b0a">&#9670;&nbsp;</a></span>get_dislocation_density_0()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_dislocation_density_0 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the initial dislocation network density in cm^-2. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00247">247</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;{</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;dislocation_density_0;</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2a03adbe67e9f704776688330ba14ca1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a03adbe67e9f704776688330ba14ca1">&#9670;&nbsp;</a></span>set_dislocation_density_0()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_dislocation_density_0 </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the initial dislocation network density. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Initial dislocation network density in cm^-2. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00254">254</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;{</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;dislocation_density_0 = val;</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="afc78843fe9d28be93a0c967b97808df1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc78843fe9d28be93a0c967b97808df1">&#9670;&nbsp;</a></span>get_grain_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_grain_size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the grain size in cm. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00260">260</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;{</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;grain_size;</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5aee66ac6630f3b3f0956262ba3d4da3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5aee66ac6630f3b3f0956262ba3d4da3">&#9670;&nbsp;</a></span>set_grain_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_grain_size </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the grain size. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Grain size in cm. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00267">267</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;{</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;grain_size = val;</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3620bc39a9bbe031fdd32f4c83fcdf53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3620bc39a9bbe031fdd32f4c83fcdf53">&#9670;&nbsp;</a></span>get_lattice_param()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_lattice_param </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the lattice parameter in cm. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00273">273</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;{</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;lattice_param;</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9bbe49a78d4ba862ddef708498601861"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bbe49a78d4ba862ddef708498601861">&#9670;&nbsp;</a></span>set_lattice_param()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_lattice_param </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the lattice parameter. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Lattice parameter in cm. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00280">280</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;{</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;lattice_param = val;</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac01c3a39c8609b79909bbd89bc2e8b56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac01c3a39c8609b79909bbd89bc2e8b56">&#9670;&nbsp;</a></span>get_burgers_vector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_burgers_vector </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the magnitude of the burgers vector. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00286">286</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;{</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;burgers_vector;</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a830b59638091c83510cb86722d9689dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a830b59638091c83510cb86722d9689dd">&#9670;&nbsp;</a></span>set_burgers_vector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_burgers_vector </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the magnitude of the burgers vector. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Magnitude of the burgers vector. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00293">293</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;{</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;burgers_vector = val;</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad0b8b981345a63ffa1deb772e0d73773"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0b8b981345a63ffa1deb772e0d73773">&#9670;&nbsp;</a></span>get_atomic_volume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> Material::get_atomic_volume </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the average volume of a single atom in the material lattice in cm^3. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00299">299</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;{</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;atomic_volume;</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad7e6f98c0b1fb07cce17c58d69281d39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7e6f98c0b1fb07cce17c58d69281d39">&#9670;&nbsp;</a></span>set_atomic_volume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Material::set_atomic_volume </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the average volume of a single atom in the material lattice. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">val</td><td>Atomic volume in cm^3. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00306">306</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;{</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>-&gt;atomic_volume = val;</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad17080342c8a44bfb1cebae5f5b46c73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad17080342c8a44bfb1cebae5f5b46c73">&#9670;&nbsp;</a></span>impl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structMaterialImpl.html">MaterialImpl</a> * Material::impl </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a raw pointer to the underlying <a class="el" href="structMaterialImpl.html">MaterialImpl</a> object. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00312">312</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;{</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>.get();</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="aa7a7678eb5bafe799dd8eddfd50565fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7a7678eb5bafe799dd8eddfd50565fc">&#9670;&nbsp;</a></span>sqlite_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Material::sqlite_id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="material_8hpp_source.html#l00174">174</a> of file <a class="el" href="material_8hpp_source.html">material.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a146c03d68345f2393ff077a95b218c23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a146c03d68345f2393ff077a95b218c23">&#9670;&nbsp;</a></span>creation_datetime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Material::creation_datetime</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Timestamp of when this <a class="el" href="structMaterial.html" title="A class which represents the material property parameters for a ClusterDynamics simulation.">Material</a> was first instantiated. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8hpp_source.html#l00175">175</a> of file <a class="el" href="material_8hpp_source.html">material.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a1467b74d319e6bf387cb51f4dc08c5dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1467b74d319e6bf387cb51f4dc08c5dd">&#9670;&nbsp;</a></span>species</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Material::species</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>A name for what kind of material this data represents. </p>
+
+<p class="definition">Definition at line <a class="el" href="material_8hpp_source.html#l00176">176</a> of file <a class="el" href="material_8hpp_source.html">material.hpp</a>.</p>
+
+</div>
+</div>
+<a id="aa258782eff9eb88048edb4c8aecac3f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa258782eff9eb88048edb4c8aecac3f3">&#9670;&nbsp;</a></span>_impl</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="structMaterialImpl.html">MaterialImpl</a>&gt; Material::_impl</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="material_8hpp_source.html#l00178">178</a> of file <a class="el" href="material_8hpp_source.html">material.hpp</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following files:<ul>
 <li>/home/omnicryptical/School/CS46X/cd-prototype/include/model/<a class="el" href="material_8hpp_source.html">material.hpp</a></li>
+<li>/home/omnicryptical/School/CS46X/cd-prototype/src/cluster_dynamics/<a class="el" href="material_8cpp_source.html">material.cpp</a></li>
 </ul>
 </div><!-- contents -->
+<div class="ttc" id="astructMaterial_html_a1467b74d319e6bf387cb51f4dc08c5dd"><div class="ttname"><a href="structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd">Material::species</a></div><div class="ttdeci">std::string species</div><div class="ttdoc">A name for what kind of material this data represents.</div><div class="ttdef"><b>Definition:</b> <a href="material_8hpp_source.html#l00176">material.hpp:176</a></div></div>
+<div class="ttc" id="astructMaterial_html_ac82536c1fd847e78eecd48217782cb1d"><div class="ttname"><a href="structMaterial.html#ac82536c1fd847e78eecd48217782cb1d">Material::copy</a></div><div class="ttdeci">void copy(const Material &amp;other)</div><div class="ttdef"><b>Definition:</b> <a href="material_8cpp_source.html#l00030">material.cpp:30</a></div></div>
+<div class="ttc" id="astructMaterial_html_a146c03d68345f2393ff077a95b218c23"><div class="ttname"><a href="structMaterial.html#a146c03d68345f2393ff077a95b218c23">Material::creation_datetime</a></div><div class="ttdeci">std::string creation_datetime</div><div class="ttdoc">Timestamp of when this Material was first instantiated.</div><div class="ttdef"><b>Definition:</b> <a href="material_8hpp_source.html#l00175">material.hpp:175</a></div></div>
+<div class="ttc" id="astructMaterial_html_aa7a7678eb5bafe799dd8eddfd50565fc"><div class="ttname"><a href="structMaterial.html#aa7a7678eb5bafe799dd8eddfd50565fc">Material::sqlite_id</a></div><div class="ttdeci">int sqlite_id</div><div class="ttdef"><b>Definition:</b> <a href="material_8hpp_source.html#l00174">material.hpp:174</a></div></div>
+<div class="ttc" id="astructMaterial_html_aa258782eff9eb88048edb4c8aecac3f3"><div class="ttname"><a href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">Material::_impl</a></div><div class="ttdeci">std::unique_ptr&lt; MaterialImpl &gt; _impl</div><div class="ttdef"><b>Definition:</b> <a href="material_8hpp_source.html#l00178">material.hpp:178</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
