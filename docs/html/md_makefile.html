@@ -84,42 +84,42 @@ $(function() {
 <p>To run a make command, go to the root directory of the project (The one with <code>Makefile</code> in it) and execute <code>make [COMMAND]</code>, where <code>[COMMAND]</code> is replaced by one of the commands listed further down in this document. Optionally, if you include <code>R=1</code> at the end of a make command for a test or executable target, the executable will run immediately after being built (<code>make [COMMAND] R=1</code>). The CI targets cannot be run automatically like this.</p>
 <p>The following commands are present in our Makefile:</p>
 <p>Library Targets</p><ul>
-<li><b>cdlib</b> Builds the cluster dynamics library. Outputs <code>lib/libclusterdynamics.a</code>. <br  />
+<li><b>cdlib</b> - Builds the cluster dynamics library. Outputs <code>lib/libclusterdynamics.a</code>. <br  />
 </li>
-<li><b>cdcudalib</b> Builds the CUDA implementation of the cluster dynamics library. Outputs <code>lib/libclusterdynamicscuda.a</code>. <br  />
+<li><b>cdcudalib</b> - Builds the CUDA implementation of the cluster dynamics library. Outputs <code>lib/libclusterdynamicscuda.a</code>. <br  />
 </li>
-<li><b>cdmetallib</b> Builds the Metal implementation of the cluster dynamics library. Outputs <code>lib/libclusterdynamicsmetal.a</code>.</li>
-<li><b>dblib</b> Builds the database library. Outputs <code>lib/libclientdb.a</code>. <br  />
+<li><b>cdmetallib</b> - Builds the Metal implementation of the cluster dynamics library. Outputs <code>lib/libclusterdynamicsmetal.a</code>.</li>
+<li><b>dblib</b> - Builds the database library. Outputs <code>lib/libclientdb.a</code>. <br  />
 </li>
 </ul>
 <p>Test Targets <br  />
 </p><ul>
-<li><b>cdtests</b> Builds the cluster dynamics test target. Outputs <code>bin/cd_tests.out</code>. <br  />
+<li><b>cdtests</b> - Builds the cluster dynamics test target. Outputs <code>bin/cd_tests.out</code>. <br  />
 </li>
-<li><b>cdcudatests</b> Builds the cluster dynamics test target with the CUDA backend implementation. Outputs <code>bin/cd_cuda_tests.out</code>. <br  />
+<li><b>cdcudatests</b> - Builds the cluster dynamics test target with the CUDA backend implementation. Outputs <code>bin/cd_cuda_tests.out</code>. <br  />
 </li>
-<li><b>dbtests</b> Builds the database test target. Outputs <code>bin/db_tests.out</code>. <br  />
+<li><b>dbtests</b> - Builds the database test target. Outputs <code>bin/db_tests.out</code>. <br  />
 </li>
 </ul>
 <p>Example Executable Targets <br  />
 </p><ul>
-<li><b>cdex</b> Builds the example frontend for the cluster dynamics backend library. Outputs <code>bin/cd_example.out</code>. <br  />
+<li><b>cdex</b> - Builds the example frontend for the cluster dynamics backend library. Outputs <code>bin/cd_example.out</code>. <br  />
 </li>
-<li><b>cdv</b> Same as <b>cdex</b> but with verbose printing enabled, which will tell the example frontend to show each step of the simulation instead of just the last one. <br  />
+<li><b>cdv</b> - Same as <b>cdex</b> but with verbose printing enabled, which will tell the example frontend to show each step of the simulation instead of just the last one. <br  />
 </li>
-<li><b>cdcsv</b> Same as <b>cdex</b> but with csv output enabled, which will disable normal output and only print out csv rows of the simulation data. <br  />
+<li><b>cdcsv</b> - Same as <b>cdex</b> but with csv output enabled, which will disable normal output and only print out csv rows of the simulation data. <br  />
 </li>
-<li><b>cdcudaex</b> Similar to <b>cdex</b> except using the CUDA cluster dynamics backend library. Outputs <code>bin/cd_cuda_example.out</code>. <br  />
+<li><b>cdcudaex</b> - Similar to <b>cdex</b> except using the CUDA cluster dynamics backend library. Outputs <code>bin/cd_cuda_example.out</code>. <br  />
 </li>
-<li><b>cdmetalex</b> Similar to <b>cdex</b> except using the Metal cluster dynamics backend library. Outputs <code>bin/cd_metal_example.out</code>. <br  />
+<li><b>cdmetalex</b> - Similar to <b>cdex</b> except using the Metal cluster dynamics backend library. Outputs <code>bin/cd_metal_example.out</code>. <br  />
 </li>
-<li><b>dbex</b> Builds an example usage of the database library. Outputs <code>bin/db_example.out</code>. <br  />
+<li><b>dbex</b> - Builds an example usage of the database library. Outputs <code>bin/db_example.out</code>. <br  />
 </li>
 </ul>
 <p>CI Targets</p><ul>
-<li><b>cluster_dynamics</b> Same as <b>cdex</b>, except it outputs <code>bin/cluster_dynamics.out</code>, and the resulting executable cannot be run automatically with <code>R=1</code>. <br  />
+<li><b>cluster_dynamics</b> - Same as <b>cdex</b>, except it outputs <code>bin/cluster_dynamics.out</code>, and the resulting executable cannot be run automatically with <code>R=1</code>. <br  />
 </li>
-<li><b>client_db</b> Same as <b>dbex</b>, except it outputs <code>bin/client_db.out</code>, and the resulting executable cannot be run automatically with <code>R=1</code>.</li>
+<li><b>client_db</b> - Same as <b>dbex</b>, except it outputs <code>bin/client_db.out</code>, and the resulting executable cannot be run automatically with <code>R=1</code>.</li>
 </ul>
 <p>If you build from Windows, the output filetypes should be automatically changed to match. For example, all of the <code>.out</code> outputs should give you <code>.exe</code> files instead. </p>
 </div></div><!-- contents -->
