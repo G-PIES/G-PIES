@@ -227,13 +227,13 @@ gp_float ClusterDynamicsImpl::i1_cluster_delta()
         // (2)
         - annihilation_rate() * interstitials[1] * vacancies[1]
         // (3)
-        - interstitials[1] * i_dislocation_annihilation_time()
+        - interstitials[1] * i_dislocation_annihilation_rate()
         // (4)
-        - interstitials[1] * i_grain_boundary_annihilation_time()
+        - interstitials[1] * i_grain_boundary_annihilation_rate()
         // (5)
-        - interstitials[1] * i_absorption_time()
+        - interstitials[1] * i_absorption_rate()
         // (6)
-        + i_emission_time();
+        + i_emission_rate();
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3a
@@ -259,13 +259,13 @@ gp_float ClusterDynamicsImpl::v1_cluster_delta()
         // (2)
         - annihilation_rate() * interstitials[1] * vacancies[1]
         // (3)
-        - vacancies[1] * v_dislocation_annihilation_time()
+        - vacancies[1] * v_dislocation_annihilation_rate()
         // (4)
-        - vacancies[1] * v_grain_boundary_annihilation_time()
+        - vacancies[1] * v_grain_boundary_annihilation_rate()
         // (5)
-        - vacancies[1] * v_absorption_time()
+        - vacancies[1] * v_absorption_rate()
         // (6)
-        + v_emission_time();
+        + v_emission_rate();
 }
 // --------------------------------------------------------------------------------------------
 
@@ -277,7 +277,7 @@ gp_float ClusterDynamicsImpl::v1_cluster_delta()
                 (1)                      (2)                     (3)
     tEi(n) = SUM ( E[i,i](n) * Ci(n) ) + 4 * E[i,i](2) * Ci(2) + B[i,v](2) * Cv(2) * Ci(2)
 */
-gp_float ClusterDynamicsImpl::i_emission_time()
+gp_float ClusterDynamicsImpl::i_emission_rate()
 {
    gp_float time = 0.;
    for (size_t in = 3; in < concentration_boundary - 1; ++in)
@@ -303,7 +303,7 @@ gp_float ClusterDynamicsImpl::i_emission_time()
                 (1)                           (2)                     (3)
     tEv(n) = SUM[n>0] ( E[v,v](n) * Cv(n) ) + 4 * E[v,v](2) * Cv(2) + B[v,i](2) * Cv(2) * Ci(2)
 */
-gp_float ClusterDynamicsImpl::v_emission_time()
+gp_float ClusterDynamicsImpl::v_emission_rate()
 {
    gp_float time = 0.;
    for (size_t vn = 3; vn < concentration_boundary - 1; ++vn)
@@ -332,7 +332,7 @@ gp_float ClusterDynamicsImpl::v_emission_time()
                         (1)                              (2)
     tAi(n) = SUM[n>0] ( B[i,i](n) * Ci(n) ) + SUM[n>1] ( B[v,i](n) * Cv(n) )
 */
-gp_float ClusterDynamicsImpl::i_absorption_time()
+gp_float ClusterDynamicsImpl::i_absorption_rate()
 {
    gp_float time = ii_absorption(1) * interstitials[1];
    for (size_t in = 2; in < concentration_boundary - 1; ++in)
@@ -355,7 +355,7 @@ gp_float ClusterDynamicsImpl::i_absorption_time()
                         (1)                              (2)
     tAv(n) = SUM[n>0] ( B[v,v](n) * Cv(n) ) + SUM[n>1] ( B[i,v](n) * Ci(n) )
 */
-gp_float ClusterDynamicsImpl::v_absorption_time()
+gp_float ClusterDynamicsImpl::v_absorption_rate()
 {
    gp_float time = vv_absorption(1) * vacancies[1];
    for (size_t vn = 2; vn < concentration_boundary - 1; ++vn)
@@ -399,7 +399,7 @@ gp_float ClusterDynamicsImpl::annihilation_rate()
            (1)   (2)    (3)
     tAdi = p  *  Di  *  Zi
 */
-gp_float ClusterDynamicsImpl::i_dislocation_annihilation_time()
+gp_float ClusterDynamicsImpl::i_dislocation_annihilation_rate()
 {
     return
         // (1)
@@ -416,7 +416,7 @@ gp_float ClusterDynamicsImpl::i_dislocation_annihilation_time()
            (1)   (2)    (3)
     tAdv = p  *  Dv  *  Zv
 */
-gp_float ClusterDynamicsImpl::v_dislocation_annihilation_time()
+gp_float ClusterDynamicsImpl::v_dislocation_annihilation_rate()
 {
     return
         // (1)
@@ -436,7 +436,7 @@ gp_float ClusterDynamicsImpl::v_dislocation_annihilation_time()
            (1)            (2)      (3)                            (4)                              (5)
     tAdi = 6 * Di * sqrt( p * Zi + SUM[n] ( B[i,i](n) * Ci(n) ) + SUM[n] ( B[v,i](n) * Cv(n) ) ) / d
 */
-gp_float ClusterDynamicsImpl::i_grain_boundary_annihilation_time()
+gp_float ClusterDynamicsImpl::i_grain_boundary_annihilation_rate()
 {
     return
         // (1)
@@ -461,7 +461,7 @@ gp_float ClusterDynamicsImpl::i_grain_boundary_annihilation_time()
            (1)            (2)      (3)                            (4)                              (5)
     tAdv = 6 * Di * sqrt( p * Zv + SUM[n] ( B[v,v](n) * Cv(n) ) + SUM[n] ( B[i,v](n) * Ci(n) ) ) / d
 */
-gp_float ClusterDynamicsImpl::v_grain_boundary_annihilation_time()
+gp_float ClusterDynamicsImpl::v_grain_boundary_annihilation_rate()
 {
     return
         // (1)

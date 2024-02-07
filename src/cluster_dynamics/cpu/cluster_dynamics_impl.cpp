@@ -96,13 +96,13 @@ gp_float ClusterDynamicsImpl::i1_concentration_derivative() const
         // (2)
         - annihilation_rate() * interstitials[1] * vacancies[1]
         // (3)
-        - interstitials[1] * i_dislocation_annihilation_time()
+        - interstitials[1] * i_dislocation_annihilation_rate()
         // (4)
-        - interstitials[1] * i_grain_boundary_annihilation_time()
+        - interstitials[1] * i_grain_boundary_annihilation_rate()
         // (5)
-        - interstitials[1] * i_absorption_time()
+        - interstitials[1] * i_absorption_rate()
         // (6)
-        + i_emission_time();
+        + i_emission_rate();
 }
 
 
@@ -132,13 +132,13 @@ gp_float ClusterDynamicsImpl::v1_concentration_derivative() const
         // (2)
         - annihilation_rate() * interstitials[1] * vacancies[1]
         // (3)
-        - vacancies[1] * v_dislocation_annihilation_time()
+        - vacancies[1] * v_dislocation_annihilation_rate()
         // (4)
-        - vacancies[1] * v_grain_boundary_annihilation_time()
+        - vacancies[1] * v_grain_boundary_annihilation_rate()
         // (5)
-        - vacancies[1] * v_absorption_time()
+        - vacancies[1] * v_absorption_rate()
         // (6)
-        + v_emission_time();
+        + v_emission_rate();
 }
 
 
@@ -461,7 +461,7 @@ gp_float ClusterDynamicsImpl::vemission_iabsorption_nm1(size_t nm1) const
  *  (3) Represents the rate that interstitials are produced by interstitial clusters of size 2 absorbing a
  *  vacancy.
 */
-gp_float ClusterDynamicsImpl::i_emission_time() const
+gp_float ClusterDynamicsImpl::i_emission_rate() const
 {
    gp_float time = 0.;
    for (size_t in = 3; in < concentration_boundary - 1; ++in)
@@ -502,12 +502,12 @@ gp_float ClusterDynamicsImpl::i_emission_time() const
  * 
  *  (2) Represents the rate of emission of single vacancies by vacancy clusters of size = 2.
  *  This cannot be included in (1) because size 2 clusters create 2 single vacancies when they emit
- *  one. There is a bug which is possibly related to this term, see i_emission_time().
+ *  one. There is a bug which is possibly related to this term, see i_emission_rate().
  * 
  *  (3) Represents the rate that vacancies are produced by vacancy clusters of size 2 absorbing a
  *  vacancy.
 */
-gp_float ClusterDynamicsImpl::v_emission_time() const
+gp_float ClusterDynamicsImpl::v_emission_rate() const
 {
    gp_float time = 0.;
    for (size_t vn = 3; vn < concentration_boundary - 1; ++vn)
@@ -521,7 +521,7 @@ gp_float ClusterDynamicsImpl::v_emission_time() const
       // (2)
       4. * vv_emission(2) * vacancies[2]
       // (3)
-      + vi_absorption(2) * vacancies[2] * interstitials[2];
+      + vi_absorption(2) * interstitials[1] * vacancies[2];
 
    return time;
 }
@@ -541,7 +541,7 @@ gp_float ClusterDynamicsImpl::v_emission_time() const
  *    \ann{2}{\sum_{n>1} \beta_{v,i}(n) C_v(n)}
  *  \f$
 */
-gp_float ClusterDynamicsImpl::i_absorption_time() const
+gp_float ClusterDynamicsImpl::i_absorption_rate() const
 {
    gp_float time = ii_absorption(1) * interstitials[1];
    for (size_t in = 2; in < concentration_boundary - 1; ++in)
@@ -571,7 +571,7 @@ gp_float ClusterDynamicsImpl::i_absorption_time() const
  *    \ann{2}{\sum_{n>1} \beta_{i,v}(n) C_i(n)}
  *  \f$
 */
-gp_float ClusterDynamicsImpl::v_absorption_time() const
+gp_float ClusterDynamicsImpl::v_absorption_rate() const
 {
    gp_float time = vv_absorption(1) * vacancies[1];
    for (size_t vn = 2; vn < concentration_boundary - 1; ++vn)
@@ -627,7 +627,7 @@ gp_float ClusterDynamicsImpl::annihilation_rate() const
  * \ann{3}{Z_i}
  * \f$
 */
-gp_float ClusterDynamicsImpl::i_dislocation_annihilation_time() const
+gp_float ClusterDynamicsImpl::i_dislocation_annihilation_rate() const
 {
     return
         // (1)
@@ -659,7 +659,7 @@ gp_float ClusterDynamicsImpl::i_dislocation_annihilation_time() const
  * 
  * (3) \f$Z_v\f$ 🡆 `material.v_dislocation_bias`
 */
-gp_float ClusterDynamicsImpl::v_dislocation_annihilation_time() const
+gp_float ClusterDynamicsImpl::v_dislocation_annihilation_rate() const
 {
     return
         // (1)
@@ -691,7 +691,7 @@ gp_float ClusterDynamicsImpl::v_dislocation_annihilation_time() const
  *  \f$
  * 
 */
-gp_float ClusterDynamicsImpl::i_grain_boundary_annihilation_time() const
+gp_float ClusterDynamicsImpl::i_grain_boundary_annihilation_rate() const
 {
     return
         // (1)
@@ -729,7 +729,7 @@ gp_float ClusterDynamicsImpl::i_grain_boundary_annihilation_time() const
  *    {\ann{5}{d}}
  *  \f$
 */
-gp_float ClusterDynamicsImpl::v_grain_boundary_annihilation_time() const
+gp_float ClusterDynamicsImpl::v_grain_boundary_annihilation_rate() const
 {
     return
         // (1)
