@@ -22,13 +22,13 @@ public:
   size_t concentration_boundary;
   gp_float dislocation_density;
 
-  gp_float mean_dislocation_radius_val;
-  gp_float ii_sum_absorption_val;
-  gp_float iv_sum_absorption_val;
-  gp_float vv_sum_absorption_val;
-  gp_float vi_sum_absorption_val;
-  gp_float i_diffusion_val;
-  gp_float v_diffusion_val;
+  gp_float mean_dislocation_radius_val; //!< Precomputed in step_init() using mean_dislocation_cell_radius()
+  gp_float ii_sum_absorption_val; //!< Precomputed in step_init() using ii_sum_absorption()
+  gp_float iv_sum_absorption_val; //!< Precomputed in step_init() using iv_sum_absorption()
+  gp_float vv_sum_absorption_val; //!< Precomputed in step_init() using vv_sum_absorption()
+  gp_float vi_sum_absorption_val; //!< Precomputed in step_init() using vi_sum_absorption()
+  gp_float i_diffusion_val; //!< Precomputed in step_init() using i_diffusion()
+  gp_float v_diffusion_val; //!< Precomputed in step_init() using v_diffusion()
 
   MaterialImpl material;
   NuclearReactorImpl reactor;

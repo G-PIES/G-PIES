@@ -155,13 +155,14 @@ gp_float ClusterDynamicsImpl::v1_concentration_derivative() const
  * 
  *  \f$
  *    \dwn{\frac{d\rho}{dt}=}
- *    \ann{1}{Gain \vphantom{\rho^{3/2}}}\dwn{-}
- *    \ann{2}{Kb^2\rho^{3/2}}
+ *    \ann{1}{ \frac{2 \pi}{\Omega} \sum_{n>0} r_i(n) C_i(n) \beta_{i,i}(n) P_{unf}(n) }\dwn{-}
+ *    \ann{2}{ Kb^2\rho^{3/2} \vphantom{\sum_{n>0}} }
  *  \f$
  * 
  * <b>Notes</b>
  * 
- * The gain term comes from the Sakaguchi paper's model of dislocation network evolution. Every time an
+ * The gain term comes from the Sakaguchi paper's model of dislocation network evolution modified to use
+ * notation more similar to the Pokor paper. Every time an
  * interstitial cluster grows by absorbing a size 1 interstitial, it has a \f$P_{unf}(n)\f$ probability of
  * becoming part of the dislocation network instead.
 */
@@ -170,7 +171,7 @@ gp_float ClusterDynamicsImpl::dislocation_density_derivative() const
    gp_float gain = 0.0;
    for (size_t n = 1; n < concentration_boundary; ++n)
    {
-      gain += cluster_radius(n) * dislocation_promotion_probability(n) * ii_absorption(n) * interstitials[n];
+      gain += cluster_radius(n) * ii_absorption(n) * interstitials[n] * dislocation_promotion_probability(n);
    }
 
    gain *= 2. * M_PI / material.atomic_volume;
@@ -319,24 +320,13 @@ gp_float ClusterDynamicsImpl::vemission_iabsorption_np1(size_t np1) const
  *  <hr>
  * 
  *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 2c
- *  N. Sakaguchi / Acta Materialia 1131 (2001), Equation 3.14
  * 
  *  \f$
  *    \dwn{b_{i,n} =}
  *    \ann{1}{\beta_{i,v}(n)C_v(1)}\dwn{+}
- *    \ann{2}{\beta_{i,i}(n)C_i(1)}
- *    \ann{3}{(1-P_{unf}(n))}\dwn{+}
+ *    \ann{2}{\beta_{i,i}(n)C_i(1)}\dwn{+}
  *    \ann{4}{\alpha_{i,i}(n)}
  *  \f$
- * 
- *  <b>Notes</b>
- * 
- *  This equation uses the cluster evolution equations from the Pokor paper
- *  modified to accomodate the dislocation network evolution model of the Sakaguchi paper. 
- *  \f$K_{1(j)}\f$ from the Sakaguchi paper corresponds to \f$\beta_{i,i}(n)C_i(1)\f$
- *  in the Pokor paper, both being the rate of promotion to the next cluster size.
- *  Dr. Chen suggested using \f$P_{unf}(n)\f$, in a similar way to the Sakaguchi paper
- *  to determine what percentage of promoted clusters become part of the dislocation network.
 */
 gp_float ClusterDynamicsImpl::iemission_vabsorption_n(size_t n) const
 {
@@ -346,8 +336,6 @@ gp_float ClusterDynamicsImpl::iemission_vabsorption_n(size_t n) const
         // (2)
         + ii_absorption(n) * interstitials[1] 
         // (3)
-        * (1 - dislocation_promotion_probability(n))
-        // (4)
         + ii_emission(n);
 }
 
@@ -355,8 +343,8 @@ gp_float ClusterDynamicsImpl::iemission_vabsorption_n(size_t n) const
 
 /** @brief Returns the rate that a vacancy cluster of size n can evolve toward a cluster of size
  *  n + 1 absorbing a vacancy, or toward a cluster of size
- *  n - 1 absorbing an interstitial or emitting an vacancy,
- * . \todo Document units
+ *  n - 1 absorbing an interstitial or emitting an vacancy.
+ *  \todo Document units
  * 
  *  <hr>
  * 
@@ -384,26 +372,38 @@ gp_float ClusterDynamicsImpl::vemission_iabsorption_n(size_t n) const
 
 
 /** @brief Returns the rate that an interstitial cluster of size n - 1 can evolve into a
- *  cluster of size n by absorbing an interstitial,. \todo Document units
+ *  cluster of size n by absorbing an interstitial. \todo Document units
  * 
  * <hr>
  * 
  * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 2d
+ * N. Sakaguchi / Acta Materialia 1131 (2001), Equation 3.14
  * 
  * \f$
  *   \dwn{c_{i,n-1} =}
- *   \ann{1}{\beta_{i,i}(n-1)}\dwn{*}
+ *   \ann{1}{\beta_{i,i}(n-1)}
  *   \ann{2}{C_i(1)}
+ *   \ann{3}{(1-P_{unf}(n))}
  * \f$
  * 
+ *  <b>Notes</b>
+ * 
+ *  This equation uses the cluster evolution term from the Pokor paper
+ *  modified to accomodate the dislocation network evolution model of the Sakaguchi paper. 
+ *  \f$K_{1(j)}\f$ from the Sakaguchi paper corresponds to \f$\beta_{i,i}(n)C_i(1)\f$
+ *  in the Pokor paper, both representing the rate of promotion to the next cluster size.
+ *  Dr. Chen suggested using \f$P_{unf}(n)\f$, in a similar way to the Sakaguchi paper
+ *  to determine what percentage of promoted clusters become part of the dislocation network.
 */
 gp_float ClusterDynamicsImpl::iemission_vabsorption_nm1(size_t nm1) const
 {
     return
         // (1)
-        ii_absorption(nm1) *
+        ii_absorption(nm1) 
         // (2)
-        interstitials[1];
+        * interstitials[1]
+        // (3)
+        * (1 - dislocation_promotion_probability(n));
 }
 
 
@@ -1120,14 +1120,13 @@ gp_float ClusterDynamicsImpl::v_diffusion() const
 */
 gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const
 {
-   // (2)
    gp_float r_0_factor = 0.;
    for (size_t i = 1; i < concentration_boundary; ++i)
    {
       r_0_factor += cluster_radius(i) * interstitials[i];
    }
 
-                     // (1)                                                        (3)                       
+                     // (1)                                           (2)          (3)                       
    return 1 / std::sqrt((2. * M_PI * M_PI / material.atomic_volume) * r_0_factor + M_PI * dislocation_density);
 }
 
@@ -1137,7 +1136,10 @@ gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const
 /*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.12
 */
 /** @brief Returns the probability that an interstitial cluster of size n will unfurl to join the dislocation
- *  network when it grows to size n + 1,. \todo Document units
+ *  network when it grows to size n + 1. 
+ *  \todo Document units
+ *  \todo Consider reworking the equation to remove the squaring of mean_dislocation_radius_val. 
+ *  We also do a sqrt to calculate mean_dislocation_radius_val and they'll cancel out.
  * 
  *  <hr>
  * 
@@ -1156,8 +1158,8 @@ gp_float ClusterDynamicsImpl::dislocation_promotion_probability(size_t n) const
 
    //      (1)                           (2)
    return (2. * cluster_radius(n) * dr + std::pow(dr, 2.)) 
-   //    (3)                                       (4)
-      / (M_PI * mean_dislocation_radius_val / 2. - std::pow(cluster_radius(n), 2.)); 
+   //    (3)                                                    (4)
+      / (std::pow(M_PI * mean_dislocation_radius_val / 2., 2) - std::pow(cluster_radius(n), 2.)); 
 }
 
 
