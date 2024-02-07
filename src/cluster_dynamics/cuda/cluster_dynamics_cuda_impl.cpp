@@ -138,7 +138,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::iemission_vabsorption_n(size_t n) con
         // (1)
         iv_absorption(n) * vacancies[1]
         // (2)
-        + ii_absorption(n) * interstitials[1] * (1 - dislocation_promotion_probability(n))
+        + ii_absorption(n) * interstitials[1]
         // (3)
         + ii_emission(n);
 }
@@ -166,16 +166,18 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::vemission_iabsorption_n(size_t n) con
     The rate that an interstitial loop of size n - 1 can evolve into a
     loop of size n by absorbing an interstitial.
 
-               (1)           (2)
-    c[i,n-1] = B[i,i](n-1) * Ci(1)
+               (1)           (2)     (3)
+    c[i,n-1] = B[i,i](n-1) * Ci(1) * P_unf(n)
 */
 __CUDADECL__ gp_float ClusterDynamicsImpl::iemission_vabsorption_nm1(size_t nm1) const
 {
     return
         // (1)
-        ii_absorption(nm1) *
+        ii_absorption(nm1)
         // (2)
-        interstitials[1];
+        * interstitials[1]
+        // (3)
+         * (1 - dislocation_promotion_probability(nm1 + 1));
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2d
@@ -268,7 +270,7 @@ gp_float ClusterDynamicsImpl::v1_concentration_derivative() const
     clusters of size up to (nmax).
 
                 (1)                      (2)                     (3)
-    tEi(n) = SUM ( E[i,i](n) * Ci(n) ) + 4 * E[i,i](2) * Ci(2) + B[i,v](2) * Cv(2) * Ci(2)
+    tEi(n) = SUM ( E[i,i](n) * Ci(n) ) + 4 * E[i,i](2) * Ci(2) + B[i,v](2) * Cv(1) * Ci(2)
 */
 gp_float ClusterDynamicsImpl::i_emission_rate() const
 {
@@ -281,7 +283,7 @@ gp_float ClusterDynamicsImpl::i_emission_rate() const
       // (2)
       4. * ii_emission(2) * host_interstitials[2]
       // (3)
-      + iv_absorption(2) * host_vacancies[2] * host_interstitials[2];
+      + iv_absorption(2) * host_vacancies[1] * host_interstitials[2];
 
   return time;
 }
@@ -291,7 +293,7 @@ gp_float ClusterDynamicsImpl::i_emission_rate() const
     clusters of size up to (nmax).
 
                 (1)                           (2)                     (3)
-    tEv(n) = SUM[n>0] ( E[v,v](n) * Cv(n) ) + 4 * E[v,v](2) * Cv(2) + B[v,i](2) * Cv(2) * Ci(2)
+    tEv(n) = SUM[n>0] ( E[v,v](n) * Cv(n) ) + 4 * E[v,v](2) * Cv(2) + B[v,i](2) * Cv(2) * Ci(1)
 */
 gp_float ClusterDynamicsImpl::v_emission_rate() const
 {
@@ -304,7 +306,7 @@ gp_float ClusterDynamicsImpl::v_emission_rate() const
       // (2)
       4. * vv_emission(2) * host_vacancies[2]
       // (3)
-      + vi_absorption(2) * host_vacancies[2] * host_interstitials[2];
+      + vi_absorption(2) * host_vacancies[2] * host_interstitials[1];
 
   return time;
 }
@@ -661,7 +663,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::dislocation_promotion_probability(siz
     gp_float dr = cluster_radius(n + 1) - cluster_radius(n);
 
     return (2. * cluster_radius(n) * dr + std::pow(dr, 2.)) 
-         / (M_PI * mean_dislocation_radius_val / 2. - std::pow(cluster_radius(n), 2.)); 
+         / (std::pow(M_PI * mean_dislocation_radius_val / 2., 2) - std::pow(cluster_radius(n), 2.)); 
 }
 // --------------------------------------------------------------------------------------------
 

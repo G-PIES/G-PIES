@@ -403,7 +403,7 @@ gp_float ClusterDynamicsImpl::iemission_vabsorption_nm1(size_t nm1) const
         // (2)
         * interstitials[1]
         // (3)
-        * (1 - dislocation_promotion_probability(n));
+        * (1 - dislocation_promotion_probability(nm1 + 1));
 }
 
 
