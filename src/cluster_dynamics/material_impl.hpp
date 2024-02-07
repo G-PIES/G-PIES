@@ -3,56 +3,42 @@
 
 #include "types.hpp"
 
-// C. Pokor / Journal of Nuclear Materials 326 (2004), Table 6
+/// C. Pokor / Journal of Nuclear Materials 326 (2004), Table 6
+/// \todo Get better descriptions for the bias factors
 struct MaterialImpl
 {
-    // migration energy (eV)
-    gp_float i_migration;
-    gp_float v_migration;
 
-    // diffusion coefficients (pre-exponential) (cm^2 / s)
-    gp_float i_diffusion_0;
-    gp_float v_diffusion_0;
+    gp_float i_migration; //!< Single interstitial migration energy in eV.
+    gp_float v_migration; //!< Single vacancy migration energy in eV.
 
-    // formation energy (eV)
-    gp_float i_formation;
-    gp_float v_formation;
+    gp_float i_diffusion_0; //!< Single interstitial preexponential diffusion constant in cm^2/s.
+    gp_float v_diffusion_0; //!< Single vacancy preexponential diffusion constant in cm^2/s.
 
-    // binding energy for bi-interstitials and bi-vacancies (eV)
-    gp_float i_binding;
-    gp_float v_binding;
+    gp_float i_formation; //!< Interstitial formation energy in eV.
+    gp_float v_formation; //!< Vacancy formation energy in eV.
 
-    // recombination radius between defects (cm)
-    gp_float recombination_radius;
+    gp_float i_binding; //!< Binding energy for size 2 interstitials in eV.
+    gp_float v_binding; //!< Binding energy for size 2 interstitials in eV.
 
-    // bias factor of the loops for interstitials
-    gp_float i_loop_bias;
+    gp_float recombination_radius; //!< Recombination radius of point defects in cm.
 
-    // bias factor of dislocations for interstitial
-    gp_float i_dislocation_bias;
-    gp_float i_dislocation_bias_param;
+    gp_float i_loop_bias; //!< Interstitial loop bias factor.
+    gp_float i_dislocation_bias; //!< Interstitial dislocation bias factor.
+    gp_float i_dislocation_bias_param; //!< Interstitial dislocation bias parameter.
 
-    // bias factor of the loops for vacancies
-    gp_float v_loop_bias;
+    gp_float v_loop_bias; //!< Vacancy loop bias factor.
+    gp_float v_dislocation_bias; //!< Vacancy dislocation bias factor.
+    gp_float v_dislocation_bias_param; //!< Vacancy dislocation bias parameter.
 
-    // bias factor of dislocations for vacancies 
-    gp_float v_dislocation_bias;
-    gp_float v_dislocation_bias_param;
+    gp_float dislocation_density_0; //!< Initial dislocation network density in cm^-2.
 
-    // (cm^2)
-    gp_float dislocation_density_0;
+    gp_float grain_size; //!< Grain size in cm.
 
-    // grain size (cm)
-    gp_float grain_size;
+    gp_float lattice_param; //!< Lattice parameter in cm.
 
-    // lattice parameter (cm)
-    gp_float lattice_param;
+    gp_float burgers_vector; //!< The magnitude of the burgers vector.
 
-    // burgers vector magnitude
-    gp_float burgers_vector;
-
-    // average volume of a single atom in the lattice
-    gp_float atomic_volume;
+    gp_float atomic_volume; //!< The average volume of a single atom in the material lattice.
 };
 
 #endif // MATERIAL_IMPL_HPP
