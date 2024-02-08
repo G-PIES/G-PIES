@@ -1,0 +1,11 @@
+# Borrowed from https://github.com/cpplint/GitHub-Action-for-cpplint?tab=readme-ov-file
+name: cpplint
+on: [push, pull_request]
+jobs:
+  cpplint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+    - run: pip install cpplint
+    - run: cpplint --recursive --exclude='extern/*' --filter=-legal/copyright .
