@@ -246,7 +246,7 @@ gp_float iemission_vabsorption_nm1(device ClusterDynamicsMetalArgs& args, uint n
         // (2)
         * args.interstitials[1]
         // (3)
-        * (1 - dislocation_promotion_probability(args, n));
+        * (1 - dislocation_promotion_probability(args, nm1));
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2d
