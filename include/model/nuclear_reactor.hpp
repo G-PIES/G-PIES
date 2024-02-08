@@ -7,7 +7,7 @@
 #include "datetime.hpp"
 #include "types.hpp"
 
-class NuclearReactorImpl;
+struct NuclearReactorImpl;
 
 /** @brief A class which represents the radiation environment 
  *  parameters for a ClusterDynamics simulation.

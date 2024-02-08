@@ -6,8 +6,8 @@
 #include "types.hpp"
 #include "gpies_exception.hpp"
 
-class NuclearReactor;
-class Material;
+struct NuclearReactor;
+struct Material;
 
 static const char* DEFAULT_CLIENT_DB_PATH = "./db/gpies.db";
 
