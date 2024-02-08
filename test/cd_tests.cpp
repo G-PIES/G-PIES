@@ -508,90 +508,90 @@ TEST_F(ClusterDynamicsTest, vv_absorption_test)
   EXPECT_DOUBLE_EQ(expected[2], actual[2]);
 }
 
-TEST_F(ClusterDynamicsTest, i_dislocation_annihilation_time_test)
+TEST_F(ClusterDynamicsTest, i_dislocation_annihilation_rate_test)
 {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
   cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
   gp_float expected = 1.3898960585069451e-20;
-  gp_float actual = cd.i_dislocation_annihilation_time();
+  gp_float actual = cd.i_dislocation_annihilation_rate();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
 
-TEST_F(ClusterDynamicsTest, v_dislocation_annihilation_time_test)
+TEST_F(ClusterDynamicsTest, v_dislocation_annihilation_rate_test)
 {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
   cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
   gp_float expected = 2.0452274646486708e-25;
-  gp_float actual = cd.v_dislocation_annihilation_time();
+  gp_float actual = cd.v_dislocation_annihilation_rate();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
 
-TEST_F(ClusterDynamicsTest, i_grain_boundary_annihilation_time_test)
+TEST_F(ClusterDynamicsTest, i_grain_boundary_annihilation_rate_test)
 {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
   cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
   gp_float expected = 7.3710369608603651e-11;
-  gp_float actual = cd.i_grain_boundary_annihilation_time();
+  gp_float actual = cd.i_grain_boundary_annihilation_rate();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
 
-TEST_F(ClusterDynamicsTest, v_grain_boundary_annihilation_time_test)
+TEST_F(ClusterDynamicsTest, v_grain_boundary_annihilation_rate_test)
 {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
   cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
   gp_float expected = 1.2033063175360925e-15;
-  gp_float actual = cd.v_grain_boundary_annihilation_time();
+  gp_float actual = cd.v_grain_boundary_annihilation_rate();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
 
-TEST_F(ClusterDynamicsTest, i_emission_time_test)
+TEST_F(ClusterDynamicsTest, i_emission_rate_test)
 {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
   cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
   gp_float expected = 2.2296462178878698e-07;
-  gp_float actual = cd.i_emission_time();
+  gp_float actual = cd.i_emission_rate();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
 
-TEST_F(ClusterDynamicsTest, v_emission_time_test)
+TEST_F(ClusterDynamicsTest, v_emission_rate_test)
 {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
   cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
-  gp_float expected = 2.1587051805814287e-35;
-  gp_float actual = cd.v_emission_time();
+  gp_float expected = 2.1585231596640677e-35;
+  gp_float actual = cd.v_emission_rate();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
 
-TEST_F(ClusterDynamicsTest, i_absorption_time_test)
+TEST_F(ClusterDynamicsTest, i_absorption_rate_test)
 {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
   cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
   gp_float expected = 1.4921083516796222e-25;
-  gp_float actual = cd.i_absorption_time();
+  gp_float actual = cd.i_absorption_rate();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
 
-TEST_F(ClusterDynamicsTest, v_absorption_time_test)
+TEST_F(ClusterDynamicsTest, v_absorption_rate_test)
 {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
   cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
   gp_float expected = 2.3112901377168451e-30;
-  gp_float actual = cd.v_absorption_time();
+  gp_float actual = cd.v_absorption_rate();
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
@@ -724,11 +724,11 @@ TEST_F(ClusterDynamicsTest, dislocation_promotion_probability_test)
 
   // Starts from cluster size = 2
   gp_float expected[5] = {
-    6.3739818750851983e-23, 
-    6.3739818750851924e-23, 
-    6.373981875085203e-23, 
-    6.3739818750851854e-23, 
-    6.37398187508521e-23
+    2.2743949558520322e-29, 
+    2.2743949558520299e-29, 
+    2.2743949558520339e-29, 
+    2.2743949558520277e-29, 
+    2.2743949558520367e-29
   };
 
   gp_float actual[5];

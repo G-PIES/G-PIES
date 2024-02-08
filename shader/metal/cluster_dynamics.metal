@@ -207,7 +207,7 @@ gp_float iemission_vabsorption_n(device ClusterDynamicsMetalArgs& args, uint n)
         // (1)
         iv_absorption(args, n) * args.vacancies[1]
         // (2)
-        + ii_absorption(args, n) * args.interstitials[1] * (1 - dislocation_promotion_probability(args, n))
+        + ii_absorption(args, n) * args.interstitials[1]
         // (3)
         + ii_emission(args, n);
 }
@@ -242,9 +242,11 @@ gp_float iemission_vabsorption_nm1(device ClusterDynamicsMetalArgs& args, uint n
 {
     return
         // (1)
-        ii_absorption(args, nm1) *
+        ii_absorption(args, nm1)
         // (2)
-        args.interstitials[1];
+        * args.interstitials[1]
+        // (3)
+        * (1 - dislocation_promotion_probability(args, n));
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2d
@@ -337,7 +339,7 @@ gp_float v1_cluster_delta(device ClusterDynamicsMetalArgs& args)
     clusters of size up to (nmax).
 
                 (1)                      (2)                     (3)
-    tEi(args, n) = SUM ( E[i,i](args, n) * Ci(args, n) ) + 4 * E[i,i](2) * Ci(2) + B[i,v](2) * Cv(2) * Ci(2)
+    tEi(args, n) = SUM ( E[i,i](args, n) * Ci(args, n) ) + 4 * E[i,i](2) * Ci(2) + B[i,v](2) * Cv(1) * Ci(2)
 */
 gp_float i_emission_time(device ClusterDynamicsMetalArgs& args)
 {
@@ -353,7 +355,7 @@ gp_float i_emission_time(device ClusterDynamicsMetalArgs& args)
       // (2)
       4. * ii_emission(args, 2) * args.interstitials[2]
       // (3)
-      + iv_absorption(args, 2) * args.vacancies[2] * args.interstitials[2];
+      + iv_absorption(args, 2) * args.vacancies[1] * args.interstitials[2];
 
   return time;
 }
@@ -363,7 +365,7 @@ gp_float i_emission_time(device ClusterDynamicsMetalArgs& args)
     clusters of size up to (nmax).
 
                 (1)                           (2)                     (3)
-    tEv(args, n) = SUM[n>0] ( E[v,v](args, n) * Cv(args, n) ) + 4 * E[v,v](2) * Cv(2) + B[v,i](2) * Cv(2) * Ci(2)
+    tEv(args, n) = SUM[n>0] ( E[v,v](args, n) * Cv(args, n) ) + 4 * E[v,v](2) * Cv(2) + B[v,i](2) * Cv(2) * Ci(1)
 */
 gp_float v_emission_time(device ClusterDynamicsMetalArgs& args)
 {
@@ -379,7 +381,7 @@ gp_float v_emission_time(device ClusterDynamicsMetalArgs& args)
       // (2)
       4. * vv_emission(args, 2) * args.vacancies[2]
       // (3)
-      + vi_absorption(args, 2) * args.vacancies[2] * args.interstitials[2];
+      + vi_absorption(args, 2) * args.vacancies[2] * args.interstitials[1];
 
    return time;
 }
@@ -737,7 +739,7 @@ gp_float dislocation_promotion_probability(device ClusterDynamicsMetalArgs& args
    gp_float dr = cluster_radius(args, n + 1) - cluster_radius(args, n);
 
    return (2. * cluster_radius(args, n) * dr + metal::precise::pow(dr, 2.)) 
-      / (M_PI * args.mean_dislocation_radius_val / 2. - metal::precise::pow(cluster_radius(args, n), 2.)); 
+      / (metal::precise::pow(M_PI * args.mean_dislocation_radius_val / 2., 2.) - metal::precise::pow(cluster_radius(args, n), 2.)); 
 }
 // --------------------------------------------------------------------------------------------
 
