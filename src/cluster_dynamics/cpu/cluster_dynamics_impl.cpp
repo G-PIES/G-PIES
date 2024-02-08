@@ -651,13 +651,12 @@ gp_float ClusterDynamicsImpl::i_dislocation_annihilation_rate() const
  * 
  * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3e
  * 
- * \f$\LARGE\frac{1}{\tau^a_{d,v}} = \rho D_v Z_v\f$
- * 
- * (1) \f$\rho\f$ 🡆 `dislocation_density`
- * 
- * (2) \f$D_v\f$ 🡆 `v_diffusion_val`
- * 
- * (3) \f$Z_v\f$ 🡆 `material.v_dislocation_bias`
+ * \f$
+ * \dwn{\frac{1}{\tau^a_{d,v}} =} 
+ * \ann{1}{\rho \vphantom{D_v}} 
+ * \ann{2}{D_v}
+ * \ann{3}{Z_v}
+ * \f$
 */
 gp_float ClusterDynamicsImpl::v_dislocation_annihilation_rate() const
 {
@@ -758,7 +757,7 @@ gp_float ClusterDynamicsImpl::v_grain_boundary_annihilation_rate() const
  *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 4a
  * 
  *  \f$
- *    \dwn{a_{i,i}(n) = }
+ *    \dwn{\alpha_{i,i}(n) = }
  *    \ann{1}{2 \pi r_i(n)\vphantom{\frac{Z_t}{Z_t}}}
  *    \ann{2}{Z_{ic}\vphantom{\frac{Z_t}{Z_t}}}
  *    \ann{3}{\frac{D_i}{V_{at}}}
@@ -847,7 +846,7 @@ gp_float ClusterDynamicsImpl::iv_absorption(size_t n) const
  *  C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 4a
  * 
  *  \f$
- *    \dwn{a_{v,v}(n) = }
+ *    \dwn{\alpha_{v,v}(n) = }
  *    \ann{1}{2 \pi r_v(n)\vphantom{\frac{Z_t}{Z_t}}}
  *    \ann{2}{Z_{vc}\vphantom{\frac{Z_t}{Z_t}}}
  *    \ann{3}{\frac{D_v}{V_{at}}}
