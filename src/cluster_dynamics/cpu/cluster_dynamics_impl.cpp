@@ -651,13 +651,12 @@ gp_float ClusterDynamicsImpl::i_dislocation_annihilation_rate() const
  * 
  * C. Pokor / Journal of Nuclear Materials 326 (2004), Equation 3e
  * 
- * \f$\LARGE\frac{1}{\tau^a_{d,v}} = \rho D_v Z_v\f$
- * 
- * (1) \f$\rho\f$ 🡆 `dislocation_density`
- * 
- * (2) \f$D_v\f$ 🡆 `v_diffusion_val`
- * 
- * (3) \f$Z_v\f$ 🡆 `material.v_dislocation_bias`
+ * \f$
+ * \dwn{\frac{1}{\tau^a_{d,v}} =} 
+ * \ann{1}{\rho \vphantom{D_v}} 
+ * \ann{2}{D_v}
+ * \ann{3}{Z_v}
+ * \f$
 */
 gp_float ClusterDynamicsImpl::v_dislocation_annihilation_rate() const
 {
