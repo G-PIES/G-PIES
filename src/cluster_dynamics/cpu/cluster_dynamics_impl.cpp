@@ -1018,7 +1018,7 @@ gp_float ClusterDynamicsImpl::v_bias_factor(size_t n) const
  *    \dwn{E_{bi}(n) = }
  *    \ann{1}{E_{fi} \vphantom{\frac{E_f}{2^8.}} }\dwn{+}
  *    \ann{2}{\frac{E_{b2i}-E_{fi}}{2^{0.8}-1}}
- *    \ann{3}{n^{0.8}-(n-1)^{0.8} \vphantom{\frac{E_f}{2^8.}}}
+ *    \ann{3}{(n^{0.8}-(n-1)^{0.8} \vphantom{\frac{E_f}{2^8.}})}
  *  \f$
 */
 gp_float ClusterDynamicsImpl::i_binding_energy(size_t n) const
@@ -1045,7 +1045,7 @@ gp_float ClusterDynamicsImpl::i_binding_energy(size_t n) const
  *    \dwn{E_{bv}(n) = }
  *    \ann{1}{E_{fv} \vphantom{\frac{E_f}{2^8.}} }\dwn{+}
  *    \ann{2}{\frac{E_{b2v}-E_{fv}}{2^{0.8}-1}}
- *    \ann{3}{n^{0.8}-(n-1)^{0.8} \vphantom{\frac{E_f}{2^8.}}}
+ *    \ann{3}{(n^{0.8}-(n-1)^{0.8} \vphantom{\frac{E_f}{2^8.}})}
  *  \f$
 */
 gp_float ClusterDynamicsImpl::v_binding_energy(size_t n) const
@@ -1148,7 +1148,7 @@ gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const
  *  \f$
  *    \dwn{P_{unf}(n) =}
  *    \frac
- *       {\ann{1}{2r_i(n)(r_i(n+1) \dwn{-} r_i(n))} \dwn{+} \ann{2}{(r_i(n+1)-r_i)^2}}
+ *       {\ann{1}{2r_i(n)(r_i(n+1) - r_i(n))} \dwn{+} \ann{2}{(r_i(n+1)-r_i(n))^2}}
  *       {\ann{3}{(\pi r_0 / 2)^2} \dwn{-} \ann{4}{r_i(n)^2}}
  *  \f$
 */
