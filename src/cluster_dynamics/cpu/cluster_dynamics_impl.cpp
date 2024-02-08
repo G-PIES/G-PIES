@@ -1071,7 +1071,7 @@ gp_float ClusterDynamicsImpl::v_binding_energy(size_t n) const
  *  \f$
  *    \dwn{D_i =}
  *    \ann{1}{D_{i0} \vphantom{\frac{-E_{mi}}{kT}} }
- *    \ann{2}{exp(\frac{-E_{mi}}{(kT)}) }
+ *    \ann{2}{exp(\frac{-E_{mi}}{kT}) }
  *  \f$
 */
 gp_float ClusterDynamicsImpl::i_diffusion() const
@@ -1092,7 +1092,7 @@ gp_float ClusterDynamicsImpl::i_diffusion() const
  *  \f$
  *    \dwn{D_v =}
  *    \ann{1}{D_{v0} \vphantom{\frac{-E_{mv}}{kT}} }
- *    \ann{2}{exp(\frac{-E_{mv}}{(kT)}) }
+ *    \ann{2}{exp(\frac{-E_{mv}}{kT}) }
  *  \f$
 */  
 gp_float ClusterDynamicsImpl::v_diffusion() const

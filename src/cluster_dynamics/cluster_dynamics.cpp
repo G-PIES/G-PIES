@@ -10,6 +10,8 @@
 
 ClusterDynamics::ClusterDynamics(size_t concentration_boundary, const NuclearReactor& reactor, const Material& material)
 {
+  this->reactor = reactor;
+  this->material = material;
   _impl = std::make_unique<ClusterDynamicsImpl>(concentration_boundary, *reactor._impl, *material._impl);
 }
 
