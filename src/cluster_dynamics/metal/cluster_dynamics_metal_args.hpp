@@ -27,8 +27,8 @@ struct ClusterDynamicsMetalArgs
     gp_float iv_sum_absorption_val;
     gp_float vv_sum_absorption_val;
     gp_float vi_sum_absorption_val;
-    gp_float i1_val;
-    gp_float v1_val;
+    gp_float i_diffusion_val;
+    gp_float v_diffusion_val;
 };
 
 #endif // CLUSTER_DYNAMICS_METAL_IMPL_ARGS_HPP

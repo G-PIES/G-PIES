@@ -319,7 +319,7 @@ namespace materials
 
 /** @brief A function which fills a Material object with parameters that roughly correspond to
  *  the properties of SA304 steel.
- *  @param reactor A reference to the Material object to be populated with data.
+ *  @param material A reference to the Material object to be populated with data.
 */
 void SA304(Material& material) 
 {

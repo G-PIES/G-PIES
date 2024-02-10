@@ -48,64 +48,65 @@ public:
     size_t concentration_boundary;
     gp_float dislocation_density;
 
-    gp_float mean_dislocation_radius_val;
-    gp_float ii_sum_absorption_val;
-    gp_float iv_sum_absorption_val;
-    gp_float vv_sum_absorption_val;
-    gp_float vi_sum_absorption_val;
-    gp_float i1_val;
-    gp_float v1_val;
+    gp_float mean_dislocation_radius_val; //!< Precomputed in step_init() using mean_dislocation_cell_radius()
+    gp_float ii_sum_absorption_val; //!< Precomputed in step_init() using ii_sum_absorption()
+    gp_float iv_sum_absorption_val; //!< Precomputed in step_init() using iv_sum_absorption()
+    gp_float vv_sum_absorption_val; //!< Precomputed in step_init() using vv_sum_absorption()
+    gp_float vi_sum_absorption_val; //!< Precomputed in step_init() using vi_sum_absorption()
+    gp_float i_diffusion_val; //!< Precomputed in step_init() using i_diffusion()
+    gp_float v_diffusion_val; //!< Precomputed in step_init() using v_diffusion()
 
     MaterialImpl material;
     NuclearReactorImpl reactor;
 
-    gp_float i_defect_production(size_t);
-    gp_float v_defect_production(size_t);
-    gp_float i_clusters_delta(size_t);
-    gp_float v_clusters_delta(size_t);
-    gp_float iemission_vabsorption_np1(size_t);
-    gp_float vemission_iabsorption_np1(size_t);
-    gp_float iemission_vabsorption_n(size_t);
-    gp_float vemission_iabsorption_n(size_t);
-    gp_float iemission_vabsorption_nm1(size_t);
-    gp_float vemission_iabsorption_nm1(size_t);
-    gp_float i1_cluster_delta();
-    gp_float v1_cluster_delta();
-    gp_float i_emission_rate();
-    gp_float v_emission_rate();
-    gp_float i_absorption_rate();
-    gp_float v_absorption_rate();
-    gp_float annihilation_rate();
-    gp_float i_dislocation_annihilation_rate();
-    gp_float v_dislocation_annihilation_rate();
-    gp_float i_grain_boundary_annihilation_rate();
-    gp_float v_grain_boundary_annihilation_rate();
-    gp_float ii_emission(size_t);
-    gp_float vv_emission(size_t);
-    gp_float ii_absorption(size_t);
-    gp_float vi_absorption(size_t);
-    gp_float iv_absorption(size_t);
-    gp_float vv_absorption(size_t);
-    gp_float i_bias_factor(size_t);
-    gp_float v_bias_factor(size_t);
-    gp_float i_binding_energy(size_t);
-    gp_float v_binding_energy(size_t);
-    gp_float i_diffusion();
-    gp_float v_diffusion();
-    gp_float dislocation_promotion_probability(size_t);
-    gp_float cluster_radius(size_t);
+    // Physics Model Functions
+    gp_float i_concentration_derivative(size_t) const;
+    gp_float v_concentration_derivative(size_t) const;
+    gp_float i1_concentration_derivative() const;
+    gp_float v1_concentration_derivative() const;
+    gp_float dislocation_density_derivative() const;
+    gp_float i_defect_production(size_t) const;
+    gp_float v_defect_production(size_t) const;
+    gp_float iemission_vabsorption_np1(size_t) const;
+    gp_float vemission_iabsorption_np1(size_t) const;
+    gp_float iemission_vabsorption_n(size_t) const;
+    gp_float vemission_iabsorption_n(size_t) const;
+    gp_float iemission_vabsorption_nm1(size_t) const;
+    gp_float vemission_iabsorption_nm1(size_t) const;
+    gp_float i_emission_rate() const;
+    gp_float v_emission_rate() const;
+    gp_float i_absorption_rate() const;
+    gp_float v_absorption_rate() const;
+    gp_float annihilation_rate() const;
+    gp_float i_dislocation_annihilation_rate() const;
+    gp_float v_dislocation_annihilation_rate() const;
+    gp_float i_grain_boundary_annihilation_rate() const;
+    gp_float v_grain_boundary_annihilation_rate() const;
+    gp_float ii_emission(size_t) const;
+    gp_float vv_emission(size_t) const;
+    gp_float ii_absorption(size_t) const;
+    gp_float iv_absorption(size_t) const;
+    gp_float vi_absorption(size_t) const;
+    gp_float vv_absorption(size_t) const;
+    gp_float i_bias_factor(size_t) const;
+    gp_float v_bias_factor(size_t) const;
+    gp_float i_binding_energy(size_t) const;
+    gp_float v_binding_energy(size_t) const;
+    gp_float dislocation_promotion_probability(size_t) const;
+    gp_float cluster_radius(size_t) const;
 
-    // Simulation Operation Functions
-    gp_float dislocation_density_delta();
-    gp_float mean_dislocation_cell_radius();
-    gp_float ii_sum_absorption(size_t);
-    gp_float iv_sum_absorption(size_t);
-    gp_float vv_sum_absorption(size_t);
-    gp_float vi_sum_absorption(size_t);
+    // Value Precalculation Functions
+    gp_float i_diffusion() const;
+    gp_float v_diffusion() const;
+    gp_float ii_sum_absorption(size_t) const;
+    gp_float iv_sum_absorption(size_t) const;
+    gp_float vv_sum_absorption(size_t) const;
+    gp_float vi_sum_absorption(size_t) const;
+    gp_float mean_dislocation_cell_radius() const;
+
     void step_init();
     bool step(gp_float);
     bool update_clusters_1(gp_float);
-    bool validate(size_t);
 
     // Interface functions
     ClusterDynamicsImpl(size_t concentration_boundary, const NuclearReactorImpl& reactor, const MaterialImpl& material);
@@ -122,7 +123,7 @@ private:
     void mtl_init_lib();
     void mtl_init_args();
     void mtl_init_buffers();
-    void mtl_send_command();
+    void mtl_update_clusters();
     void mtl_encode_command(MTL::ComputeCommandEncoder*);
 };
 
