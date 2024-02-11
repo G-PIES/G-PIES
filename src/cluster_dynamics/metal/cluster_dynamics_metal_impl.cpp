@@ -1200,7 +1200,6 @@ gp_float ClusterDynamicsImpl::cluster_radius(size_t n) const
 
 void ClusterDynamicsImpl::step_init()
 {
-    // TODO - GPU
   i_diffusion_val = i_diffusion();
   v_diffusion_val = v_diffusion();
   ii_sum_absorption_val = ii_sum_absorption(concentration_boundary - 1);
@@ -1316,8 +1315,8 @@ gp_float ClusterDynamicsImpl::vi_sum_absorption(size_t nmax) const
 // TODO - clean up the uses of random +1/+2/-1/etc throughout the code
 ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, const NuclearReactorImpl& reactor, const MaterialImpl& material)
   : time(0.0),
-    interstitials(concentration_boundary + 1, 0.0),
-    vacancies(concentration_boundary + 1, 0.0),
+    interstitials(concentration_boundary + 1, 0.),
+    vacancies(concentration_boundary + 1, 0.),
     concentration_boundary(concentration_boundary),
     dislocation_density(material.dislocation_density_0), 
     material(material), reactor(reactor)
@@ -1415,7 +1414,7 @@ void ClusterDynamicsImpl::mtl_init_args()
 
 void ClusterDynamicsImpl::mtl_init_buffers()
 {
-    size_t mtl_buf_size = (concentration_boundary + 1) * sizeof(gp_float);
+    size_t mtl_buf_size = concentration_boundary * sizeof(gp_float);
 
     mtl_interstitials_in = mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
     mtl_vacancies_in = mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
@@ -1457,7 +1456,7 @@ void ClusterDynamicsImpl::mtl_encode_command(MTL::ComputeCommandEncoder* mtl_com
     mtl_compute_encoder->setBuffer(mtl_interstitials_out, 0, 5);
     mtl_compute_encoder->setBuffer(mtl_vacancies_out, 0, 6);
     
-    MTL::Size mtl_grid_size = MTL::Size(concentration_boundary + 1, 1, 1);
+    MTL::Size mtl_grid_size = MTL::Size(concentration_boundary, 1, 1);
  
     // calculate a threadgroup size
     NS::UInteger mtl_max_threads_per_group = mtl_compute_pipeline_state->maxTotalThreadsPerThreadgroup();
