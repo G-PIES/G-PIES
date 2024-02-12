@@ -1,15 +1,19 @@
 ifeq ($(OS), Windows_NT)
+	TARGET_OS = windows
 	CCFLAGS += -D WIN32
 	CCFLAGS += -D_USE_MATH_DEFINES
 	LIB_EXT := .lib
 	EXE_EXT := .exe
 	ifeq ($(PROCESSOR_ARCHITEW6432), AMD64)
+		TARGET_ARCH = amd64
 		CCFLAGS += -D AMD64
 		GTEST_LIBS = ./extern/googletest/lib/windows
 	else ifeq ($(PROCESSOR_ARCHITECTURE), AMD64)
+		TARGET_ARCH = amd64
 		CCFLAGS += -D AMD64
 		GTEST_LIBS = ./extern/googletest/lib/windows
 	else ifeq ($(PROCESSOR_ARCHITECTURE), x86)
+		TARGET_ARCH = ia32
 		CCFLAGS += -D IA32
 		GTEST_LIBS = ./extern/googletest/lib/windows
 	endif
@@ -19,23 +23,27 @@ else
 	
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S), Linux)
+		TARGET_OS = linux
 		CCFLAGS += -D LINUX
 		GTEST_LIBS = ./extern/googletest/lib/linux
 	else ifeq ($(UNAME_S), Darwin)
+		TARGET_OS = macos
 		CCFLAGS += -D OSX
 		GTEST_LIBS = ./extern/googletest/lib/apple
 	endif
 
 	UNAME_P := $(shell uname -p)
 	ifeq ($(UNAME_P), x86_64)
+		TARGET_ARCH = amd64
 		CCFLAGS += -D AMD64
 	else ifneq ($(filter %86, $(UNAME_P)),)
+		TARGET_ARCH = ia32
 		CCFLAGS += -D IA32
 	else ifneq ($(filter arm%, $(UNAME_P)),)
+		TARGET_ARCH = arm
 		CCFLAGS += -D ARM
 	endif
 endif
-
 
 # ----------------------------------------------------------------------------------------
 # Variables
@@ -203,10 +211,81 @@ dbtests: dblib
 
 # Cluster Dynamics
 cluster_dynamics: cdlib 
-	$(CC) $(CCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cluster_dynamics$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics 
+	$(CC) $(CCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cluster_dynamics$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
 
 # Database 
 client_db: dblib
 	$(CC) $(CCFLAGS) example/db_example.cpp -o $(BIN_DIR)/client_db$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclientdb -lsqlite3
 
 # ----------------------------------------------------------------------------------------
+
+# New Makefile
+
+.SECONDEXPANSION:
+
+CONFIGURATION = release
+
+# Compiler parameters
+CXX = g++
+CXXFLAGS.common     = -MMD -MP -Wall -std=c++17 -fno-fast-math
+CXXFLAGS.release    = -O3
+CXXFLAGS.debug      = -O0 -g3 -fsanitize=undefined -fsanitize=address
+CXXFLAGS.arch_amd64 = -D AMD64
+CXXFLAGS.arch_ia32  = -D IA32
+CXXFLAGS.arch_arm   = -D ARM
+CXXFLAGS.os_windows = -D WIN32 -D_USE_MATH_DEFINES
+CXXFLAGS.os_linux   = -D LINUX
+CXXFLAGS.os_maxos   = -D OSX
+
+INCLUDES = src/client_db src/cluster_dynamics include/client_db include/cluster_dynamics include/model include/utils
+
+CXXFLAGS = $(strip $(CXXFLAGS.common) $(CXXFLAGS.$(CONFIGURATION)) $(CXXFLAGS.arch_$(TARGET_ARCH)) $(CXXFLAGS.os_$(TARGET_OS)) $(INCLUDES:%=-I%))
+
+# Linker parameters
+LD = g++
+LDFLAGS.common  =
+LDFLAGS.release =
+LDFLAGS.debug   =
+
+LDFLAGS  = $(strip $(LDFLAGS.common) $(LDFLAGS.$(CONFIGURATION)))
+
+# Generic source and artifact paths
+SRC_PATH      = ./src
+EXAMPLE_PATH  = ./example
+BUILD_PATH    = ./build/$(CONFIGURATION)
+OBJ_PATH      = $(BUILD_PATH)/obj
+get_obj_name  = $(patsubst $(EXAMPLE_PATH)/%.cpp,$(OBJ_PATH)/example/%.o,$(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.o,$1))
+
+# Component-specific object files
+CLIENT_DB_OBJ_FILES  = $(call get_obj_name,$(sort $(shell find $(SRC_PATH)/client_db -type f -name '*.cpp')))
+CD_BASE_OBJ_FILES    = $(call get_obj_name,$(SRC_PATH)/cluster_dynamics/*.cpp)
+CD_CPU_OBJ_FILES     = $(call get_obj_name,$(sort $(shell find $(SRC_PATH)/cluster_dynamics/cpu -type f -name '*.cpp')))
+CD_CUDA_OBJ_FILES    = $(call get_obj_name,$(sort $(shell find $(SRC_PATH)/cluster_dynamics/cuda -type f -name '*.cpp')))
+OKMC_OBJ_FILES       = $(call get_obj_name,$(sort $(shell find $(SRC_PATH)/okmc -type f -name '*.cpp')))
+CD_EXAMPLE_OBJ_FILES = $(call get_obj_name,$(EXAMPLE_PATH)/cd_example.cpp)
+DB_EXAMPLE_OBJ_FILES = $(call get_obj_name,$(EXAMPLE_PATH)/db_example.cpp)
+
+# OKMC
+ALL_EXE += okmc
+EXE_okmc_PREREQUISITES = $(OKMC_OBJ_FILES)
+
+# Generic C++ compile target
+ALL_CXX_FILES := $(foreach path,$(SRC_PATH) $(EXAMPLE_PATH),$(sort $(shell find $(path) -type f -name '*.cpp')))
+ALL_OBJ_FILES := $(call get_obj_name,$(ALL_CXX_FILES))
+ALL_DEP_FILES := $(ALL_OBJ_FILES:%.o,%.d)
+-include $(ALL_DEP_FILES)
+
+$(ALL_OBJ_FILES): $(OBJ_PATH)/%.o: $(SRC_PATH)/%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Generic executable target
+EXE_EXT.os_linux   =
+EXE_EXT.os_macos   =
+EXE_EXT.os_windows = .exe
+
+ALL_EXE_FILES = $(ALL_EXE:%=$(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS)))
+.PHONY: $(ALL_EXE)
+$(ALL_EXE): %: $(BUILD_PATH)/%
+$(ALL_EXE_FILES): $(BUILD_PATH)/%: $$(EXE_%_PREREQUISITES)
+	$(LD) $(LDFLAGS) $^ -o $@
