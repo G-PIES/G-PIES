@@ -59,11 +59,11 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::i_concentration_derivative(size_t in)
         // (1)
         i_defect_production(in)
         // (2)
-        + iemission_vabsorption_np1(in + 1) * interstitials[in + 1]
+        + i_demotion_rate(in + 1) * interstitials[in + 1]
         // // (3)
-        - iemission_vabsorption_n(in) * interstitials[in]
+        - i_combined_promotion_demotion_rate(in) * interstitials[in]
         // // (4)
-        + iemission_vabsorption_nm1(in - 1) * interstitials[in - 1];
+        + i_promotion_rate(in - 1) * interstitials[in - 1];
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2a
@@ -78,50 +78,50 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::v_concentration_derivative(size_t vn)
         // (1)
         v_defect_production(vn)
         // (2)
-        + vemission_iabsorption_np1(vn + 1) * vacancies[vn + 1]
+        + v_demotion_rate(vn + 1) * vacancies[vn + 1]
         // (3)
-        - vemission_iabsorption_n(vn) * vacancies[vn]
+        - v_combined_promotion_demotion_rate(vn) * vacancies[vn]
         // (4)
-        + vemission_iabsorption_nm1(vn - 1) * vacancies[vn - 1];
+        + v_promotion_rate(vn - 1) * vacancies[vn - 1];
 }
 // --------------------------------------------------------------------------------------------
 
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2b
-    The combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (np1),
+    The combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (n),
     both events leading to an interstitial loop of size n.
 
                (1)             (2)     (3)
     a[i,n+1] = B[i,v](n + 1) * Cv(1) + E[i,i](n + 1)
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::iemission_vabsorption_np1(size_t np1) const
+__CUDADECL__ gp_float ClusterDynamicsImpl::i_demotion_rate(size_t n) const
 {
     return
         // (1)
-        iv_absorption(np1) *
+        iv_absorption(n) *
         // (2)
         vacancies[1] + 
         // (3)
-        ii_emission(np1);
+        ii_emission(n);
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2b
-    The combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (np1),
+    The combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (n),
     both events leading to an interstitial loop of size n.
 
                (1)             (2)     (3)
     a[v,n+1] = B[v,i](n + 1) * Ci(1) + E[v,v](n + 1)
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::vemission_iabsorption_np1(size_t np1) const
+__CUDADECL__ gp_float ClusterDynamicsImpl::v_demotion_rate(size_t n) const
 {
     return 
         // (1)
-        vi_absorption(np1) * 
+        vi_absorption(n) * 
         // (2)
         interstitials[1] + 
         // (3)
-        vv_emission(np1);
+        vv_emission(n);
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2c
@@ -132,7 +132,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::vemission_iabsorption_np1(size_t np1)
              (1)                 (2)                 (3)
     b[i,n] = B[i,v](n) * Cv(1) + B[i,i](n) * Ci(1) + E[i,i](n)
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::iemission_vabsorption_n(size_t n) const
+__CUDADECL__ gp_float ClusterDynamicsImpl::i_combined_promotion_demotion_rate(size_t n) const
 {
     return
         // (1)
@@ -151,7 +151,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::iemission_vabsorption_n(size_t n) con
              (1)                 (2)                 (3)
     b[v,n] = B[v,i](n) * Ci(1) + B[v,v](n) * Cv(1) + E[v,v](n)
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::vemission_iabsorption_n(size_t n) const
+__CUDADECL__ gp_float ClusterDynamicsImpl::v_combined_promotion_demotion_rate(size_t n) const
 {
     return 
         // (1)
@@ -169,15 +169,15 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::vemission_iabsorption_n(size_t n) con
                (1)           (2)     (3)
     c[i,n-1] = B[i,i](n-1) * Ci(1) * P_unf(n)
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::iemission_vabsorption_nm1(size_t nm1) const
+__CUDADECL__ gp_float ClusterDynamicsImpl::i_promotion_rate(size_t n) const
 {
     return
         // (1)
-        ii_absorption(nm1)
+        ii_absorption(n)
         // (2)
         * interstitials[1]
         // (3)
-         * (1 - dislocation_promotion_probability(nm1 + 1));
+         * (1 - dislocation_promotion_probability(n + 1));
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2d
@@ -187,11 +187,11 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::iemission_vabsorption_nm1(size_t nm1)
                (1)           (2)
     c[v,n-1] = B[v,v](n-1) * Cv(1)
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::vemission_iabsorption_nm1(size_t nm1) const
+__CUDADECL__ gp_float ClusterDynamicsImpl::v_promotion_rate(size_t n) const
 {
     return
         // (1)
-        vv_absorption(nm1) * 
+        vv_absorption(n) * 
         // (2)
         vacancies[1];
 }

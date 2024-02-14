@@ -41,12 +41,12 @@ public:
   gp_float dislocation_density_derivative() const;
   gp_float i_defect_production(size_t) const;
   gp_float v_defect_production(size_t) const;
-  gp_float iemission_vabsorption_np1(size_t) const;
-  gp_float vemission_iabsorption_np1(size_t) const;
-  gp_float iemission_vabsorption_n(size_t) const;
-  gp_float vemission_iabsorption_n(size_t) const;
-  gp_float iemission_vabsorption_nm1(size_t) const;
-  gp_float vemission_iabsorption_nm1(size_t) const;
+  gp_float i_demotion_rate(size_t) const;
+  gp_float v_demotion_rate(size_t) const;
+  gp_float i_combined_promotion_demotion_rate(size_t) const;
+  gp_float v_combined_promotion_demotion_rate(size_t) const;
+  gp_float i_promotion_rate(size_t) const;
+  gp_float v_promotion_rate(size_t) const;
   gp_float i_emission_rate() const;
   gp_float v_emission_rate() const;
   gp_float i_absorption_rate() const;

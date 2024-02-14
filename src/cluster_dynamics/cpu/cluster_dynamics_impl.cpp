@@ -26,11 +26,11 @@ gp_float ClusterDynamicsImpl::i_concentration_derivative(size_t n) const
         // (1)
         i_defect_production(n)
         // (2)
-        + iemission_vabsorption_np1(n + 1) * interstitials[n + 1]
-        // // (3)
-        - iemission_vabsorption_n(n) * interstitials[n]
-        // // (4)
-        + iemission_vabsorption_nm1(n - 1) * interstitials[n - 1];
+        + i_demotion_rate(n + 1) * interstitials[n + 1]
+        //    (3)
+        - i_combined_promotion_demotion_rate(n) * interstitials[n]
+        //    (4)
+        + i_promotion_rate(n - 1) * interstitials[n - 1];
 }
 
 
@@ -56,17 +56,17 @@ gp_float ClusterDynamicsImpl::i_concentration_derivative(size_t n) const
  * paper implies that it also works for vacancy clusters in the line immediately preceding
  * the definition of 2a.
 */
-gp_float ClusterDynamicsImpl::v_concentration_derivative(size_t vn) const
+gp_float ClusterDynamicsImpl::v_concentration_derivative(size_t n) const
 {
     return
         // (1)
-        v_defect_production(vn)
+        v_defect_production(n)
         // (2)
-        + vemission_iabsorption_np1(vn + 1) * vacancies[vn + 1]
+        + v_demotion_rate(n + 1) * vacancies[n + 1]
         // (3)
-        - vemission_iabsorption_n(vn) * vacancies[vn]
+        - v_combined_promotion_demotion_rate(n) * vacancies[n]
         // (4)
-        + vemission_iabsorption_nm1(vn - 1) * vacancies[vn - 1];
+        + v_promotion_rate(n - 1) * vacancies[n - 1];
 }
 
 
@@ -260,7 +260,7 @@ gp_float ClusterDynamicsImpl::v_defect_production(size_t n) const
 
 
 
-/** @brief Returns the combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (np1)
+/** @brief Returns the combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (n)
  *. \todo Document units, both events leading to an interstitial loop of size n.
  * 
  * <hr>
@@ -273,20 +273,20 @@ gp_float ClusterDynamicsImpl::v_defect_production(size_t n) const
  *  \ann{3}{\alpha_{i,i}(n+1)}
  * \f$
 */
-gp_float ClusterDynamicsImpl::iemission_vabsorption_np1(size_t np1) const
+gp_float ClusterDynamicsImpl::i_demotion_rate(size_t n) const
 {
     return
         // (1)
-        iv_absorption(np1) *
+        iv_absorption(n) *
         // (2)
         vacancies[1] + 
         // (3)
-        ii_emission(np1);
+        ii_emission(n);
 }
 
 
 
-/** @brief Returns the combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (np1)
+/** @brief Returns the combined rate of emission of an interstitial and absorption of a vacancy by an interstitial loop of size (n)
  * . \todo Document units, both events leading to an interstitial loop of size n.
  * 
  * <hr>
@@ -299,15 +299,15 @@ gp_float ClusterDynamicsImpl::iemission_vabsorption_np1(size_t np1) const
  *  \ann{3}{\alpha_{v,v}(n+1)}
  * \f$
 */
-gp_float ClusterDynamicsImpl::vemission_iabsorption_np1(size_t np1) const
+gp_float ClusterDynamicsImpl::v_demotion_rate(size_t n) const
 {
     return 
         // (1)
-        vi_absorption(np1) * 
+        vi_absorption(n) * 
         // (2)
         interstitials[1] + 
         // (3)
-        vv_emission(np1);
+        vv_emission(n);
 }
 
 
@@ -328,7 +328,7 @@ gp_float ClusterDynamicsImpl::vemission_iabsorption_np1(size_t np1) const
  *    \ann{4}{\alpha_{i,i}(n)}
  *  \f$
 */
-gp_float ClusterDynamicsImpl::iemission_vabsorption_n(size_t n) const
+gp_float ClusterDynamicsImpl::i_combined_promotion_demotion_rate(size_t n) const
 {
     return
         // (1)
@@ -358,7 +358,7 @@ gp_float ClusterDynamicsImpl::iemission_vabsorption_n(size_t n) const
  *    \ann{3}{\alpha_{v,v}(n)}
  *  \f$
 */
-gp_float ClusterDynamicsImpl::vemission_iabsorption_n(size_t n) const
+gp_float ClusterDynamicsImpl::v_combined_promotion_demotion_rate(size_t n) const
 {
     return 
         // (1)
@@ -395,15 +395,15 @@ gp_float ClusterDynamicsImpl::vemission_iabsorption_n(size_t n) const
  *  Dr. Chen suggested using \f$P_{unf}(n)\f$, in a similar way to the Sakaguchi paper
  *  to determine what percentage of promoted clusters become part of the dislocation network.
 */
-gp_float ClusterDynamicsImpl::iemission_vabsorption_nm1(size_t nm1) const
+gp_float ClusterDynamicsImpl::i_promotion_rate(size_t n) const
 {
     return
         // (1)
-        ii_absorption(nm1) 
+        ii_absorption(n) 
         // (2)
         * interstitials[1]
         // (3)
-        * (1 - dislocation_promotion_probability(nm1 + 1));
+        * (1 - dislocation_promotion_probability(n + 1));
 }
 
 
@@ -422,11 +422,11 @@ gp_float ClusterDynamicsImpl::iemission_vabsorption_nm1(size_t nm1) const
  * \f$
  * 
 */
-gp_float ClusterDynamicsImpl::vemission_iabsorption_nm1(size_t nm1) const
+gp_float ClusterDynamicsImpl::v_promotion_rate(size_t n) const
 {
     return
         // (1)
-        vv_absorption(nm1) * 
+        vv_absorption(n) * 
         // (2)
         vacancies[1];
 }
