@@ -41,6 +41,9 @@ resources
 # Local Configurations
 .vscode
 
+#pycache
+__pycache__
+
 # csv
 *.csv
 

@@ -3,7 +3,8 @@
 #include <pybind11/stl.h>
 
 #include <iostream>
-#include <cstring>
+#include <sstream>
+#include <string>
 #include <cmath>
 #include <array>
 
@@ -55,6 +56,32 @@ struct Simulation {
         fprintf(stderr, "\nDislocation Network Density: %g\n\n", state.dislocation_density);
     }
 
+    std::string string_state()
+    {
+        std::stringstream str_state;
+        std::string str_to_cat;
+        
+        if (!state.valid) 
+        {
+            str_state << "\nINVALID SIM @ Time=" << state.time;
+            return str_state.str();
+        }
+        else str_state << "\nTime=" << state.time;
+        if (state.interstitials.size() != concentration_boundary || state.vacancies.size() != concentration_boundary)
+        {
+            str_state << "\nError: Output data is incorrect size.\n";
+            return str_state.str();
+        }
+        str_state << "\nCluster Size\t-\tInterstitials\t-\tVacancies\n\n";
+        for (uint64_t n = 1; n < concentration_boundary; ++n)
+        {
+            str_state << (unsigned long long)n << "\t\t" << state.interstitials[n] << "\t\t" << state.vacancies[n] << "\n\n";
+        }
+        str_state << "\nDislocation Network Density: " << state.dislocation_density << "\n\n";
+        
+        return str_state.str();
+    }
+
     double get_state_time() 
     {
         return state.time;
@@ -91,6 +118,7 @@ PYBIND11_MODULE(pyclusterdynamics, m) {
         .def(py::init<size_t, double, double>())
         .def("run", &Simulation::run) 
         .def("print_state", &Simulation::print_state)
+        .def("string_state", &Simulation::string_state)
         .def("get_state_time", &Simulation::get_state_time)
         .def("get_int_idx", &Simulation::get_int_idx) // vacancies
         .def("get_vac_idx", &Simulation::get_vac_idx); // interstials
