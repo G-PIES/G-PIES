@@ -9,6 +9,7 @@ struct MaterialImpl
 {
 
     gp_float i_migration; //!< Single interstitial migration energy in eV.
+
     gp_float v_migration; //!< Single vacancy migration energy in eV.
 
     gp_float i_diffusion_0; //!< Single interstitial preexponential diffusion constant in cm^2/s.
@@ -38,7 +39,7 @@ struct MaterialImpl
 
     gp_float burgers_vector; //!< The magnitude of the burgers vector.
 
-    gp_float atomic_volume; //!< The average volume of a single atom in the material lattice.
+    gp_float atomic_volume;
 };
 
 #endif // MATERIAL_IMPL_HPP
