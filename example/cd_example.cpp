@@ -59,8 +59,9 @@ void print_state(const ClusterDynamicsState &state) {
 
 void print_csv(const ClusterDynamicsState &state) {
     for (uint64_t n = 1; n < concentration_boundary; ++n) {
-        fprintf(stdout, "%g,%llu,%g,%g\n", state.time, (long long unsigned int)n,
-                state.interstitials[n], state.vacancies[n]);
+        fprintf(stdout, "%g,%llu,%g,%g\n", state.time,
+                (long long unsigned int)n, state.interstitials[n],
+                state.vacancies[n]);
     }
 }
 
