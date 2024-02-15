@@ -280,8 +280,7 @@ EXE_okmc_PREREQUISITES = $(OKMC_OBJ_FILES)
 
 # Cluster Dynamics Example
 ALL_EXE += cd_example
-EXE_cd_example_PREREQUISITES = $(CD_EXAMPLE_OBJ_FILES)
-cd_example: libclusterdynamics
+EXE_cd_example_PREREQUISITES = libclusterdynamics $(CD_EXAMPLE_OBJ_FILES)
 cd_example: LIBRARIES += clusterdynamics
 
 # Generic C++ compile target
@@ -304,7 +303,7 @@ ALL_EXE_FILES = $(ALL_EXE:%=$(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS)))
 $(ALL_EXE): %: $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS))
 	@[ "$(R)" ] && $< || ( exit 0 )
 $(ALL_EXE_FILES): $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS)): $$(EXE_%_PREREQUISITES)
-	$(LD) $(LDFLAGS) $^ -o $@
+	$(LD) $(LDFLAGS) $(filter %.o,$^) -o $@
 
 # Generic library target
 LIB_EXT.os_linux =   .a
@@ -315,4 +314,4 @@ ALL_LIB_FILES = $(ALL_LIB:%=$(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS)))
 .PHONY: $(ALL_LIB)
 $(ALL_LIB): %: $(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS))
 $(ALL_LIB_FILES): $(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS)): $$(LIB_%_PREREQUISITES)
-	$(AR) $(ARFLAGS) $@ $^
+	$(AR) $(ARFLAGS) $@ $(filter %.o,$^)
