@@ -237,8 +237,7 @@ CXXFLAGS.os_windows = -D WIN32 -D_USE_MATH_DEFINES
 CXXFLAGS.os_linux   = -D LINUX
 CXXFLAGS.os_maxos   = -D OSX
 
-INCLUDES = src/client_db src/cluster_dynamics include/client_db include/cluster_dynamics include/model include/utils
-
+INCLUDES = $(wildcard include/*)
 CXXFLAGS = $(strip $(CXXFLAGS.common) $(CXXFLAGS.$(CONFIGURATION)) $(CXXFLAGS.arch_$(TARGET_ARCH)) $(CXXFLAGS.os_$(TARGET_OS)) $(INCLUDES:%=-I%))
 
 # Linker parameters
@@ -258,12 +257,18 @@ get_obj_name  = $(patsubst $(EXAMPLE_PATH)/%.cpp,$(OBJ_PATH)/example/%.o,$(patsu
 
 # Component-specific object files
 CLIENT_DB_OBJ_FILES  = $(call get_obj_name,$(sort $(shell find $(SRC_PATH)/client_db -type f -name '*.cpp')))
-CD_BASE_OBJ_FILES    = $(call get_obj_name,$(SRC_PATH)/cluster_dynamics/*.cpp)
+CD_BASE_OBJ_FILES    = $(call get_obj_name,$(wildcard $(SRC_PATH)/cluster_dynamics/*.cpp))
 CD_CPU_OBJ_FILES     = $(call get_obj_name,$(sort $(shell find $(SRC_PATH)/cluster_dynamics/cpu -type f -name '*.cpp')))
 CD_CUDA_OBJ_FILES    = $(call get_obj_name,$(sort $(shell find $(SRC_PATH)/cluster_dynamics/cuda -type f -name '*.cpp')))
 OKMC_OBJ_FILES       = $(call get_obj_name,$(sort $(shell find $(SRC_PATH)/okmc -type f -name '*.cpp')))
 CD_EXAMPLE_OBJ_FILES = $(call get_obj_name,$(EXAMPLE_PATH)/cd_example.cpp)
 DB_EXAMPLE_OBJ_FILES = $(call get_obj_name,$(EXAMPLE_PATH)/db_example.cpp)
+
+# Cluster Dynamics Library
+ALL_LIB += libclusterdynamics
+LIB_libclusterdynamics_PREREQUISITES = $(CD_BASE_OBJ_FILES) $(CD_CPU_OBJ_FILES)
+libclusterdynamics: INCLUDES += $(SRC_PATH)/cluster_dynamics
+libclusterdynamics: INCLUDES += $(SRC_PATH)/cluster_dynamics/cpu
 
 # OKMC
 ALL_EXE += okmc
@@ -289,3 +294,14 @@ ALL_EXE_FILES = $(ALL_EXE:%=$(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS)))
 $(ALL_EXE): %: $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS))
 $(ALL_EXE_FILES): $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS)): $$(EXE_%_PREREQUISITES)
 	$(LD) $(LDFLAGS) $^ -o $@
+
+# Generic library target
+LIB_EXT.os_linux =   .a
+LIB_EXT.os_macos =   .a
+LIB_EXT.os_windows = .lib
+
+ALL_LIB_FILES = $(ALL_LIB:%=$(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS)))
+.PHONY: $(ALL_LIB)
+$(ALL_LIB): %: $(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS))
+$(ALL_LIB_FILES): $(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS)): $$(LIB_%_PREREQUISITES)
+	$(AR) $(ARFLAGS) $@ $^
