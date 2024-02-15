@@ -10,7 +10,7 @@
 #include "nuclear_reactor_impl.hpp"
 
 class ClusterDynamicsImpl {
-   public:
+ public:
     gp_float time;
 
     std::vector<gp_float> interstitials;

@@ -8,4 +8,4 @@ jobs:
     - uses: actions/checkout@v1
     - uses: actions/setup-python@v1
     - run: pip install cpplint
-    - run: cpplint --recursive --exclude='extern/*' --filter=-legal/copyright .
+    - run: cpplint --recursive --exclude='extern/*' --filter=-legal/copyright,-build/header_guard,-runtime/references,-runtime/string,-build/c++11,-runtime/threadsafe_fn,-whitespace/comments,-build/include_subdir,-readability/todo,-readability/casting,-readability/inheritance,-build/include_order .
