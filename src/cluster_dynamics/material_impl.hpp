@@ -39,7 +39,7 @@ struct MaterialImpl
 
     gp_float burgers_vector; //!< The magnitude of the burgers vector.
 
-    gp_float atomic_volume;
+    gp_float atomic_volume; //!< The average volume of a single atom in the material lattice.
 };
 
 #endif // MATERIAL_IMPL_HPP
