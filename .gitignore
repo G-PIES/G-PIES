@@ -53,10 +53,9 @@ db/*.db
 ./build
 ./lib
 ./out
-docs/html
-docs/latex
 
-#Documentatino files
+#Documentation files
+docs/latex
 
 # gtest binaries
 !libgtest_main.a
@@ -67,3 +66,6 @@ extern/metal-cpp
 *.ir
 *.air
 *.metallib
+
+# Build artifacts
+build/*

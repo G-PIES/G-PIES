@@ -9,7 +9,7 @@
 #include "datetime.hpp"
 #include "types.hpp"
 
-class MaterialImpl;
+struct MaterialImpl;
 
 /** @brief A class which represents the material property parameters for a ClusterDynamics simulation. 
  * 

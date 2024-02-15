@@ -22,13 +22,13 @@ public:
   size_t concentration_boundary;
   gp_float dislocation_density;
 
-  gp_float mean_dislocation_radius_val;
-  gp_float ii_sum_absorption_val;
-  gp_float iv_sum_absorption_val;
-  gp_float vv_sum_absorption_val;
-  gp_float vi_sum_absorption_val;
-  gp_float i_diffusion_val;
-  gp_float v_diffusion_val;
+  gp_float mean_dislocation_radius_val; //!< Precomputed in step_init() using mean_dislocation_cell_radius()
+  gp_float ii_sum_absorption_val; //!< Precomputed in step_init() using ii_sum_absorption()
+  gp_float iv_sum_absorption_val; //!< Precomputed in step_init() using iv_sum_absorption()
+  gp_float vv_sum_absorption_val; //!< Precomputed in step_init() using vv_sum_absorption()
+  gp_float vi_sum_absorption_val; //!< Precomputed in step_init() using vi_sum_absorption()
+  gp_float i_diffusion_val; //!< Precomputed in step_init() using i_diffusion()
+  gp_float v_diffusion_val; //!< Precomputed in step_init() using v_diffusion()
 
   MaterialImpl material;
   NuclearReactorImpl reactor;
@@ -47,15 +47,15 @@ public:
   gp_float vemission_iabsorption_n(size_t) const;
   gp_float iemission_vabsorption_nm1(size_t) const;
   gp_float vemission_iabsorption_nm1(size_t) const;
-  gp_float i_emission_time() const;
-  gp_float v_emission_time() const;
-  gp_float i_absorption_time() const;
-  gp_float v_absorption_time() const;
+  gp_float i_emission_rate() const;
+  gp_float v_emission_rate() const;
+  gp_float i_absorption_rate() const;
+  gp_float v_absorption_rate() const;
   gp_float annihilation_rate() const;
-  gp_float i_dislocation_annihilation_time() const;
-  gp_float v_dislocation_annihilation_time() const;
-  gp_float i_grain_boundary_annihilation_time() const;
-  gp_float v_grain_boundary_annihilation_time() const;
+  gp_float i_dislocation_annihilation_rate() const;
+  gp_float v_dislocation_annihilation_rate() const;
+  gp_float i_grain_boundary_annihilation_rate() const;
+  gp_float v_grain_boundary_annihilation_rate() const;
   gp_float ii_emission(size_t) const;
   gp_float vv_emission(size_t) const;
   gp_float ii_absorption(size_t) const;
