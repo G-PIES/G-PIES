@@ -237,8 +237,10 @@ CXXFLAGS.os_windows = -D WIN32 -D_USE_MATH_DEFINES
 CXXFLAGS.os_linux   = -D LINUX
 CXXFLAGS.os_maxos   = -D OSX
 
-INCLUDES = $(wildcard include/*)
-CXXFLAGS = $(strip $(CXXFLAGS.common) $(CXXFLAGS.$(CONFIGURATION)) $(CXXFLAGS.arch_$(TARGET_ARCH)) $(CXXFLAGS.os_$(TARGET_OS)) $(INCLUDES:%=-I%))
+INCLUDES             = $(wildcard include/*)
+CXXFLAGS_COMPILATION = $(CXXFLAGS.common) $(CXXFLAGS.$(CONFIGURATION)) $(CXXFLAGS.arch_$(TARGET_ARCH)) $(CXXFLAGS.os_$(TARGET_OS))
+CXXFLAGS_INCLUDES    = $(INCLUDES:%=-I%)
+CXXFLAGS             = $(strip $(CXXFLAGS_COMPILATION) $(CXXFLAGS_INCLUDES))
 
 # Linker parameters
 LD = g++
@@ -246,14 +248,16 @@ LDFLAGS.common  =
 LDFLAGS.release =
 LDFLAGS.debug   =
 
-LDFLAGS  = $(strip $(LDFLAGS.common) $(LDFLAGS.$(CONFIGURATION)))
+LIBRARIES =
+LDFLAGS   = $(strip $(LDFLAGS.common) $(LDFLAGS.$(CONFIGURATION)) -L$(BUILD_PATH) $(LIBRARIES:%=-l%))
 
 # Generic source and artifact paths
-SRC_PATH      = ./src
-EXAMPLE_PATH  = ./example
-BUILD_PATH    = ./build/$(CONFIGURATION)
-OBJ_PATH      = $(BUILD_PATH)/obj
-get_obj_name  = $(patsubst $(EXAMPLE_PATH)/%.cpp,$(OBJ_PATH)/example/%.o,$(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.o,$1))
+SRC_PATH     = src
+EXAMPLE_PATH = example
+BUILD_PATH   = build/$(CONFIGURATION)
+OBJ_PATH     = $(BUILD_PATH)/obj
+get_obj_name = $(patsubst $(EXAMPLE_PATH)/%.cpp,$(OBJ_PATH)/example/%.o,$(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.o,$1))
+get_cpp_name = $(subst $(OBJ_PATH),$(SRC_PATH),$(subst $(OBJ_PATH)/example,$(EXAMPLE_PATH),$(1:.o=.cpp)))
 
 # Component-specific object files
 CLIENT_DB_OBJ_FILES  = $(call get_obj_name,$(sort $(shell find $(SRC_PATH)/client_db -type f -name '*.cpp')))
@@ -274,13 +278,19 @@ libclusterdynamics: INCLUDES += $(SRC_PATH)/cluster_dynamics/cpu
 ALL_EXE += okmc
 EXE_okmc_PREREQUISITES = $(OKMC_OBJ_FILES)
 
+# Cluster Dynamics Example
+ALL_EXE += cd_example
+EXE_cd_example_PREREQUISITES = $(CD_EXAMPLE_OBJ_FILES)
+cd_example: libclusterdynamics
+cd_example: LIBRARIES += clusterdynamics
+
 # Generic C++ compile target
 ALL_CXX_FILES := $(foreach path,$(SRC_PATH) $(EXAMPLE_PATH),$(sort $(shell find $(path) -type f -name '*.cpp')))
 ALL_OBJ_FILES := $(call get_obj_name,$(ALL_CXX_FILES))
 ALL_DEP_FILES := $(ALL_OBJ_FILES:%.o,%.d)
 -include $(ALL_DEP_FILES)
 
-$(ALL_OBJ_FILES): $(OBJ_PATH)/%.o: $(SRC_PATH)/%.cpp
+$(ALL_OBJ_FILES): %: $$(call get_cpp_name,%)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
@@ -292,6 +302,7 @@ EXE_EXT.os_windows = .exe
 ALL_EXE_FILES = $(ALL_EXE:%=$(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS)))
 .PHONY: $(ALL_EXE)
 $(ALL_EXE): %: $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS))
+	@[ "$(R)" ] && $< || ( exit 0 )
 $(ALL_EXE_FILES): $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS)): $$(EXE_%_PREREQUISITES)
 	$(LD) $(LDFLAGS) $^ -o $@
 
