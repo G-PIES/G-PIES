@@ -21,6 +21,10 @@
 #endif
 
 size_t concentration_boundary;
+bool sensitivity_analysis_mode = false;
+std::string sensitivity_analysis_variable = "";
+size_t num_of_simulation_loops = 0;
+gp_float delta_sensitivity_analysis = 0;
 gp_float simulation_time;
 gp_float delta_time;
 gp_float sample_interval;  // How often (in seconds) to record the state
@@ -92,7 +96,85 @@ void profile() {
     }
 }
 
-int main(int argc, char *argv[]) {
+enum var_code {
+    e_noMatch,
+    e_iMigration,
+    e_vMigration,
+    e_iFormation,
+    e_vFormation,
+    e_iBinding,
+    e_vBinding,
+    e_dislocationDensity0,
+    e_flux,
+    e_temperature,
+    e_dislocationDensityEvolution
+};
+
+var_code hashit (std::string const& varString){
+    if (varString == "i_migration") return e_iMigration;
+    if (varString == "v_migration") return e_vMigration;
+    if (varString == "i_formation") return e_iFormation;
+    if (varString == "v_formation") return e_vFormation;
+    if (varString == "i_binding") return e_iBinding;
+    if (varString == "v_binding") return e_vBinding;
+    if (varString == "dislocation_density_0") return e_dislocationDensity0;
+    if (varString == "flux") return e_flux;
+    if (varString == "temperature") return e_temperature;
+    if (varString == "dislocation_density_evolution") return e_dislocationDensityEvolution;
+    return e_noMatch;
+}
+
+void update_for_sensitivity_analysis(ClusterDynamics &cd, NuclearReactor reactor, Material material, gp_float delta)
+{
+    switch(hashit(sensitivity_analysis_variable))
+    {
+        case e_iMigration:\
+            material.set_i_migration(material.get_i_migration() + delta);
+            cd.set_material(material);
+            break;
+        case e_vMigration:
+            material.set_v_migration(material.get_v_migration() + delta);
+            cd.set_material(material);
+            break;
+        case e_iFormation:
+            material.set_i_formation(material.get_i_formation() + delta);
+            cd.set_material(material);
+            break;
+        case e_vFormation:
+            material.set_v_formation(material.get_v_formation() + delta);
+            cd.set_material(material);
+            break;
+        case e_iBinding:
+            material.set_i_binding(material.get_i_binding() + delta);
+            cd.set_material(material);
+            break;
+        case e_vBinding:
+            material.set_v_binding(material.get_v_binding() + delta);
+            cd.set_material(material);
+            break;
+        case e_dislocationDensity0:
+            material.set_dislocation_density_0(material.get_dislocation_density_0() + delta);
+            cd.set_material(material);
+            break;
+        case e_flux:
+            reactor.set_flux(reactor.get_flux() + delta);
+            cd.set_reactor(reactor);
+            break;
+        case e_temperature:
+            reactor.set_temperature(reactor.get_temperature() + delta);
+            cd.set_reactor(reactor);
+            break;
+        case e_dislocationDensityEvolution:
+            reactor.set_dislocation_density_evolution(reactor.get_dislocation_density_evolution() + delta);
+            cd.set_reactor(reactor);
+            break;
+        default:
+            break;
+    }
+}
+
+int main(int argc, char* argv[])
+{
     NuclearReactor reactor;
     nuclear_reactors::OSIRIS(reactor);
 
@@ -106,7 +188,14 @@ int main(int argc, char *argv[]) {
     sample_interval = delta_time;
 
     // Override default values with CLI arguments
-    switch (argc) {
+    switch (argc)
+    {
+        case 8:
+            delta_sensitivity_analysis = strtod(argv[7], NULL);
+            num_of_simulation_loops = strtod(argv[6], NULL);
+            sensitivity_analysis_variable = argv[5];
+            sensitivity_analysis_mode = true; // argv[4] should be -s
+            // fall through
         case 4:
             concentration_boundary = strtod(argv[3], NULL);
             // fall through
@@ -119,45 +208,92 @@ int main(int argc, char *argv[]) {
             break;
     }
 
-    ClusterDynamics cd(concentration_boundary, reactor, material);
+    if (sensitivity_analysis_mode){
+        // --------------------------------------------------------------------------------------------
+        // sensitivity analysis simulation loop
+        for (size_t n = 0; n < num_of_simulation_loops; n++){   
+            ClusterDynamics cd(concentration_boundary, reactor, material);
 
-    print_start_message();
+            print_start_message();
 
-#if CSV
-    fprintf(stdout,
-            "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
-#endif
+            #if CSV
+            fprintf(stdout, "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
+            #endif
 
-    ClusterDynamicsState state;
+            ClusterDynamicsState state;
+            update_for_sensitivity_analysis(cd, reactor, material, n * delta_sensitivity_analysis);
+            
 
-    // --------------------------------------------------------------------------------------------
-    // main simulation loop
-    for (gp_float t = 0; t < simulation_time; t = state.time) {
-        // run simulation for this time slice
-        state = cd.run(delta_time, sample_interval);
+            for (gp_float t = 0; t < simulation_time; t = state.time)
+            {
+                // run simulation for this time slice
+                state = cd.run(delta_time, sample_interval);
 
-#if VPRINT
-        print_state(state);
-#elif CSV
-        print_csv(state);
-#endif
+                #if VPRINT 
+                    print_state(state);
+                #elif CSV
+                    print_csv(state);
+                #endif
 
-        if (!state.valid) {
-            break;
+                if (!state.valid) 
+                {
+                    break;
+                }
+
+                #if VBREAK
+                fgetc(stdin);
+                #endif
+            }
+
+            // --------------------------------------------------------------------------------------------
+            // print results
+            #if !VPRINT && !CSV
+            print_state(state);
+            #endif
+            // --------------------------------------------------------------------------------------------  
         }
+        // --------------------------------------------------------------------------------------------
+    } else {
+        ClusterDynamics cd(concentration_boundary, reactor, material);
 
-#if VBREAK
-        fgetc(stdin);
-#endif
+        print_start_message();
+
+        #if CSV
+        fprintf(stdout, "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
+        #endif
+
+        ClusterDynamicsState state;
+        // --------------------------------------------------------------------------------------------
+        // main simulation loop
+        for (gp_float t = 0; t < simulation_time; t = state.time)
+        {
+            // run simulation for this time slice
+            state = cd.run(delta_time, sample_interval);
+
+            #if VPRINT 
+                print_state(state);
+            #elif CSV
+                print_csv(state);
+            #endif
+
+            if (!state.valid) 
+            {
+                break;
+            }
+
+            #if VBREAK
+            fgetc(stdin);
+            #endif
+        }
+        // --------------------------------------------------------------------------------------------
+
+        // --------------------------------------------------------------------------------------------
+        // print results
+        #if !VPRINT && !CSV
+        print_state(state);
+        #endif
+        // --------------------------------------------------------------------------------------------
     }
-// --------------------------------------------------------------------------------------------
-
-// --------------------------------------------------------------------------------------------
-// print results
-#if !VPRINT && !CSV
-    print_state(state);
-#endif
-    // --------------------------------------------------------------------------------------------
 
     return 0;
 }
