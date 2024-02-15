@@ -1,12 +1,11 @@
-#include <iostream>
-#include <cstring>
-#include <cmath>
 #include <array>
+#include <cmath>
+#include <cstring>
+#include <iostream>
 
 #include "cluster_dynamics.hpp"
 #include "material.hpp"
 #include "nuclear_reactor.hpp"
-
 #include "timer.hpp"
 
 #ifndef VPRINT
@@ -24,46 +23,48 @@
 size_t concentration_boundary;
 gp_float simulation_time;
 gp_float delta_time;
-gp_float sample_interval; // How often (in seconds) to record the state
+gp_float sample_interval;  // How often (in seconds) to record the state
 
-void print_start_message()
-{
+void print_start_message() {
     fprintf(stderr, "\nSimulation Started: ");
     fprintf(stderr, "delta_time: %g, ", delta_time);
     fprintf(stderr, "simulation_time: %g, ", simulation_time);
-    fprintf(stderr, "concentration_boundary: %llu\n", (unsigned long long)concentration_boundary);
+    fprintf(stderr, "concentration_boundary: %4d\n",
+            static_cast<int>(concentration_boundary));
 }
 
-void print_state(ClusterDynamicsState& state)
-{
-    if (!state.valid) fprintf(stdout, "\nINVALID SIM @ Time=%g", state.time);
-    else fprintf(stdout, "\nTime=%g", state.time);
+void print_state(const ClusterDynamicsState &state) {
+    if (!state.valid)
+        fprintf(stdout, "\nINVALID SIM @ Time=%g", state.time);
+    else
+        fprintf(stdout, "\nTime=%g", state.time);
 
-    if (state.interstitials.size() != concentration_boundary || state.vacancies.size() != concentration_boundary)
-    {
+    if (state.interstitials.size() != concentration_boundary ||
+        state.vacancies.size() != concentration_boundary) {
         fprintf(stderr, "\nError: Output data is incorrect size.\n");
         return;
     }
 
-    fprintf(stdout, "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n");
-    for (uint64_t n = 1; n < concentration_boundary; ++n)
-    {
-        fprintf(stdout, "%llu\t\t\t\t\t%13g\t\t\t  %15g\n\n", (unsigned long long)n, state.interstitials[n], state.vacancies[n]);
+    fprintf(stdout,
+            "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n");
+    for (uint64_t n = 1; n < concentration_boundary; ++n) {
+        fprintf(stdout, "%llu\t\t\t\t\t%13g\t\t\t  %15g\n\n",
+                n, state.interstitials[n],
+                state.vacancies[n]);
     }
 
-    fprintf(stderr, "\nDislocation Network Density: %g\n\n", state.dislocation_density);
+    fprintf(stderr, "\nDislocation Network Density: %g\n\n",
+            state.dislocation_density);
 }
 
-void print_csv(ClusterDynamicsState& state)
-{
-    for (uint64_t n = 1; n < concentration_boundary; ++n)
-    {
-        fprintf(stdout, "%g,%llu,%g,%g\n", state.time, (unsigned long long) n, state.interstitials[n], state.vacancies[n]);
+void print_csv(const ClusterDynamicsState &state) {
+    for (uint64_t n = 1; n < concentration_boundary; ++n) {
+        fprintf(stdout, "%g,%llu,%g,%g\n", state.time, n,
+                state.interstitials[n], state.vacancies[n]);
     }
 }
 
-void profile()
-{
+void profile() {
     std::vector<gp_float> times;
     Timer timer;
 
@@ -78,8 +79,7 @@ void profile()
     ClusterDynamics cd(10, reactor, material);
     cd.run(1e-5, 1e-5);
 
-    for (int n = 100; n < 400000; n += 10000)
-    {
+    for (int n = 100; n < 400000; n += 10000) {
         fprintf(stderr, "N=%d\n", n);
         ClusterDynamics cd(n, reactor, material);
 
@@ -91,8 +91,7 @@ void profile()
     }
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char *argv[]) {
     NuclearReactor reactor;
     nuclear_reactors::OSIRIS(reactor);
 
@@ -106,8 +105,7 @@ int main(int argc, char* argv[])
     sample_interval = delta_time;
 
     // Override default values with CLI arguments
-    switch (argc)
-    {
+    switch (argc) {
         case 4:
             concentration_boundary = strtod(argv[3], NULL);
             // fall through
@@ -124,41 +122,40 @@ int main(int argc, char* argv[])
 
     print_start_message();
 
-    #if CSV
-    fprintf(stdout, "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
-    #endif
+#if CSV
+    fprintf(stdout,
+            "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
+#endif
 
     ClusterDynamicsState state;
 
     // --------------------------------------------------------------------------------------------
     // main simulation loop
-    for (gp_float t = 0; t < simulation_time; t = state.time)
-    {
+    for (gp_float t = 0; t < simulation_time; t = state.time) {
         // run simulation for this time slice
         state = cd.run(delta_time, sample_interval);
 
-        #if VPRINT 
-            print_state(state);
-        #elif CSV
-            print_csv(state);
-        #endif
+#if VPRINT
+        print_state(state);
+#elif CSV
+        print_csv(state);
+#endif
 
-        if (!state.valid) 
-        {
+        if (!state.valid) {
             break;
         }
 
-        #if VBREAK
+#if VBREAK
         fgetc(stdin);
-        #endif
+#endif
     }
-    // --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 
-    // --------------------------------------------------------------------------------------------
-    // print results
-    #if !VPRINT && !CSV
+// --------------------------------------------------------------------------------------------
+// print results
+#if !VPRINT && !CSV
     print_state(state);
-    #endif
+#endif
     // --------------------------------------------------------------------------------------------
 
     return 0;

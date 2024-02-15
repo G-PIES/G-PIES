@@ -5,18 +5,17 @@
 #include "nuclear_reactor_impl.hpp"
 
 #if defined(__METAL__)
-    #define __METALDECL__ device
+#define __METALDECL__ device
 #else
-    #define __METALDECL__
+#define __METALDECL__
 #endif
 
-struct ClusterDynamicsMetalArgs
-{
-    __METALDECL__ MaterialImpl* material;
-    __METALDECL__ NuclearReactorImpl* reactor;
+struct ClusterDynamicsMetalArgs {
+    __METALDECL__ MaterialImpl *material;
+    __METALDECL__ NuclearReactorImpl *reactor;
 
-    __METALDECL__ gp_float* interstitials;
-    __METALDECL__ gp_float* vacancies;
+    __METALDECL__ gp_float *interstitials;
+    __METALDECL__ gp_float *vacancies;
 
     uint64_t concentration_boundary;
     gp_float dislocation_density;
@@ -31,4 +30,4 @@ struct ClusterDynamicsMetalArgs
     gp_float v_diffusion_val;
 };
 
-#endif // CLUSTER_DYNAMICS_METAL_IMPL_ARGS_HPP
+#endif  // CLUSTER_DYNAMICS_METAL_IMPL_ARGS_HPP
