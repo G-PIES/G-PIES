@@ -251,6 +251,10 @@ LDFLAGS.debug   =
 LIBRARIES =
 LDFLAGS   = $(strip $(LDFLAGS.common) $(LDFLAGS.$(CONFIGURATION)) -L$(BUILD_PATH) $(LIBRARIES:%=-l%))
 
+# Arciver parameters
+AR = ar
+ARFLAGS = -crvs
+
 # Generic source and artifact paths
 SRC_PATH     = src
 EXAMPLE_PATH = example
@@ -300,10 +304,11 @@ EXE_EXT.os_windows = .exe
 
 ALL_EXE_FILES = $(ALL_EXE:%=$(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS)))
 .PHONY: $(ALL_EXE)
+all: $(ALL_EXE)
 $(ALL_EXE): %: $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS))
 	@[ "$(R)" ] && $< || ( exit 0 )
 $(ALL_EXE_FILES): $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS)): $$(EXE_%_PREREQUISITES)
-	$(LD) $(LDFLAGS) $(filter %.o,$^) -o $@
+	$(LD) $(filter %.o,$^) $(LDFLAGS) -o $@
 
 # Generic library target
 LIB_EXT.os_linux =   .a
@@ -312,6 +317,7 @@ LIB_EXT.os_windows = .lib
 
 ALL_LIB_FILES = $(ALL_LIB:%=$(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS)))
 .PHONY: $(ALL_LIB)
+all: $(ALL_LIB)
 $(ALL_LIB): %: $(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS))
 $(ALL_LIB_FILES): $(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS)): $$(LIB_%_PREREQUISITES)
 	$(AR) $(ARFLAGS) $@ $(filter %.o,$^)
