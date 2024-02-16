@@ -3,8 +3,6 @@
 
 #include "cluster_dynamics_impl.hpp"
 
-#define MAX_SPATIAL_DIM 10
-
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
     The rate of production of interstital defects from the irradiation cascade for size (n) clusters.
@@ -144,7 +142,7 @@ double ClusterDynamicsImpl::iemission_vabsorption_n(size_t n, size_t x)
         // (1)
         iv_absorption(n) * vacancies[1][x]
         // (2)
-        + ii_absorption(n) * interstitials[1][x] * (1 - dislocation_promotion_probability(n))
+        + ii_absorption(n) * interstitials[1][x] * (1 - dislocation_promotion_probability(n, x))
         // (3)
         + ii_emission(n);
 }
@@ -245,9 +243,9 @@ double ClusterDynamicsImpl::i1_cluster_delta(size_t x)
         // (2)
         - annihilation_rate() * interstitials[1][x] * vacancies[1][x]
         // (3)
-        - interstitials[1][x] * i_dislocation_annihilation_time()
+        - interstitials[1][x] * i_dislocation_annihilation_time(x)
         // (4)
-        - interstitials[1][x] * i_grain_boundary_annihilation_time()
+        - interstitials[1][x] * i_grain_boundary_annihilation_time(x)
         // (5)
         - interstitials[1][x] * i_absorption_time(x)
         // (6)
@@ -277,9 +275,9 @@ double ClusterDynamicsImpl::v1_cluster_delta(size_t x)
         // (2)
         - annihilation_rate() * interstitials[1][x] * vacancies[1][x]
         // (3)
-        - vacancies[1][x] * v_dislocation_annihilation_time()
+        - vacancies[1][x] * v_dislocation_annihilation_time(x)
         // (4)
-        - vacancies[1][x] * v_grain_boundary_annihilation_time()
+        - vacancies[1][x] * v_grain_boundary_annihilation_time(x)
         // (5)
         - vacancies[1][x] * v_absorption_time(x)
         // (6)
@@ -417,11 +415,11 @@ double ClusterDynamicsImpl::annihilation_rate()
            (1)   (2)    (3)
     tAdi = p  *  Di  *  Zi
 */
-double ClusterDynamicsImpl::i_dislocation_annihilation_time()
+double ClusterDynamicsImpl::i_dislocation_annihilation_time(size_t x)
 {
     return
         // (1)
-        dislocation_density *
+        dislocation_density[x] *
         // (2)
         i_diffusion() *
         // (3)
@@ -434,11 +432,11 @@ double ClusterDynamicsImpl::i_dislocation_annihilation_time()
            (1)   (2)    (3)
     tAdv = p  *  Dv  *  Zv
 */
-double ClusterDynamicsImpl::v_dislocation_annihilation_time()
+double ClusterDynamicsImpl::v_dislocation_annihilation_time(size_t x)
 {
     return
         // (1)
-        dislocation_density *
+        dislocation_density[x] *
         // (2)
         v_diffusion() *
         // (3)
@@ -454,7 +452,7 @@ double ClusterDynamicsImpl::v_dislocation_annihilation_time()
            (1)            (2)      (3)                            (4)                              (5)
     tAdi = 6 * Di * sqrt( p * Zi + SUM[n] ( B[i,i](n) * Ci(n) ) + SUM[n] ( B[v,i](n) * Cv(n) ) ) / d
 */
-double ClusterDynamicsImpl::i_grain_boundary_annihilation_time()
+double ClusterDynamicsImpl::i_grain_boundary_annihilation_time(size_t x)
 {
     return
         // (1)
@@ -462,12 +460,12 @@ double ClusterDynamicsImpl::i_grain_boundary_annihilation_time()
         sqrt
         (
             // (2)
-            dislocation_density *
+            dislocation_density[x] *
             material.i_dislocation_bias
             // (3)
-            + ii_sum_absorption_val
+            + ii_sum_absorption_val[x]
             // (4)
-            + vi_sum_absorption_val
+            + vi_sum_absorption_val[x]
         ) /
         // (5)
         material.grain_size;
@@ -479,7 +477,7 @@ double ClusterDynamicsImpl::i_grain_boundary_annihilation_time()
            (1)            (2)      (3)                            (4)                              (5)
     tAdv = 6 * Di * sqrt( p * Zv + SUM[n] ( B[v,v](n) * Cv(n) ) + SUM[n] ( B[i,v](n) * Ci(n) ) ) / d
 */
-double ClusterDynamicsImpl::v_grain_boundary_annihilation_time()
+double ClusterDynamicsImpl::v_grain_boundary_annihilation_time(size_t x)
 {
     return
         // (1)
@@ -487,12 +485,12 @@ double ClusterDynamicsImpl::v_grain_boundary_annihilation_time()
         sqrt
         (
             // (2)
-            dislocation_density *
+            dislocation_density[x] *
             material.v_dislocation_bias
             // (3)
-            + vv_sum_absorption_val
+            + vv_sum_absorption_val[x]
             // (4)
-            + iv_sum_absorption_val
+            + iv_sum_absorption_val[x]
         ) /
         // (5)
         material.grain_size;
@@ -682,18 +680,18 @@ double ClusterDynamicsImpl::mean_dislocation_cell_radius(size_t x)
       r_0_factor += cluster_radius(i) * interstitials[i][x];
    }
 
-   return 1 / std::sqrt((2. * M_PI * M_PI / material.atomic_volume) * r_0_factor + M_PI * dislocation_density);
+   return 1 / std::sqrt((2. * M_PI * M_PI / material.atomic_volume) * r_0_factor + M_PI * dislocation_density[x]);
 }
 
 // --------------------------------------------------------------------------------------------
 /*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.12
 */
-double ClusterDynamicsImpl::dislocation_promotion_probability(size_t n)
+double ClusterDynamicsImpl::dislocation_promotion_probability(size_t n, size_t x)
 {
    double dr = cluster_radius(n + 1) - cluster_radius(n);
 
    return (2. * cluster_radius(n) * dr + std::pow(dr, 2.))
-      / (M_PI * mean_dislocation_radius_val / 2. - std::pow(cluster_radius(n), 2.));
+      / (M_PI * mean_dislocation_radius_val[x] / 2. - std::pow(cluster_radius(n), 2.));
 }
 // --------------------------------------------------------------------------------------------
 
@@ -706,7 +704,7 @@ double ClusterDynamicsImpl::dislocation_density_delta(size_t x)
    double gain = 0.0;
    for (size_t n = 1; n < concentration_boundary; ++n)
    {
-      gain += cluster_radius(n) * dislocation_promotion_probability(n) * ii_absorption(n) * interstitials[n][x];
+      gain += cluster_radius(n) * dislocation_promotion_probability(n, x) * ii_absorption(n) * interstitials[n][x];
    }
 
    gain *= 2. * M_PI / material.atomic_volume;
@@ -715,7 +713,7 @@ double ClusterDynamicsImpl::dislocation_density_delta(size_t x)
       gain
       - reactor.dislocation_density_evolution *
       std::pow(material.burgers_vector, 2.) *
-      std::pow(dislocation_density, 3. / 2.);
+      std::pow(dislocation_density[x], 3. / 2.);
 }
 
 // --------------------------------------------------------------------------------------------
@@ -741,11 +739,11 @@ double ClusterDynamicsImpl::cluster_radius(size_t n)
 
 void ClusterDynamicsImpl::step_init(size_t x)
 {
-  mean_dislocation_radius_val = mean_dislocation_cell_radius(x);
-  ii_sum_absorption_val = ii_sum_absorption(concentration_boundary - 1, x);
-  iv_sum_absorption_val = iv_sum_absorption(concentration_boundary - 1, x);
-  vi_sum_absorption_val = vi_sum_absorption(concentration_boundary - 1, x);
-  vv_sum_absorption_val = vv_sum_absorption(concentration_boundary - 1, x);
+  mean_dislocation_radius_val[x] = mean_dislocation_cell_radius(x);
+  ii_sum_absorption_val[x] = ii_sum_absorption(concentration_boundary - 1, x);
+  iv_sum_absorption_val[x] = iv_sum_absorption(concentration_boundary - 1, x);
+  vi_sum_absorption_val[x] = vi_sum_absorption(concentration_boundary - 1, x);
+  vv_sum_absorption_val[x] = vv_sum_absorption(concentration_boundary - 1, x);
 }
 
 bool ClusterDynamicsImpl::step(double delta_time, double delta_x)
@@ -754,15 +752,14 @@ bool ClusterDynamicsImpl::step(double delta_time, double delta_x)
     cudaMemcpy(thrust::raw_pointer_cast(self), this, sizeof(ClusterDynamicsImpl), cudaMemcpyHostToDevice);
   #endif
 
-  for (size_t x = 0; x < MAX_SPATIAL_DIM; x++)
+  for (size_t x = 0; x <= max_spatial_dim; x++)
     step_init(x);
 
   bool state_is_valid = update_clusters_1(delta_time, delta_x);
   update_clusters(delta_time, delta_x);
 
-  // Ella's note: Not sure if this is right
-  for (size_t x = 0; x < MAX_SPATIAL_DIM; x++)
-    dislocation_density += dislocation_density_delta(x) * delta_time;
+  for (size_t x = 0; x <= max_spatial_dim; x++)
+    dislocation_density[x] += dislocation_density_delta(x) * delta_time;
 
   interstitials = interstitials_temp;
   vacancies = vacancies_temp;
@@ -774,7 +771,7 @@ bool ClusterDynamicsImpl::update_clusters_1(double delta_time, double delta_x)
 {
   bool state_is_valid = true;
 
-  for (size_t x = 1; x < MAX_SPATIAL_DIM - 1; x++)
+  for (size_t x = 1; x <= max_spatial_dim; x++)
   {
     interstitials_temp[1][x] += i1_cluster_delta(x) * delta_time;
     vacancies_temp[1][x] += v1_cluster_delta(x) * delta_time;
@@ -791,7 +788,7 @@ bool ClusterDynamicsImpl::update_clusters(double delta_time, double delta_x)
 
    for (size_t n = 2; n < concentration_boundary; ++n)
    {
-      for (size_t x = 1; x < MAX_SPATIAL_DIM - 1; x++)
+      for (size_t x = 1; x <= max_spatial_dim; x++)
       {
         interstitials_temp[n][x] += i_clusters_delta(n, x, delta_x) * delta_time;
         vacancies_temp[n][x] += v_clusters_delta(n, x, delta_x) * delta_time;
@@ -881,14 +878,16 @@ bool ClusterDynamicsImpl::validate(size_t n, size_t x)
 
 
 // TODO - clean up the uses of random +1/+2/-1/etc throughout the code
-ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, NuclearReactor reactor, Material material)
-  : concentration_boundary(concentration_boundary), reactor(reactor), material(material),
-    interstitials(concentration_boundary + 1, std::vector<double>(MAX_SPATIAL_DIM, 0.0)),
-    vacancies(concentration_boundary + 1, std::vector<double>(MAX_SPATIAL_DIM, 0.0)),
-    interstitials_temp(concentration_boundary + 1, std::vector<double>(MAX_SPATIAL_DIM, 0.0)),
-    vacancies_temp(concentration_boundary + 1, std::vector<double>(MAX_SPATIAL_DIM, 0.0)),
-    dislocation_density(material.dislocation_density_0), time(0.0)
-{
+ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, size_t max_spatial_dim, NuclearReactor reactor, Material material)
+  : concentration_boundary(concentration_boundary), max_spatial_dim(max_spatial_dim), reactor(reactor), material(material),
+    interstitials(concentration_boundary + 1, std::vector<double>(max_spatial_dim + 1, 0.0)),
+    vacancies(concentration_boundary + 1, std::vector<double>(max_spatial_dim + 1, 0.0)),
+    interstitials_temp(concentration_boundary + 1, std::vector<double>(max_spatial_dim + 1, 0.0)),
+    vacancies_temp(concentration_boundary + 1, std::vector<double>(max_spatial_dim + 1, 0.0)),
+    dislocation_density(max_spatial_dim + 1, material.dislocation_density_0), time(0.0), mean_dislocation_radius_val(max_spatial_dim + 1, 0.0),
+    ii_sum_absorption_val(max_spatial_dim + 1, 0.0), iv_sum_absorption_val(max_spatial_dim + 1, 0.0), vv_sum_absorption_val(max_spatial_dim + 1, 0.0),
+    vi_sum_absorption_val(max_spatial_dim + 1, 0.0)
+    {
   #ifdef USE_CUDA
     ClusterDynamicsImpl* ptr;
     cudaMalloc(&ptr, sizeof(ClusterDynamicsImpl));
@@ -909,7 +908,7 @@ ClusterDynamicsState ClusterDynamicsImpl::run(double delta_time, double total_ti
     }
 
     // Need to fix the resizing here
-    
+
     //vector<double> is(interstitials);
     //vector<double> vs(vacancies);
 

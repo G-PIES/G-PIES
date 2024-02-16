@@ -13,7 +13,7 @@ class ClusterDynamics
 private:
   std::unique_ptr<ClusterDynamicsImpl> _impl;
 public:
-  ClusterDynamics(size_t concentration_boundary, NuclearReactor reactor, Material material);
+  ClusterDynamics(size_t concentration_boundary, size_t max_spatial_dim, NuclearReactor reactor, Material material);
   ~ClusterDynamics();
 
   ClusterDynamicsState run(double delta_time, double total_time, double delta_x);

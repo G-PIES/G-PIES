@@ -1,9 +1,9 @@
 #include "cluster_dynamics.hpp"
 #include "cluster_dynamics_impl.hpp"
 
-ClusterDynamics::ClusterDynamics(size_t concentration_boundary, NuclearReactor reactor, Material material)
+ClusterDynamics::ClusterDynamics(size_t concentration_boundary, size_t max_spatial_dim, NuclearReactor reactor, Material material)
 {
-  _impl = std::make_unique<ClusterDynamicsImpl>(concentration_boundary, reactor, material);
+  _impl = std::make_unique<ClusterDynamicsImpl>(concentration_boundary, max_spatial_dim, reactor, material);
 }
 
 ClusterDynamics::~ClusterDynamics()

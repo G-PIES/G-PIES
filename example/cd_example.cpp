@@ -22,6 +22,7 @@
 #endif
 
 size_t concentration_boundary;
+size_t max_spatial_dim;
 double simulation_time;
 double delta_time;
 double delta_x;
@@ -33,7 +34,8 @@ void print_start_message()
     fprintf(stderr, "delta_time: %g, ", delta_time);
     fprintf(stderr, "delta_x: %g, ", delta_x);
     fprintf(stderr, "simulation_time: %g, ", simulation_time);
-    fprintf(stderr, "concentration_boundary: %llu\n", (unsigned long long)concentration_boundary);
+    fprintf(stderr, "concentration_boundary: %llu, ", (unsigned long long)concentration_boundary);
+    fprintf(stderr, "max_spatial_dim: %llu\n", (unsigned long long)max_spatial_dim);
 }
 
 void print_state(ClusterDynamicsState& state)
@@ -52,11 +54,12 @@ void print_state(ClusterDynamicsState& state)
     {
         // Change the second index to view a specific spatial dimension.
         // Will need to update the output format here to view everything at once
-        
+
         fprintf(stdout, "%llu\t\t\t\t\t%13g\t\t\t  %15g\n\n", (unsigned long long)n, state.interstitials[n][2], state.vacancies[n][2]);
     }
 
-    fprintf(stderr, "\nDislocation Network Density: %g\n\n", state.dislocation_density);
+    for (int i = 0; i < max_spatial_dim; i++)
+      fprintf(stderr, "\n%d Dislocation Network Density: %g\n\n", i, state.dislocation_density[i]);
 }
 
 void print_csv(ClusterDynamicsState& state)
@@ -80,13 +83,13 @@ void profile()
     Material material;
     materials::SA304(material);
 
-    ClusterDynamics cd(10, reactor, material);
+    ClusterDynamics cd(10, 5, reactor, material);
     cd.run(1e-5, 1e-5, 1e-4);
 
     for (int n = 100; n < 400000; n += 10000)
     {
         fprintf(stderr, "N=%d\n", n);
-        ClusterDynamics cd(n, reactor, material);
+        ClusterDynamics cd(n, 5, reactor, material);
 
         timer.Start();
         state = cd.run(1e-5, 1e-5, 1e-4);
@@ -106,6 +109,7 @@ int main(int argc, char* argv[])
 
     // Default values
     concentration_boundary = 10;
+    max_spatial_dim = 5;
     simulation_time = 1.0;
     delta_time = 1e-5;
     delta_x = 1e-4;
@@ -114,6 +118,8 @@ int main(int argc, char* argv[])
     // Override default values with CLI arguments
     switch (argc)
     {
+        case 6:
+            max_spatial_dim = strtod(argv[5], NULL);
         case 5:
             delta_x = strtod(argv[4], NULL);
         case 4:
@@ -126,7 +132,7 @@ int main(int argc, char* argv[])
             break;
     }
 
-    ClusterDynamics cd(concentration_boundary, reactor, material);
+    ClusterDynamics cd(concentration_boundary, max_spatial_dim, reactor, material);
 
     print_start_message();
 

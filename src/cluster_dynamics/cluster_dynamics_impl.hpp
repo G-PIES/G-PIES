@@ -41,13 +41,14 @@ public:
   vector<vector<double>> vacancies_temp;
 
   size_t concentration_boundary;
-  double dislocation_density;
+  size_t max_spatial_dim;
+  vector<double> dislocation_density;
 
-  double mean_dislocation_radius_val;
-  double ii_sum_absorption_val;
-  double iv_sum_absorption_val;
-  double vv_sum_absorption_val;
-  double vi_sum_absorption_val;
+  vector<double> mean_dislocation_radius_val;
+  vector<double> ii_sum_absorption_val;
+  vector<double> iv_sum_absorption_val;
+  vector<double> vv_sum_absorption_val;
+  vector<double> vi_sum_absorption_val;
   double i1_val;
   double v1_val;
 
@@ -82,10 +83,10 @@ public:
   double i_absorption_time(size_t); //Changed, good
   double v_absorption_time(size_t); //Changed, good
   __CUDADECL__ double annihilation_rate();
-  __CUDADECL__ double i_dislocation_annihilation_time();
-  __CUDADECL__ double v_dislocation_annihilation_time();
-  __CUDADECL__ double i_grain_boundary_annihilation_time();
-  __CUDADECL__ double v_grain_boundary_annihilation_time();
+  __CUDADECL__ double i_dislocation_annihilation_time(size_t);
+  __CUDADECL__ double v_dislocation_annihilation_time(size_t);
+  __CUDADECL__ double i_grain_boundary_annihilation_time(size_t);
+  __CUDADECL__ double v_grain_boundary_annihilation_time(size_t);
   __CUDADECL__ double ii_emission(size_t);
   __CUDADECL__ double ii_absorption(size_t);
   __CUDADECL__ double iv_absorption(size_t);
@@ -98,7 +99,7 @@ public:
   __CUDADECL__ double v_binding_energy(size_t);
   __CUDADECL__ double i_diffusion();
   __CUDADECL__ double v_diffusion();
-  __CUDADECL__ double dislocation_promotion_probability(size_t);
+  __CUDADECL__ double dislocation_promotion_probability(size_t, size_t);
   __CUDADECL__ double cluster_radius(size_t);
 
   // Simulation Operation Functions
@@ -115,7 +116,7 @@ public:
   bool validate(size_t, size_t); //Changed, good
 
   // Interface functions
-  ClusterDynamicsImpl(size_t concentration_boundary, NuclearReactor reactor, Material material);
+  ClusterDynamicsImpl(size_t concentration_boundary, size_t max_spatial_dim, NuclearReactor reactor, Material material);
   ~ClusterDynamicsImpl();
 
   ClusterDynamicsState run(double delta_time, double total_time, double x_delta);
