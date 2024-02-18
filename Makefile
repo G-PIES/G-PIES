@@ -32,14 +32,14 @@ else
 		GTEST_LIBS = ./extern/googletest/lib/apple
 	endif
 
-	UNAME_P := $(shell uname -p)
-	ifeq ($(UNAME_P), x86_64)
+	UNAME_M := $(shell uname -m)
+	ifeq ($(UNAME_M), x86_64)
 		TARGET_ARCH = amd64
 		CCFLAGS += -D AMD64
-	else ifneq ($(filter %86, $(UNAME_P)),)
+	else ifneq ($(filter %86, $(UNAME_M)),)
 		TARGET_ARCH = ia32
 		CCFLAGS += -D IA32
-	else ifneq ($(filter arm%, $(UNAME_P)),)
+	else ifneq ($(filter arm%, $(UNAME_M)),)
 		TARGET_ARCH = arm
 		CCFLAGS += -D ARM
 	endif
