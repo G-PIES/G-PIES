@@ -1,8 +1,8 @@
 #include "gtest/gtest.h"
-#include "client_db.hpp"
-#include "nuclear_reactor.hpp"
-#include "material.hpp"
-#include "randomizer.hpp"
+#include "client_db/client_db.hpp"
+#include "model/nuclear_reactor.hpp"
+#include "model/material.hpp"
+#include "utils/randomizer.hpp"
 
 class ClientDbTest : public ::testing::Test
 {

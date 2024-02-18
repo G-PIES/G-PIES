@@ -4,8 +4,8 @@
 #include <vector>
 #include <cmath>
 
-#include "cluster_dynamics_state.hpp"
-#include "constants.hpp"
+#include "cluster_dynamics/cluster_dynamics_state.hpp"
+#include "utils/constants.hpp"
 #include "material_impl.hpp"
 #include "nuclear_reactor_impl.hpp"
 

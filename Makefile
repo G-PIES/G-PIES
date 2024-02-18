@@ -54,7 +54,7 @@ NVCCFLAGS += -std=c++17 -DUSE_CUDA -x cu -Werror all-warnings
 CLANGFLAGS = $(CCFLAGS) -DUSE_METAL
 
 INCLUDE_FLAGS = -Isrc/client_db -Isrc/cluster_dynamics -Isrc/cluster_dynamics/cpu -Isrc/cluster_dynamics/cuda -Isrc/cluster_dynamics/metal
-INCLUDE_FLAGS += -Iinclude/client_db -Iinclude/cluster_dynamics -Iinclude/model -Iinclude/utils
+INCLUDE_FLAGS += -Iinclude
 
 # Directories
 BIN_DIR = bin
@@ -237,7 +237,7 @@ CXXFLAGS.os_windows = -D WIN32 -D_USE_MATH_DEFINES
 CXXFLAGS.os_linux   = -D LINUX
 CXXFLAGS.os_maxos   = -D OSX
 
-INCLUDES             = $(wildcard include/*)
+INCLUDES             = include
 CXXFLAGS_COMPILATION = $(CXXFLAGS.common) $(CXXFLAGS.$(CONFIGURATION)) $(CXXFLAGS.arch_$(TARGET_ARCH)) $(CXXFLAGS.os_$(TARGET_OS))
 CXXFLAGS_INCLUDES    = $(INCLUDES:%=-I%)
 CXXFLAGS             = $(strip $(CXXFLAGS_COMPILATION) $(CXXFLAGS_INCLUDES))

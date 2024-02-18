@@ -1,4 +1,4 @@
-#include "nuclear_reactor.hpp"
+#include "model/nuclear_reactor.hpp"
 #include "nuclear_reactor_impl.hpp"
 
 

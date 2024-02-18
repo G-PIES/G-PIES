@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "cluster_dynamics.hpp"
+#include "cluster_dynamics/cluster_dynamics.hpp"
 
 #if defined(USE_CUDA)
     #include "cluster_dynamics_cuda_impl.hpp"

@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <sqlite3.h>
-#include "types.hpp"
-#include "gpies_exception.hpp"
+#include "utils/types.hpp"
+#include "utils/gpies_exception.hpp"
 
 struct NuclearReactor;
 struct Material;

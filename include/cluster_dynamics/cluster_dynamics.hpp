@@ -2,10 +2,10 @@
 #define CLUSTER_DYNAMICS_HPP
 
 #include <memory>
-#include "types.hpp"
+#include "utils/types.hpp"
 #include "cluster_dynamics_state.hpp"
-#include "material.hpp"
-#include "nuclear_reactor.hpp"
+#include "model/material.hpp"
+#include "model/nuclear_reactor.hpp"
 
 class ClusterDynamicsImpl;
 
