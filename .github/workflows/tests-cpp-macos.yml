@@ -1,0 +1,16 @@
+name: Build and run tests (macOS)
+
+on: pull_request
+
+jobs:
+  build:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Cluster Dynamics Tests
+        run: make cdtests
+      - name: Build Client Database Tests
+        run: make dbtests

@@ -2,10 +2,10 @@
 #include <string>
 #include <vector>
 
-#include "client_db.hpp"
-#include "db_queries.hpp"
-#include "nuclear_reactor.hpp"
-#include "material.hpp"
+#include "client_db/client_db.hpp"
+#include "client_db/db_queries.hpp"
+#include "model/nuclear_reactor.hpp"
+#include "model/material.hpp"
 
 
 // --------------------------------------------------------------------------------------------

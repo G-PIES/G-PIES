@@ -1,7 +1,7 @@
 #ifndef CLUSTER_DYNAMICS_STATE_HPP
 #define CLUSTER_DYNAMICS_STATE_HPP
 
-#include "types.hpp"
+#include "utils/types.hpp"
 #include <vector>
 
 /** @brief Class which contains information about the state of a ClusterDynamics simulation.

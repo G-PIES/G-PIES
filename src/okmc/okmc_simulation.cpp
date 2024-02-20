@@ -92,7 +92,7 @@ double OkmcSimulation::calculate_event_probability(Event *event, int times, doub
 }
 
 int OkmcSimulation::calculate_number_of_times(std::vector<double> probabilities, double random_double) {
-    int index = 0;
+    unsigned int index = 0;
     for (; index < probabilities.size(); index++) {
         if (probabilities[index] > random_double) {
             return index;
@@ -119,12 +119,12 @@ void OkmcSimulation::process_interactions(Model *model) {
 
     unsigned int object_count = model->objects.size();
 
-    for (int i = 0; i < object_count; i++) {
+    for (unsigned int i = 0; i < object_count; i++) {
         Defect *first = static_cast<Defect *>(model->objects[i]);
         if (first == nullptr) {
             continue;
         }
-        for (int j = i + 1; j < object_count; j++) {
+        for (unsigned int j = i + 1; j < object_count; j++) {
             Defect *second = static_cast<Defect *>(model->objects[j]);
             if (second == nullptr) {
                 continue;

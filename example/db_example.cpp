@@ -1,11 +1,11 @@
 #include <iostream>
 #include <vector>
 
-#include "client_db.hpp"
-#include "nuclear_reactor.hpp"
-#include "material.hpp"
-#include "gpies_exception.hpp"
-#include "randomizer.hpp"
+#include "client_db/client_db.hpp"
+#include "model/nuclear_reactor.hpp"
+#include "model/material.hpp"
+#include "utils/gpies_exception.hpp"
+#include "utils/randomizer.hpp"
 
 #define VEC_SIZE 4
 

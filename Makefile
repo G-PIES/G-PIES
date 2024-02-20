@@ -32,14 +32,14 @@ else
 		GTEST_LIBS = ./extern/googletest/lib/apple
 	endif
 
-	UNAME_P := $(shell uname -p)
-	ifeq ($(UNAME_P), x86_64)
+	UNAME_M := $(shell uname -m)
+	ifeq ($(UNAME_M), x86_64)
 		TARGET_ARCH = amd64
 		CCFLAGS += -D AMD64
-	else ifneq ($(filter %86, $(UNAME_P)),)
+	else ifneq ($(filter %86, $(UNAME_M)),)
 		TARGET_ARCH = ia32
 		CCFLAGS += -D IA32
-	else ifneq ($(filter arm%, $(UNAME_P)),)
+	else ifneq ($(filter arm%, $(UNAME_M)),)
 		TARGET_ARCH = arm
 		CCFLAGS += -D ARM
 	endif
@@ -54,7 +54,7 @@ NVCCFLAGS += -std=c++17 -DUSE_CUDA -x cu -Werror all-warnings
 CLANGFLAGS = $(CCFLAGS) -DUSE_METAL
 
 INCLUDE_FLAGS = -Isrc/client_db -Isrc/cluster_dynamics -Isrc/cluster_dynamics/cpu -Isrc/cluster_dynamics/cuda -Isrc/cluster_dynamics/metal
-INCLUDE_FLAGS += -Iinclude/client_db -Iinclude/cluster_dynamics -Iinclude/model -Iinclude/utils
+INCLUDE_FLAGS += -Iinclude
 
 # Directories
 BIN_DIR = bin
@@ -237,7 +237,7 @@ CXXFLAGS.os_windows = -D WIN32 -D_USE_MATH_DEFINES
 CXXFLAGS.os_linux   = -D LINUX
 CXXFLAGS.os_maxos   = -D OSX
 
-INCLUDES             = $(wildcard include/*)
+INCLUDES             = include
 CXXFLAGS_COMPILATION = $(CXXFLAGS.common) $(CXXFLAGS.$(CONFIGURATION)) $(CXXFLAGS.arch_$(TARGET_ARCH)) $(CXXFLAGS.os_$(TARGET_OS))
 CXXFLAGS_INCLUDES    = $(INCLUDES:%=-I%)
 CXXFLAGS             = $(strip $(CXXFLAGS_COMPILATION) $(CXXFLAGS_INCLUDES))
@@ -250,6 +250,10 @@ LDFLAGS.debug   =
 
 LIBRARIES =
 LDFLAGS   = $(strip $(LDFLAGS.common) $(LDFLAGS.$(CONFIGURATION)) -L$(BUILD_PATH) $(LIBRARIES:%=-l%))
+
+# Arciver parameters
+AR = ar
+ARFLAGS = -crvs
 
 # Generic source and artifact paths
 SRC_PATH     = src
@@ -300,10 +304,11 @@ EXE_EXT.os_windows = .exe
 
 ALL_EXE_FILES = $(ALL_EXE:%=$(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS)))
 .PHONY: $(ALL_EXE)
+all: $(ALL_EXE)
 $(ALL_EXE): %: $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS))
 	@[ "$(R)" ] && $< || ( exit 0 )
 $(ALL_EXE_FILES): $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS)): $$(EXE_%_PREREQUISITES)
-	$(LD) $(LDFLAGS) $(filter %.o,$^) -o $@
+	$(LD) $(filter %.o,$^) $(LDFLAGS) -o $@
 
 # Generic library target
 LIB_EXT.os_linux =   .a
@@ -312,6 +317,7 @@ LIB_EXT.os_windows = .lib
 
 ALL_LIB_FILES = $(ALL_LIB:%=$(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS)))
 .PHONY: $(ALL_LIB)
+all: $(ALL_LIB)
 $(ALL_LIB): %: $(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS))
 $(ALL_LIB_FILES): $(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS)): $$(LIB_%_PREREQUISITES)
 	$(AR) $(ARFLAGS) $@ $(filter %.o,$^)
