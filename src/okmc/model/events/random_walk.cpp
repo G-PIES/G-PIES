@@ -1,8 +1,9 @@
+#include "random_walk.hpp"
+
 #include <cmath>
 
-#include "random_walk.hpp"
-#include "../model.hpp"
 #include "../../okmc_simulation.hpp"
+#include "../model.hpp"
 #include "../objects/defect.hpp"
 
 void RandomWalk::init(Model *model) {
@@ -13,11 +14,10 @@ void RandomWalk::init(Model *model) {
     double T = model->parameters->temperature;
 
     _rate = v0 * std::exp(-Em / (kB * T));
-
 }
 
 void RandomWalk::execute(Model *model, ModelObject *object) {
-    Defect *sia = (Defect *) object;
+    Defect *sia = (Defect *)object;
 
     if (sia->size >= 5) {
         return;

@@ -1,8 +1,9 @@
 #include <iostream>
-#include "okmc_simulation.hpp"
+
+#include "exporters/wolfram_mathematica_exporter.hpp"
 #include "model/events/random_walk.hpp"
 #include "model/objects/defect.hpp"
-#include "exporters/wolfram_mathematica_exporter.hpp"
+#include "okmc_simulation.hpp"
 
 void generate_objects(Model *model);
 
@@ -36,17 +37,20 @@ double random_double_between(double from, double to) {
     return from + (to - from) * OkmcSimulation::random_double();
 }
 
-void generate_objects(Model *model){
+void generate_objects(Model *model) {
     const int count = 500;
 
-    for (int i = 0; i < count; i++)
-    {
+    for (int i = 0; i < count; i++) {
         Vector3<double> position = Vector3<double>();
-        position.x = random_double_between(model->parameters->x_from, model->parameters->x_to);
-        position.y = random_double_between(model->parameters->y_from, model->parameters->y_to);
-        position.z = random_double_between(model->parameters->z_from, model->parameters->z_to);
+        position.x = random_double_between(model->parameters->x_from,
+                                           model->parameters->x_to);
+        position.y = random_double_between(model->parameters->y_from,
+                                           model->parameters->y_to);
+        position.z = random_double_between(model->parameters->z_from,
+                                           model->parameters->z_to);
         Defect *defect = new Defect();
-        defect->type = random_double_between(0, 1) < 0.5 ? Interstitial : Vacancy;
+        defect->type =
+            random_double_between(0, 1) < 0.5 ? Interstitial : Vacancy;
         defect->size = 1;
         defect->position = position;
         model->objects.push_back(defect);

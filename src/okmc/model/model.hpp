@@ -1,12 +1,12 @@
 #pragma once
 
-#include "vector"
-#include "model_object.hpp"
-#include "event.hpp"
 #include "../vector3.hpp"
+#include "event.hpp"
+#include "model_object.hpp"
+#include "vector"
 
 class ModelParameters {
-public:
+ public:
     double attempt_frequency;
     double migration_energy;
     double temperature;
@@ -18,7 +18,7 @@ public:
 };
 
 class Model {
-public:
+ public:
     Model();
     void init();
 

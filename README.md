@@ -14,11 +14,11 @@ Nvidia graphics card.
 
 **Doxygen**  
 
-We've currently got Doxygen set up to serve most of our documentation.  
+We've currently got Doxygen set up to serve most of our documentation.
 
-To view our full documentation, do the following:  
-  1. Install [doxygen](https://www.doxygen.nl/download.html)  
-  2. Run either `doxygen InterfaceDoxyfile` or `doxygen BackendDoxyfile`. 
-     The former only documents the interface of the cluster dynamics library.
-     The latter includes documentation for the backend.
-  3. Open `docs/html/index.html` in a browser.
+To view our full documentation, do the following:
+   1. Install [doxygen](https://www.doxygen.nl/download.html)
+   2. Run either `doxygen InterfaceDoxyfile` or `doxygen BackendDoxyfile`.
+      The former only documents the interface of the cluster dynamics library.
+      The latter includes documentation for the backend.
+   3. Open `docs/html/index.html` in a browser.

@@ -2,7 +2,7 @@
 #define TYPES_HPP
 
 #ifndef GP_FLOAT
-    #define GP_FLOAT double 
+#define GP_FLOAT double
 #endif
 
 typedef GP_FLOAT gp_float;
