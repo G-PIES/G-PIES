@@ -1,13 +1,12 @@
-#include "client_db.hpp"
-
 #include <sqlite3.h>
 
 #include <string>
 #include <vector>
 
-#include "db_queries.hpp"
-#include "material.hpp"
-#include "nuclear_reactor.hpp"
+#include "client_db/client_db.hpp"
+#include "client_db/db_queries.hpp"
+#include "model/nuclear_reactor.hpp"
+#include "model/material.hpp"
 
 // --------------------------------------------------------------------------------------------
 // TEMPLATE FUNCTIONS

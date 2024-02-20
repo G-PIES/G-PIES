@@ -1,7 +1,7 @@
 #ifndef NUCLEAR_REACTOR_IMPL_HPP
 #define NUCLEAR_REACTOR_IMPL_HPP
 
-#include "types.hpp"
+#include "utils/types.hpp"
 
 // C. Pokor / Journal of Nuclear Materials 326 (2004), Table 5
 struct NuclearReactorImpl {

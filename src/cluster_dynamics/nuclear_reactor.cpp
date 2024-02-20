@@ -1,5 +1,4 @@
-#include "nuclear_reactor.hpp"
-
+#include "model/nuclear_reactor.hpp"
 #include "nuclear_reactor_impl.hpp"
 
 NuclearReactor::NuclearReactor() : sqlite_id(-1) {

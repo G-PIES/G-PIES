@@ -11,10 +11,10 @@
 #include <cmath>
 #include <vector>
 
-#include "cluster_dynamics_state.hpp"
-#include "constants.hpp"
+#include "cluster_dynamics/cluster_dynamics_state.hpp"
 #include "material_impl.hpp"
 #include "nuclear_reactor_impl.hpp"
+#include "utils/constants.hpp"
 
 #define __CUDADECL__ __device__ __host__
 

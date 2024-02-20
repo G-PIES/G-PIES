@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
-#include "gpies_exception.hpp"
-#include "types.hpp"
+#include "utils/gpies_exception.hpp"
+#include "utils/types.hpp"
 
 struct NuclearReactor;
 struct Material;

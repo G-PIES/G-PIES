@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "types.hpp"
+#include "utils/types.hpp"
 
 /** @brief Class which contains information about the state of a ClusterDynamics
  * simulation.

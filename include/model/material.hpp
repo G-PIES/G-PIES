@@ -6,10 +6,10 @@
 #include <algorithm>
 #include <memory>
 
-#include "constants.hpp"
-#include "conversions.hpp"
-#include "datetime.hpp"
-#include "types.hpp"
+#include "utils/constants.hpp"
+#include "utils/conversions.hpp"
+#include "utils/datetime.hpp"
+#include "utils/types.hpp"
 
 struct MaterialImpl;
 

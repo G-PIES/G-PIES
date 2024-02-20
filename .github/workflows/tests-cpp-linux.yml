@@ -1,4 +1,4 @@
-name: Build and Create Executable Artifact
+name: Build and run tests (Linux)
 
 on: pull_request
 
@@ -7,23 +7,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: Jimver/cuda-toolkit@v0.2.14
+        id: cuda-toolkit
+        with:
+          cuda: '12.3.2'
+
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up C++ environment
-        uses: kurocha/setup-cpp@v1
-        with:
-          compiler: 'g++'
+      - name: Build all
+        run: make all
 
-
-      - name: Build Sim Backend
-        run: make cdlib
-      - name: Build Sim
-        run: make cluster_dynamics
-      - name: Build DB Backend
-        run: make client_db
-      - name: Build client_db
-        run: make client_db
       - name: Build Cluster Dynamics Tests
         run: make cdtests
       - name: Run Cluster Dynamics Tests

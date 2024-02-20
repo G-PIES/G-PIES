@@ -1,6 +1,6 @@
 #include <metal_stdlib>
 
-#include "constants.hpp"
+#include "utils/constants.hpp"
 #include "cluster_dynamics_metal_args.hpp"
 
 gp_float i_concentration_derivative(device ClusterDynamicsMetalArgs& args, uint);

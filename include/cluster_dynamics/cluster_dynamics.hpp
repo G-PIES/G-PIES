@@ -4,9 +4,9 @@
 #include <memory>
 
 #include "cluster_dynamics_state.hpp"
-#include "material.hpp"
-#include "nuclear_reactor.hpp"
-#include "types.hpp"
+#include "model/material.hpp"
+#include "model/nuclear_reactor.hpp"
+#include "utils/types.hpp"
 
 class ClusterDynamicsImpl;
 

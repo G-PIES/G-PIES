@@ -1,8 +1,8 @@
 #ifndef RANDOMIZER_HPP
 #define RANDOMIZER_HPP
 
-#include "material.hpp"
-#include "nuclear_reactor.hpp"
+#include "model/material.hpp"
+#include "model/nuclear_reactor.hpp"
 
 class Randomizer {
  public:

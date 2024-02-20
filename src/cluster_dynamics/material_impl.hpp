@@ -1,7 +1,7 @@
 #ifndef MATERIAL_IMPL_HPP
 #define MATERIAL_IMPL_HPP
 
-#include "types.hpp"
+#include "utils/types.hpp"
 
 /// C. Pokor / Journal of Nuclear Materials 326 (2004), Table 6
 /// \todo Get better descriptions for the bias factors
