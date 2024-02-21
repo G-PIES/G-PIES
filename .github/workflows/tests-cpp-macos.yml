@@ -4,6 +4,10 @@ on: pull_request
 
 jobs:
   build:
+    strategy:
+      matrix:
+        configuration: [debug, release]
+
     runs-on: macos-14
 
     steps:
@@ -11,4 +15,4 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build CPU targets
-        run: make all_cpu
+        run: make all_cpu CONFIGURATION=${{ matrix.configuration }}

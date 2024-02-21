@@ -4,6 +4,10 @@ on: pull_request
 
 jobs:
   build:
+    strategy:
+      matrix:
+        configuration: [debug, release]
+
     runs-on: ubuntu-latest
 
     steps:
@@ -11,15 +15,16 @@ jobs:
         id: cuda-toolkit
         with:
           cuda: '12.3.2'
+          log-file-suffix: ${{ matrix.configuration }}-log.txt
 
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Build CPU targets
-        run: make all_cpu all dbtests
+        run: make all_cpu all dbtests CONFIGURATION=${{ matrix.configuration }}
 
       - name: Run Cluster Dynamics Tests
-        run: ./build/release/cd_tests
+        run: ./build/${{ matrix.configuration }}/cd_tests
       - name: Run Client Database Tests
         run: ./bin/db_tests.out
 

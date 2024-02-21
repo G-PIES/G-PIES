@@ -268,7 +268,7 @@ CXXFLAGS             = $(strip \
 LD = g++
 LDFLAGS.common  =
 LDFLAGS.release =
-LDFLAGS.debug   =
+LDFLAGS.debug   = -fsanitize=undefined -fsanitize=address
 
 LIBRARIES             =
 EXTERN_LIBRARIES      =
