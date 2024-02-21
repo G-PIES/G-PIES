@@ -15,15 +15,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build all
-        run: make all
+      - name: Build CPU targets
+        run: make all_cpu all dbtests
 
-      - name: Build Cluster Dynamics Tests
-        run: make cdtests
       - name: Run Cluster Dynamics Tests
-        run: ./bin/cd_tests.out
-      - name: Build Client Database Tests
-        run: make dbtests
+        run: ./build/release/cd_tests
       - name: Run Client Database Tests
         run: ./bin/db_tests.out
 

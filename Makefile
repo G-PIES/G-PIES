@@ -61,7 +61,6 @@ BIN_DIR = bin
 BUILD_DIR = build
 DB_DIR = db
 LIB_DIR = lib
-OUT_DIR = out
 SHADER_DIR = shader
 
 # Libraries
@@ -72,7 +71,7 @@ DB_LIB = $(LIB_DIR)/libclientdb$(LIB_EXT)
 
 # ----------------------------------------------------------------------------------------
 
-.PHONY: bdirs clean lib ex cuda all cd cdlib cdcudalib dblib cdex cdv cdcsv cdcudaex dbex cdtests dbtests cluster_dynamics client_db
+.PHONY: bdirs clean lib ex cuda all cd cdlib cdcudalib dblib cdv cdcsv cdcudaex dbex dbtests cluster_dynamics client_db
 
 # ----------------------------------------------------------------------------------------
 # Utilties 
@@ -83,7 +82,6 @@ bdirs:
 	mkdir -p $(BUILD_DIR)
 	mkdir -p $(DB_DIR)
 	mkdir -p $(LIB_DIR)
-	mkdir -p $(OUT_DIR)
 
 # Clean Development Files
 clean: 
@@ -91,7 +89,6 @@ clean:
 	rm -fr $(BUILD_DIR)
 	rm -fr $(DB_DIR)/*.db
 	rm -fr $(LIB_DIR)
-	rm -fr $(OUT_DIR)
 
 # ----------------------------------------------------------------------------------------
 
@@ -154,21 +151,6 @@ dblib: bdirs
 # Executables 
 # NOTE: "make [target] R=1" will automatically run the executable following the build
 
-# Cluster Dynamics Example
-cdex: cdlib
-	$(CC) $(CCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
-	@[ "${R}" ] && ./$(BIN_DIR)/cd_example$(EXE_EXT) || ( exit 0 )
-
-# Cluster Dynamics Example W/ Verbose Printing
-cdv:
-	$(CC) $(CCFLAGS) -g -D VPRINT=true -D VBREAK=true example/cd_example.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
-	@[ "${R}" ] && ./$(BIN_DIR)/cd_example$(EXE_EXT) || ( exit 0 )
-
-# Cluster Dynamics Example W/ CSV Output Formatting
-cdcsv: cdlib
-	$(CC) $(CCFLAGS) -D CSV=true example/cd_example.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
-	@[ "${R}" ] && ./$(BIN_DIR)/cd_example$(EXE_EXT) 1e-5 1 > $(OUT_DIR)/cd-output.csv || ( exit 0 )
-
 # Cluster Dynamics W/ CUDA Example
 cdcudaex: cdcudalib
 	nvcc $(NVCCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cd_cuda_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamicscuda
@@ -189,11 +171,6 @@ dbex: dblib
 
 # ----------------------------------------------------------------------------------------
 # Tests 
-
-# GoogleTest Cluster Dynamics Unit Tests
-cdtests: cdlib
-	$(CC) $(CCFLAGS) test/cd_tests.cpp -o $(BIN_DIR)/cd_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L$(GTEST_LIBS) -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamics
-	@[ "${R}" ] && ./$(BIN_DIR)/cd_tests$(EXE_EXT) || ( exit 0 )
 
 # GoogleTest Cluster Dynamics W/ CUDA Unit Tests
 cdcudatests: cdcudalib
@@ -227,6 +204,46 @@ client_db: dblib
 
 CONFIGURATION = release
 
+# -----------------------------------------------------------------------------
+# Meta targets and aliases
+
+.PHONY: all_cpu clean
+all_cpu: okmc cd_example cd_tests libclusterdynamics
+
+.PHONY: clean_build_dir
+clean: clean_build_dir
+clean_build_dir:
+	rm -rf $(BUILD_DIR)
+
+# Cluster Dynamics Example
+.PHONY: cdex
+cdex: cd_example
+
+# Cluster Dynamics Library
+.PHONY: cdlib
+cdlib: libclusterdynamics
+
+# Cluster Dynamics Example W/ Verbose Printing
+.PHONY: cdv
+cdv: cd_example
+cdv: CXXFLAGS += -D VPRINT=true -D VBREAK=true
+
+# Cluster Dynamics Example W/ CSV Output Formatting
+.PHONY: cdcsv out_dir clean_out_dir
+cdcsv: out_dir cd_example
+cdcsv: CXXFLAGS += -D CSV=true
+cdcsv: RUN_ARGS = 1e-5 1 > out/cd-output.csv
+out_dir:
+	mkdir -p out
+clean: clean_out_dir
+clean_out_dir:
+	rm -rf out
+
+# GoogleTest Cluster Dynamics Unit Tests
+.PHONY: cdtests
+cdtests: cd_tests
+
+# -----------------------------------------------------------------------------
 # Compiler parameters
 CXX = g++
 CXXFLAGS.common     = -MMD -MP -Wall -std=c++17 -fno-fast-math
@@ -240,31 +257,57 @@ CXXFLAGS.os_linux   = -D LINUX
 CXXFLAGS.os_maxos   = -D OSX
 
 INCLUDES             = include
-CXXFLAGS_COMPILATION = $(CXXFLAGS.common) $(CXXFLAGS.$(CONFIGURATION)) $(CXXFLAGS.arch_$(TARGET_ARCH)) $(CXXFLAGS.os_$(TARGET_OS))
 CXXFLAGS_INCLUDES    = $(INCLUDES:%=-I%)
-CXXFLAGS             = $(strip $(CXXFLAGS_COMPILATION) $(CXXFLAGS_INCLUDES))
+CXXFLAGS             = $(strip \
+                       $(CXXFLAGS.common) $(CXXFLAGS.$(CONFIGURATION)) \
+                       $(CXXFLAGS.arch_$(TARGET_ARCH)) $(CXXFLAGS.os_$(TARGET_OS)) \
+                       $(INCLUDES:%=-I%))
 
+# -----------------------------------------------------------------------------
 # Linker parameters
 LD = g++
 LDFLAGS.common  =
 LDFLAGS.release =
 LDFLAGS.debug   =
 
-LIBRARIES =
-LDFLAGS   = $(strip $(LDFLAGS.common) $(LDFLAGS.$(CONFIGURATION)) -L$(BUILD_PATH) $(LIBRARIES:%=-l%))
+LIBRARIES             =
+EXTERN_LIBRARIES      =
+EXTERN_LIBRARIES_PATH =
+LDFLAGS               = $(strip \
+                        $(LDFLAGS.common) $(LDFLAGS.$(CONFIGURATION)) \
+                        -L$(BUILD_PATH) $(LIBRARIES:%=-l%) \
+                        $(EXTERN_LIBRARIES_PATH:%=-L%) $(EXTERN_LIBRARIES:%=-l%))
 
+# -----------------------------------------------------------------------------
 # Arciver parameters
 AR = ar
 ARFLAGS = -crvs
 
+# -----------------------------------------------------------------------------
 # Generic source and artifact paths
 SRC_PATH     = src
 EXAMPLE_PATH = example
+TEST_PATH    = test
 BUILD_PATH   = build/$(CONFIGURATION)
 OBJ_PATH     = $(BUILD_PATH)/obj
-get_obj_name = $(patsubst $(EXAMPLE_PATH)/%.cpp,$(OBJ_PATH)/example/%.o,$(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.o,$1))
-get_cpp_name = $(subst $(OBJ_PATH),$(SRC_PATH),$(subst $(OBJ_PATH)/example,$(EXAMPLE_PATH),$(1:.o=.cpp)))
+get_obj_name = $(patsubst $(EXAMPLE_PATH)/%.cpp,$(OBJ_PATH)/example/%.o, \
+               $(patsubst $(TEST_PATH)/%.cpp,$(OBJ_PATH)/$(TEST_PATH)/%.o, \
+               $(patsubst $(SRC_PATH)/%.cpp,$(OBJ_PATH)/%.o,$1)))
+get_cpp_name = $(subst $(OBJ_PATH),$(SRC_PATH), \
+               $(subst $(OBJ_PATH)/$(TEST_PATH),$(TEST_PATH), \
+               $(subst $(OBJ_PATH)/$(EXAMPLE_PATH),$(EXAMPLE_PATH),$(1:.o=.cpp))))
 
+EXE_EXT.os_linux   =
+EXE_EXT.os_macos   =
+EXE_EXT.os_windows = .exe
+get_exe_name       = $(BUILD_PATH)/$1$(EXE_EXT.os_$(TARGET_OS))
+
+LIB_EXT.os_linux   = .a
+LIB_EXT.os_macos   = .a
+LIB_EXT.os_windows = .lib
+get_lib_name       = $(BUILD_PATH)/$1$(LIB_EXT.os_$(TARGET_OS))
+
+# -----------------------------------------------------------------------------
 # Component-specific object files
 CLIENT_DB_OBJ_FILES  = $(call get_obj_name,$(sort $(shell find $(SRC_PATH)/client_db -type f -name '*.cpp')))
 CD_BASE_OBJ_FILES    = $(call get_obj_name,$(wildcard $(SRC_PATH)/cluster_dynamics/*.cpp))
@@ -273,24 +316,40 @@ CD_CUDA_OBJ_FILES    = $(call get_obj_name,$(sort $(shell find $(SRC_PATH)/clust
 OKMC_OBJ_FILES       = $(call get_obj_name,$(sort $(shell find $(SRC_PATH)/okmc -type f -name '*.cpp')))
 CD_EXAMPLE_OBJ_FILES = $(call get_obj_name,$(EXAMPLE_PATH)/cd_example.cpp)
 DB_EXAMPLE_OBJ_FILES = $(call get_obj_name,$(EXAMPLE_PATH)/db_example.cpp)
+CD_TESTS_OBJ_FILES   = $(call get_obj_name,$(TEST_PATH)/cd_tests.cpp)
+DB_TESTS_OBJ_FILES   = $(call get_obj_name,$(TEST_PATH)/db_tests.cpp)
 
+# -----------------------------------------------------------------------------
 # Cluster Dynamics Library
 ALL_LIB += libclusterdynamics
 LIB_libclusterdynamics_PREREQUISITES = $(CD_BASE_OBJ_FILES) $(CD_CPU_OBJ_FILES)
-libclusterdynamics: INCLUDES += $(SRC_PATH)/cluster_dynamics
-libclusterdynamics: INCLUDES += $(SRC_PATH)/cluster_dynamics/cpu
+$(LIB_libclusterdynamics_PREREQUISITES): INCLUDES += $(SRC_PATH)/cluster_dynamics $(SRC_PATH)/cluster_dynamics/cpu
 
+# -----------------------------------------------------------------------------
+# Cluster Dynamics Tests
+ALL_EXE += cd_tests
+EXE_cd_tests_PREREQUISITES = $(CD_TESTS_OBJ_FILES)
+EXE_cd_tests_FILE = $(call get_exe_name,cd_tests)
+$(CD_TESTS_OBJ_FILES): INCLUDES += $(SRC_PATH)/cluster_dynamics $(SRC_PATH)/cluster_dynamics/cpu extern/googletest/include
+$(EXE_cd_tests_FILE): LIBRARIES += clusterdynamics
+$(EXE_cd_tests_FILE): EXTERN_LIBRARIES += gtest gtest_main
+$(EXE_cd_tests_FILE): EXTERN_LIBRARIES_PATH += extern/googletest/lib/$(TARGET_OS)
+
+# -----------------------------------------------------------------------------
+# Cluster Dynamics Example
+ALL_EXE += cd_example
+EXE_cd_example_PREREQUISITES = $(CD_EXAMPLE_OBJ_FILES)
+EXE_cd_example_FILE = $(call get_exe_name,cd_example)
+$(EXE_cd_example_FILE): LIBRARIES += clusterdynamics
+
+# -----------------------------------------------------------------------------
 # OKMC
 ALL_EXE += okmc
 EXE_okmc_PREREQUISITES = $(OKMC_OBJ_FILES)
 
-# Cluster Dynamics Example
-ALL_EXE += cd_example
-EXE_cd_example_PREREQUISITES = libclusterdynamics $(CD_EXAMPLE_OBJ_FILES)
-cd_example: LIBRARIES += clusterdynamics
-
+# -----------------------------------------------------------------------------
 # Generic C++ compile target
-ALL_CXX_FILES := $(foreach path,$(SRC_PATH) $(EXAMPLE_PATH),$(sort $(shell find $(path) -type f -name '*.cpp')))
+ALL_CXX_FILES := $(foreach path,$(SRC_PATH) $(EXAMPLE_PATH) $(TEST_PATH),$(sort $(shell find $(path) -type f -name '*.cpp')))
 ALL_OBJ_FILES := $(call get_obj_name,$(ALL_CXX_FILES))
 ALL_DEP_FILES := $(ALL_OBJ_FILES:%.o,%.d)
 -include $(ALL_DEP_FILES)
@@ -299,27 +358,27 @@ $(ALL_OBJ_FILES): %: $$(call get_cpp_name,%)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# -----------------------------------------------------------------------------
 # Generic executable target
-EXE_EXT.os_linux   =
-EXE_EXT.os_macos   =
-EXE_EXT.os_windows = .exe
-
-ALL_EXE_FILES = $(ALL_EXE:%=$(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS)))
+ALL_EXE_FILES = $(foreach exe,$(ALL_EXE),$(call get_exe_name,$(exe)))
 .PHONY: $(ALL_EXE)
 all: $(ALL_EXE)
+
+ifeq ($(R), 1)
 $(ALL_EXE): %: $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS))
-	@[ "$(R)" ] && $< || ( exit 0 )
-$(ALL_EXE_FILES): $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS)): $$(EXE_%_PREREQUISITES)
+	@[ "$(R)" ] && $< $(RUN_ARGS) || ( exit 0 )
+else
+$(ALL_EXE): %: $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS))
+endif
+
+$(ALL_EXE_FILES): $(call get_exe_name,%): $$(foreach lib,$$(LIBRARIES),$$(call get_lib_name,lib$$(lib))) $$(EXE_%_PREREQUISITES)
 	$(LD) $(filter %.o,$^) $(LDFLAGS) -o $@
 
+# -----------------------------------------------------------------------------
 # Generic library target
-LIB_EXT.os_linux =   .a
-LIB_EXT.os_macos =   .a
-LIB_EXT.os_windows = .lib
-
-ALL_LIB_FILES = $(ALL_LIB:%=$(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS)))
+ALL_LIB_FILES = $(foreach lib,$(ALL_LIB),$(call get_lib_name,$(lib)))
 .PHONY: $(ALL_LIB)
 all: $(ALL_LIB)
 $(ALL_LIB): %: $(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS))
-$(ALL_LIB_FILES): $(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS)): $$(LIB_%_PREREQUISITES)
+$(ALL_LIB_FILES): $(call get_lib_name,%): $$(LIB_%_PREREQUISITES)
 	$(AR) $(ARFLAGS) $@ $(filter %.o,$^)
