@@ -30,17 +30,14 @@
     <item>
      <widget class="QWidget" name="widget" native="true">
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0" rowspan="2">
-        <widget class="QTextBrowser" name="textBrowser">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>3</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Time Elasped:                          Simulation Time:</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
+       <item row="2" column="1">
         <widget class="QLabel" name="label_2">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -49,28 +46,18 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Data about the Sim</string>
+          <string>Data about the Sim: </string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QTextBrowser" name="textBrowser_2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>1</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
+       <item row="1" column="0" colspan="2">
         <widget class="Line" name="line">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="2" column="0">
         <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0">
          <item>
           <widget class="QPushButton" name="pushButton_2">
@@ -95,12 +82,8 @@
          </item>
         </layout>
        </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Time Elasped:                          Simulation Time:</string>
-         </property>
-        </widget>
+       <item row="0" column="0" colspan="2">
+        <layout class="QVBoxLayout" name="verticalLayout_2"/>
        </item>
       </layout>
      </widget>
@@ -113,7 +96,7 @@
      <x>0</x>
      <y>0</y>
      <width>849</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>
