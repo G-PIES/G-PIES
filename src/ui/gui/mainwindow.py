@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\mainwindow.ui'
+# Form implementation generated from reading ui file 'mainwindow.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -33,14 +33,9 @@ class Ui_MainWindow(object):
         self.widget.setObjectName("widget")
         self.gridLayout = QtWidgets.QGridLayout(self.widget)
         self.gridLayout.setObjectName("gridLayout")
-        self.textBrowser = QtWidgets.QTextBrowser(self.widget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(3)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.textBrowser.sizePolicy().hasHeightForWidth())
-        self.textBrowser.setSizePolicy(sizePolicy)
-        self.textBrowser.setObjectName("textBrowser")
-        self.gridLayout.addWidget(self.textBrowser, 0, 0, 2, 1)
+        self.label = QtWidgets.QLabel(self.widget)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 3, 0, 1, 1)
         self.label_2 = QtWidgets.QLabel(self.widget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(1)
@@ -48,20 +43,12 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
         self.label_2.setSizePolicy(sizePolicy)
         self.label_2.setObjectName("label_2")
-        self.gridLayout.addWidget(self.label_2, 0, 1, 1, 1)
-        self.textBrowser_2 = QtWidgets.QTextBrowser(self.widget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(1)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.textBrowser_2.sizePolicy().hasHeightForWidth())
-        self.textBrowser_2.setSizePolicy(sizePolicy)
-        self.textBrowser_2.setObjectName("textBrowser_2")
-        self.gridLayout.addWidget(self.textBrowser_2, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.label_2, 2, 1, 1, 1)
         self.line = QtWidgets.QFrame(self.widget)
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line.setObjectName("line")
-        self.gridLayout.addWidget(self.line, 2, 0, 1, 2)
+        self.gridLayout.addWidget(self.line, 1, 0, 1, 2)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.pushButton_2 = QtWidgets.QPushButton(self.widget)
@@ -73,14 +60,14 @@ class Ui_MainWindow(object):
         self.pushButton = QtWidgets.QPushButton(self.widget)
         self.pushButton.setObjectName("pushButton")
         self.verticalLayout.addWidget(self.pushButton)
-        self.gridLayout.addLayout(self.verticalLayout, 3, 0, 1, 1)
-        self.label = QtWidgets.QLabel(self.widget)
-        self.label.setObjectName("label")
-        self.gridLayout.addWidget(self.label, 4, 0, 1, 1)
+        self.gridLayout.addLayout(self.verticalLayout, 2, 0, 1, 1)
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.gridLayout.addLayout(self.verticalLayout_2, 0, 0, 1, 2)
         self.horizontalLayout.addWidget(self.widget)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 849, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 849, 24))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -93,8 +80,18 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label_2.setText(_translate("MainWindow", "Data about the Sim"))
+        self.label.setText(_translate("MainWindow", "Time Elasped:                          Simulation Time:"))
+        self.label_2.setText(_translate("MainWindow", "Data about the Sim: "))
         self.pushButton_2.setText(_translate("MainWindow", "Start Simulation"))
         self.pushButton_3.setText(_translate("MainWindow", "Stop"))
         self.pushButton.setText(_translate("MainWindow", "Pause"))
-        self.label.setText(_translate("MainWindow", "Time Elasped:                          Simulation Time:"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
