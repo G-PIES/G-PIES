@@ -1,5 +1,6 @@
 #include "model/nuclear_reactor.hpp"
 #include "nuclear_reactor_impl.hpp"
+#include "utils/datetime.hpp"
 
 NuclearReactor::NuclearReactor() : sqlite_id(-1) {
     datetime::utc_now(creation_datetime);

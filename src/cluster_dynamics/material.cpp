@@ -1,5 +1,6 @@
 #include "material_impl.hpp"
 #include "model/material.hpp"
+#include "utils/datetime.hpp"
 
 Material::Material() : sqlite_id(-1) {
     datetime::utc_now(creation_datetime);
