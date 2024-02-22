@@ -1,12 +1,13 @@
+#include "client_db/client_db.hpp"
+
 #include <sqlite3.h>
 
 #include <string>
 #include <vector>
 
-#include "client_db/client_db.hpp"
 #include "client_db/db_queries.hpp"
-#include "model/nuclear_reactor.hpp"
 #include "model/material.hpp"
+#include "model/nuclear_reactor.hpp"
 
 // --------------------------------------------------------------------------------------------
 // TEMPLATE FUNCTIONS
@@ -120,8 +121,13 @@ void ClientDb::bind_reactor(sqlite3_stmt *stmt, const NuclearReactor &reactor) {
     sqlite3_bind_double(stmt, 9, reactor.get_v_tri());
     sqlite3_bind_double(stmt, 10, reactor.get_v_quad());
     sqlite3_bind_double(stmt, 11, reactor.get_dislocation_density_evolution());
+    // update
     if (is_valid_sqlite_id(reactor.sqlite_id))
         sqlite3_bind_int(stmt, 12, reactor.sqlite_id);
+    // create
+    else
+        sqlite3_bind_text(stmt, 12, reactor.creation_datetime.c_str(),
+                          reactor.creation_datetime.length(), nullptr);
 }
 
 void ClientDb::bind_material(sqlite3_stmt *stmt, const Material &material) {
@@ -147,8 +153,13 @@ void ClientDb::bind_material(sqlite3_stmt *stmt, const Material &material) {
     sqlite3_bind_double(stmt, 19, material.get_lattice_param());
     sqlite3_bind_double(stmt, 20, material.get_burgers_vector());
     sqlite3_bind_double(stmt, 21, material.get_atomic_volume());
+    // update
     if (is_valid_sqlite_id(material.sqlite_id))
         sqlite3_bind_int(stmt, 22, material.sqlite_id);
+    // create
+    else
+        sqlite3_bind_text(stmt, 22, material.creation_datetime.c_str(),
+                          material.creation_datetime.length(), nullptr);
 }
 
 // --------------------------------------------------------------------------------------------
