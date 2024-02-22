@@ -1125,6 +1125,10 @@ bool ClusterDynamicsMetalKernel::update_clusters_1(gp_float delta_time)
     return true;
 }
 
+void ClusterDynamicsMetalKernel::update_dislocation_density(gp_float delta_time) __METALDECL__ {
+    dislocation_density += dislocation_density_derivative() * delta_time;
+}
+
 gp_float ClusterDynamicsMetalKernel::ii_sum_absorption(uint64_t nmax)
     __METALDECL__ {
     gp_float emission = 0.;

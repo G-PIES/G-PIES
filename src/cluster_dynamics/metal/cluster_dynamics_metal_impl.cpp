@@ -30,7 +30,7 @@ bool ClusterDynamicsImpl::step(gp_float delta_time)
     memcpy(interstitials_in + 1, mtl_kernel.interstitials + 1, sizeof(gp_float) * concentration_boundary);
     memcpy(vacancies_in + 1, mtl_kernel.vacancies + 1, sizeof(gp_float) * concentration_boundary);
 
-    mtl_update_clusters();
+    mtl_update_clusters(delta_time);
 
     // GPU memory to CPU memory
     // copy from index 2 to concentration_boundary - 1
@@ -39,7 +39,7 @@ bool ClusterDynamicsImpl::step(gp_float delta_time)
     memcpy(mtl_kernel.interstitials + 2, interstitials_out + 2, sizeof(gp_float) * (concentration_boundary - 1));
     memcpy(mtl_kernel.vacancies + 2, vacancies_out + 2, sizeof(gp_float) * (concentration_boundary - 1));
 
-    mtl_kernel.dislocation_density += mtl_kernel.dislocation_density_derivative() * delta_time;
+    mtl_kernel.update_dislocation_density(delta_time);
 
     return true; // TODO - exception handling
 }
@@ -75,9 +75,6 @@ ClusterDynamicsImpl::~ClusterDynamicsImpl()
 ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time, gp_float total_time)
 {
     bool state_is_valid = true;
-
-    // TODO - set in a more appropriate place?
-    mtl_kernel.delta_time = delta_time;
 
     for (gp_float endtime = time + total_time; time < endtime; time += delta_time)
     {
@@ -170,7 +167,7 @@ void ClusterDynamicsImpl::mtl_init_buffers()
     mtl_vacancies_out = mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
 }
 
-void ClusterDynamicsImpl::mtl_update_clusters()
+void ClusterDynamicsImpl::mtl_update_clusters(gp_float delta_time)
 {
     // create a command buffer to hold commands
     MTL::CommandBuffer* mtl_command_buffer = mtl_command_queue->commandBuffer();
@@ -180,7 +177,7 @@ void ClusterDynamicsImpl::mtl_update_clusters()
     MTL::ComputeCommandEncoder* mtl_compute_encoder = mtl_command_buffer->computeCommandEncoder();
     assert(mtl_compute_encoder != nullptr);
     
-    mtl_encode_command(mtl_compute_encoder);
+    mtl_encode_command(mtl_compute_encoder, delta_time);
     
     // end the compute pass
     mtl_compute_encoder->endEncoding();
@@ -191,7 +188,7 @@ void ClusterDynamicsImpl::mtl_update_clusters()
     mtl_command_buffer->waitUntilCompleted();
 }
 
-void ClusterDynamicsImpl::mtl_encode_command(MTL::ComputeCommandEncoder* mtl_compute_encoder)
+void ClusterDynamicsImpl::mtl_encode_command(MTL::ComputeCommandEncoder* mtl_compute_encoder, gp_float delta_time)
 {
     // encode the pipeline state object and its parameters
     mtl_compute_encoder->setComputePipelineState(mtl_compute_pipeline_state);
@@ -203,6 +200,7 @@ void ClusterDynamicsImpl::mtl_encode_command(MTL::ComputeCommandEncoder* mtl_com
     mtl_compute_encoder->setBuffer(mtl_vacancies_in, 0, 4);
     mtl_compute_encoder->setBuffer(mtl_interstitials_out, 0, 5);
     mtl_compute_encoder->setBuffer(mtl_vacancies_out, 0, 6);
+    mtl_compute_encoder->setBytes(&delta_time, sizeof(gp_float), 7);
     
     MTL::Size mtl_grid_size = MTL::Size(concentration_boundary, 1, 1);
  

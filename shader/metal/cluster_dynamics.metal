@@ -11,6 +11,7 @@ kernel void update_clusters(
     device gp_float* vacancies_in,
     device gp_float* interstitials_out,
     device gp_float* vacancies_out,
+    constant gp_float& delta_time,
     uint index [[thread_position_in_grid]]
     )
 {
@@ -21,7 +22,7 @@ kernel void update_clusters(
         mtl_kernel.interstitials = interstitials_in;
         mtl_kernel.vacancies = vacancies_in;
 
-        interstitials_out[index] += mtl_kernel.i_concentration_derivative(index) * mtl_kernel.delta_time;
-        vacancies_out[index] += mtl_kernel.v_concentration_derivative(index) * mtl_kernel.delta_time;
+        interstitials_out[index] += mtl_kernel.i_concentration_derivative(index) * delta_time;
+        vacancies_out[index] += mtl_kernel.v_concentration_derivative(index) * delta_time;
     }
 }

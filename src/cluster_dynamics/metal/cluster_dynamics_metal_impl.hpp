@@ -64,8 +64,8 @@ private:
     void mtl_init_kernel();
     void mtl_init_lib();
     void mtl_init_buffers();
-    void mtl_update_clusters();
-    void mtl_encode_command(MTL::ComputeCommandEncoder*);
+    void mtl_update_clusters(gp_float);
+    void mtl_encode_command(MTL::ComputeCommandEncoder*, gp_float);
 };
 
 #endif // CLUSTER_DYNAMICS_METAL_IMPL_HPP

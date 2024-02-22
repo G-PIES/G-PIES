@@ -23,7 +23,6 @@ class ClusterDynamicsMetalKernel {
 
     uint64_t concentration_boundary;
     gp_float dislocation_density;
-    gp_float delta_time;
 
     gp_float mean_dislocation_radius_val;
     gp_float ii_sum_absorption_val;
@@ -80,6 +79,7 @@ class ClusterDynamicsMetalKernel {
 
     void step_init() __METALDECL__;
     bool update_clusters_1(gp_float) __METALDECL__;
+    void update_dislocation_density(gp_float) __METALDECL__;
 };
 
 #endif  // CLUSTER_DYNAMICS_METAL_ARGS_HPP
