@@ -42,6 +42,9 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         if(self.sim_process.is_alive()):
             self.sim_process.terminate()
             self.parent_conn.close()
+            self.data = []
+            self.data_x = []
+            self.data_y = []
         print("simulation stopped")
 
     def init_graph(self):
