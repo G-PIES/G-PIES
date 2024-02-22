@@ -112,22 +112,6 @@ cd: cdlib cdcudalib cdex
 # ----------------------------------------------------------------------------------------
 # Libraries 
 
-# Cluster Dynamics Library
-cdlib: bdirs
-	$(CC) $(CCFLAGS) src/cluster_dynamics/cluster_dynamics.cpp -c -o $(BUILD_DIR)/clusterdynamics.o $(INCLUDE_FLAGS)
-	$(CC) $(CCFLAGS) src/cluster_dynamics/material.cpp -c -o $(BUILD_DIR)/material.o $(INCLUDE_FLAGS)
-	$(CC) $(CCFLAGS) src/cluster_dynamics/nuclear_reactor.cpp -c -o $(BUILD_DIR)/nuclear_reactor.o $(INCLUDE_FLAGS)
-	$(CC) $(CCFLAGS) src/cluster_dynamics/cpu/cluster_dynamics_impl.cpp -c -o $(BUILD_DIR)/clusterdynamicsimpl.o $(INCLUDE_FLAGS)
-	ar crs $(CD_LIB) $(BUILD_DIR)/clusterdynamics.o $(BUILD_DIR)/material.o $(BUILD_DIR)/nuclear_reactor.o $(BUILD_DIR)/clusterdynamicsimpl.o
-
-# Cluster Dynamics CUDA Library
-cdcudalib: bdirs
-	nvcc $(NVCCFLAGS) src/cluster_dynamics/cluster_dynamics.cpp -c -o $(BUILD_DIR)/clusterdynamicscuda.o $(INCLUDE_FLAGS)
-	nvcc $(NVCCFLAGS) src/cluster_dynamics/material.cpp -c -o $(BUILD_DIR)/material.o $(INCLUDE_FLAGS)
-	nvcc $(NVCCFLAGS) src/cluster_dynamics/nuclear_reactor.cpp -c -o $(BUILD_DIR)/nuclear_reactor.o $(INCLUDE_FLAGS)
-	nvcc $(NVCCFLAGS) -c --expt-extended-lambda  src/cluster_dynamics/cuda/cluster_dynamics_cuda_impl.cpp -o $(BUILD_DIR)/clusterdynamicscudaimpl.o $(INCLUDE_FLAGS)
-	ar crs $(CDCUDA_LIB) $(BUILD_DIR)/clusterdynamicscuda.o $(BUILD_DIR)/material.o $(BUILD_DIR)/nuclear_reactor.o $(BUILD_DIR)/clusterdynamicscudaimpl.o
-
 cdmetallib: bdirs
 	xcrun -sdk macosx metal -DGP_FLOAT=float $(SHADER_DIR)/metal/cluster_dynamics.metal -c -o $(BUILD_DIR)/cluster_dynamics.ir $(INCLUDE_FLAGS)
 	xcrun -sdk macosx metallib -o $(LIB_DIR)/cluster_dynamics.metallib $(BUILD_DIR)/cluster_dynamics.ir
@@ -151,11 +135,6 @@ dblib: bdirs
 # Executables 
 # NOTE: "make [target] R=1" will automatically run the executable following the build
 
-# Cluster Dynamics W/ CUDA Example
-cdcudaex: cdcudalib
-	nvcc $(NVCCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cd_cuda_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamicscuda
-	@[ "${R}" ] && ./$(BIN_DIR)/cd_cuda_example$(EXE_EXT) || ( exit 0 )
-
 # Cluster Dynamics W/ Metal Example
 cdmetalex: cdmetallib
 	$(CC) $(CCFLAGS) -DGP_FLOAT=float example/cd_example.cpp -o $(BIN_DIR)/cd_metal_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamicsmetal -framework Metal -framework QuartzCore -framework Foundation
@@ -171,11 +150,6 @@ dbex: dblib
 
 # ----------------------------------------------------------------------------------------
 # Tests 
-
-# GoogleTest Cluster Dynamics W/ CUDA Unit Tests
-cdcudatests: cdcudalib
-	nvcc $(NVCCFLAGS) test/cd_tests.cpp -o $(BIN_DIR)/cdcuda_tests$(EXE_EXT) $(INCLUDE_FLAGS) -I./extern/googletest/include -L$(GTEST_LIBS) -L$(LIB_DIR) -lgtest_main -lgtest -lpthread -lclusterdynamicscuda
-	@[ "${R}" ] && ./$(BIN_DIR)/cdcuda_tests$(EXE_EXT) || ( exit 0 )
 
 # GoogleTest Database Unit Tests
 dbtests: dblib
@@ -207,21 +181,29 @@ CONFIGURATION = release
 # -----------------------------------------------------------------------------
 # Meta targets and aliases
 
-.PHONY: all_cpu clean
+.PHONY: all_cpu all_cuda clean
 all_cpu: okmc cd_example cd_tests libclusterdynamics
+all_cuda: cd_cuda_example cdcuda_tests libclusterdynamicscuda
 
 .PHONY: clean_build_dir
 clean: clean_build_dir
 clean_build_dir:
 	rm -rf $(BUILD_DIR)
 
+# Cluster Dynamics Library and tests
+.PHONY: cdlib cdcudalib cdtests cdcudatests
+cdlib: libclusterdynamics
+cdcudalib: libclusterdynamicscuda
+cdtests: cd_tests
+cdcudatests: cdcuda_tests
+
 # Cluster Dynamics Example
 .PHONY: cdex
 cdex: cd_example
 
-# Cluster Dynamics Library
-.PHONY: cdlib
-cdlib: libclusterdynamics
+# Cluster Dynamics W/ CUDA Example
+.PHONY: cdcudaex
+cdex: cd_cuda_example
 
 # Cluster Dynamics Example W/ Verbose Printing
 .PHONY: cdv
@@ -239,44 +221,61 @@ clean: clean_out_dir
 clean_out_dir:
 	rm -rf out
 
-# GoogleTest Cluster Dynamics Unit Tests
-.PHONY: cdtests
-cdtests: cd_tests
-
 # -----------------------------------------------------------------------------
 # Compiler parameters
-CXX = g++
-CXXFLAGS.common     = -MMD -MP -Wall -std=c++17 -fno-fast-math
-CXXFLAGS.release    = -O3
-CXXFLAGS.debug      = -O0 -g3 -fsanitize=undefined -fsanitize=address
-CXXFLAGS.arch_amd64 = -D AMD64
-CXXFLAGS.arch_ia32  = -D IA32
-CXXFLAGS.arch_arm   = -D ARM
-CXXFLAGS.os_windows = -D WIN32 -D_USE_MATH_DEFINES
-CXXFLAGS.os_linux   = -D LINUX
-CXXFLAGS.os_maxos   = -D OSX
+#
+# Supported variables
+# - CXXFLAGS.{suffix}
+# - CXXFLAGS.{compiler}.{suffix}
+# Where suffix is one of the following
+# - {configuration}
+# - arch_{architecture}
+# - os_{architecture}
+#
+# For example this flags will be used only for nvcc on Windows:
+# CXXFLAGS.nvcc.os_windows = -example
 
-INCLUDES             = include
-CXXFLAGS_INCLUDES    = $(INCLUDES:%=-I%)
-CXXFLAGS             = $(strip \
-                       $(CXXFLAGS.common) $(CXXFLAGS.$(CONFIGURATION)) \
-                       $(CXXFLAGS.arch_$(TARGET_ARCH)) $(CXXFLAGS.os_$(TARGET_OS)) \
-                       $(INCLUDES:%=-I%))
+COMPILER = gcc
+
+INCLUDES = include
+
+CXXFLAGS.common     = -MMD -MP -std=c++17 $(INCLUDES:%=-I%)
+CXXFLAGS.release    = -O3
+CXXFLAGS.debug      = -O0
+CXXFLAGS.arch_amd64 = -DAMD64
+CXXFLAGS.arch_ia32  = -DIA32
+CXXFLAGS.arch_arm   = -DARM
+CXXFLAGS.os_windows = -DWIN32 -D_USE_MATH_DEFINES
+CXXFLAGS.os_linux   = -DLINUX
+CXXFLAGS.os_macos   = -DOSX
+
+CXX.gcc = g++
+CXXFLAGS.gcc.common = -Wall -fno-fast-math
+CXXFLAGS.gcc.debug  = -g3 -fsanitize=undefined -fsanitize=address
+
+CXX.nvcc = nvcc
+CXXFLAGS.nvcc.common = -Werror all-warnings -DUSE_CUDA -x cu --expt-extended-lambda
+
+calculate_compiler_options = $(strip $($1.common) $($1.$(CONFIGURATION)) $($1.arch_$(TARGET_ARCH)) $($1.os_$(TARGET_OS)))
+CXX      = $(CXX.$(COMPILER))
+CXXFLAGS = $(strip $(call calculate_compiler_options,CXXFLAGS) $(call calculate_compiler_options,CXXFLAGS.$(COMPILER)))
 
 # -----------------------------------------------------------------------------
 # Linker parameters
-LD = g++
-LDFLAGS.common  =
-LDFLAGS.release =
-LDFLAGS.debug   = -fsanitize=undefined -fsanitize=address
 
 LIBRARIES             =
 EXTERN_LIBRARIES      =
 EXTERN_LIBRARIES_PATH =
-LDFLAGS               = $(strip \
-                        $(LDFLAGS.common) $(LDFLAGS.$(CONFIGURATION)) \
-                        -L$(BUILD_PATH) $(LIBRARIES:%=-l%) \
-                        $(EXTERN_LIBRARIES_PATH:%=-L%) $(EXTERN_LIBRARIES:%=-l%))
+
+LDFLAGS.common  = -L$(BUILD_PATH) $(LIBRARIES:%=-l%) $(EXTERN_LIBRARIES_PATH:%=-L%) $(EXTERN_LIBRARIES:%=-l%)
+
+LDFLAGS.gcc.debug   = -fsanitize=undefined -fsanitize=address
+
+LD.gcc = g++
+LD.nvcc = nvcc
+
+LD = $(LD.$(COMPILER))
+LDFLAGS = $(strip $(call calculate_compiler_options,LDFLAGS) $(call calculate_compiler_options,LDFLAGS.$(COMPILER)))
 
 # -----------------------------------------------------------------------------
 # Arciver parameters
@@ -287,7 +286,7 @@ ARFLAGS = -crvs
 # Generic source and artifact paths
 BUILD_PATH    = build/$(CONFIGURATION)
 OBJ_PATH      = $(BUILD_PATH)/obj
-get_obj_files = $(addprefix $(OBJ_PATH)/,$(CXX_FILES.$1:.cpp=.o))
+get_obj_files = $(addprefix $(OBJ_PATH)/$1/,$(CXX_FILES.$1:.cpp=.o))
 
 EXE_EXT.os_linux   =
 EXE_EXT.os_macos   =
@@ -307,7 +306,15 @@ OBJ_FILES.libclusterdynamics = $(call get_obj_files,libclusterdynamics)
 $(OBJ_FILES.libclusterdynamics): INCLUDES += src/cluster_dynamics src/cluster_dynamics/cpu
 
 # -----------------------------------------------------------------------------
-# Cluster Dynamics Tests
+# Cluster Dynamics CUDA Library
+ALL_LIB += libclusterdynamicscuda
+CXX_FILES.libclusterdynamicscuda = $(wildcard src/cluster_dynamics/*.cpp) $(shell find src/cluster_dynamics/cuda -type f -name '*.cpp')
+OBJ_FILES.libclusterdynamicscuda = $(call get_obj_files,libclusterdynamicscuda)
+$(OBJ_FILES.libclusterdynamicscuda): COMPILER = nvcc
+$(OBJ_FILES.libclusterdynamicscuda): INCLUDES += src/cluster_dynamics src/cluster_dynamics/cuda
+
+# -----------------------------------------------------------------------------
+# GoogleTest Cluster Dynamics Unit Tests
 ALL_EXE += cd_tests
 CXX_FILES.cd_tests = test/cd_tests.cpp
 OBJ_FILES.cd_tests = $(call get_obj_files,cd_tests)
@@ -318,12 +325,34 @@ $(EXE_FILE.cd_tests): EXTERN_LIBRARIES += gtest gtest_main
 $(EXE_FILE.cd_tests): EXTERN_LIBRARIES_PATH += extern/googletest/lib/$(TARGET_OS)
 
 # -----------------------------------------------------------------------------
+# GoogleTest Cluster Dynamics W/ CUDA Unit Tests
+ALL_EXE += cdcuda_tests
+CXX_FILES.cdcuda_tests = test/cd_tests.cpp
+OBJ_FILES.cdcuda_tests = $(call get_obj_files,cdcuda_tests)
+EXE_FILE.cdcuda_tests = $(call get_exe_file,cdcuda_tests)
+$(OBJ_FILES.cdcuda_tests): COMPILER = nvcc
+$(OBJ_FILES.cdcuda_tests): INCLUDES += src/cluster_dynamics src/cluster_dynamics/cuda extern/googletest/include
+$(EXE_FILE.cdcuda_tests): COMPILER = nvcc
+$(EXE_FILE.cdcuda_tests): LIBRARIES += clusterdynamicscuda
+$(EXE_FILE.cdcuda_tests): EXTERN_LIBRARIES += gtest gtest_main pthread
+$(EXE_FILE.cdcuda_tests): EXTERN_LIBRARIES_PATH += extern/googletest/lib/$(TARGET_OS)
+
+# -----------------------------------------------------------------------------
 # Cluster Dynamics Example
 ALL_EXE += cd_example
 CXX_FILES.cd_example = example/cd_example.cpp
 OBJ_FILES.cd_example = $(call get_obj_files,cd_example)
 EXE_FILE.cd_example = $(call get_exe_file,cd_example)
 $(EXE_FILE.cd_example): LIBRARIES += clusterdynamics
+
+# Cluster Dynamics W/ CUDA Example
+ALL_EXE += cd_cuda_example
+CXX_FILES.cd_cuda_example = example/cd_example.cpp
+OBJ_FILES.cd_cuda_example = $(call get_obj_files,cd_cuda_example)
+EXE_FILE.cd_cuda_example = $(call get_exe_file,cd_cuda_example)
+$(OBJ_FILES.cd_cuda_example): COMPILER = nvcc
+$(EXE_FILE.cd_cuda_example): COMPILER = nvcc
+$(EXE_FILE.cd_cuda_example): LIBRARIES += clusterdynamicscuda
 
 # -----------------------------------------------------------------------------
 # OKMC
@@ -333,10 +362,14 @@ OBJ_FILES.okmc = $(call get_obj_files,okmc)
 
 # -----------------------------------------------------------------------------
 # Generic C++ compile target
-$(OBJ_PATH)/%.o: %.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
--include $(shell find $(OBJ_PATH) -type f -name '*.d')
+define CXX_template
+$$(OBJ_PATH)/$1/%.o: %.cpp
+	@mkdir -p $$(@D)
+	$$(CXX) $$(CXXFLAGS) -c $$< -o $$@
+endef
+
+$(foreach prog,$(ALL_EXE) $(ALL_LIB),$(eval $(call CXX_template,$(prog))))
+-include $(shell test -d $(OBJ_PATH) && find $(OBJ_PATH) -type f -name '*.d')
 
 # -----------------------------------------------------------------------------
 # Generic executable target

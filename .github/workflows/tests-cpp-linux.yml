@@ -27,7 +27,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build CPU targets
-        run: make all_cpu all dbtests CONFIGURATION=${{ matrix.configuration }}
+        run: make all_cpu CONFIGURATION=${{ matrix.configuration }}
+      - name: Build CUDA targets
+        run: make all_cuda CONFIGURATION=${{ matrix.configuration }}
+      - name: Build DB targets
+        run: make dbtests dbex
 
       - name: Run Cluster Dynamics Tests
         run: ./build/${{ matrix.configuration }}/cd_tests
