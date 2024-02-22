@@ -1,6 +1,11 @@
 #define NS_PRIVATE_IMPLEMENTATION
 #define CA_PRIVATE_IMPLEMENTATION
 #define MTL_PRIVATE_IMPLEMENTATION
+
+#include "cluster_dynamics_metal_impl.hpp"
+
+#include <stdio.h>
+#include <cstring>
 #include <Foundation/Foundation.hpp>
 #include <Metal/Metal.hpp>
 #include <QuartzCore/QuartzCore.hpp>
@@ -41,7 +46,7 @@ bool ClusterDynamicsImpl::step(gp_float delta_time)
 
     mtl_kernel.update_dislocation_density(delta_time);
 
-    return true; // TODO - exception handling
+    return true;  // TODO - exception handling
 }
 
 // --------------------------------------------------------------------------------------------
@@ -51,8 +56,6 @@ bool ClusterDynamicsImpl::step(gp_float delta_time)
  */
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
-
-
 
 // TODO - clean up the uses of random +1/+2/-1/etc throughout the code
 ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, const NuclearReactorImpl& reactor, const MaterialImpl& material)
@@ -111,12 +114,10 @@ void ClusterDynamicsImpl::set_reactor(const NuclearReactorImpl& reactor)
     mtl_kernel.reactor = reactor;
 }
 
-
-
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 /*
- *  METAL SHADER ROUTINES 
+ *  METAL SHADER ROUTINES
  */
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -137,51 +138,59 @@ void ClusterDynamicsImpl::mtl_init_lib()
     mtl_ar_pool = NS::AutoreleasePool::alloc()->init();
     mtl_device = MTL::CreateSystemDefaultDevice();
 
-    NS::String* metallib_path = NS::String::string(METALLIB_PATH, NS::UTF8StringEncoding);
-    NS::Error* mtl_error;
+    NS::String *metallib_path =
+        NS::String::string(METALLIB_PATH, NS::UTF8StringEncoding);
+    NS::Error *mtl_error;
 
-    MTL::Library* mtl_lib = mtl_device->newLibrary(metallib_path, &mtl_error);
+    MTL::Library *mtl_lib = mtl_device->newLibrary(metallib_path, &mtl_error);
     if (!mtl_lib) fprintf(stderr, "metal_library null\n");
-    
-    NS::String* mtl_func_name = NS::String::string("update_clusters", NS::ASCIIStringEncoding);
-    MTL::Function* mtl_func = mtl_lib->newFunction(mtl_func_name);
+
+    NS::String *mtl_func_name =
+        NS::String::string("update_clusters", NS::ASCIIStringEncoding);
+    MTL::Function *mtl_func = mtl_lib->newFunction(mtl_func_name);
     if (!mtl_func) fprintf(stderr, "metal_function null\n");
-    
-    mtl_compute_pipeline_state = mtl_device->newComputePipelineState(mtl_func, &mtl_error);
-    if (!mtl_compute_pipeline_state) fprintf(stderr, "metal_compute_pipeline_state null\n");
-    
+
+    mtl_compute_pipeline_state =
+        mtl_device->newComputePipelineState(mtl_func, &mtl_error);
+    if (!mtl_compute_pipeline_state)
+        fprintf(stderr, "metal_compute_pipeline_state null\n");
+
     mtl_command_queue = mtl_device->newCommandQueue();
     if (!mtl_command_queue) fprintf(stderr, "metal_command_queue null\n");
 }
 
-void ClusterDynamicsImpl::mtl_init_buffers()
-{
+void ClusterDynamicsImpl::mtl_init_buffers() {
     size_t mtl_buf_size = concentration_boundary * sizeof(gp_float);
 
-    mtl_interstitials_in = mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
-    mtl_vacancies_in = mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
-    mtl_interstitials_out = mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
-    mtl_vacancies_out = mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
+    mtl_interstitials_in =
+        mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
+    mtl_vacancies_in =
+        mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
+    mtl_interstitials_out =
+        mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
+    mtl_vacancies_out =
+        mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
 }
 
 void ClusterDynamicsImpl::mtl_update_clusters(gp_float delta_time)
 {
     // create a command buffer to hold commands
-    MTL::CommandBuffer* mtl_command_buffer = mtl_command_queue->commandBuffer();
+    MTL::CommandBuffer *mtl_command_buffer = mtl_command_queue->commandBuffer();
     assert(mtl_command_buffer != nullptr);
-    
+
     // start a compute pass
-    MTL::ComputeCommandEncoder* mtl_compute_encoder = mtl_command_buffer->computeCommandEncoder();
+    MTL::ComputeCommandEncoder *mtl_compute_encoder =
+        mtl_command_buffer->computeCommandEncoder();
     assert(mtl_compute_encoder != nullptr);
     
     mtl_encode_command(mtl_compute_encoder, delta_time);
     
     // end the compute pass
     mtl_compute_encoder->endEncoding();
-    
+
     // execute the command
     mtl_command_buffer->commit();
-    
+
     mtl_command_buffer->waitUntilCompleted();
 }
 
@@ -198,15 +207,16 @@ void ClusterDynamicsImpl::mtl_encode_command(MTL::ComputeCommandEncoder* mtl_com
     mtl_compute_encoder->setBytes(&delta_time, sizeof(gp_float), 5);
     
     MTL::Size mtl_grid_size = MTL::Size(concentration_boundary, 1, 1);
- 
+
     // calculate a threadgroup size
-    NS::UInteger mtl_max_threads_per_group = mtl_compute_pipeline_state->maxTotalThreadsPerThreadgroup();
-    if (mtl_max_threads_per_group > concentration_boundary)
-    {
+    NS::UInteger mtl_max_threads_per_group =
+        mtl_compute_pipeline_state->maxTotalThreadsPerThreadgroup();
+    if (mtl_max_threads_per_group > concentration_boundary) {
         mtl_max_threads_per_group = concentration_boundary;
     }
 
-    MTL::Size mtl_thread_group_size = MTL::Size(mtl_max_threads_per_group, 1, 1);
+    MTL::Size mtl_thread_group_size =
+        MTL::Size(mtl_max_threads_per_group, 1, 1);
 
     // encode the compute command
     mtl_compute_encoder->dispatchThreads(mtl_grid_size, mtl_thread_group_size);

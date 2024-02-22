@@ -161,8 +161,10 @@ Public Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="cluster__dynamics_8cpp_source.html#l00011">11</a> of file <a class="el" href="cluster__dynamics_8cpp_source.html">cluster_dynamics.cpp</a>.</p>
 <div class="fragment"><div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;{</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  _impl = std::make_unique&lt;ClusterDynamicsImpl&gt;(concentration_boundary, *reactor.<a class="code" href="structNuclearReactor.html#ac59238a112687260136baa18ae4c1b95">_impl</a>, *material.<a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>);</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;}</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  this-&gt;reactor = reactor;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  this-&gt;material = material;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  _impl = std::make_unique&lt;ClusterDynamicsImpl&gt;(concentration_boundary, *reactor.<a class="code" href="structNuclearReactor.html#ac59238a112687260136baa18ae4c1b95">_impl</a>, *material.<a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>);</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -183,9 +185,9 @@ Public Member Functions</h2></td></tr>
 <p>We cannot use the default destructor that the header would've defined because unique_ptr needs to know how to delete the type it contains: <br  />
  <a href="https://stackoverflow.com/questions/34072862/why-is-error-invalid-application-of-sizeof-to-an-incomplete-type-using-uniqu">https://stackoverflow.com/questions/34072862/why-is-error-invalid-application-of-sizeof-to-an-incomplete-type-using-uniqu</a> </p>
 
-<p class="definition">Definition at line <a class="el" href="cluster__dynamics_8cpp_source.html#l00020">20</a> of file <a class="el" href="cluster__dynamics_8cpp_source.html">cluster_dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;{</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="cluster__dynamics_8cpp_source.html#l00022">22</a> of file <a class="el" href="cluster__dynamics_8cpp_source.html">cluster_dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;{</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -226,10 +228,10 @@ Public Member Functions</h2></td></tr>
 </dl>
 <p><a class="el" href="classClusterDynamics.html#a49cbdf82021c1fffe698a69c0e80edd3" title="Runs the simulation and returns the end simulation state as a ClusterDynamicsState object.">run()</a> can be called multiple times, and the simulation will resume from where it stopped after the last time <a class="el" href="classClusterDynamics.html#a49cbdf82021c1fffe698a69c0e80edd3" title="Runs the simulation and returns the end simulation state as a ClusterDynamicsState object.">run()</a> was called. </p>
 
-<p class="definition">Definition at line <a class="el" href="cluster__dynamics_8cpp_source.html#l00024">24</a> of file <a class="el" href="cluster__dynamics_8cpp_source.html">cluster_dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;{</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keywordflow">return</span> _impl-&gt;run(delta_time, total_time);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="cluster__dynamics_8cpp_source.html#l00026">26</a> of file <a class="el" href="cluster__dynamics_8cpp_source.html">cluster_dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;{</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keywordflow">return</span> _impl-&gt;run(delta_time, total_time);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -250,10 +252,10 @@ Public Member Functions</h2></td></tr>
 
 <p>Returns the <a class="el" href="structMaterial.html" title="A class which represents the material property parameters for a ClusterDynamics simulation.">Material</a> parameters that the simulation currently has set. </p>
 
-<p class="definition">Definition at line <a class="el" href="cluster__dynamics_8cpp_source.html#l00029">29</a> of file <a class="el" href="cluster__dynamics_8cpp_source.html">cluster_dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;{</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordflow">return</span> material;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="cluster__dynamics_8cpp_source.html#l00031">31</a> of file <a class="el" href="cluster__dynamics_8cpp_source.html">cluster_dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;{</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordflow">return</span> material;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -282,11 +284,11 @@ Public Member Functions</h2></td></tr>
 </dl>
 <p>It is okay to change the material parameters even if the simulation has already been <a class="el" href="classClusterDynamics.html#a49cbdf82021c1fffe698a69c0e80edd3" title="Runs the simulation and returns the end simulation state as a ClusterDynamicsState object.">run()</a> for some time. </p>
 
-<p class="definition">Definition at line <a class="el" href="cluster__dynamics_8cpp_source.html#l00034">34</a> of file <a class="el" href="cluster__dynamics_8cpp_source.html">cluster_dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;{</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  this-&gt;material = material;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  _impl-&gt;set_material(*material.<a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="cluster__dynamics_8cpp_source.html#l00036">36</a> of file <a class="el" href="cluster__dynamics_8cpp_source.html">cluster_dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;{</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  this-&gt;material = material;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  _impl-&gt;set_material(*material.<a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -307,10 +309,10 @@ Public Member Functions</h2></td></tr>
 
 <p>Returns the <a class="el" href="structNuclearReactor.html" title="A class which represents the radiation environment parameters for a ClusterDynamics simulation.">NuclearReactor</a> parameters that the simulation currently has set. </p>
 
-<p class="definition">Definition at line <a class="el" href="cluster__dynamics_8cpp_source.html#l00040">40</a> of file <a class="el" href="cluster__dynamics_8cpp_source.html">cluster_dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;{</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordflow">return</span> reactor;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="cluster__dynamics_8cpp_source.html#l00042">42</a> of file <a class="el" href="cluster__dynamics_8cpp_source.html">cluster_dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;{</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordflow">return</span> reactor;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -339,11 +341,11 @@ Public Member Functions</h2></td></tr>
 </dl>
 <p>It is okay to change the reactor parameters even if the simulation has already been <a class="el" href="classClusterDynamics.html#a49cbdf82021c1fffe698a69c0e80edd3" title="Runs the simulation and returns the end simulation state as a ClusterDynamicsState object.">run()</a> for some time. </p>
 
-<p class="definition">Definition at line <a class="el" href="cluster__dynamics_8cpp_source.html#l00045">45</a> of file <a class="el" href="cluster__dynamics_8cpp_source.html">cluster_dynamics.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;{</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  this-&gt;reactor = reactor;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  _impl-&gt;set_reactor(*reactor.<a class="code" href="structNuclearReactor.html#ac59238a112687260136baa18ae4c1b95">_impl</a>);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="cluster__dynamics_8cpp_source.html#l00047">47</a> of file <a class="el" href="cluster__dynamics_8cpp_source.html">cluster_dynamics.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;{</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  this-&gt;reactor = reactor;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  _impl-&gt;set_reactor(*reactor.<a class="code" href="structNuclearReactor.html#ac59238a112687260136baa18ae4c1b95">_impl</a>);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>

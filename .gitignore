@@ -66,3 +66,6 @@ extern/metal-cpp
 *.ir
 *.air
 *.metallib
+
+# Build artifacts
+build/*
