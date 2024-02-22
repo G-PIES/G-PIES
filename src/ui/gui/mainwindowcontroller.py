@@ -47,6 +47,7 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
     def init_graph(self):
         #plt.
         self._plot_ref = None
+        self.data = []
         self.data_x = []
         self.data_y = []
         #self.df = pd.DataFrame(columns =['Time (s)', 'Cluster Size', 'Interstitials / cm^3', 'Vacancies / cm^3'])
@@ -66,9 +67,9 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         print("simulation finished")
 
     def update_graph(self):
-        data = self.parent_conn.recv()
-        self.data_x.append(data[0])
-        self.data_y.append(data[2])
+        self.data = self.parent_conn.recv()
+        self.data_x.append(self.data[0])
+        self.data_y.append(self.data[2])
         
         self.scatter_plot.axes.cla()
         self.scatter_plot.axes.scatter(x=self.data_x, y=self.data_y)
