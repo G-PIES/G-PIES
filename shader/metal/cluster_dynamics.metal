@@ -5,8 +5,6 @@
 
 kernel void update_clusters(
     device ClusterDynamicsMetalKernel& mtl_kernel,
-    device NuclearReactorImpl& reactor,
-    device MaterialImpl& material,
     device gp_float* interstitials_in,
     device gp_float* vacancies_in,
     device gp_float* interstitials_out,
@@ -17,8 +15,6 @@ kernel void update_clusters(
 {
     if (index > 1)
     {
-        mtl_kernel.reactor = &reactor;
-        mtl_kernel.material = &material;
         mtl_kernel.interstitials = interstitials_in;
         mtl_kernel.vacancies = vacancies_in;
 

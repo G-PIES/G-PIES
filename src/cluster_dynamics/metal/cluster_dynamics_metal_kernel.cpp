@@ -167,14 +167,14 @@ gp_float ClusterDynamicsMetalKernel::dislocation_density_derivative()
                 dislocation_promotion_probability(n);
     }
 
-    gain *= 2. * M_PI / material->atomic_volume;
+    gain *= 2. * M_PI / material.atomic_volume;
 
     return
         // (1)
         gain
         // (2)
-        - reactor->dislocation_density_evolution *
-              mtl_math::pow(material->burgers_vector, 2.) *
+        - reactor.dislocation_density_evolution *
+              mtl_math::pow(material.burgers_vector, 2.) *
               mtl_math::pow(dislocation_density, 3. / 2.);
 }
 
@@ -198,15 +198,15 @@ gp_float ClusterDynamicsMetalKernel::i_defect_production(uint64_t n)
     switch (n) {
         //             (1)                     (2)
         case 1:
-            return reactor->recombination * reactor->flux *
+            return reactor.recombination * reactor.flux *
                    //    (3)            (4)             (5)
-                   (1. - reactor->i_bi - reactor->i_tri - reactor->i_quad);
+                   (1. - reactor.i_bi - reactor.i_tri - reactor.i_quad);
         case 2:
-            return reactor->recombination * reactor->flux * reactor->i_bi;
+            return reactor.recombination * reactor.flux * reactor.i_bi;
         case 3:
-            return reactor->recombination * reactor->flux * reactor->i_tri;
+            return reactor.recombination * reactor.flux * reactor.i_tri;
         case 4:
-            return reactor->recombination * reactor->flux * reactor->i_quad;
+            return reactor.recombination * reactor.flux * reactor.i_quad;
 
         default:
             break;
@@ -242,15 +242,15 @@ gp_float ClusterDynamicsMetalKernel::v_defect_production(uint64_t n)
     switch (n) {
         //             (1)                     (2)
         case 1:
-            return reactor->recombination * reactor->flux *
+            return reactor.recombination * reactor.flux *
                    //    (3)            (4)             (5)
-                   (1. - reactor->v_bi - reactor->v_tri - reactor->v_quad);
+                   (1. - reactor.v_bi - reactor.v_tri - reactor.v_quad);
         case 2:
-            return reactor->recombination * reactor->flux * reactor->v_bi;
+            return reactor.recombination * reactor.flux * reactor.v_bi;
         case 3:
-            return reactor->recombination * reactor->flux * reactor->v_tri;
+            return reactor.recombination * reactor.flux * reactor.v_tri;
         case 4:
-            return reactor->recombination * reactor->flux * reactor->v_quad;
+            return reactor.recombination * reactor.flux * reactor.v_quad;
 
         default:
             break;
@@ -588,7 +588,7 @@ gp_float ClusterDynamicsMetalKernel::annihilation_rate() __METALDECL__ {
         // (2)
         (i_diffusion_val + v_diffusion_val) *
         // (3)
-        material->recombination_radius;
+        material.recombination_radius;
 }
 // --------------------------------------------------------------------------------------------
 
@@ -614,7 +614,7 @@ gp_float ClusterDynamicsMetalKernel::i_dislocation_annihilation_rate()
         // (2)
         i_diffusion_val *
         // (3)
-        material->i_dislocation_bias;
+        material.i_dislocation_bias;
 }
 
 /** @brief Returns the 1 over the characteristic time for annihilation of
@@ -634,7 +634,7 @@ gp_float ClusterDynamicsMetalKernel::i_dislocation_annihilation_rate()
  *
  * (2) \f$D_v\f$ 🡆 `v_diffusion_val`
  *
- * (3) \f$Z_v\f$ 🡆 `material->v_dislocation_bias`
+ * (3) \f$Z_v\f$ 🡆 `material.v_dislocation_bias`
  */
 gp_float ClusterDynamicsMetalKernel::v_dislocation_annihilation_rate()
     __METALDECL__ {
@@ -644,7 +644,7 @@ gp_float ClusterDynamicsMetalKernel::v_dislocation_annihilation_rate()
         // (2)
         v_diffusion_val *
         // (3)
-        material->v_dislocation_bias;
+        material.v_dislocation_bias;
 }
 // --------------------------------------------------------------------------------------------
 
@@ -674,13 +674,13 @@ gp_float ClusterDynamicsMetalKernel::i_grain_boundary_annihilation_rate()
         6. * i_diffusion_val *
         mtl_math::sqrt(
             // (2)
-            dislocation_density * material->i_dislocation_bias
+            dislocation_density * material.i_dislocation_bias
             // (3)
             + ii_sum_absorption_val
             // (4)
             + vi_sum_absorption_val) /
         // (5)
-        material->grain_size;
+        material.grain_size;
 }
 
 // --------------------------------------------------------------------------------------------
@@ -708,13 +708,13 @@ gp_float ClusterDynamicsMetalKernel::v_grain_boundary_annihilation_rate()
         6. * v_diffusion_val *
         mtl_math::sqrt(
             // (2)
-            dislocation_density * material->v_dislocation_bias
+            dislocation_density * material.v_dislocation_bias
             // (3)
             + vv_sum_absorption_val
             // (4)
             + iv_sum_absorption_val) /
         // (5)
-        material->grain_size;
+        material.grain_size;
 }
 
 /** @brief Returns the rate of emission of an interstitial by an interstital
@@ -739,10 +739,10 @@ gp_float ClusterDynamicsMetalKernel::ii_emission(uint64_t n) __METALDECL__ {
         // (2)
         i_bias_factor(n) *
         // (3)
-        i_diffusion_val / material->atomic_volume *
+        i_diffusion_val / material.atomic_volume *
         // (4)
         mtl_math::exp(-i_binding_energy(n) /
-                      (BOLTZMANN_EV_KELVIN * reactor->temperature));
+                      (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
 
 /** @brief Returns the rate of absorption of an interstitial by an interstital
@@ -818,7 +818,7 @@ gp_float ClusterDynamicsMetalKernel::vv_emission(uint64_t n) __METALDECL__ {
         v_diffusion_val *
         // (4)
         mtl_math::exp(-v_binding_energy(n) /
-                      (BOLTZMANN_EV_KELVIN * reactor->temperature));
+                      (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
 
 /** @brief Returns the rate of absorption of a vacancy by a vacancy cluster of
@@ -882,18 +882,18 @@ gp_float ClusterDynamicsMetalKernel::vi_absorption(uint64_t n) __METALDECL__ {
 gp_float ClusterDynamicsMetalKernel::i_bias_factor(uint64_t n) __METALDECL__ {
     return
         // (1)
-        material->i_dislocation_bias +
+        material.i_dislocation_bias +
         (
             // (2)
-            mtl_math::sqrt(material->burgers_vector /
-                           (8. * M_PI * material->lattice_param)) *
+            mtl_math::sqrt(material.burgers_vector /
+                           (8. * M_PI * material.lattice_param)) *
                 // (3)
-                material->i_loop_bias -
+                material.i_loop_bias -
             // (4)
-            material->i_dislocation_bias) *
+            material.i_dislocation_bias) *
             // (5)
             1. /
-            mtl_math::pow((gp_float)n, material->i_dislocation_bias_param / 2.);
+            mtl_math::pow((gp_float)n, material.i_dislocation_bias_param / 2.);
 }
 
 /** @brief Returns the bias factor of a vacancy cluster of size (n).
@@ -913,14 +913,14 @@ gp_float ClusterDynamicsMetalKernel::i_bias_factor(uint64_t n) __METALDECL__ {
  * \f$
  */
 gp_float ClusterDynamicsMetalKernel::v_bias_factor(uint64_t n) __METALDECL__ {
-    return material->v_dislocation_bias +
-           (mtl_math::sqrt(material->burgers_vector /
-                           (8. * M_PI * material->lattice_param)) *
-                material->v_loop_bias -
-            material->v_dislocation_bias) *
+    return material.v_dislocation_bias +
+           (mtl_math::sqrt(material.burgers_vector /
+                           (8. * M_PI * material.lattice_param)) *
+                material.v_loop_bias -
+            material.v_dislocation_bias) *
                1. /
                mtl_math::pow((gp_float)n,
-                             material->v_dislocation_bias_param / 2.);
+                             material.v_dislocation_bias_param / 2.);
 }
 
 /** @brief Returnst the binding energy for an interstitial cluster of size (n).
@@ -941,9 +941,9 @@ gp_float ClusterDynamicsMetalKernel::i_binding_energy(uint64_t n)
     __METALDECL__ {
     return
         // (1)
-        material->i_formation
+        material.i_formation
         // (2)
-        + (material->i_binding - material->i_formation) /
+        + (material.i_binding - material.i_formation) /
               (mtl_math::pow(2., .8) - 1.) *
               // (3)
               (mtl_math::pow((gp_float)n, .8) -
@@ -968,9 +968,9 @@ gp_float ClusterDynamicsMetalKernel::v_binding_energy(uint64_t n)
     __METALDECL__ {
     return
         // (1)
-        material->v_formation
+        material.v_formation
         // (2)
-        + (material->v_binding - material->v_formation) /
+        + (material.v_binding - material.v_formation) /
               (mtl_math::pow(2., .8) - 1) *
               // (3)
               (mtl_math::pow((gp_float)n, .8) -
@@ -993,9 +993,9 @@ gp_float ClusterDynamicsMetalKernel::v_binding_energy(uint64_t n)
  */
 gp_float ClusterDynamicsMetalKernel::i_diffusion() __METALDECL__ {
     //     (1)                      (2)
-    return material->i_diffusion_0 *
-           mtl_math::exp(-material->i_migration /
-                         (BOLTZMANN_EV_KELVIN * reactor->temperature));
+    return material.i_diffusion_0 *
+           mtl_math::exp(-material.i_migration /
+                         (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
 
 /** @brief Returns the diffusion coefficient for single vacancies.
@@ -1014,9 +1014,9 @@ gp_float ClusterDynamicsMetalKernel::i_diffusion() __METALDECL__ {
  */
 gp_float ClusterDynamicsMetalKernel::v_diffusion() __METALDECL__ {
     //     (1)                      (2)
-    return material->v_diffusion_0 *
-           mtl_math::exp(-material->v_migration /
-                         (BOLTZMANN_EV_KELVIN * reactor->temperature));
+    return material.v_diffusion_0 *
+           mtl_math::exp(-material.v_migration /
+                         (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
 
 /** Returns the mean dislocation cell radius of the system.
@@ -1042,7 +1042,7 @@ gp_float ClusterDynamicsMetalKernel::mean_dislocation_cell_radius()
     }
 
     // (1)                                           (2)          (3)
-    return 1 / mtl_math::sqrt((2. * M_PI * M_PI / material->atomic_volume) *
+    return 1 / mtl_math::sqrt((2. * M_PI * M_PI / material.atomic_volume) *
                                   r_0_factor +
                               M_PI * dislocation_density);
 }
@@ -1095,7 +1095,7 @@ gp_float ClusterDynamicsMetalKernel::dislocation_promotion_probability(
  */
 gp_float ClusterDynamicsMetalKernel::cluster_radius(uint64_t n) __METALDECL__ {
     return mtl_math::sqrt(mtl_math::sqrt(3.) *
-                          mtl_math::pow(material->lattice_param, 2.) *
+                          mtl_math::pow(material.lattice_param, 2.) *
                           (gp_float)n / (4. * M_PI));
 }
 // --------------------------------------------------------------------------------------------

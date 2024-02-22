@@ -44,9 +44,6 @@ public:
 
     size_t concentration_boundary;
 
-    MaterialImpl material;
-    NuclearReactorImpl reactor;
-
     bool step(gp_float);
 
     // Interface functions
@@ -61,7 +58,7 @@ public:
 
 private:
     // metal shader routines 
-    void mtl_init_kernel();
+    void mtl_init_kernel(const NuclearReactorImpl&, const MaterialImpl&);
     void mtl_init_lib();
     void mtl_init_buffers();
     void mtl_update_clusters(gp_float);

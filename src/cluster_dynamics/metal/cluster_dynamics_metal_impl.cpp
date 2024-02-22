@@ -57,10 +57,9 @@ bool ClusterDynamicsImpl::step(gp_float delta_time)
 // TODO - clean up the uses of random +1/+2/-1/etc throughout the code
 ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, const NuclearReactorImpl& reactor, const MaterialImpl& material)
   : time(0.0),
-    concentration_boundary(concentration_boundary),
-    material(material), reactor(reactor)
+    concentration_boundary(concentration_boundary)
 {
-    mtl_init_kernel();
+    mtl_init_kernel(reactor, material);
     mtl_init_lib();
     mtl_init_buffers();
 }
@@ -94,24 +93,22 @@ ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time, gp_float tota
 
 MaterialImpl ClusterDynamicsImpl::get_material()
 {
-    return material;
+    return mtl_kernel.material;
 }
 
 void ClusterDynamicsImpl::set_material(const MaterialImpl& material)
 {
-    this->material = material;
-    mtl_kernel.material = &this->material;
+    mtl_kernel.material = material;
 }
 
 NuclearReactorImpl ClusterDynamicsImpl::get_reactor()
 {
-    return reactor;
+    return mtl_kernel.reactor;
 }
 
 void ClusterDynamicsImpl::set_reactor(const NuclearReactorImpl& reactor)
 {
-    this->reactor = reactor;
-    mtl_kernel.reactor = &this->reactor;
+    mtl_kernel.reactor = reactor;
 }
 
 
@@ -126,11 +123,11 @@ void ClusterDynamicsImpl::set_reactor(const NuclearReactorImpl& reactor)
 
 
 
-void ClusterDynamicsImpl::mtl_init_kernel() {
+void ClusterDynamicsImpl::mtl_init_kernel(const NuclearReactorImpl& reactor, const MaterialImpl& material) {
     mtl_kernel.interstitials = new gp_float[concentration_boundary + 1];
     mtl_kernel.vacancies = new gp_float[concentration_boundary + 1];
-    mtl_kernel.reactor = &this->reactor;
-    mtl_kernel.material = &this->material;
+    mtl_kernel.reactor = reactor;
+    mtl_kernel.material = material;
     mtl_kernel.concentration_boundary = concentration_boundary;
     mtl_kernel.dislocation_density = material.dislocation_density_0;
 }
@@ -194,13 +191,11 @@ void ClusterDynamicsImpl::mtl_encode_command(MTL::ComputeCommandEncoder* mtl_com
     mtl_compute_encoder->setComputePipelineState(mtl_compute_pipeline_state);
 
     mtl_compute_encoder->setBytes(&mtl_kernel, sizeof(ClusterDynamicsMetalKernel), 0);
-    mtl_compute_encoder->setBytes(mtl_kernel.reactor, sizeof(NuclearReactorImpl), 1);
-    mtl_compute_encoder->setBytes(mtl_kernel.material, sizeof(MaterialImpl), 2);
-    mtl_compute_encoder->setBuffer(mtl_interstitials_in, 0, 3);
-    mtl_compute_encoder->setBuffer(mtl_vacancies_in, 0, 4);
-    mtl_compute_encoder->setBuffer(mtl_interstitials_out, 0, 5);
-    mtl_compute_encoder->setBuffer(mtl_vacancies_out, 0, 6);
-    mtl_compute_encoder->setBytes(&delta_time, sizeof(gp_float), 7);
+    mtl_compute_encoder->setBuffer(mtl_interstitials_in, 0, 1);
+    mtl_compute_encoder->setBuffer(mtl_vacancies_in, 0, 2);
+    mtl_compute_encoder->setBuffer(mtl_interstitials_out, 0, 3);
+    mtl_compute_encoder->setBuffer(mtl_vacancies_out, 0, 4);
+    mtl_compute_encoder->setBytes(&delta_time, sizeof(gp_float), 5);
     
     MTL::Size mtl_grid_size = MTL::Size(concentration_boundary, 1, 1);
  
