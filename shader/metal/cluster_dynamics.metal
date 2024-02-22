@@ -10,9 +10,7 @@ kernel void update_clusters(
     device gp_float* interstitials_out,
     device gp_float* vacancies_out,
     constant gp_float& delta_time,
-    uint index [[thread_position_in_grid]]
-    )
-{
+    uint index [[thread_position_in_grid]]) {
     mtl_kernel.interstitials = interstitials_in;
     mtl_kernel.vacancies = vacancies_in;
 

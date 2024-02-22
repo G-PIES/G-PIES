@@ -10,13 +10,11 @@
 #include <QuartzCore/QuartzCore.hpp>
 #include <vector>
 
-#include "cluster_dynamics_metal_args.hpp"
 #include "cluster_dynamics/cluster_dynamics_state.hpp"
+#include "cluster_dynamics_metal_kernel.hpp"
 #include "constants.hpp"
 #include "material_impl.hpp"
 #include "nuclear_reactor_impl.hpp"
-#include "material_impl.hpp"
-#include "cluster_dynamics_metal_kernel.hpp"
 
 class ClusterDynamicsImpl {
  public:
@@ -48,7 +46,8 @@ class ClusterDynamicsImpl {
     bool step(gp_float);
 
     // Interface functions
-    ClusterDynamicsImpl(size_t, const NuclearReactorImpl&, const MaterialImpl&);
+    ClusterDynamicsImpl(size_t, const NuclearReactorImpl &,
+                        const MaterialImpl &);
     ~ClusterDynamicsImpl();
 
     ClusterDynamicsState run(gp_float delta_time, gp_float total_time);
@@ -57,13 +56,13 @@ class ClusterDynamicsImpl {
     NuclearReactorImpl get_reactor();
     void set_reactor(const NuclearReactorImpl &reactor);
 
-private:
-    // metal shader routines 
-    void mtl_init_kernel(const NuclearReactorImpl&, const MaterialImpl&);
+ private:
+    // metal shader routines
+    void mtl_init_kernel(const NuclearReactorImpl &, const MaterialImpl &);
     void mtl_init_lib();
     void mtl_init_buffers();
     void mtl_update_clusters(gp_float);
-    void mtl_encode_command(MTL::ComputeCommandEncoder*, gp_float);
+    void mtl_encode_command(MTL::ComputeCommandEncoder *, gp_float);
 };
 
 #endif  // CLUSTER_DYNAMICS_METAL_IMPL_HPP

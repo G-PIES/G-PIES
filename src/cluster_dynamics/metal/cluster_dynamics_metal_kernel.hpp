@@ -1,5 +1,5 @@
-#ifndef CLUSTER_DYNAMICS_METAL_ARGS_HPP
-#define CLUSTER_DYNAMICS_METAL_ARGS_HPP
+#ifndef CLUSTER_DYNAMICS_METAL_KERNEL_HPP
+#define CLUSTER_DYNAMICS_METAL_KERNEL_HPP
 
 #include "material_impl.hpp"
 #include "nuclear_reactor_impl.hpp"
@@ -82,4 +82,4 @@ class ClusterDynamicsMetalKernel {
     void update_dislocation_density(gp_float) __METALDECL__;
 };
 
-#endif  // CLUSTER_DYNAMICS_METAL_ARGS_HPP
+#endif  // CLUSTER_DYNAMICS_METAL_KERNEL_HPP
