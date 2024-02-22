@@ -13,12 +13,9 @@ kernel void update_clusters(
     uint index [[thread_position_in_grid]]
     )
 {
-    if (index > 1)
-    {
-        mtl_kernel.interstitials = interstitials_in;
-        mtl_kernel.vacancies = vacancies_in;
+    mtl_kernel.interstitials = interstitials_in;
+    mtl_kernel.vacancies = vacancies_in;
 
-        interstitials_out[index] += mtl_kernel.i_concentration_derivative(index) * delta_time;
-        vacancies_out[index] += mtl_kernel.v_concentration_derivative(index) * delta_time;
-    }
+    interstitials_out[index] += mtl_kernel.i_concentration_derivative(index) * delta_time;
+    vacancies_out[index] += mtl_kernel.v_concentration_derivative(index) * delta_time;
 }
