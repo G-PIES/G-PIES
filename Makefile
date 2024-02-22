@@ -54,7 +54,7 @@ NVCCFLAGS += -std=c++17 -DUSE_CUDA -x cu -Werror all-warnings
 CLANGFLAGS = $(CCFLAGS) -DUSE_METAL
 
 INCLUDE_FLAGS = -Isrc/client_db -Isrc/cluster_dynamics -Isrc/cluster_dynamics/cpu -Isrc/cluster_dynamics/cuda -Isrc/cluster_dynamics/metal
-INCLUDE_FLAGS += -Iinclude
+INCLUDE_FLAGS += -Iinclude -Iinclude/utils
 
 # Directories
 BIN_DIR = bin
