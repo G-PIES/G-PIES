@@ -113,7 +113,7 @@ struct NuclearReactor {
     std::string
         species;  //!< A name for what kind of material this data represents.
 
-    std::unique_ptr<NuclearReactorImpl> _impl;
+    std::shared_ptr<NuclearReactorImpl> _impl;
 };
 
 // --------------------------------------------------------------------------------------------

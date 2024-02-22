@@ -178,7 +178,7 @@ struct Material {
     std::string
         species;  //!< A name for what kind of material this data represents.
 
-    std::unique_ptr<MaterialImpl> _impl;
+    std::shared_ptr<MaterialImpl> _impl;
 };
 
 // --------------------------------------------------------------------------------------------

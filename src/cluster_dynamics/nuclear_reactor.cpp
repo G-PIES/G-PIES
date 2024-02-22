@@ -10,7 +10,7 @@ NuclearReactor::NuclearReactor(const NuclearReactor &other)
     : sqlite_id(other.sqlite_id),
       creation_datetime(other.creation_datetime),
       species(other.species) {
-    _impl = std::make_unique<NuclearReactorImpl>(*other._impl.get());
+    _impl = other._impl;
 }
 
 NuclearReactor::~NuclearReactor() {}
@@ -26,8 +26,7 @@ void NuclearReactor::copy(const NuclearReactor &other) {
     creation_datetime = other.creation_datetime;
     species = other.species;
 
-    _impl.release();
-    _impl = std::make_unique<NuclearReactorImpl>(*other._impl.get());
+    _impl = other._impl;
 }
 
 /// @brief Returns the neutron flux through the material in dpa/s
