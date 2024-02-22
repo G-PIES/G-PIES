@@ -40,10 +40,9 @@ public:
     MTL::Buffer* mtl_interstitials_out;
     MTL::Buffer* mtl_vacancies_out;
 
-    ClusterDynamicsMetalKernel mtl_args;
+    ClusterDynamicsMetalKernel mtl_kernel;
 
     size_t concentration_boundary;
-    gp_float dislocation_density;
 
     MaterialImpl material;
     NuclearReactorImpl reactor;
@@ -51,7 +50,7 @@ public:
     bool step(gp_float);
 
     // Interface functions
-    ClusterDynamicsImpl(size_t concentration_boundary, const NuclearReactorImpl& reactor, const MaterialImpl& material);
+    ClusterDynamicsImpl(size_t, const NuclearReactorImpl&, const MaterialImpl&);
     ~ClusterDynamicsImpl();
         
     ClusterDynamicsState run(gp_float delta_time, gp_float total_time);
@@ -62,8 +61,8 @@ public:
 
 private:
     // metal shader routines 
+    void mtl_init_kernel();
     void mtl_init_lib();
-    void mtl_init_args();
     void mtl_init_buffers();
     void mtl_update_clusters();
     void mtl_encode_command(MTL::ComputeCommandEncoder*);

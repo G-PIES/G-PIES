@@ -15,8 +15,8 @@
 
 class ClusterDynamicsMetalKernel {
  public:
-    __METALDECL__ MaterialImpl* material;
     __METALDECL__ NuclearReactorImpl* reactor;
+    __METALDECL__ MaterialImpl* material;
 
     __METALDECL__ gp_float* interstitials;
     __METALDECL__ gp_float* vacancies;

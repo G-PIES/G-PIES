@@ -20,15 +20,15 @@
 
 bool ClusterDynamicsImpl::step(gp_float delta_time)
 {
-    mtl_args.step_init();
-    mtl_args.update_clusters_1(delta_time);
+    mtl_kernel.step_init();
+    mtl_kernel.update_clusters_1(delta_time);
 
     // CPU memory to GPU memory
     // copy from index 1 to concentration_boundary - 1
     gp_float* interstitials_in = (gp_float*)mtl_interstitials_in->contents();
     gp_float* vacancies_in = (gp_float*)mtl_vacancies_in->contents();
-    memcpy(interstitials_in + 1, mtl_args.interstitials + 1, sizeof(gp_float) * concentration_boundary);
-    memcpy(vacancies_in + 1, mtl_args.vacancies + 1, sizeof(gp_float) * concentration_boundary);
+    memcpy(interstitials_in + 1, mtl_kernel.interstitials + 1, sizeof(gp_float) * concentration_boundary);
+    memcpy(vacancies_in + 1, mtl_kernel.vacancies + 1, sizeof(gp_float) * concentration_boundary);
 
     mtl_update_clusters();
 
@@ -36,17 +36,12 @@ bool ClusterDynamicsImpl::step(gp_float delta_time)
     // copy from index 2 to concentration_boundary - 1
     gp_float* interstitials_out = (gp_float*)mtl_interstitials_out->contents();
     gp_float* vacancies_out = (gp_float*)mtl_vacancies_out->contents();
-    memcpy(mtl_args.interstitials + 2, interstitials_out + 2, sizeof(gp_float) * (concentration_boundary - 1));
-    memcpy(mtl_args.vacancies + 2, vacancies_out + 2, sizeof(gp_float) * (concentration_boundary - 1));
+    memcpy(mtl_kernel.interstitials + 2, interstitials_out + 2, sizeof(gp_float) * (concentration_boundary - 1));
+    memcpy(mtl_kernel.vacancies + 2, vacancies_out + 2, sizeof(gp_float) * (concentration_boundary - 1));
 
-    mtl_args.dislocation_density += mtl_args.dislocation_density_derivative() * delta_time;
+    mtl_kernel.dislocation_density += mtl_kernel.dislocation_density_derivative() * delta_time;
 
     return true; // TODO - exception handling
-}
-
-ClusterDynamicsImpl::~ClusterDynamicsImpl()
-{
-    mtl_ar_pool->release();
 }
 
 // --------------------------------------------------------------------------------------------
@@ -63,12 +58,18 @@ ClusterDynamicsImpl::~ClusterDynamicsImpl()
 ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, const NuclearReactorImpl& reactor, const MaterialImpl& material)
   : time(0.0),
     concentration_boundary(concentration_boundary),
-    dislocation_density(material.dislocation_density_0), 
     material(material), reactor(reactor)
 {
+    mtl_init_kernel();
     mtl_init_lib();
-    mtl_init_args();
     mtl_init_buffers();
+}
+
+ClusterDynamicsImpl::~ClusterDynamicsImpl()
+{
+    mtl_ar_pool->release();
+    delete[] mtl_kernel.interstitials;
+    delete[] mtl_kernel.vacancies;
 }
 
 ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time, gp_float total_time)
@@ -76,7 +77,7 @@ ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time, gp_float tota
     bool state_is_valid = true;
 
     // TODO - set in a more appropriate place?
-    mtl_args.delta_time = delta_time;
+    mtl_kernel.delta_time = delta_time;
 
     for (gp_float endtime = time + total_time; time < endtime; time += delta_time)
     {
@@ -88,9 +89,9 @@ ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time, gp_float tota
     {
         .valid = state_is_valid,
         .time = time,
-        .interstitials = std::vector<gp_float>(mtl_args.interstitials, mtl_args.interstitials + concentration_boundary),
-        .vacancies = std::vector<gp_float>(mtl_args.vacancies, mtl_args.vacancies + concentration_boundary),
-        .dislocation_density = mtl_args.dislocation_density
+        .interstitials = std::vector<gp_float>(mtl_kernel.interstitials, mtl_kernel.interstitials + concentration_boundary),
+        .vacancies = std::vector<gp_float>(mtl_kernel.vacancies, mtl_kernel.vacancies + concentration_boundary),
+        .dislocation_density = mtl_kernel.dislocation_density
     };
 }
 
@@ -102,6 +103,7 @@ MaterialImpl ClusterDynamicsImpl::get_material()
 void ClusterDynamicsImpl::set_material(const MaterialImpl& material)
 {
     this->material = material;
+    mtl_kernel.material = &this->material;
 }
 
 NuclearReactorImpl ClusterDynamicsImpl::get_reactor()
@@ -112,6 +114,7 @@ NuclearReactorImpl ClusterDynamicsImpl::get_reactor()
 void ClusterDynamicsImpl::set_reactor(const NuclearReactorImpl& reactor)
 {
     this->reactor = reactor;
+    mtl_kernel.reactor = &this->reactor;
 }
 
 
@@ -125,6 +128,15 @@ void ClusterDynamicsImpl::set_reactor(const NuclearReactorImpl& reactor)
 // --------------------------------------------------------------------------------------------
 
 
+
+void ClusterDynamicsImpl::mtl_init_kernel() {
+    mtl_kernel.interstitials = new gp_float[concentration_boundary + 1];
+    mtl_kernel.vacancies = new gp_float[concentration_boundary + 1];
+    mtl_kernel.reactor = &this->reactor;
+    mtl_kernel.material = &this->material;
+    mtl_kernel.concentration_boundary = concentration_boundary;
+    mtl_kernel.dislocation_density = material.dislocation_density_0;
+}
 
 void ClusterDynamicsImpl::mtl_init_lib()
 {
@@ -146,16 +158,6 @@ void ClusterDynamicsImpl::mtl_init_lib()
     
     mtl_command_queue = mtl_device->newCommandQueue();
     if (!mtl_command_queue) fprintf(stderr, "metal_command_queue null\n");
-}
-
-void ClusterDynamicsImpl::mtl_init_args()
-{
-    mtl_args.interstitials = new gp_float[concentration_boundary + 1];
-    mtl_args.vacancies = new gp_float[concentration_boundary + 1];
-    mtl_args.reactor = &reactor;
-    mtl_args.material = &material;
-    mtl_args.dislocation_density = dislocation_density;
-    mtl_args.concentration_boundary = concentration_boundary;
 }
 
 void ClusterDynamicsImpl::mtl_init_buffers()
@@ -194,9 +196,9 @@ void ClusterDynamicsImpl::mtl_encode_command(MTL::ComputeCommandEncoder* mtl_com
     // encode the pipeline state object and its parameters
     mtl_compute_encoder->setComputePipelineState(mtl_compute_pipeline_state);
 
-    mtl_compute_encoder->setBytes(&mtl_args, sizeof(ClusterDynamicsMetalKernel), 0);
-    mtl_compute_encoder->setBytes(mtl_args.reactor, sizeof(NuclearReactorImpl), 1);
-    mtl_compute_encoder->setBytes(mtl_args.material, sizeof(MaterialImpl), 2);
+    mtl_compute_encoder->setBytes(&mtl_kernel, sizeof(ClusterDynamicsMetalKernel), 0);
+    mtl_compute_encoder->setBytes(mtl_kernel.reactor, sizeof(NuclearReactorImpl), 1);
+    mtl_compute_encoder->setBytes(mtl_kernel.material, sizeof(MaterialImpl), 2);
     mtl_compute_encoder->setBuffer(mtl_interstitials_in, 0, 3);
     mtl_compute_encoder->setBuffer(mtl_vacancies_in, 0, 4);
     mtl_compute_encoder->setBuffer(mtl_interstitials_out, 0, 5);
