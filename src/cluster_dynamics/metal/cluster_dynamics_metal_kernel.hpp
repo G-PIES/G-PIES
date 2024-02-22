@@ -6,11 +6,14 @@
 
 #if defined(__METAL__)
 #define __METALDECL__ device
+#define mtl_math metal::precise
 #else
+#include <cstdint>
 #define __METALDECL__
+#define mtl_math std
 #endif
 
-class ClusterDynamicsMetalArgs {
+class ClusterDynamicsMetalKernel {
  public:
     __METALDECL__ MaterialImpl* material;
     __METALDECL__ NuclearReactorImpl* reactor;

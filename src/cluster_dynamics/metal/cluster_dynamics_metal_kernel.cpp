@@ -1,5 +1,8 @@
-#include <metal_stdlib>
-#include "cluster_dynamics_metal_args.hpp"
+#ifndef __METAL__
+#include <cmath>
+#endif
+
+#include "cluster_dynamics_metal_kernel.hpp"
 #include "constants.hpp"
 
 /** @brief Returns the rate of change of the concentration of interstitial clusters of size (n)
@@ -17,7 +20,7 @@
  * \ann{4}{c_{i,n-1}C_i(n-1)}
  * \f$
 */
-gp_float ClusterDynamicsMetalArgs::i_concentration_derivative(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::i_concentration_derivative(uint64_t n) __METALDECL__
 {
     return
         // (1)
@@ -53,7 +56,7 @@ gp_float ClusterDynamicsMetalArgs::i_concentration_derivative(uint64_t n) __META
  * paper implies that it also works for vacancy clusters in the line immediately preceding
  * the definition of 2a.
 */
-gp_float ClusterDynamicsMetalArgs::v_concentration_derivative(uint64_t vn) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::v_concentration_derivative(uint64_t vn) __METALDECL__
 {
     return
         // (1)
@@ -85,7 +88,7 @@ gp_float ClusterDynamicsMetalArgs::v_concentration_derivative(uint64_t vn) __MET
  *    \ann{6}{\frac{1}{\tau^e_i}}
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::i1_concentration_derivative() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::i1_concentration_derivative() __METALDECL__
 {
     return 
         // (1)
@@ -121,7 +124,7 @@ gp_float ClusterDynamicsMetalArgs::i1_concentration_derivative() __METALDECL__
  *    \ann{6}{\frac{1}{\tau^e_v}}
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::v1_concentration_derivative() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::v1_concentration_derivative() __METALDECL__
 {
     return 
         // (1)
@@ -163,7 +166,7 @@ gp_float ClusterDynamicsMetalArgs::v1_concentration_derivative() __METALDECL__
  * interstitial cluster grows by absorbing a size 1 interstitial, it has a \f$P_{unf}(n)\f$ probability of
  * becoming part of the dislocation network instead.
 */
-gp_float ClusterDynamicsMetalArgs::dislocation_density_derivative() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::dislocation_density_derivative() __METALDECL__
 {
    gp_float gain = 0.0;
    for (uint64_t n = 1; n < concentration_boundary; ++n)
@@ -177,7 +180,7 @@ gp_float ClusterDynamicsMetalArgs::dislocation_density_derivative() __METALDECL_
     // (1)
       gain
     // (2)
-      - reactor->dislocation_density_evolution * metal::precise::pow(material->burgers_vector, 2.) * metal::precise::pow(dislocation_density, 3. / 2.);
+      - reactor->dislocation_density_evolution * mtl_math::pow(material->burgers_vector, 2.) * mtl_math::pow(dislocation_density, 3. / 2.);
 }
 
 
@@ -196,7 +199,7 @@ gp_float ClusterDynamicsMetalArgs::dislocation_density_derivative() __METALDECL_
  * G_i(4)=\eta G_{dpa}f_{i4}
  * \f$
 */
-gp_float ClusterDynamicsMetalArgs::i_defect_production(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::i_defect_production(uint64_t n) __METALDECL__
 {
     switch (n)
     {
@@ -236,7 +239,7 @@ gp_float ClusterDynamicsMetalArgs::i_defect_production(uint64_t n) __METALDECL__
  * These equations are only implicitly provided in the Pokor paper. The equations for interstitial
  * generation are given followed by the line 'A similar expression is written for \f$G_v(n)\f$.'
 */
-gp_float ClusterDynamicsMetalArgs::v_defect_production(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::v_defect_production(uint64_t n) __METALDECL__
 {
     switch (n)
     {
@@ -270,7 +273,7 @@ gp_float ClusterDynamicsMetalArgs::v_defect_production(uint64_t n) __METALDECL__
  *  \ann{3}{\alpha_{i,i}(n+1)}
  * \f$
 */
-gp_float ClusterDynamicsMetalArgs::iemission_vabsorption_np1(uint64_t np1) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::iemission_vabsorption_np1(uint64_t np1) __METALDECL__
 {
     return
         // (1)
@@ -296,7 +299,7 @@ gp_float ClusterDynamicsMetalArgs::iemission_vabsorption_np1(uint64_t np1) __MET
  *  \ann{3}{\alpha_{v,v}(n+1)}
  * \f$
 */
-gp_float ClusterDynamicsMetalArgs::vemission_iabsorption_np1(uint64_t np1) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::vemission_iabsorption_np1(uint64_t np1) __METALDECL__
 {
     return 
         // (1)
@@ -325,7 +328,7 @@ gp_float ClusterDynamicsMetalArgs::vemission_iabsorption_np1(uint64_t np1) __MET
  *    \ann{4}{\alpha_{i,i}(n)}
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::iemission_vabsorption_n(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::iemission_vabsorption_n(uint64_t n) __METALDECL__
 {
     return
         // (1)
@@ -355,7 +358,7 @@ gp_float ClusterDynamicsMetalArgs::iemission_vabsorption_n(uint64_t n) __METALDE
  *    \ann{3}{\alpha_{v,v}(n)}
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::vemission_iabsorption_n(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::vemission_iabsorption_n(uint64_t n) __METALDECL__
 {
     return 
         // (1)
@@ -392,7 +395,7 @@ gp_float ClusterDynamicsMetalArgs::vemission_iabsorption_n(uint64_t n) __METALDE
  *  Dr. Chen suggested using \f$P_{unf}(n)\f$, in a similar way to the Sakaguchi paper
  *  to determine what percentage of promoted clusters become part of the dislocation network.
 */
-gp_float ClusterDynamicsMetalArgs::iemission_vabsorption_nm1(uint64_t nm1) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::iemission_vabsorption_nm1(uint64_t nm1) __METALDECL__
 {
     return
         // (1)
@@ -419,7 +422,7 @@ gp_float ClusterDynamicsMetalArgs::iemission_vabsorption_nm1(uint64_t nm1) __MET
  * \f$
  * 
 */
-gp_float ClusterDynamicsMetalArgs::vemission_iabsorption_nm1(uint64_t nm1) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::vemission_iabsorption_nm1(uint64_t nm1) __METALDECL__
 {
     return
         // (1)
@@ -458,7 +461,7 @@ gp_float ClusterDynamicsMetalArgs::vemission_iabsorption_nm1(uint64_t nm1) __MET
  *  (3) Represents the rate that interstitials are produced by interstitial clusters of size 2 absorbing a
  *  vacancy.
 */
-gp_float ClusterDynamicsMetalArgs::i_emission_rate() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::i_emission_rate() __METALDECL__
 {
    gp_float time = 0.;
    for (uint64_t in = 3; in < concentration_boundary - 1; ++in)
@@ -504,7 +507,7 @@ gp_float ClusterDynamicsMetalArgs::i_emission_rate() __METALDECL__
  *  (3) Represents the rate that vacancies are produced by vacancy clusters of size 2 absorbing a
  *  vacancy.
 */
-gp_float ClusterDynamicsMetalArgs::v_emission_rate() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::v_emission_rate() __METALDECL__
 {
    gp_float time = 0.;
    for (uint64_t vn = 3; vn < concentration_boundary - 1; ++vn)
@@ -538,7 +541,7 @@ gp_float ClusterDynamicsMetalArgs::v_emission_rate() __METALDECL__
  *    \ann{2}{\sum_{n>1} \beta_{v,i}(n) C_v(n)}
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::i_absorption_rate() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::i_absorption_rate() __METALDECL__
 {
    gp_float time = ii_absorption(1) * interstitials[1];
    for (uint64_t in = 2; in < concentration_boundary - 1; ++in)
@@ -568,7 +571,7 @@ gp_float ClusterDynamicsMetalArgs::i_absorption_rate() __METALDECL__
  *    \ann{2}{\sum_{n>1} \beta_{i,v}(n) C_i(n)}
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::v_absorption_rate() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::v_absorption_rate() __METALDECL__
 {
    gp_float time = vv_absorption(1) * vacancies[1];
    for (uint64_t vn = 2; vn < concentration_boundary - 1; ++vn)
@@ -597,7 +600,7 @@ gp_float ClusterDynamicsMetalArgs::v_absorption_rate() __METALDECL__
  *  \ann{3}{r_{iv}}
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::annihilation_rate() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::annihilation_rate() __METALDECL__
 {
     return 
         // (1)
@@ -624,7 +627,7 @@ gp_float ClusterDynamicsMetalArgs::annihilation_rate() __METALDECL__
  * \ann{3}{Z_i}
  * \f$
 */
-gp_float ClusterDynamicsMetalArgs::i_dislocation_annihilation_rate() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::i_dislocation_annihilation_rate() __METALDECL__
 {
     return
         // (1)
@@ -656,7 +659,7 @@ gp_float ClusterDynamicsMetalArgs::i_dislocation_annihilation_rate() __METALDECL
  * 
  * (3) \f$Z_v\f$ 🡆 `material->v_dislocation_bias`
 */
-gp_float ClusterDynamicsMetalArgs::v_dislocation_annihilation_rate() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::v_dislocation_annihilation_rate() __METALDECL__
 {
     return
         // (1)
@@ -688,12 +691,12 @@ gp_float ClusterDynamicsMetalArgs::v_dislocation_annihilation_rate() __METALDECL
  *  \f$
  * 
 */
-gp_float ClusterDynamicsMetalArgs::i_grain_boundary_annihilation_rate() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::i_grain_boundary_annihilation_rate() __METALDECL__
 {
     return
         // (1)
         6. * i_diffusion_val *
-        metal::precise::sqrt
+        mtl_math::sqrt
         (
             // (2)
             dislocation_density * 
@@ -726,12 +729,12 @@ gp_float ClusterDynamicsMetalArgs::i_grain_boundary_annihilation_rate() __METALD
  *    {\ann{5}{d}}
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::v_grain_boundary_annihilation_rate() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::v_grain_boundary_annihilation_rate() __METALDECL__
 {
     return
         // (1)
         6. * v_diffusion_val *
-        metal::precise::sqrt
+        mtl_math::sqrt
         (
             // (2)
             dislocation_density *
@@ -762,7 +765,7 @@ gp_float ClusterDynamicsMetalArgs::v_grain_boundary_annihilation_rate() __METALD
  *    \ann{4}{exp(-\frac{E_bi(n)}{kT})}
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::ii_emission(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::ii_emission(uint64_t n) __METALDECL__
 {
     return 
         // (1)
@@ -772,7 +775,7 @@ gp_float ClusterDynamicsMetalArgs::ii_emission(uint64_t n) __METALDECL__
         // (3)
         i_diffusion_val / material->atomic_volume *
         // (4)
-        metal::precise::exp
+        mtl_math::exp
         (
             -i_binding_energy(n) /
             (BOLTZMANN_EV_KELVIN * reactor->temperature)
@@ -796,7 +799,7 @@ gp_float ClusterDynamicsMetalArgs::ii_emission(uint64_t n) __METALDECL__
  *     \ann{3}{D_i}
  * \f$
 */
-gp_float ClusterDynamicsMetalArgs::ii_absorption(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::ii_absorption(uint64_t n) __METALDECL__
 {
     return 
         // (1)
@@ -823,7 +826,7 @@ gp_float ClusterDynamicsMetalArgs::ii_absorption(uint64_t n) __METALDECL__
  *     \ann{3}{D_v}
  * \f$
 */
-gp_float ClusterDynamicsMetalArgs::iv_absorption(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::iv_absorption(uint64_t n) __METALDECL__
 {
     return 
         // (1)
@@ -851,7 +854,7 @@ gp_float ClusterDynamicsMetalArgs::iv_absorption(uint64_t n) __METALDECL__
  *    \ann{4}{exp(-\frac{E_bv(n)}{kT})}
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::vv_emission(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::vv_emission(uint64_t n) __METALDECL__
 {
     return 
         // (1)
@@ -861,7 +864,7 @@ gp_float ClusterDynamicsMetalArgs::vv_emission(uint64_t n) __METALDECL__
         // (3)
         v_diffusion_val *
         // (4)
-        metal::precise::exp
+        mtl_math::exp
         (
             -v_binding_energy(n) /
             (BOLTZMANN_EV_KELVIN * reactor->temperature)
@@ -884,7 +887,7 @@ gp_float ClusterDynamicsMetalArgs::vv_emission(uint64_t n) __METALDECL__
  *     \ann{3}{D_v}
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::vv_absorption(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::vv_absorption(uint64_t n) __METALDECL__
 {
     return 
         // (1)
@@ -911,7 +914,7 @@ gp_float ClusterDynamicsMetalArgs::vv_absorption(uint64_t n) __METALDECL__
  *     \ann{3}{D_i}
  * \f$
 */
-gp_float ClusterDynamicsMetalArgs::vi_absorption(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::vi_absorption(uint64_t n) __METALDECL__
 {
     return 
         2. * M_PI * cluster_radius(n) *
@@ -937,14 +940,14 @@ gp_float ClusterDynamicsMetalArgs::vi_absorption(uint64_t n) __METALDECL__
  *    \ann{5}{n^{-a_{li}/2}\vphantom{\sqrt{\frac{b}{b}}}}
  * \f$ 
 */
-gp_float ClusterDynamicsMetalArgs::i_bias_factor(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::i_bias_factor(uint64_t n) __METALDECL__
 {
     return 
         // (1)
         material->i_dislocation_bias +
         (
             // (2)
-            metal::precise::sqrt
+            mtl_math::sqrt
             (
                     material->burgers_vector /
                     (8. * M_PI * material->lattice_param)
@@ -956,7 +959,7 @@ gp_float ClusterDynamicsMetalArgs::i_bias_factor(uint64_t n) __METALDECL__
         ) *
         // (5)
         1. /
-        metal::precise::pow
+        mtl_math::pow
         (
             (gp_float)n,
             material->i_dislocation_bias_param / 2.
@@ -981,12 +984,12 @@ gp_float ClusterDynamicsMetalArgs::i_bias_factor(uint64_t n) __METALDECL__
  *    \ann{5}{n^{-a_{lv}/2}\vphantom{\sqrt{\frac{b}{b}}}}
  * \f$ 
 */
-gp_float ClusterDynamicsMetalArgs::v_bias_factor(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::v_bias_factor(uint64_t n) __METALDECL__
 {
     return 
         material->v_dislocation_bias +
         (
-            metal::precise::sqrt
+            mtl_math::sqrt
             (
                     material->burgers_vector /
                     (8. * M_PI * material->lattice_param)
@@ -995,7 +998,7 @@ gp_float ClusterDynamicsMetalArgs::v_bias_factor(uint64_t n) __METALDECL__
             material->v_dislocation_bias
         ) *
         1. /
-        metal::precise::pow
+        mtl_math::pow
         (
             (gp_float)n,
             material->v_dislocation_bias_param / 2.
@@ -1018,15 +1021,15 @@ gp_float ClusterDynamicsMetalArgs::v_bias_factor(uint64_t n) __METALDECL__
  *    \ann{3}{n^{0.8}-(n-1)^{0.8} \vphantom{\frac{E_f}{2^8.}}}
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::i_binding_energy(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::i_binding_energy(uint64_t n) __METALDECL__
 {
     return
         // (1)
         material->i_formation
         // (2)
-        + (material->i_binding - material->i_formation) / (metal::precise::pow(2., .8) - 1.) *
+        + (material->i_binding - material->i_formation) / (mtl_math::pow(2., .8) - 1.) *
         // (3)
-        (metal::precise::pow((gp_float)n, .8) - metal::precise::pow((gp_float)n - 1., .8));
+        (mtl_math::pow((gp_float)n, .8) - mtl_math::pow((gp_float)n - 1., .8));
 }
 
 
@@ -1045,15 +1048,15 @@ gp_float ClusterDynamicsMetalArgs::i_binding_energy(uint64_t n) __METALDECL__
  *    \ann{3}{n^{0.8}-(n-1)^{0.8} \vphantom{\frac{E_f}{2^8.}}}
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::v_binding_energy(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::v_binding_energy(uint64_t n) __METALDECL__
 {
     return
         // (1)
         material->v_formation
         // (2)
-        + (material->v_binding - material->v_formation) / (metal::precise::pow(2., .8) - 1) *
+        + (material->v_binding - material->v_formation) / (mtl_math::pow(2., .8) - 1) *
         // (3)
-        (metal::precise::pow((gp_float)n, .8) - metal::precise::pow((gp_float)n - 1., .8));
+        (mtl_math::pow((gp_float)n, .8) - mtl_math::pow((gp_float)n - 1., .8));
 }
 
 
@@ -1071,10 +1074,10 @@ gp_float ClusterDynamicsMetalArgs::v_binding_energy(uint64_t n) __METALDECL__
  *    \ann{2}{exp(\frac{-E_{mi}}{(kT)}) }
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::i_diffusion() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::i_diffusion() __METALDECL__
 {
     //     (1)                      (2)
-    return material->i_diffusion_0 * metal::precise::exp(-material->i_migration / (BOLTZMANN_EV_KELVIN * reactor->temperature));
+    return material->i_diffusion_0 * mtl_math::exp(-material->i_migration / (BOLTZMANN_EV_KELVIN * reactor->temperature));
 }
 
 
@@ -1092,10 +1095,10 @@ gp_float ClusterDynamicsMetalArgs::i_diffusion() __METALDECL__
  *    \ann{2}{exp(\frac{-E_{mv}}{(kT)}) }
  *  \f$
 */  
-gp_float ClusterDynamicsMetalArgs::v_diffusion() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::v_diffusion() __METALDECL__
 {
    //     (1)                      (2)
-   return material->v_diffusion_0 * metal::precise::exp(-material->v_migration / (BOLTZMANN_EV_KELVIN * reactor->temperature));
+   return material->v_diffusion_0 * mtl_math::exp(-material->v_migration / (BOLTZMANN_EV_KELVIN * reactor->temperature));
 }
 
 
@@ -1115,7 +1118,7 @@ gp_float ClusterDynamicsMetalArgs::v_diffusion() __METALDECL__
  *    \dwn{)^{-1/2}}
  * \f$
 */
-gp_float ClusterDynamicsMetalArgs::mean_dislocation_cell_radius() __METALDECL__
+gp_float ClusterDynamicsMetalKernel::mean_dislocation_cell_radius() __METALDECL__
 {
    gp_float r_0_factor = 0.;
    for (uint64_t i = 1; i < concentration_boundary; ++i)
@@ -1124,7 +1127,7 @@ gp_float ClusterDynamicsMetalArgs::mean_dislocation_cell_radius() __METALDECL__
    }
 
                      // (1)                                           (2)          (3)                       
-   return 1 / metal::precise::sqrt((2. * M_PI * M_PI / material->atomic_volume) * r_0_factor + M_PI * dislocation_density);
+   return 1 / mtl_math::sqrt((2. * M_PI * M_PI / material->atomic_volume) * r_0_factor + M_PI * dislocation_density);
 }
 
 
@@ -1149,14 +1152,14 @@ gp_float ClusterDynamicsMetalArgs::mean_dislocation_cell_radius() __METALDECL__
  *       {\ann{3}{(\pi r_0 / 2)^2} \dwn{-} \ann{4}{r_i(n)^2}}
  *  \f$
 */
-gp_float ClusterDynamicsMetalArgs::dislocation_promotion_probability(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::dislocation_promotion_probability(uint64_t n) __METALDECL__
 {
    gp_float dr = cluster_radius(n + 1) - cluster_radius(n);
 
    //      (1)                           (2)
-   return (2. * cluster_radius(n) * dr + metal::precise::pow(dr, 2.)) 
+   return (2. * cluster_radius(n) * dr + mtl_math::pow(dr, 2.)) 
    //    (3)                                                    (4)
-      / (metal::precise::pow(M_PI * mean_dislocation_radius_val / 2., 2) - metal::precise::pow(cluster_radius(n), 2.)); 
+      / (mtl_math::pow(M_PI * mean_dislocation_radius_val / 2., 2) - mtl_math::pow(cluster_radius(n), 2.)); 
 }
 
 
@@ -1174,9 +1177,9 @@ gp_float ClusterDynamicsMetalArgs::dislocation_promotion_probability(uint64_t n)
  * r_i = (\frac{\sqrt{3}a^2n}{4 \pi})^{-1/2}
  * \f$
 */
-gp_float ClusterDynamicsMetalArgs::cluster_radius(uint64_t n) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::cluster_radius(uint64_t n) __METALDECL__
 {
-    return metal::precise::sqrt(metal::precise::sqrt(3.) * metal::precise::pow(material->lattice_param, 2.) * (gp_float)n / (4. * M_PI));
+    return mtl_math::sqrt(mtl_math::sqrt(3.) * mtl_math::pow(material->lattice_param, 2.) * (gp_float)n / (4. * M_PI));
 }
 // --------------------------------------------------------------------------------------------
 
@@ -1190,7 +1193,7 @@ gp_float ClusterDynamicsMetalArgs::cluster_radius(uint64_t n) __METALDECL__
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-void ClusterDynamicsMetalArgs::step_init() __METALDECL__
+void ClusterDynamicsMetalKernel::step_init() __METALDECL__
 {
   i_diffusion_val = i_diffusion();
   v_diffusion_val = v_diffusion();
@@ -1201,14 +1204,14 @@ void ClusterDynamicsMetalArgs::step_init() __METALDECL__
   mean_dislocation_radius_val = mean_dislocation_cell_radius();
 }
 
-bool ClusterDynamicsMetalArgs::update_clusters_1(gp_float delta_time) __METALDECL__
+bool ClusterDynamicsMetalKernel::update_clusters_1(gp_float delta_time) __METALDECL__
 {
     interstitials[1] += i1_concentration_derivative() * delta_time;
     vacancies[1] += v1_concentration_derivative() * delta_time;
     return true;
 }
 
-gp_float ClusterDynamicsMetalArgs::ii_sum_absorption(uint64_t nmax) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::ii_sum_absorption(uint64_t nmax) __METALDECL__
 {
    gp_float emission = 0.;
    for (uint64_t vn = 1; vn < nmax; ++vn)
@@ -1219,7 +1222,7 @@ gp_float ClusterDynamicsMetalArgs::ii_sum_absorption(uint64_t nmax) __METALDECL_
    return emission;
 }
 
-gp_float ClusterDynamicsMetalArgs::iv_sum_absorption(uint64_t nmax) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::iv_sum_absorption(uint64_t nmax) __METALDECL__
 {
    gp_float emission = 0.;
    for (uint64_t n = 1; n < nmax; ++n)
@@ -1230,7 +1233,7 @@ gp_float ClusterDynamicsMetalArgs::iv_sum_absorption(uint64_t nmax) __METALDECL_
    return emission;
 }
 
-gp_float ClusterDynamicsMetalArgs::vv_sum_absorption(uint64_t nmax) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::vv_sum_absorption(uint64_t nmax) __METALDECL__
 {
    gp_float emission = 0.;
    for (uint64_t n = 1; n < nmax; ++n)
@@ -1241,7 +1244,7 @@ gp_float ClusterDynamicsMetalArgs::vv_sum_absorption(uint64_t nmax) __METALDECL_
    return emission;
 }
 
-gp_float ClusterDynamicsMetalArgs::vi_sum_absorption(uint64_t nmax) __METALDECL__
+gp_float ClusterDynamicsMetalKernel::vi_sum_absorption(uint64_t nmax) __METALDECL__
 {
    gp_float emission = 0.;
    for (uint64_t n = 1; n < nmax; ++n)
