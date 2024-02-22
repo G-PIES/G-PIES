@@ -1,16 +1,21 @@
 name: Build and run tests (macOS)
 
-on: pull_request
+on:
+  pull_request:
+  push:
+    branches: [ main ]
 
 jobs:
   build:
+    strategy:
+      matrix:
+        configuration: [debug, release]
+
     runs-on: macos-14
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build Cluster Dynamics Tests
-        run: make cdtests
-      - name: Build Client Database Tests
-        run: make dbtests
+      - name: Build CPU targets
+        run: make all_cpu CONFIGURATION=${{ matrix.configuration }}

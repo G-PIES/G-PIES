@@ -3,14 +3,14 @@
 
 Material::Material() : sqlite_id(-1) {
     datetime::utc_now(creation_datetime);
-    _impl = std::make_unique<MaterialImpl>();
+    _impl = std::make_shared<MaterialImpl>();
 }
 
 Material::Material(const Material &other)
     : sqlite_id(other.sqlite_id),
       creation_datetime(other.creation_datetime),
       species(other.species) {
-    _impl = std::make_unique<MaterialImpl>(*other._impl.get());
+    _impl = other._impl;
 }
 
 Material::~Material() {}
@@ -26,8 +26,7 @@ void Material::copy(const Material &other) {
     creation_datetime = other.creation_datetime;
     species = other.species;
 
-    _impl.release();
-    _impl = std::make_unique<MaterialImpl>(*other._impl.get());
+    _impl = other._impl;
 }
 
 /// @brief Returns the single interstitial migration energy in eV.

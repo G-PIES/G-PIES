@@ -1,9 +1,16 @@
 name: Build and run tests (Linux)
 
-on: pull_request
+on:
+  pull_request:
+  push:
+    branches: [ main ]
 
 jobs:
   build:
+    strategy:
+      matrix:
+        configuration: [debug, release]
+
     runs-on: ubuntu-latest
 
     steps:
@@ -11,19 +18,16 @@ jobs:
         id: cuda-toolkit
         with:
           cuda: '12.3.2'
+          log-file-suffix: ${{ matrix.configuration }}-log.txt
 
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build all
-        run: make all
+      - name: Build CPU targets
+        run: make all_cpu all dbtests CONFIGURATION=${{ matrix.configuration }}
 
-      - name: Build Cluster Dynamics Tests
-        run: make cdtests
       - name: Run Cluster Dynamics Tests
-        run: ./bin/cd_tests.out
-      - name: Build Client Database Tests
-        run: make dbtests
+        run: ./build/${{ matrix.configuration }}/cd_tests
       - name: Run Client Database Tests
         run: ./bin/db_tests.out
 

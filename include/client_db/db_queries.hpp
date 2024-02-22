@@ -14,7 +14,7 @@ std::string init =
     "CREATE TABLE IF NOT EXISTS reactors"
     "("
     "id_reactor INTEGER PRIMARY KEY AUTOINCREMENT,"
-    "creation_datetime TEXT DEFAULT current_timestamp,"
+    "creation_datetime TEXT,"
     "species text NOT NULL DEFAULT '',"
     "flux float DEFAULT 0.0,"
     "temperature float DEFAULT 0.0,"
@@ -31,7 +31,7 @@ std::string init =
     "CREATE TABLE IF NOT EXISTS materials"
     "("
     "id_material INTEGER PRIMARY KEY,"
-    "creation_datetime TEXT DEFAULT current_timestamp,"
+    "creation_datetime TEXT,"
     "species text NOT NULL DEFAULT '',"
     "i_migration float DEFAULT 0.0,"
     "v_migration float DEFAULT 0.0,"
@@ -58,7 +58,7 @@ std::string init =
     "CREATE TABLE IF NOT EXISTS simulations"
     "("
     "id_simulation INTEGER PRIMARY KEY,"
-    "creation_datetime TEXT DEFAULT current_timestamp,"
+    "creation_datetime TEXT,"
     "id_reactor INTEGER,"
     "simulation_time FLOAT DEFAULT 0.0,"
     "time_delta FLOAT DEFAULT 0.0,"
@@ -85,8 +85,8 @@ std::string last_insert_rowid = "SELECT last_insert_rowid();";
 std::string create_reactor =
     "INSERT INTO reactors ("
     "species, flux, temperature, recombination, i_bi, i_tri, i_quad, v_bi, "
-    "v_tri, v_quad, dislocation_density_evolution"
-    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    "v_tri, v_quad, dislocation_density_evolution, creation_datetime"
+    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 std::string read_reactors = "SELECT * FROM reactors;";
 
@@ -117,8 +117,10 @@ std::string create_material =
     "i_formation, v_formation, i_binding, v_binding, recombination_radius, "
     "i_loop_bias, i_dislocation_bias, i_dislocation_bias_param, v_loop_bias, "
     "v_dislocation_bias, v_dislocation_bias_param, dislocation_density_0, "
-    "grain_size, lattice_param, burgers_vector, atomic_volume"
-    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    "grain_size, lattice_param, burgers_vector, atomic_volume, "
+    "creation_datetime"
+    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+    "?);";
 
 std::string read_materials = "SELECT * FROM materials;";
 
@@ -201,4 +203,4 @@ std::string delete_simulation_material =
     "= ?;";
 }  // namespace db_queries
 
-#endif // DB_QUERIES_HPP
+#endif  // DB_QUERIES_HPP
