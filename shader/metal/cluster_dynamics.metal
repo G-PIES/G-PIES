@@ -1,7 +1,8 @@
 #include <metal_stdlib>
 
 #include "constants.hpp"
-#include "cluster_dynamics_metal_args.hpp"
+//#include "cluster_dynamics_metal_args.hpp"
+#include "cluster_dynamics_metal_args.cpp"
 
 gp_float i_concentration_derivative(device ClusterDynamicsMetalArgs& args, uint);
 gp_float v_concentration_derivative(device ClusterDynamicsMetalArgs& args, uint);
@@ -59,7 +60,6 @@ kernel void update_clusters(
     uint index [[thread_position_in_grid]]
     )
 {
-
     if (index > 1)
     {
         args.reactor = &reactor;
@@ -67,8 +67,10 @@ kernel void update_clusters(
         args.interstitials = interstitials_in;
         args.vacancies = vacancies_in;
 
-        interstitials_out[index] += i_concentration_derivative(args, index) * args.delta_time;
-        vacancies_out[index] += v_concentration_derivative(args, index) * args.delta_time;
+        //interstitials_out[index] += i_concentration_derivative(args, index) * args.delta_time;
+        //vacancies_out[index] += v_concentration_derivative(args, index) * args.delta_time;
+        interstitials_out[index] += args.i_concentration_derivative(index) * args.delta_time;
+        vacancies_out[index] += args.v_concentration_derivative(index) * args.delta_time;
     }
 }
 
