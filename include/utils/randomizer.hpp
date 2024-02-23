@@ -1,6 +1,8 @@
 #ifndef RANDOMIZER_HPP
 #define RANDOMIZER_HPP
 
+#include <ctime>
+
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
 
