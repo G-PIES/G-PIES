@@ -3,13 +3,14 @@
 #include <vector>
 #include <cstdint>
 
-#include <boost/numeric/odeint.hpp>
-
 #include "cluster_dynamics_state.hpp"
 #include "nuclear_reactor.hpp"
 #include "material.hpp"
 
-#define odeint boost::numeric::odeint 
+#include "cvodes/cvodes.h"
+#include "nvector/nvector_serial.h"
+#include <sunlinsol/sunlinsol_dense.h>
+#include <sunmatrix/sunmatrix_dense.h> 
 
 #ifdef USE_CUDA
   #include <thrust/host_vector.h>
@@ -42,8 +43,6 @@ public:
   vector<double> interstitials_temp;
   vector<double> vacancies_temp;
 
-  odeint::runge_kutta4<vector<double>> stepper;
-  vector<double> state;
   double* interstitials;
   double* vacancies;
   double* dislocation_density;
@@ -57,6 +56,14 @@ public:
   double vi_sum_absorption_val;
   double i_diffusion_val;
   double v_diffusion_val;
+
+  SUNContext sunctx;
+  realtype t, tout;
+  N_Vector y;
+  N_Vector abstol;
+  SUNMatrix A;
+  SUNLinearSolver LS;
+  void *cvode_mem;
 
   Material material;
   NuclearReactor reactor;
@@ -121,7 +128,7 @@ public:
   void step_init();
   bool validate(size_t) const;
 
-  void system(const vector<double>& initial_state, vector<double>& state_derivatives, const double t);
+  int system(double, N_Vector, N_Vector, void*);
 
   // Interface functions
   ClusterDynamicsImpl(size_t concentration_boundary, NuclearReactor reactor, Material material);

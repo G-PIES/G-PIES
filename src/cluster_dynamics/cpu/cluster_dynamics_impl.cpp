@@ -3,6 +3,33 @@
 
 #include "cluster_dynamics_impl.hpp"
 
+static int check_retval(void *returnvalue, const char *funcname, int opt)
+{
+  int *retval;
+
+  /* Check if SUNDIALS function returned NULL pointer - no memory allocated */
+  if (opt == 0 && returnvalue == NULL) {
+    fprintf(stderr, "\nSUNDIALS_ERROR: %s() failed - returned NULL pointer\n\n",
+            funcname);
+    return(1); }
+
+  /* Check if retval < 0 */
+  else if (opt == 1) {
+    retval = (int *) returnvalue;
+    if (*retval < 0) {
+      fprintf(stderr, "\nSUNDIALS_ERROR: %s() failed with retval = %d\n\n",
+              funcname, *retval);
+      return(1); }}
+
+  /* Check if function returned NULL pointer - no memory allocated */
+  else if (opt == 2 && returnvalue == NULL) {
+    fprintf(stderr, "\nMEMORY_ERROR: %s() failed - returned NULL pointer\n\n",
+            funcname);
+    return(1); }
+
+  return(0);
+}
+
 
 
 /** @brief Returns the rate of production of interstital defects from the irradiation cascade for 
@@ -1240,20 +1267,23 @@ bool ClusterDynamicsImpl::validate(size_t n) const
         !(interstitials_temp[n] < 0) &&
         !(vacancies_temp[n] < 0);
 }
-
-void ClusterDynamicsImpl::system(const vector<double>& initial_state, vector<double>& state_derivatives, const double t)
+// make interstitial and vacancies and dislocation densities point into state vector so that the derivative calculations work
+int ClusterDynamicsImpl::system(double t, N_Vector state, N_Vector state_derivatives, void* user_data)
 {
-  state_derivatives[1] = i1_concentration_derivative();
+  double* state_derivative_contents = N_VGetArrayPointer(state_derivatives);
+  state_derivative_contents[1] = i1_concentration_derivative();
   for (int i = 2; i < concentration_boundary + 1; ++i)
   {
-    state_derivatives[i] = i_concentration_derivative(i);
+    state_derivative_contents[i] = i_concentration_derivative(i);
   }
-  state_derivatives[concentration_boundary + 2 + 1] = v1_concentration_derivative();
+  state_derivative_contents[concentration_boundary + 2 + 1] = v1_concentration_derivative();
   for (int i = 2; i < concentration_boundary + 1; ++i)
   {
-    state_derivatives[concentration_boundary + 2 + i] = v_concentration_derivative(i);
+    state_derivative_contents[concentration_boundary + 2 + i] = v_concentration_derivative(i);
   }
-  state_derivatives[2 * (concentration_boundary + 1) + 2] = dislocation_density_derivative();
+  state_derivative_contents[2 * (concentration_boundary + 1) + 2] = dislocation_density_derivative();
+  
+  return 0;
 }
 
 
@@ -1278,24 +1308,55 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary, NuclearR
   vacancies = state.data() + concentration_boundary + 2;
   dislocation_density = &(*(state.end() - 1));
   *dislocation_density = material.dislocation_density_0;
+
+  int retval;
+  int NEQ = 2 * (concentration_boundary + 1) + 4;
+  double abstol = 1;
+
+   /* Create the SUNDIALS context */
+  retval = SUNContext_Create(NULL, &sunctx);
+  if (check_retval(&retval, "SUNContext_Create", 1)) return(1);
+
+  /* Initial conditions */
+  y = N_VNew_Serial(2 * (concentration_boundary + 1) + 4, sunctx);
+  if (check_retval((void *)y, "N_VNew_Serial", 0)) return(1);
+
+  /* Initialize Values */
+  
+  dislocation_density = N_VGetArrayPointer(y) + 2 * (concentration_boundary + 1) + 3;
+
+   /* Call CVodeCreate to create the solver memory and specify the
+   * Backward Differentiation Formula */
+  cvode_mem = CVodeCreate(CV_BDF, sunctx);
+  if (check_retval((void *)cvode_mem, "CVodeCreate", 0)) return(1);
+
+  /* Call CVodeInit to initialize the integrator memory and specify the
+   * user's right hand side function in y'=f(t,y), the initial time T0, and
+   * the initial dependent variable vector y. */
+  retval = CVodeInit(cvode_mem, system, 0, y);
+  if (check_retval(&retval, "CVodeInit", 1)) return(1);
+
+   /* Call CVodeSVtolerances to specify the scalar relative tolerance
+   * and vector absolute tolerances */
+  retval = CVodeSStolerances(cvode_mem, RTOL, abstol);
+  if (check_retval(&retval, "CVodeSVtolerances", 1)) return(1);
+
+    /* Create dense SUNLinearSolver object for use by CVode */
+  LS = SUNLinSol_Dense(y, A, sunctx);
+  if (check_retval((void *)LS, "SUNLinSol_Dense", 0)) return(1);
+
+  /* Attach the matrix and linear solver */
+  retval = CVodeSetLinearSolver(cvode_mem, LS, A);
+  if (check_retval(&retval, "CVodeSetLinearSolver", 1)) return(1);
+
+  /* Set the user-supplied Jacobian routine Jac */
+  retval = CVodeSetJacFn(cvode_mem, Jac);
+  if (check_retval(&retval, "CVodeSetJacFn", 1)) return(1);
 }
 
 ClusterDynamicsState ClusterDynamicsImpl::run(double delta_time, double total_time)
 {
     bool state_is_valid = true;
-
-    odeint::integrate_const(stepper, 
-      [&](const vector<double>& initial_state, vector<double>& state_derivatives, const double t)
-        {
-          this->step_init();
-          return this->system(initial_state, state_derivatives, t);
-        }, 
-      state, time, time + total_time, delta_time,
-      [&](const vector<double>& state, double t)
-        {
-          this->time = t;
-        }
-      );
 
     return ClusterDynamicsState 
     {
