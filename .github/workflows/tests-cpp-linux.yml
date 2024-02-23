@@ -19,13 +19,19 @@ jobs:
         id: cuda-toolkit
         with:
           cuda: '12.3.2'
+          method: network
+          sub-packages: '[ "nvcc" ]'
           log-file-suffix: ${{ matrix.configuration }}-log.txt
 
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Build CPU targets
-        run: make all_cpu all dbtests CONFIGURATION=${{ matrix.configuration }}
+        run: make all_cpu CONFIGURATION=${{ matrix.configuration }}
+      - name: Build CUDA targets
+        run: make all_cuda CONFIGURATION=${{ matrix.configuration }}
+      - name: Build DB targets
+        run: make dbtests dbex
 
       - name: Run Cluster Dynamics Tests
         run: ./build/${{ matrix.configuration }}/cd_tests
