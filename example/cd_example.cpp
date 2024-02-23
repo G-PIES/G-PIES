@@ -110,7 +110,7 @@ enum var_code {
     e_dislocationDensityEvolution
 };
 
-var_code hashit (std::string const& varString){
+var_code hashit(std::string const& varString) {
     if (varString == "i_migration") return e_iMigration;
     if (varString == "v_migration") return e_vMigration;
     if (varString == "i_formation") return e_iFormation;
@@ -120,14 +120,16 @@ var_code hashit (std::string const& varString){
     if (varString == "dislocation_density_0") return e_dislocationDensity0;
     if (varString == "flux") return e_flux;
     if (varString == "temperature") return e_temperature;
-    if (varString == "dislocation_density_evolution") return e_dislocationDensityEvolution;
+    if (varString == "dislocation_density_evolution")
+        return e_dislocationDensityEvolution;
     return e_noMatch;
 }
 
-void update_for_sensitivity_analysis(ClusterDynamics &cd, NuclearReactor reactor, Material material, gp_float delta)
-{
-    switch(hashit(sensitivity_analysis_variable))
-    {
+void update_for_sensitivity_analysis(ClusterDynamics &cd,
+                                     NuclearReactor reactor,
+                                     Material material,
+                                     gp_float delta) {
+    switch (hashit(sensitivity_analysis_variable)) {
         case e_iMigration:
             material.set_i_migration(material.get_i_migration() + delta);
             cd.set_material(material);
@@ -153,7 +155,8 @@ void update_for_sensitivity_analysis(ClusterDynamics &cd, NuclearReactor reactor
             cd.set_material(material);
             break;
         case e_dislocationDensity0:
-            material.set_dislocation_density_0(material.get_dislocation_density_0() + delta);
+            material.set_dislocation_density_0(
+                material.get_dislocation_density_0() + delta);
             cd.set_material(material);
             break;
         case e_flux:
@@ -165,7 +168,8 @@ void update_for_sensitivity_analysis(ClusterDynamics &cd, NuclearReactor reactor
             cd.set_reactor(reactor);
             break;
         case e_dislocationDensityEvolution:
-            reactor.set_dislocation_density_evolution(reactor.get_dislocation_density_evolution() + delta);
+            reactor.set_dislocation_density_evolution(
+                reactor.get_dislocation_density_evolution() + delta);
             cd.set_reactor(reactor);
             break;
         default:
@@ -173,8 +177,7 @@ void update_for_sensitivity_analysis(ClusterDynamics &cd, NuclearReactor reactor
     }
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     NuclearReactor reactor;
     nuclear_reactors::OSIRIS(reactor);
 
@@ -188,8 +191,7 @@ int main(int argc, char* argv[])
     sample_interval = delta_time;
 
     // Override default values with CLI arguments
-    switch (argc)
-    {
+    switch (argc) {
         case 8:
             delta_sensitivity_analysis = strtod(argv[7], NULL);
             num_of_simulation_loops = strtod(argv[6], NULL);
@@ -208,35 +210,38 @@ int main(int argc, char* argv[])
             break;
     }
 
-    if (sensitivity_analysis_mode){
+    if (sensitivity_analysis_mode) {
         // --------------------------------------------------------------------------------------------
         // sensitivity analysis simulation loop
-        for (size_t n = 0; n < num_of_simulation_loops; n++){   
+        for (size_t n = 0; n < num_of_simulation_loops; n++) {
             ClusterDynamics cd(concentration_boundary, reactor, material);
 
             print_start_message();
 
             #if CSV
-            fprintf(stdout, "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
+            fprintf(stdout,
+                "Time (s),Cluster Size," +
+                "Interstitials / cm^3,Vacancies / cm^3\n");
             #endif
 
             ClusterDynamicsState state;
-            update_for_sensitivity_analysis(cd, reactor, material, n * delta_sensitivity_analysis);
-            
+            update_for_sensitivity_analysis(cd,
+                                            reactor,
+                                            material,
+                                            n * delta_sensitivity_analysis);
 
-            for (gp_float t = 0; t < simulation_time; t = state.time)
-            {
+
+            for (gp_float t = 0; t < simulation_time; t = state.time) {
                 // run simulation for this time slice
                 state = cd.run(delta_time, sample_interval);
 
-                #if VPRINT 
+                #if VPRINT
                     print_state(state);
                 #elif CSV
                     print_csv(state);
                 #endif
 
-                if (!state.valid) 
-                {
+                if (!state.valid) {
                     break;
                 }
 
@@ -245,39 +250,38 @@ int main(int argc, char* argv[])
                 #endif
             }
 
-            // --------------------------------------------------------------------------------------------
+            // ----------------------------------------------------------------
             // print results
             #if !VPRINT && !CSV
             print_state(state);
             #endif
-            // --------------------------------------------------------------------------------------------  
+            // ----------------------------------------------------------------
         }
-        // --------------------------------------------------------------------------------------------
+        // --------------------------------------------------------------------
     } else {
         ClusterDynamics cd(concentration_boundary, reactor, material);
 
         print_start_message();
 
         #if CSV
-        fprintf(stdout, "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
+        fprintf(stdout,
+            "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
         #endif
 
         ClusterDynamicsState state;
         // --------------------------------------------------------------------------------------------
         // main simulation loop
-        for (gp_float t = 0; t < simulation_time; t = state.time)
-        {
+        for (gp_float t = 0; t < simulation_time; t = state.time) {
             // run simulation for this time slice
             state = cd.run(delta_time, sample_interval);
 
-            #if VPRINT 
+            #if VPRINT
                 print_state(state);
             #elif CSV
                 print_csv(state);
             #endif
 
-            if (!state.valid) 
-            {
+            if (!state.valid) {
                 break;
             }
 
