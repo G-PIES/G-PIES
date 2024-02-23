@@ -128,7 +128,7 @@ void update_for_sensitivity_analysis(ClusterDynamics &cd, NuclearReactor reactor
 {
     switch(hashit(sensitivity_analysis_variable))
     {
-        case e_iMigration:\
+        case e_iMigration:
             material.set_i_migration(material.get_i_migration() + delta);
             cd.set_material(material);
             break;
