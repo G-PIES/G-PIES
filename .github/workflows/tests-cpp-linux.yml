@@ -19,6 +19,8 @@ jobs:
         id: cuda-toolkit
         with:
           cuda: '12.3.2'
+          method: network
+          sub-packages: '[ "nvcc" ]'
           log-file-suffix: ${{ matrix.configuration }}-log.txt
 
       - name: Checkout code
