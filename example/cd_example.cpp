@@ -126,9 +126,9 @@ var_code hashit(std::string const& varString) {
 }
 
 void update_for_sensitivity_analysis(ClusterDynamics &cd,
-                                     NuclearReactor reactor,
-                                     Material material,
-                                     gp_float delta) {
+                                     NuclearReactor &reactor,
+                                     Material &material,
+                                     const gp_float delta) {
     switch (hashit(sensitivity_analysis_variable)) {
         case e_iMigration:
             material.set_i_migration(material.get_i_migration() + delta);
