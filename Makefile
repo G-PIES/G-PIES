@@ -239,7 +239,7 @@ COMPILER = gcc
 
 INCLUDES = include
 
-CXXFLAGS.common     = -MMD -MP -std=c++17 $(INCLUDES:%=-I%)
+CXXFLAGS.common     = -std=c++17 $(INCLUDES:%=-I%)
 CXXFLAGS.release    = -O3
 CXXFLAGS.debug      = -O0
 CXXFLAGS.arch_amd64 = -DAMD64
@@ -250,13 +250,15 @@ CXXFLAGS.os_linux   = -DLINUX
 CXXFLAGS.os_macos   = -DOSX
 
 CXX.gcc = g++
-CXXFLAGS.gcc.common = -Wall -fno-fast-math
+CXXFLAGS.gcc.common = -Wall -fno-fast-math -MMD -MP
 CXXFLAGS.gcc.debug  = -g3
 CXXFLAGS.gcc.debug.os_linux = -fsanitize=undefined -fsanitize=address
 CXXFLAGS.gcc.debug.os_macos = -fsanitize=undefined -fsanitize=address
 
 CXX.nvcc = nvcc
 CXXFLAGS.nvcc.common = -Werror all-warnings -DUSE_CUDA -x cu --expt-extended-lambda
+CXXFLAGS.nvcc.os_linux = -MMD -MP
+CXXFLAGS.nvcc.os_macos = -MMD -MP
 
 calculate_compiler_options = $(strip $($1.common) $($1.$(CONFIGURATION)) \
 							 $($1.arch_$(TARGET_ARCH)) $($1.$(CONFIGURATION).arch_$(TARGET_ARCH)) \
