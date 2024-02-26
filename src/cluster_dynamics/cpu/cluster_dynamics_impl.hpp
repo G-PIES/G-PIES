@@ -13,6 +13,7 @@ class ClusterDynamicsImpl
 {
 public:
   gp_float time;
+  gp_float dpa;
 
   std::vector<gp_float> interstitials;
   std::vector<gp_float> interstitials_temp;

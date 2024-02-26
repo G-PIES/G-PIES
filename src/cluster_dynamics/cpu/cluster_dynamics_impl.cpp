@@ -90,11 +90,12 @@ gp_float ClusterDynamicsImpl::v_concentration_derivative(size_t n) const
 */
 gp_float ClusterDynamicsImpl::i1_concentration_derivative() const
 {
+
     return 
         // (1)
         i_defect_production(1)
         // (2)
-         - annihilation_rate() * interstitials[1] * vacancies[1]
+        - annihilation_rate() * interstitials[1] * vacancies[1]
         // (3)
         - interstitials[1] * i_dislocation_annihilation_rate()
         // (4)
@@ -1160,12 +1161,12 @@ gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const
 */
 gp_float ClusterDynamicsImpl::dislocation_promotion_probability(size_t n) const
 {
-   gp_float dr = cluster_radius(n + 1) - cluster_radius(n);
+  gp_float dr = cluster_radius(n + 1) - cluster_radius(n);
 
-   //      (1)                           (2)
-   return (2. * cluster_radius(n) * dr + std::pow(dr, 2.)) 
-   //    (3)                                                    (4)
-      / (std::pow(M_PI * mean_dislocation_radius_val / 2., 2) - std::pow(cluster_radius(n), 2.)); 
+  //      (1)                           (2)
+  return (2. * cluster_radius(n) * dr + std::pow(dr, 2.)) 
+  //    (3)                                                    (4)
+    / (std::pow(M_PI * mean_dislocation_radius_val / 2., 2) - std::pow(cluster_radius(n), 2.)); 
 }
 
 
@@ -1234,8 +1235,6 @@ bool ClusterDynamicsImpl::update_clusters_1(gp_float delta_time)
 bool ClusterDynamicsImpl::update_clusters(gp_float delta_time)
 {
    bool state_is_valid = true;
-
-   fprintf(stderr, "\n %g", i_demotion_rate(3));
 
    vacancies_temp[2] += v_concentration_derivative(2) * delta_time;
 
@@ -1339,6 +1338,8 @@ ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time, gp_float tota
 
     for (gp_float endtime = time + total_time; time < endtime; time += delta_time)
     {
+        dpa += delta_time * reactor.flux;
+        
         state_is_valid = step(delta_time);
         if (!state_is_valid) break;
     }
@@ -1347,6 +1348,7 @@ ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time, gp_float tota
     {
         .valid = state_is_valid,
         .time = time,
+        .dpa = dpa,
         .interstitials = std::vector<gp_float>(interstitials.begin(), interstitials.end() - 1),
         .vacancies = std::vector<gp_float>(vacancies.begin(), vacancies.end() - 1),
         .dislocation_density = dislocation_density

@@ -56,10 +56,12 @@ void print_state(ClusterDynamicsState& state)
 
 void print_csv(ClusterDynamicsState& state)
 {
-    for (uint64_t n = 1; n < concentration_boundary; ++n)
-    {
-        fprintf(stdout, "%g,%llu,%g,%g\n", state.time, (unsigned long long) n, state.interstitials[n], state.vacancies[n]);
-    }
+  fprintf(stdout, "%g", state.dpa);
+  for (uint64_t n = 1; n < concentration_boundary; ++n)
+  {
+      fprintf(stdout, ",%g,%g", state.interstitials[n], state.vacancies[n]);
+  }
+  fprintf(stdout, "\n");
 }
 
 void profile()
@@ -103,7 +105,6 @@ int main(int argc, char* argv[])
     concentration_boundary = 10;
     simulation_time = 1.;
     delta_time = 1e-5;
-    sample_interval = delta_time;
 
     // Override default values with CLI arguments
     switch (argc)
@@ -120,12 +121,19 @@ int main(int argc, char* argv[])
             break;
     }
 
+    sample_interval = delta_time;
+
     ClusterDynamics cd(concentration_boundary, reactor, material);
 
     print_start_message();
 
     #if CSV
-    fprintf(stdout, "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
+    fprintf(stdout, "Dose (dpa)");
+    for (size_t i = 1; i < concentration_boundary; ++i)
+    {
+      fprintf(stdout, ",i%lu,v%lu", i, i);
+    }
+    fprintf(stdout, "\n");
     #endif
 
     ClusterDynamicsState state;
