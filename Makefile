@@ -251,12 +251,16 @@ CXXFLAGS.os_macos   = -DOSX
 
 CXX.gcc = g++
 CXXFLAGS.gcc.common = -Wall -fno-fast-math
-CXXFLAGS.gcc.debug  = -g3 -fsanitize=undefined -fsanitize=address
+CXXFLAGS.gcc.debug  = -g3
+CXXFLAGS.gcc.debug.os_linux = -fsanitize=undefined -fsanitize=address
+CXXFLAGS.gcc.debug.os_macos = -fsanitize=undefined -fsanitize=address
 
 CXX.nvcc = nvcc
 CXXFLAGS.nvcc.common = -Werror all-warnings -DUSE_CUDA -x cu --expt-extended-lambda
 
-calculate_compiler_options = $(strip $($1.common) $($1.$(CONFIGURATION)) $($1.arch_$(TARGET_ARCH)) $($1.os_$(TARGET_OS)))
+calculate_compiler_options = $(strip $($1.common) $($1.$(CONFIGURATION)) \
+							 $($1.arch_$(TARGET_ARCH)) $($1.$(CONFIGURATION).arch_$(TARGET_ARCH)) \
+							 $($1.os_$(TARGET_OS)) $($1.$(CONFIGURATION).os_$(TARGET_OS)))
 CXX      = $(CXX.$(COMPILER))
 CXXFLAGS = $(strip $(call calculate_compiler_options,CXXFLAGS) $(call calculate_compiler_options,CXXFLAGS.$(COMPILER)))
 
@@ -267,9 +271,10 @@ LIBRARIES             =
 EXTERN_LIBRARIES      =
 EXTERN_LIBRARIES_PATH =
 
-LDFLAGS.common  = -L$(BUILD_PATH) $(LIBRARIES:%=-l%) $(EXTERN_LIBRARIES_PATH:%=-L%) $(EXTERN_LIBRARIES:%=-l%)
+LDFLAGS.common = -L$(BUILD_PATH) $(LIBRARIES:%=-l%) $(EXTERN_LIBRARIES_PATH:%=-L%) $(EXTERN_LIBRARIES:%=-l%)
 
-LDFLAGS.gcc.debug   = -fsanitize=undefined -fsanitize=address
+LDFLAGS.gcc.debug.os_linux = -fsanitize=undefined -fsanitize=address
+LDFLAGS.gcc.debug.os_macos = -fsanitize=undefined -fsanitize=address
 
 LD.gcc = g++
 LD.nvcc = nvcc
