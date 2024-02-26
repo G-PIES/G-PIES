@@ -61,11 +61,9 @@ void print_state(const ClusterDynamicsState &state) {
             state.dislocation_density);
 }
 
-void print_csv(ClusterDynamicsState& state)
-{
+void print_csv(ClusterDynamicsState& state) {
   fprintf(stdout, "%g", state.dpa);
-  for (uint64_t n = 1; n < concentration_boundary; ++n)
-  {
+  for (uint64_t n = 1; n < concentration_boundary; ++n) {
       fprintf(stdout, ",%g,%g", state.interstitials[n], state.vacancies[n]);
   }
   fprintf(stdout, "\n");
@@ -210,6 +208,8 @@ int main(int argc, char* argv[]) {
         default:
             break;
     }
+
+    sample_interval = delta_time;
 
     if (sensitivity_analysis_mode) {
         // --------------------------------------------------------------------------------------------

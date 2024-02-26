@@ -18,9 +18,8 @@
 
 #define __CUDADECL__ __device__ __host__
 
-class ClusterDynamicsImpl
-{
-public:
+class ClusterDynamicsImpl {
+ public:
     gp_float time;
 
     thrust::device_vector<gp_float> interstitials;
@@ -101,10 +100,10 @@ public:
     bool validate(size_t) const;
 
     // Interface functions
-    ClusterDynamicsImpl(size_t concentration_boundary, 
+    ClusterDynamicsImpl(size_t concentration_boundary,
         const NuclearReactorImpl& reactor, const MaterialImpl& material);
     ~ClusterDynamicsImpl();
-      
+
     ClusterDynamicsState run(gp_float delta_time, gp_float total_time);
     MaterialImpl get_material() const;
     void set_material(const MaterialImpl& material);
