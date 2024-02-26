@@ -39,7 +39,8 @@ resources
 *.pdf
 
 # Local Configurations
-.vscode
+.vscode/*
+!.vscode/settings.json
 
 # csv
 *.csv
