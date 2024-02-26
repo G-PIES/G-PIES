@@ -1,79 +1,92 @@
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtCore import QThread
-from gui.mainwindow import Ui_MainWindow
-from simulationworker import SimulationWorker
+from PyQt5.QtCore import QThread, QDateTime
 
-from simulationprocess import SimulationProcess
-from mplcanvas import MplCanvas
-from multiprocessing import Process, Pipe
-
-import pandas as pd
-import matplotlib.pyplot as plt
-
+from multiprocessing import shared_memory, Event
 import threading
 
-import numpy as np
+from gui.mainwindow import Ui_MainWindow
+from gui.simulation.simulationprocess import SimulationProcess
+from gui.simulation.simulationparams import SimulationParams
+from gui.visualization.dataaccumulator import DataAccumulator
+from gui.visualization.graphcontroller import GraphController
+
 
 class MainWindowController(QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
-        self.init_graph()
         self.init_connections()
 
         stylesheet = "./gui/resources/stylesheet.qss"
         with open(stylesheet, "r") as f:
             self.setStyleSheet(f.read())
 
+        self.gc = GraphController(self.verticalLayout_2, width=5, height=4, dpi=100)
+        self.gc.init_graph(1)
+        self.sim_running = False
+
     def init_connections(self):
         self.pushButton_2.clicked.connect(self.start_simulation)
         self.pushButton_3.clicked.connect(self.stop_simulation)
 
     def start_simulation(self):
-        self.parent_conn, child_conn = Pipe()
-        self.sim_process = SimulationProcess(C=10, simulation_time=1.0, step=0.00001, pipe=child_conn)
+        if self.sim_running:
+            self.stop_simulation()
 
+        # To be initialized by GUI parameter entry handling
+        self.params = SimulationParams(10, 1.0, 0.00001, 4, runner_block_size=1000)
+        self.gc.init_graph(self.params.C)
+
+        # Init shared memory for SimulationProcess / DataAccumulator communication
+        shm_size = self.params.runner_block_size * (self.params.C - 1) * self.params.entry_size * 8
+        self.shm = shared_memory.SharedMemory(create=True, size=shm_size)
+        self.shm_name = self.shm.name
+        self.shm_ready = Event()
+
+        # Init SimulationProcess and start
+        self.sim_running = True
+        self.start_time = QDateTime.currentDateTime()
+        self.sim_process = SimulationProcess(simulation_params=self.params,
+                                             read_interval=10, shm_name=self.shm_name, shm_ready=self.shm_ready)
         self.thread = threading.Thread(target=self.start_waiting_for_task)
         self.thread.start()
-
         print("simulation started")
 
     def stop_simulation(self):
-        if(self.sim_process.is_alive()):
-            self.sim_process.terminate()
-            self.parent_conn.close()
-            self.data = []
-            self.data_x = []
-            self.data_y = []
-        print("simulation stopped")
-
-    def init_graph(self):
-        #plt.
-        self._plot_ref = None
-        self.data = []
-        self.data_x = []
-        self.data_y = []
-        #self.df = pd.DataFrame(columns =['Time (s)', 'Cluster Size', 'Interstitials / cm^3', 'Vacancies / cm^3'])
-        self.scatter_plot = MplCanvas(self, width=5, height=4, dpi=100)
-        #self.df.plot.scatter(ax=self.sc.axes, x = 'Time (s)', y = 'Interstitials / cm^3')
-        self.scatter_plot.axes.set_xlabel('Time (s)')
-        self.scatter_plot.axes.set_ylabel('Interstitials / cm^3')
-        #self.scatter_plot.axes.scatter()
-        self.verticalLayout_2.addWidget(self.scatter_plot)
-        self.scatter_plot.show()
+        # ignore stop requests if sim is not running
+        if self.sim_running:
+            self.sim_running = False
+            if self.sim_process.is_alive():
+                self.sim_process.terminate()
+            if self.accumulator_thread.isRunning():
+                self.accumulator_thread.quit()
+            if self.shm:
+                self.shm.close()
+                self.shm.unlink()
+            print("simulation stopped")
 
     def start_waiting_for_task(self):
+        self.data_accumulator = DataAccumulator(self.params, self.shm_name, self.shm_ready)
+        self.data_accumulator.data_processed_signal.connect(self.update_graph)
+
+        self.accumulator_thread = QThread()
+        self.data_accumulator.moveToThread(self.accumulator_thread)
+        self.accumulator_thread.started.connect(self.data_accumulator.run)
+        self.accumulator_thread.start()
+
         self.sim_process.start()
-        while(self.sim_process.is_alive()):
-            self.update_graph()
         self.sim_process.join()
         print("simulation finished")
 
+        if self.sim_running:
+            self.stop_simulation()
+
     def update_graph(self):
-        self.data = self.parent_conn.recv()
-        self.data_x.append(self.data[0])
-        self.data_y.append(self.data[2])
-        
-        self.scatter_plot.axes.cla()
-        self.scatter_plot.axes.scatter(x=self.data_x, y=self.data_y)
-        self.scatter_plot.draw()
+        elapsed = self.start_time.msecsTo(QDateTime.currentDateTime()) / 1000.0
+        # TODO: this changes the width of the parent layout ...
+        self.label.setText(f"Time Elapsed: {elapsed:.2f}s                Simulation Time:")
+        self.gc.update_graph(self.data_accumulator)
+
+    def closeEvent(self, event):
+        if self.sim_running:
+            self.stop_simulation()
