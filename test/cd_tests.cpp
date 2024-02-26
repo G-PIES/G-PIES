@@ -135,7 +135,7 @@ TEST_F(ClusterDynamicsTest, v1_concentration_derivative_test) {
     EXPECT_DOUBLE_EQ(expected, actual);
 }
 
-TEST_F(ClusterDynamicsTest, iemission_vabsorption_np1_test) {
+TEST_F(ClusterDynamicsTest, i_demotion_rate_test) {
     ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
     cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
@@ -145,7 +145,7 @@ TEST_F(ClusterDynamicsTest, iemission_vabsorption_np1_test) {
                             0.0039393178609528059};
     gp_float actual[5];
     for (int i = 0; i < 5; ++i) {
-        actual[i] = cd.iemission_vabsorption_np1(i + 3);
+        actual[i] = cd.i_demotion_rate(i + 3);
     }
 
     EXPECT_DOUBLE_EQ(expected[0], actual[0]);
@@ -155,7 +155,7 @@ TEST_F(ClusterDynamicsTest, iemission_vabsorption_np1_test) {
     EXPECT_DOUBLE_EQ(expected[4], actual[4]);
 }
 
-TEST_F(ClusterDynamicsTest, vemission_iabsorption_np1_test) {
+TEST_F(ClusterDynamicsTest, v_demotion_rate_test) {
     ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
     cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
@@ -165,7 +165,7 @@ TEST_F(ClusterDynamicsTest, vemission_iabsorption_np1_test) {
                             3.3728261913718135e-25};
     gp_float actual[5];
     for (int i = 0; i < 5; ++i) {
-        actual[i] = cd.vemission_iabsorption_np1(i + 3);
+        actual[i] = cd.v_demotion_rate(i + 3);
     }
 
     EXPECT_DOUBLE_EQ(expected[0], actual[0]);
@@ -175,7 +175,7 @@ TEST_F(ClusterDynamicsTest, vemission_iabsorption_np1_test) {
     EXPECT_DOUBLE_EQ(expected[4], actual[4]);
 }
 
-TEST_F(ClusterDynamicsTest, iemission_vabsorption_n_test) {
+TEST_F(ClusterDynamicsTest, i_combined_promotion_demotion_rate_test) {
     ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
     cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
@@ -185,7 +185,7 @@ TEST_F(ClusterDynamicsTest, iemission_vabsorption_n_test) {
                             0.021470762169837978};
     gp_float actual[5];
     for (int i = 0; i < 5; ++i) {
-        actual[i] = cd.iemission_vabsorption_n(i + 2);
+        actual[i] = cd.i_combined_promotion_demotion_rate(i + 2);
     }
 
     EXPECT_DOUBLE_EQ(expected[0], actual[0]);
@@ -195,7 +195,7 @@ TEST_F(ClusterDynamicsTest, iemission_vabsorption_n_test) {
     EXPECT_DOUBLE_EQ(expected[4], actual[4]);
 }
 
-TEST_F(ClusterDynamicsTest, vemission_iabsorption_n_test) {
+TEST_F(ClusterDynamicsTest, v_combined_promotion_demotion_rate_test) {
     ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
     cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
@@ -205,7 +205,7 @@ TEST_F(ClusterDynamicsTest, vemission_iabsorption_n_test) {
                             5.6757583693472816e-25};
     gp_float actual[5];
     for (int i = 0; i < 5; ++i) {
-        actual[i] = cd.vemission_iabsorption_n(i + 2);
+        actual[i] = cd.v_combined_promotion_demotion_rate(i + 2);
     }
 
     EXPECT_DOUBLE_EQ(expected[0], actual[0]);
@@ -215,7 +215,7 @@ TEST_F(ClusterDynamicsTest, vemission_iabsorption_n_test) {
     EXPECT_DOUBLE_EQ(expected[4], actual[4]);
 }
 
-TEST_F(ClusterDynamicsTest, iemission_vabsorption_nm1_test) {
+TEST_F(ClusterDynamicsTest, i_promotion_rate_test) {
     ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
     cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
@@ -225,7 +225,7 @@ TEST_F(ClusterDynamicsTest, iemission_vabsorption_nm1_test) {
                             3.2903485594033312e-26};
     gp_float actual[5];
     for (int i = 0; i < 5; ++i) {
-        actual[i] = cd.iemission_vabsorption_nm1(i + 1);
+        actual[i] = cd.i_promotion_rate(i + 1);
     }
 
     EXPECT_DOUBLE_EQ(expected[0], actual[0]);
@@ -235,7 +235,7 @@ TEST_F(ClusterDynamicsTest, iemission_vabsorption_nm1_test) {
     EXPECT_DOUBLE_EQ(expected[4], actual[4]);
 }
 
-TEST_F(ClusterDynamicsTest, vemission_iabsorption_nm1_test) {
+TEST_F(ClusterDynamicsTest, v_promotion_rate_test) {
     ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
     cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
@@ -245,7 +245,7 @@ TEST_F(ClusterDynamicsTest, vemission_iabsorption_nm1_test) {
                             1.2968639916403274e-30};
     gp_float actual[5];
     for (int i = 0; i < 5; ++i) {
-        actual[i] = cd.vemission_iabsorption_nm1(i + 1);
+        actual[i] = cd.v_promotion_rate(i + 1);
     }
 
     EXPECT_DOUBLE_EQ(expected[0], actual[0]);

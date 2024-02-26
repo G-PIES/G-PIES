@@ -321,7 +321,7 @@ OBJ_FILES.cd_tests = $(call get_obj_files,cd_tests)
 EXE_FILE.cd_tests = $(call get_exe_file,cd_tests)
 $(OBJ_FILES.cd_tests): INCLUDES += src/cluster_dynamics src/cluster_dynamics/cpu extern/googletest/include
 $(EXE_FILE.cd_tests): LIBRARIES += clusterdynamics
-$(EXE_FILE.cd_tests): EXTERN_LIBRARIES += gtest gtest_main
+$(EXE_FILE.cd_tests): EXTERN_LIBRARIES += gtest gtest_main pthread
 $(EXE_FILE.cd_tests): EXTERN_LIBRARIES_PATH += extern/googletest/lib/$(TARGET_OS)
 
 # -----------------------------------------------------------------------------

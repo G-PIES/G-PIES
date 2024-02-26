@@ -76,6 +76,15 @@ class ClusterDynamicsImpl {
     gp_float dislocation_promotion_probability(size_t) const;
     gp_float cluster_radius(size_t) const;
 
+    gp_float i_diffusion() const;
+    gp_float v_diffusion() const;
+    gp_float mean_dislocation_cell_radius() const;
+    gp_float ii_sum_absorption(size_t) const;
+    gp_float iv_sum_absorption(size_t) const;
+    gp_float vi_sum_absorption(size_t) const;
+    gp_float vv_sum_absorption(size_t) const;
+
+
     // Simulation Operation Functions
     bool update_clusters_1(gp_float);
     bool update_clusters(gp_float);
