@@ -249,8 +249,8 @@ CXXFLAGS.os_windows = -DWIN32 -D_USE_MATH_DEFINES
 CXXFLAGS.os_linux   = -DLINUX
 CXXFLAGS.os_macos   = -DOSX
 
-CXX.gcc = g++
-CXXFLAGS.gcc.common = -Wall -fno-fast-math
+CXX.gcc = clang++
+CXXFLAGS.gcc.common = -Wall -fno-fast-math -frounding-math -fno-builtin
 CXXFLAGS.gcc.debug  = -g3 -fsanitize=undefined -fsanitize=address
 
 CXX.nvcc = nvcc
@@ -344,6 +344,15 @@ CXX_FILES.cd_example = example/cd_example.cpp
 OBJ_FILES.cd_example = $(call get_obj_files,cd_example)
 EXE_FILE.cd_example = $(call get_exe_file,cd_example)
 $(EXE_FILE.cd_example): LIBRARIES += clusterdynamics
+
+# -----------------------------------------------------------------------------
+# Cluster Dynamics Example
+ALL_EXE += macos_linux
+CXX_FILES.macos_linux = example/macos_linux.cpp
+OBJ_FILES.macos_linux = $(call get_obj_files,macos_linux)
+EXE_FILE.macos_linux = $(call get_exe_file,macos_linux)
+$(OBJ_FILES.macos_linux): INCLUDES += src/cluster_dynamics src/cluster_dynamics/cpu
+$(EXE_FILE.macos_linux): LIBRARIES += clusterdynamics
 
 # Cluster Dynamics W/ CUDA Example
 ALL_EXE += cd_cuda_example

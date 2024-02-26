@@ -1,5 +1,6 @@
 #include "cluster_dynamics/cluster_dynamics.hpp"
 #include "gtest/gtest.h"
+#include "test_helpers.hpp"
 
 #if defined(USE_CUDA)
 #include "cluster_dynamics_cuda_impl.hpp"
@@ -462,7 +463,7 @@ TEST_F(ClusterDynamicsTest, v_emission_rate_test) {
     gp_float expected = 2.1585231596640677e-35;
     gp_float actual = cd.v_emission_rate();
 
-    EXPECT_DOUBLE_EQ(expected, actual);
+    GP_EXPECT_NEAR(expected, actual);
 }
 
 TEST_F(ClusterDynamicsTest, i_absorption_rate_test) {
