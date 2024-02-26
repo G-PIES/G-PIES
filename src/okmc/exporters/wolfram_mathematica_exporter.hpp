@@ -3,6 +3,6 @@
 #include "../exporter.hpp"
 
 class WolframMathematicaExporter : public Exporter {
-public:
+ public:
     void export_model(Model *model) override;
 };

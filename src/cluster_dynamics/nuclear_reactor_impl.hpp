@@ -1,26 +1,35 @@
 #ifndef NUCLEAR_REACTOR_IMPL_HPP
-#define NUCLEAR_REACTOR_IMPL_HPP 
+#define NUCLEAR_REACTOR_IMPL_HPP
 
-#include "types.hpp"
+#include "utils/types.hpp"
 
 // C. Pokor / Journal of Nuclear Materials 326 (2004), Table 5
-struct NuclearReactorImpl
-{
-  gp_float flux; //!< Neutron flux through the material in dpa/s
+struct NuclearReactorImpl {
+    /// @brief Neutron flux through the material in dpa/s
+    gp_float flux;
 
-  gp_float temperature; //!< Temperature in Kelvin
+    /// @brief Temperature in Kelvin
+    gp_float temperature;
 
-  gp_float recombination;  //!< Recombination factor for collision cascades.
+    /// @brief Recombination factor for collision cascades.
+    gp_float recombination;
 
-  gp_float i_bi; //!< The fraction of generated interstitial clusters which are size 2.
-  gp_float i_tri; //!< The fraction of generated interstitial clusters which are size 3.
-  gp_float i_quad; //!< The fraction of generated interstitial clusters which are size 4.
+    /// @brief The fraction of generated interstitial clusters which are size 2.
+    gp_float i_bi;
+    /// @brief The fraction of generated interstitial clusters which are size 3.
+    gp_float i_tri;
+    /// @brief The fraction of generated interstitial clusters which are size 4.
+    gp_float i_quad;
 
-  gp_float v_bi; //!< The fraction of generated vacancy clusters which are size 2.
-  gp_float v_tri; //!< The fraction of generated vacancy clusters which are size 2.
-  gp_float v_quad; //!< The fraction of generated vacancy clusters which are size 2.
+    /// @brief The fraction of generated vacancy clusters which are size 2.
+    gp_float v_bi;
+    /// @brief The fraction of generated vacancy clusters which are size 2.
+    gp_float v_tri;
+    /// @brief The fraction of generated vacancy clusters which are size 2.
+    gp_float v_quad;
 
-  gp_float dislocation_density_evolution; //!< Parameter which affects the evolution of the dislocation network.
+    /// @brief Parameter which affects the evolution of the dislocation network.
+    gp_float dislocation_density_evolution;
 };
 
-#endif // NUCLEAR_REACTOR_IMPL_HPP 
+#endif  // NUCLEAR_REACTOR_IMPL_HPP

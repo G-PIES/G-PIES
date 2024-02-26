@@ -1,0 +1,51 @@
+name: Build and run tests (Linux)
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [debug, release]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: Jimver/cuda-toolkit@v0.2.14
+        id: cuda-toolkit
+        with:
+          cuda: '12.3.2'
+          method: network
+          sub-packages: '[ "nvcc" ]'
+          log-file-suffix: ${{ matrix.configuration }}-log.txt
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build CPU targets
+        run: make all_cpu CONFIGURATION=${{ matrix.configuration }}
+      - name: Build CUDA targets
+        run: make all_cuda CONFIGURATION=${{ matrix.configuration }}
+      - name: Build DB targets
+        run: make dbtests dbex
+
+      - name: Run Cluster Dynamics Tests
+        run: ./build/${{ matrix.configuration }}/cd_tests
+      - name: Run Client Database Tests
+        run: ./bin/db_tests.out
+
+      - name: Upload Cluster Dynamics Executable
+        uses: actions/upload-artifact@v2
+        with:
+          name: cluster_dynamics
+          path: bin/cluster_dynamics.out
+
+      - name: Upload Client Database Executable 
+        uses: actions/upload-artifact@v2
+        with:
+          name: client_db 
+          path: bin/client_db.out

@@ -1,10 +1,13 @@
+#include "wolfram_mathematica_exporter.hpp"
+
 #include <iomanip>
 #include <iostream>
 #include <numeric>
 #include <sstream>
+#include <algorithm>
+#include <vector>
 
 #include "../model/objects/defect.hpp"
-#include "wolfram_mathematica_exporter.hpp"
 
 void WolframMathematicaExporter::export_model(Model *model) {
     std::stringstream out;
@@ -12,15 +15,15 @@ void WolframMathematicaExporter::export_model(Model *model) {
 
     std::vector<ModelObject *> objects = model->objects;
     int max_size = std::transform_reduce(
-            objects.begin(),
-            objects.end(),
-            0,
-            [](const int a, const int b) { return std::max(a, b); },
-            [](ModelObject *object) { return object == nullptr ? 0 : static_cast<Defect *>(object)->size; });
+        objects.begin(), objects.end(), 0,
+        [](const int a, const int b) { return std::max(a, b); },
+        [](ModelObject *object) {
+            return object == nullptr ? 0 : static_cast<Defect *>(object)->size;
+        });
     int max_type = 2;
 
     std::vector<Defect *> defects_by_size[max_size][max_type];
-    for (ModelObject *object: objects) {
+    for (ModelObject *object : objects) {
         Defect *defect = static_cast<Defect *>(object);
         if (defect == nullptr) {
             continue;
@@ -33,14 +36,15 @@ void WolframMathematicaExporter::export_model(Model *model) {
         for (int type = 1; type <= max_type; type++) {
             out << "{";
             bool is_first = true;
-            for (Defect *defect: defects_by_size[size - 1][type - 1]) {
+            for (Defect *defect : defects_by_size[size - 1][type - 1]) {
                 if (is_first) {
                     is_first = false;
                 } else {
                     out << ",";
                 }
 
-                out << "{" << defect->position.x << "," << defect->position.y << "," << defect->position.z << "}";
+                out << "{" << defect->position.x << "," << defect->position.y
+                    << "," << defect->position.z << "}";
             }
             out << "}";
 
@@ -57,8 +61,12 @@ void WolframMathematicaExporter::export_model(Model *model) {
 
     out << "AppendTo[PlotStyles, {";
     for (int size = 1; size <= max_size; size++) {
-        out << "Directive[" << "Red" << ",PointSize[" << size * 0.01 << "]],";
-        out << "Directive[" << "Blue" << ",PointSize[" << size * 0.01 << "]]";
+        out << "Directive["
+            << "Red"
+            << ",PointSize[" << size * 0.01 << "]],";
+        out << "Directive["
+            << "Blue"
+            << ",PointSize[" << size * 0.01 << "]]";
         if (size != max_size) {
             out << ",";
         }

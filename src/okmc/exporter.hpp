@@ -3,6 +3,6 @@
 #include "model/model.hpp"
 
 class Exporter {
-public:
+ public:
     virtual void export_model(Model *model) = 0;
 };
