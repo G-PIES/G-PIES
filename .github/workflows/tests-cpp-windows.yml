@@ -1,0 +1,45 @@
+name: Build and run tests (Windows)
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [ debug, release ]
+
+    runs-on: windows-latest
+
+    steps:
+      - name: Install CUDA Toolkit
+        uses: Jimver/cuda-toolkit@v0.2.14
+        id: cuda-toolkit
+        with:
+          cuda: '12.3.2'
+          method: network
+          sub-packages: '[ "nvcc", "cudart" ]'
+          log-file-suffix: ${{ matrix.configuration }}-log.txt
+
+      - name: Add Visual C++ to path
+        run: echo $env:MSVC_PATH | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        env:
+          MSVC_PATH: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.39.33519\bin\Hostx64\x64
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build CUDA targets
+        run: make all_cuda CONFIGURATION=${{ matrix.configuration }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: G-PIES ${{ matrix.configuration }}
+          path: |
+            build/${{ matrix.configuration }}/libclusterdynamicscuda.a
+            build/${{ matrix.configuration }}/cd_cuda_example
+            build/${{ matrix.configuration }}/cdcuda_tests

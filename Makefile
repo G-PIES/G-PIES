@@ -239,7 +239,7 @@ COMPILER = gcc
 
 INCLUDES = include
 
-CXXFLAGS.common     = -std=c++17 $(INCLUDES:%=-I%)
+CXXFLAGS.common     = -std=c++20 $(INCLUDES:%=-I%)
 CXXFLAGS.release    = -O3
 CXXFLAGS.debug      = -O0
 CXXFLAGS.arch_amd64 = -DAMD64
@@ -257,8 +257,9 @@ CXXFLAGS.gcc.debug.os_macos = -fsanitize=undefined -fsanitize=address
 
 CXX.nvcc = nvcc
 CXXFLAGS.nvcc.common = -Werror all-warnings -DUSE_CUDA -x cu --expt-extended-lambda
-CXXFLAGS.nvcc.os_linux = -MMD -MP
-CXXFLAGS.nvcc.os_macos = -MMD -MP
+CXXFLAGS.nvcc.os_windows = -MD
+CXXFLAGS.nvcc.os_linux   = -MMD -MP
+CXXFLAGS.nvcc.os_macos   = -MMD -MP
 
 calculate_compiler_options = $(strip $($1.common) $($1.$(CONFIGURATION)) \
 							 $($1.arch_$(TARGET_ARCH)) $($1.$(CONFIGURATION).arch_$(TARGET_ARCH)) \
@@ -293,17 +294,23 @@ ARFLAGS = -crvs
 # Generic source and artifact paths
 BUILD_PATH    = build/$(CONFIGURATION)
 OBJ_PATH      = $(BUILD_PATH)/obj
-get_obj_files = $(addprefix $(OBJ_PATH)/$1/,$(CXX_FILES.$1:.cpp=.o))
+OBJ_EXT.os_linux   = .o
+OBJ_EXT.os_macos   = .o
+OBJ_EXT.os_windows = .obj
+get_obj_files = $(addprefix $(OBJ_PATH)/$1/,$(CXX_FILES.$1:.cpp=$(OBJ_EXT.os_$(TARGET_OS))))
 
 EXE_EXT.os_linux   =
 EXE_EXT.os_macos   =
 EXE_EXT.os_windows = .exe
 get_exe_file       = $(BUILD_PATH)/$1$(EXE_EXT.os_$(TARGET_OS))
 
-LIB_EXT.os_linux   = .a
-LIB_EXT.os_macos   = .a
-LIB_EXT.os_windows = .lib
-get_lib_file       = $(BUILD_PATH)/$1$(LIB_EXT.os_$(TARGET_OS))
+LIB_EXT.os_linux        = .a
+LIB_EXT.os_macos        = .a
+LIB_EXT.os_windows      = .lib
+get_lib_file.os_linux   = $(BUILD_PATH)/$1$(LIB_EXT.os_$(TARGET_OS))
+get_lib_file.os_macos   = $(get_lib_file.os_linux)
+get_lib_file.os_windows = $(BUILD_PATH)/$(1:lib%=%)$(LIB_EXT.os_$(TARGET_OS))
+get_lib_file            = $(get_lib_file.os_$(TARGET_OS))
 
 # Recursive wildcard function
 # Source: https://stackoverflow.com/a/18258352
@@ -345,7 +352,7 @@ $(OBJ_FILES.cdcuda_tests): COMPILER = nvcc
 $(OBJ_FILES.cdcuda_tests): INCLUDES += src/cluster_dynamics src/cluster_dynamics/cuda extern/googletest/include
 $(EXE_FILE.cdcuda_tests): COMPILER = nvcc
 $(EXE_FILE.cdcuda_tests): LIBRARIES += clusterdynamicscuda
-$(EXE_FILE.cdcuda_tests): EXTERN_LIBRARIES += gtest gtest_main pthread
+$(EXE_FILE.cdcuda_tests): EXTERN_LIBRARIES += gtest gtest_main
 $(EXE_FILE.cdcuda_tests): EXTERN_LIBRARIES_PATH += extern/googletest/lib/$(TARGET_OS)
 
 # -----------------------------------------------------------------------------
@@ -374,7 +381,7 @@ OBJ_FILES.okmc = $(call get_obj_files,okmc)
 # -----------------------------------------------------------------------------
 # Generic C++ compile target
 define CXX_template
-$$(OBJ_PATH)/$1/%.o: %.cpp
+$$(OBJ_PATH)/$1/%$(OBJ_EXT.os_$(TARGET_OS)): %.cpp
 	@mkdir -p $$(@D)
 	$$(CXX) $$(CXXFLAGS) -c $$< -o $$@
 endef
@@ -385,24 +392,26 @@ $(foreach prog,$(ALL_EXE) $(ALL_LIB),$(eval $(call CXX_template,$(prog))))
 # -----------------------------------------------------------------------------
 # Generic executable target
 .PHONY: $(ALL_EXE)
-all: $(ALL_EXE)
 
 ifeq ($(R), 1)
-$(ALL_EXE): %: $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS))
+$(ALL_EXE): %: $(call get_exe_file,%)
 	@[ "$(R)" ] && $< $(RUN_ARGS) || ( exit 0 )
 else
-$(ALL_EXE): %: $(BUILD_PATH)/%$(EXE_EXT.os_$(TARGET_OS))
+$(ALL_EXE): %: $(call get_exe_file,%)
 endif
 
 ALL_EXE_FILES = $(foreach exe,$(ALL_EXE),$(call get_exe_file,$(exe)))
 $(ALL_EXE_FILES): $(call get_exe_file,%): $$(foreach lib,$$(LIBRARIES),$$(call get_lib_file,lib$$(lib))) $$(OBJ_FILES.%)
-	$(LD) $(filter %.o,$^) $(LDFLAGS) -o $@
+	$(LD) $(filter %$(OBJ_EXT.os_$(TARGET_OS)),$^) $(LDFLAGS) -o $@
 
 # -----------------------------------------------------------------------------
 # Generic library target
-ALL_LIB_FILES = $(foreach lib,$(ALL_LIB),$(call get_lib_file,$(lib)))
 .PHONY: $(ALL_LIB)
-all: $(ALL_LIB)
-$(ALL_LIB): %: $(BUILD_PATH)/%$(LIB_EXT.os_$(TARGET_OS))
-$(ALL_LIB_FILES): $(call get_lib_file,%): $$(OBJ_FILES.%)
-	$(AR) $(ARFLAGS) $@ $(filter %.o,$^)
+
+define LIB_template
+$1: $(call get_lib_file,$1)
+$(call get_lib_file,$1): $$(OBJ_FILES.$1)
+	$$(AR) $$(ARFLAGS) $$@ $$(filter %$(OBJ_EXT.os_$(TARGET_OS)),$$^)
+endef
+
+$(foreach lib,$(ALL_LIB),$(eval $(call LIB_template,$(lib))))
