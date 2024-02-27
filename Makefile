@@ -78,17 +78,17 @@ DB_LIB = $(LIB_DIR)/libclientdb$(LIB_EXT)
 
 # Setup Build Directories
 bdirs:
-	mkdir -p $(BIN_DIR)
-	mkdir -p $(BUILD_DIR)
-	mkdir -p $(DB_DIR)
-	mkdir -p $(LIB_DIR)
+	$(call mkdir, $(BIN_DIR))
+	$(call mkdir, $(BUILD_DIR))
+	$(call mkdir, $(DB_DIR))
+	$(call mkdir, $(LIB_DIR))
 
 # Clean Development Files
 clean: 
-	rm -fr $(BIN_DIR)
-	rm -fr $(BUILD_DIR)
-	rm -fr $(DB_DIR)/*.db
-	rm -fr $(LIB_DIR)
+	$(call rmdir,$(BIN_DIR))
+	$(call rmdir,$(BUILD_DIR))
+	$(call rmdir,$(DB_DIR))
+	$(call rmdir,$(LIB_DIR))
 
 # ----------------------------------------------------------------------------------------
 
@@ -188,7 +188,7 @@ all_cuda: cd_cuda_example cdcuda_tests libclusterdynamicscuda
 .PHONY: clean_build_dir
 clean: clean_build_dir
 clean_build_dir:
-	rm -rf $(BUILD_DIR)
+	$(call rmdir,$(BUILD_DIR))
 
 # Cluster Dynamics Library and tests
 .PHONY: cdlib cdcudalib cdtests cdcudatests
@@ -216,10 +216,10 @@ cdcsv: out_dir cd_example
 cdcsv: CXXFLAGS += -D CSV=true
 cdcsv: RUN_ARGS = 1e-5 1 > out/cd-output.csv
 out_dir:
-	mkdir -p out
+	@$(call mkdir,out)
 clean: clean_out_dir
 clean_out_dir:
-	rm -rf out
+	$(call rmdir,out)
 
 # -----------------------------------------------------------------------------
 # Compiler parameters
@@ -312,6 +312,16 @@ get_lib_file.os_macos   = $(get_lib_file.os_linux)
 get_lib_file.os_windows = $(BUILD_PATH)/$(1:lib%=%)$(LIB_EXT.os_$(TARGET_OS))
 get_lib_file            = $(get_lib_file.os_$(TARGET_OS))
 
+mkdir.os_linux   = mkdir -p $1
+mkdir.os_macos   = $(mkdir.os_linux)
+mkdir.os_windows = cmd /c if not exist $(subst /,\,$1) mkdir $(subst /,\,$1)
+mkdir            = $(mkdir.os_$(TARGET_OS))
+
+rmdir.os_linux   = rm -rf $1
+rmdir.os_macos   = $(rmdir.os_linux)
+rmdir.os_windows = cmd /c if exist $(subst /,\,$1) rmdir /s /q $(subst /,\,$1)
+rmdir            = $(rmdir.os_$(TARGET_OS))
+
 # Recursive wildcard function
 # Source: https://stackoverflow.com/a/18258352
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
@@ -382,7 +392,7 @@ OBJ_FILES.okmc = $(call get_obj_files,okmc)
 # Generic C++ compile target
 define CXX_template
 $$(OBJ_PATH)/$1/%$(OBJ_EXT.os_$(TARGET_OS)): %.cpp
-	@mkdir -p $$(@D)
+	@$$(call mkdir,$$(@D))
 	$$(CXX) $$(CXXFLAGS) -c $$< -o $$@
 endef
 
