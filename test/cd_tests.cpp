@@ -1,5 +1,6 @@
 #include "cluster_dynamics/cluster_dynamics.hpp"
 #include "gtest/gtest.h"
+#include "gtest_helpers.hpp"
 
 #if defined(USE_CUDA)
 #include "cluster_dynamics_cuda_impl.hpp"
@@ -88,11 +89,11 @@ TEST_F(ClusterDynamicsTest, i_concentration_derivative_test) {
         actual[i] = cd.i_concentration_derivative(i + 2);
     }
 
-    EXPECT_DOUBLE_EQ(expected[0], actual[0]);
-    EXPECT_DOUBLE_EQ(expected[1], actual[1]);
-    EXPECT_DOUBLE_EQ(expected[2], actual[2]);
-    EXPECT_DOUBLE_EQ(expected[3], actual[3]);
-    EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+    GP_EXPECT_NEAR(expected[0], actual[0]);
+    GP_EXPECT_NEAR(expected[1], actual[1]);
+    GP_EXPECT_NEAR(expected[2], actual[2]);
+    GP_EXPECT_NEAR(expected[3], actual[3]);
+    GP_EXPECT_NEAR(expected[4], actual[4]);
 }
 
 TEST_F(ClusterDynamicsTest, v_concentration_derivative_test) {
@@ -122,7 +123,7 @@ TEST_F(ClusterDynamicsTest, i1_concentration_derivative_test) {
     gp_float expected = 2.4384462178878696e-07;
     gp_float actual = cd.i1_concentration_derivative();
 
-    EXPECT_DOUBLE_EQ(expected, actual);
+    GP_EXPECT_NEAR(expected, actual);
 }
 
 TEST_F(ClusterDynamicsTest, v1_concentration_derivative_test) {
@@ -148,11 +149,11 @@ TEST_F(ClusterDynamicsTest, iemission_vabsorption_np1_test) {
         actual[i] = cd.iemission_vabsorption_np1(i + 3);
     }
 
-    EXPECT_DOUBLE_EQ(expected[0], actual[0]);
-    EXPECT_DOUBLE_EQ(expected[1], actual[1]);
-    EXPECT_DOUBLE_EQ(expected[2], actual[2]);
-    EXPECT_DOUBLE_EQ(expected[3], actual[3]);
-    EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+    GP_EXPECT_NEAR(expected[0], actual[0]);
+    GP_EXPECT_NEAR(expected[1], actual[1]);
+    GP_EXPECT_NEAR(expected[2], actual[2]);
+    GP_EXPECT_NEAR(expected[3], actual[3]);
+    GP_EXPECT_NEAR(expected[4], actual[4]);
 }
 
 TEST_F(ClusterDynamicsTest, vemission_iabsorption_np1_test) {
@@ -168,11 +169,11 @@ TEST_F(ClusterDynamicsTest, vemission_iabsorption_np1_test) {
         actual[i] = cd.vemission_iabsorption_np1(i + 3);
     }
 
-    EXPECT_DOUBLE_EQ(expected[0], actual[0]);
-    EXPECT_DOUBLE_EQ(expected[1], actual[1]);
-    EXPECT_DOUBLE_EQ(expected[2], actual[2]);
-    EXPECT_DOUBLE_EQ(expected[3], actual[3]);
-    EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+    GP_EXPECT_NEAR(expected[0], actual[0]);
+    GP_EXPECT_NEAR(expected[1], actual[1]);
+    GP_EXPECT_NEAR(expected[2], actual[2]);
+    GP_EXPECT_NEAR(expected[3], actual[3]);
+    GP_EXPECT_NEAR(expected[4], actual[4]);
 }
 
 TEST_F(ClusterDynamicsTest, iemission_vabsorption_n_test) {
@@ -188,11 +189,11 @@ TEST_F(ClusterDynamicsTest, iemission_vabsorption_n_test) {
         actual[i] = cd.iemission_vabsorption_n(i + 2);
     }
 
-    EXPECT_DOUBLE_EQ(expected[0], actual[0]);
-    EXPECT_DOUBLE_EQ(expected[1], actual[1]);
-    EXPECT_DOUBLE_EQ(expected[2], actual[2]);
-    EXPECT_DOUBLE_EQ(expected[3], actual[3]);
-    EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+    GP_EXPECT_NEAR(expected[0], actual[0]);
+    GP_EXPECT_NEAR(expected[1], actual[1]);
+    GP_EXPECT_NEAR(expected[2], actual[2]);
+    GP_EXPECT_NEAR(expected[3], actual[3]);
+    GP_EXPECT_NEAR(expected[4], actual[4]);
 }
 
 TEST_F(ClusterDynamicsTest, vemission_iabsorption_n_test) {
@@ -208,11 +209,11 @@ TEST_F(ClusterDynamicsTest, vemission_iabsorption_n_test) {
         actual[i] = cd.vemission_iabsorption_n(i + 2);
     }
 
-    EXPECT_DOUBLE_EQ(expected[0], actual[0]);
-    EXPECT_DOUBLE_EQ(expected[1], actual[1]);
-    EXPECT_DOUBLE_EQ(expected[2], actual[2]);
-    EXPECT_DOUBLE_EQ(expected[3], actual[3]);
-    EXPECT_DOUBLE_EQ(expected[4], actual[4]);
+    GP_EXPECT_NEAR(expected[0], actual[0]);
+    GP_EXPECT_NEAR(expected[1], actual[1]);
+    GP_EXPECT_NEAR(expected[2], actual[2]);
+    GP_EXPECT_NEAR(expected[3], actual[3]);
+    GP_EXPECT_NEAR(expected[4], actual[4]);
 }
 
 TEST_F(ClusterDynamicsTest, iemission_vabsorption_nm1_test) {
@@ -315,9 +316,9 @@ TEST_F(ClusterDynamicsTest, ii_emission_test) {
         actual[i] = cd.ii_emission(i + 1);
     }
 
-    EXPECT_DOUBLE_EQ(expected[0], actual[0]);
-    EXPECT_DOUBLE_EQ(expected[1], actual[1]);
-    EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+    GP_EXPECT_NEAR(expected[0], actual[0]);
+    GP_EXPECT_NEAR(expected[1], actual[1]);
+    GP_EXPECT_NEAR(expected[2], actual[2]);
 }
 
 TEST_F(ClusterDynamicsTest, vv_emission_test) {
@@ -332,9 +333,9 @@ TEST_F(ClusterDynamicsTest, vv_emission_test) {
         actual[i] = cd.vv_emission(i + 1);
     }
 
-    EXPECT_DOUBLE_EQ(expected[0], actual[0]);
-    EXPECT_DOUBLE_EQ(expected[1], actual[1]);
-    EXPECT_DOUBLE_EQ(expected[2], actual[2]);
+    GP_EXPECT_NEAR(expected[0], actual[0]);
+    GP_EXPECT_NEAR(expected[1], actual[1]);
+    GP_EXPECT_NEAR(expected[2], actual[2]);
 }
 
 TEST_F(ClusterDynamicsTest, ii_absorption_test) {
@@ -452,7 +453,7 @@ TEST_F(ClusterDynamicsTest, i_emission_rate_test) {
     gp_float expected = 2.2296462178878698e-07;
     gp_float actual = cd.i_emission_rate();
 
-    EXPECT_DOUBLE_EQ(expected, actual);
+    GP_EXPECT_NEAR(expected, actual);
 }
 
 TEST_F(ClusterDynamicsTest, v_emission_rate_test) {
@@ -462,7 +463,7 @@ TEST_F(ClusterDynamicsTest, v_emission_rate_test) {
     gp_float expected = 2.1585231596640677e-35;
     gp_float actual = cd.v_emission_rate();
 
-    EXPECT_DOUBLE_EQ(expected, actual);
+    GP_EXPECT_NEAR(expected, actual);
 }
 
 TEST_F(ClusterDynamicsTest, i_absorption_rate_test) {
