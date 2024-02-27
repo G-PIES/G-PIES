@@ -94,24 +94,22 @@ gp_float ClusterDynamicsMetalKernel::v_defect_production(uint64_t n)
     return 0.;
 }
 
-gp_float ClusterDynamicsMetalKernel::i_demotion_rate(uint64_t n)
-    __METALDECL__ {
+gp_float ClusterDynamicsMetalKernel::i_demotion_rate(uint64_t n) __METALDECL__ {
     return iv_absorption(n) * vacancies[1] + ii_emission(n);
 }
 
-gp_float ClusterDynamicsMetalKernel::v_demotion_rate(uint64_t n)
-    __METALDECL__ {
+gp_float ClusterDynamicsMetalKernel::v_demotion_rate(uint64_t n) __METALDECL__ {
     return vi_absorption(n) * interstitials[1] + vv_emission(n);
 }
 
-gp_float ClusterDynamicsMetalKernel::i_combined_promotion_demotion_rate(uint64_t n)
-    __METALDECL__ {
+gp_float ClusterDynamicsMetalKernel::i_combined_promotion_demotion_rate(
+    uint64_t n) __METALDECL__ {
     return iv_absorption(n) * vacancies[1] +
            ii_absorption(n) * interstitials[1] + ii_emission(n);
 }
 
-gp_float ClusterDynamicsMetalKernel::v_combined_promotion_demotion_rate(uint64_t n)
-    __METALDECL__ {
+gp_float ClusterDynamicsMetalKernel::v_combined_promotion_demotion_rate(
+    uint64_t n) __METALDECL__ {
     return vi_absorption(n) * interstitials[1] +
            vv_absorption(n) * vacancies[1] + vv_emission(n);
 }
