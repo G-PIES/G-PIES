@@ -12,6 +12,7 @@
 class ClusterDynamicsImpl {
  public:
     gp_float time;
+    gp_float dpa;
 
     std::vector<gp_float> interstitials;
     std::vector<gp_float> interstitials_temp;
@@ -47,12 +48,12 @@ class ClusterDynamicsImpl {
     gp_float dislocation_density_derivative() const;
     gp_float i_defect_production(size_t) const;
     gp_float v_defect_production(size_t) const;
-    gp_float iemission_vabsorption_np1(size_t) const;
-    gp_float vemission_iabsorption_np1(size_t) const;
-    gp_float iemission_vabsorption_n(size_t) const;
-    gp_float vemission_iabsorption_n(size_t) const;
-    gp_float iemission_vabsorption_nm1(size_t) const;
-    gp_float vemission_iabsorption_nm1(size_t) const;
+    gp_float i_demotion_rate(size_t) const;
+    gp_float v_demotion_rate(size_t) const;
+    gp_float i_combined_promotion_demotion_rate(size_t) const;
+    gp_float v_combined_promotion_demotion_rate(size_t) const;
+    gp_float i_promotion_rate(size_t) const;
+    gp_float v_promotion_rate(size_t) const;
     gp_float i_emission_rate() const;
     gp_float v_emission_rate() const;
     gp_float i_absorption_rate() const;
@@ -75,14 +76,14 @@ class ClusterDynamicsImpl {
     gp_float dislocation_promotion_probability(size_t) const;
     gp_float cluster_radius(size_t) const;
 
-    // Value Precalculation Functions
     gp_float i_diffusion() const;
     gp_float v_diffusion() const;
+    gp_float mean_dislocation_cell_radius() const;
     gp_float ii_sum_absorption(size_t) const;
     gp_float iv_sum_absorption(size_t) const;
-    gp_float vv_sum_absorption(size_t) const;
     gp_float vi_sum_absorption(size_t) const;
-    gp_float mean_dislocation_cell_radius() const;
+    gp_float vv_sum_absorption(size_t) const;
+
 
     // Simulation Operation Functions
     bool update_clusters_1(gp_float);

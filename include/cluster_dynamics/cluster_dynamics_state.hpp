@@ -21,6 +21,10 @@ struct ClusterDynamicsState {
      */
     gp_float time = 0.0;
 
+    /** The cumulative radiation dose in displacements per atom (dpa)
+     */
+    gp_float dpa = 0.0;
+
     /** @brief The current concentration of each size of interstitial cluster
      * in \todo UNITS
      *

@@ -7,7 +7,7 @@
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
     The rate of production of interstital defects from the irradiation cascade
-   for size (n) clusters.
+    for size (n) clusters.
 */
 __CUDADECL__ gp_float ClusterDynamicsImpl::i_defect_production(size_t n) const {
     switch (n) {
@@ -31,7 +31,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::i_defect_production(size_t n) const {
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
     The rate of production of vacancy defects from the irradiation cascade for
-   size (n) clusters.
+    size (n) clusters.
 */
 __CUDADECL__ gp_float ClusterDynamicsImpl::v_defect_production(size_t n) const {
     switch (n) {
@@ -60,7 +60,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::v_defect_production(size_t n) const {
 
                   (1)     (2)                    (3)              (4)
     dCi(n) / dt = Gi(n) + a[i,n+1] * Ci(n + 1) - b[i,n] * Ci(n) + c[i,n-1] *
-   Ci(n-1)
+    Ci(n-1)
 */
 __CUDADECL__ gp_float
 ClusterDynamicsImpl::i_concentration_derivative(size_t in) const {
@@ -68,11 +68,11 @@ ClusterDynamicsImpl::i_concentration_derivative(size_t in) const {
         // (1)
         i_defect_production(in)
         // (2)
-        + iemission_vabsorption_np1(in + 1) * interstitials[in + 1]
+        + i_demotion_rate(in + 1) * interstitials[in + 1]
         // // (3)
-        - iemission_vabsorption_n(in) * interstitials[in]
+        - i_combined_promotion_demotion_rate(in) * interstitials[in]
         // // (4)
-        + iemission_vabsorption_nm1(in - 1) * interstitials[in - 1];
+        + i_promotion_rate(in - 1) * interstitials[in - 1];
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2a
@@ -80,7 +80,7 @@ ClusterDynamicsImpl::i_concentration_derivative(size_t in) const {
 
                   (1)     (2)                    (3)              (4)
     dCv(n) / dt = Gv(n) + a[v,n+1] * Cv(n + 1) - b[v,n] * Cv(n) + c[v,n-1] *
-   Cv(n-1)
+    Cv(n-1)
 */
 __CUDADECL__ gp_float
 ClusterDynamicsImpl::v_concentration_derivative(size_t vn) const {
@@ -88,51 +88,49 @@ ClusterDynamicsImpl::v_concentration_derivative(size_t vn) const {
         // (1)
         v_defect_production(vn)
         // (2)
-        + vemission_iabsorption_np1(vn + 1) * vacancies[vn + 1]
+        + v_demotion_rate(vn + 1) * vacancies[vn + 1]
         // (3)
-        - vemission_iabsorption_n(vn) * vacancies[vn]
+        - v_combined_promotion_demotion_rate(vn) * vacancies[vn]
         // (4)
-        + vemission_iabsorption_nm1(vn - 1) * vacancies[vn - 1];
+        + v_promotion_rate(vn - 1) * vacancies[vn - 1];
 }
 // --------------------------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2b
-    The combined rate of emission of an interstitial and absorption of a vacancy
-   by an interstitial loop of size (np1), both events leading to an interstitial
-   loop of size n.
+    The combined rate of emission of an interstitial and absorption
+    of a vacancy by an interstitial loop of size (n),
+    both events leading to an interstitial loop of size n.
 
                (1)             (2)     (3)
     a[i,n+1] = B[i,v](n + 1) * Cv(1) + E[i,i](n + 1)
 */
-__CUDADECL__ gp_float
-ClusterDynamicsImpl::iemission_vabsorption_np1(size_t np1) const {
+__CUDADECL__ gp_float ClusterDynamicsImpl::i_demotion_rate(size_t n) const {
     return
         // (1)
-        iv_absorption(np1) *
-            // (2)
-            vacancies[1] +
+        iv_absorption(n) *
+        // (2)
+        vacancies[1] +
         // (3)
-        ii_emission(np1);
+        ii_emission(n);
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2b
     The combined rate of emission of an interstitial and absorption of a vacancy
-   by an interstitial loop of size (np1), both events leading to an interstitial
-   loop of size n.
+    by an interstitial loop of size (n),
+    both events leading to an interstitial loop of size n.
 
                (1)             (2)     (3)
     a[v,n+1] = B[v,i](n + 1) * Ci(1) + E[v,v](n + 1)
 */
-__CUDADECL__ gp_float
-ClusterDynamicsImpl::vemission_iabsorption_np1(size_t np1) const {
+__CUDADECL__ gp_float ClusterDynamicsImpl::v_demotion_rate(size_t n) const {
     return
         // (1)
-        vi_absorption(np1) *
-            // (2)
-            interstitials[1] +
+        vi_absorption(n) *
+        // (2)
+        interstitials[1] +
         // (3)
-        vv_emission(np1);
+        vv_emission(n);
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2c
@@ -143,8 +141,8 @@ ClusterDynamicsImpl::vemission_iabsorption_np1(size_t np1) const {
              (1)                 (2)                 (3)
     b[i,n] = B[i,v](n) * Cv(1) + B[i,i](n) * Ci(1) + E[i,i](n)
 */
-__CUDADECL__ gp_float
-ClusterDynamicsImpl::iemission_vabsorption_n(size_t n) const {
+__CUDADECL__ gp_float ClusterDynamicsImpl::i_combined_promotion_demotion_rate(
+    size_t n) const {
     return
         // (1)
         iv_absorption(n) * vacancies[1]
@@ -162,8 +160,8 @@ ClusterDynamicsImpl::iemission_vabsorption_n(size_t n) const {
              (1)                 (2)                 (3)
     b[v,n] = B[v,i](n) * Ci(1) + B[v,v](n) * Cv(1) + E[v,v](n)
 */
-__CUDADECL__ gp_float
-ClusterDynamicsImpl::vemission_iabsorption_n(size_t n) const {
+__CUDADECL__ gp_float ClusterDynamicsImpl::v_combined_promotion_demotion_rate(
+    size_t n) const {
     return
         // (1)
         vi_absorption(n) * interstitials[1]
@@ -180,15 +178,14 @@ ClusterDynamicsImpl::vemission_iabsorption_n(size_t n) const {
                (1)           (2)     (3)
     c[i,n-1] = B[i,i](n-1) * Ci(1) * P_unf(n)
 */
-__CUDADECL__ gp_float
-ClusterDynamicsImpl::iemission_vabsorption_nm1(size_t nm1) const {
+__CUDADECL__ gp_float ClusterDynamicsImpl::i_promotion_rate(size_t n) const {
     return
         // (1)
-        ii_absorption(nm1)
+        ii_absorption(n)
         // (2)
         * interstitials[1]
         // (3)
-        * (1 - dislocation_promotion_probability(nm1 + 1));
+        * (1 - dislocation_promotion_probability(n + 1));
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2d
@@ -198,11 +195,10 @@ ClusterDynamicsImpl::iemission_vabsorption_nm1(size_t nm1) const {
                (1)           (2)
     c[v,n-1] = B[v,v](n-1) * Cv(1)
 */
-__CUDADECL__ gp_float
-ClusterDynamicsImpl::vemission_iabsorption_nm1(size_t nm1) const {
+__CUDADECL__ gp_float ClusterDynamicsImpl::v_promotion_rate(size_t n) const {
     return
         // (1)
-        vv_absorption(nm1) *
+        vv_absorption(n) *
         // (2)
         vacancies[1];
 }
@@ -212,7 +208,7 @@ ClusterDynamicsImpl::vemission_iabsorption_nm1(size_t nm1) const {
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3a
     Point defects concentrations per unit volume given a cluster size (in).
     ** in is only used in characteristic time calculations which rely on cluster
-   sizes up to (in).
+    sizes up to (in).
 
                 (1)     (2)
     dCi(1)/dt = Gi(1) - Riv * Ci(1) * Cv(1) -
@@ -244,7 +240,7 @@ gp_float ClusterDynamicsImpl::i1_concentration_derivative() const {
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3a
     Point defects concentrations per unit volume given a cluster size (vn).
     ** vn is only used in characteristic time calculations which rely on cluster
-   sizes up to (vn).
+    sizes up to (vn).
 
             (1)     (2)
     Cv(1) = Gv(1) - Riv * Ci(1) * Cv(1) -
@@ -277,11 +273,11 @@ gp_float ClusterDynamicsImpl::v1_concentration_derivative() const {
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3b
     Characteristic time for emitting an interstitial by the population of
-   interstital or vacancy clusters of size up to (nmax).
+    interstital or vacancy clusters of size up to (nmax).
 
                 (1)                      (2)                     (3)
     tEi(n) = SUM ( E[i,i](n) * Ci(n) ) + 4 * E[i,i](2) * Ci(2) + B[i,v](2) *
-   Cv(1) * Ci(2)
+    Cv(1) * Ci(2)
 */
 gp_float ClusterDynamicsImpl::i_emission_rate() const {
     auto self = this->self;
@@ -303,11 +299,11 @@ gp_float ClusterDynamicsImpl::i_emission_rate() const {
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3b
     Characteristic time for emitting a vacancy by the population of interstital
-   or vacancy clusters of size up to (nmax).
+    or vacancy clusters of size up to (nmax).
 
                 (1)                           (2)                     (3)
     tEv(n) = SUM[n>0] ( E[v,v](n) * Cv(n) ) + 4 * E[v,v](2) * Cv(2) + B[v,i](2)
-   * Cv(2) * Ci(1)
+    * Cv(2) * Ci(1)
 */
 gp_float ClusterDynamicsImpl::v_emission_rate() const {
     auto self = this->self;
@@ -331,7 +327,7 @@ gp_float ClusterDynamicsImpl::v_emission_rate() const {
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3c
     Characteristic time for absorbing an interstitial by the population of
-   interstital or vacancy clusters of size up to (nmax).
+    interstital or vacancy clusters of size up to (nmax).
 
                         (1)                              (2)
     tAi(n) = SUM[n>0] ( B[i,i](n) * Ci(n) ) + SUM[n>1] ( B[v,i](n) * Cv(n) )
@@ -352,7 +348,7 @@ gp_float ClusterDynamicsImpl::i_absorption_rate() const {
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 3c
     Characteristic time for absorbing a vacancy by the population of interstital
-   or vacancy clusters of size up to (nmax).
+    or vacancy clusters of size up to (nmax).
 
                         (1)                              (2)
     tAv(n) = SUM[n>0] ( B[v,v](n) * Cv(n) ) + SUM[n>1] ( B[i,v](n) * Ci(n) )
@@ -431,8 +427,8 @@ ClusterDynamicsImpl::v_dislocation_annihilation_rate() const {
     Characteristic time for annihilation of interstitials on grain boundaries.
 
            (1)            (2)      (3)                            (4) (5) tAdi =
-   6 * Di * sqrt( p * Zi + SUM[n] ( B[i,i](n) * Ci(n) ) + SUM[n] ( B[v,i](n) *
-   Cv(n) ) ) / d
+    6 * Di * sqrt( p * Zi + SUM[n] ( B[i,i](n) * Ci(n) ) + SUM[n] ( B[v,i](n) *
+    Cv(n) ) ) / d
 */
 __CUDADECL__ gp_float
 ClusterDynamicsImpl::i_grain_boundary_annihilation_rate() const {
@@ -454,8 +450,8 @@ ClusterDynamicsImpl::i_grain_boundary_annihilation_rate() const {
     Characteristic time for annihilation of interstitials on grain boundaries.
 
            (1)            (2)      (3)                            (4) (5) tAdv =
-   6 * Di * sqrt( p * Zv + SUM[n] ( B[v,v](n) * Cv(n) ) + SUM[n] ( B[i,v](n) *
-   Ci(n) ) ) / d
+    6 * Di * sqrt( p * Zv + SUM[n] ( B[v,v](n) * Cv(n) ) + SUM[n] ( B[i,v](n) *
+    Ci(n) ) ) / d
 */
 __CUDADECL__ gp_float
 ClusterDynamicsImpl::v_grain_boundary_annihilation_rate() const {
