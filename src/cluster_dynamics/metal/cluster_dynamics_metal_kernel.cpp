@@ -8,17 +8,17 @@
 gp_float ClusterDynamicsMetalKernel::i_concentration_derivative(uint64_t n)
     __METALDECL__ {
     return i_defect_production(n) +
-           iemission_vabsorption_np1(n + 1) * interstitials[n + 1] -
-           iemission_vabsorption_n(n) * interstitials[n] +
-           iemission_vabsorption_nm1(n - 1) * interstitials[n - 1];
+           i_demotion_rate(n + 1) * interstitials[n + 1] -
+           i_combined_promotion_demotion_rate(n) * interstitials[n] +
+           i_promotion_rate(n - 1) * interstitials[n - 1];
 }
 
 gp_float ClusterDynamicsMetalKernel::v_concentration_derivative(uint64_t vn)
     __METALDECL__ {
     return v_defect_production(vn) +
-           vemission_iabsorption_np1(vn + 1) * vacancies[vn + 1] -
-           vemission_iabsorption_n(vn) * vacancies[vn] +
-           vemission_iabsorption_nm1(vn - 1) * vacancies[vn - 1];
+           v_demotion_rate(vn + 1) * vacancies[vn + 1] -
+           v_combined_promotion_demotion_rate(vn) * vacancies[vn] +
+           v_promotion_rate(vn - 1) * vacancies[vn - 1];
 }
 
 gp_float ClusterDynamicsMetalKernel::i1_concentration_derivative()
@@ -94,35 +94,35 @@ gp_float ClusterDynamicsMetalKernel::v_defect_production(uint64_t n)
     return 0.;
 }
 
-gp_float ClusterDynamicsMetalKernel::iemission_vabsorption_np1(uint64_t np1)
+gp_float ClusterDynamicsMetalKernel::i_demotion_rate(uint64_t np1)
     __METALDECL__ {
     return iv_absorption(np1) * vacancies[1] + ii_emission(np1);
 }
 
-gp_float ClusterDynamicsMetalKernel::vemission_iabsorption_np1(uint64_t np1)
+gp_float ClusterDynamicsMetalKernel::v_demotion_rate(uint64_t np1)
     __METALDECL__ {
     return vi_absorption(np1) * interstitials[1] + vv_emission(np1);
 }
 
-gp_float ClusterDynamicsMetalKernel::iemission_vabsorption_n(uint64_t n)
+gp_float ClusterDynamicsMetalKernel::i_combined_promotion_demotion_rate(uint64_t n)
     __METALDECL__ {
     return iv_absorption(n) * vacancies[1] +
            ii_absorption(n) * interstitials[1] + ii_emission(n);
 }
 
-gp_float ClusterDynamicsMetalKernel::vemission_iabsorption_n(uint64_t n)
+gp_float ClusterDynamicsMetalKernel::v_combined_promotion_demotion_rate(uint64_t n)
     __METALDECL__ {
     return vi_absorption(n) * interstitials[1] +
            vv_absorption(n) * vacancies[1] + vv_emission(n);
 }
 
-gp_float ClusterDynamicsMetalKernel::iemission_vabsorption_nm1(uint64_t nm1)
+gp_float ClusterDynamicsMetalKernel::i_promotion_rate(uint64_t nm1)
     __METALDECL__ {
     return ii_absorption(nm1) * interstitials[1] *
            (1 - dislocation_promotion_probability(nm1 + 1));
 }
 
-gp_float ClusterDynamicsMetalKernel::vemission_iabsorption_nm1(uint64_t nm1)
+gp_float ClusterDynamicsMetalKernel::v_promotion_rate(uint64_t nm1)
     __METALDECL__ {
     return vv_absorption(nm1) * vacancies[1];
 }

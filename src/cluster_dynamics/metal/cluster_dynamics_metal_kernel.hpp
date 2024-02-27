@@ -40,12 +40,12 @@ class ClusterDynamicsMetalKernel {
     gp_float dislocation_density_derivative() __METALDECL__;
     gp_float i_defect_production(uint64_t) __METALDECL__;
     gp_float v_defect_production(uint64_t) __METALDECL__;
-    gp_float iemission_vabsorption_np1(uint64_t) __METALDECL__;
-    gp_float vemission_iabsorption_np1(uint64_t) __METALDECL__;
-    gp_float iemission_vabsorption_n(uint64_t) __METALDECL__;
-    gp_float vemission_iabsorption_n(uint64_t) __METALDECL__;
-    gp_float iemission_vabsorption_nm1(uint64_t) __METALDECL__;
-    gp_float vemission_iabsorption_nm1(uint64_t) __METALDECL__;
+    gp_float i_demotion_rate(uint64_t) __METALDECL__;
+    gp_float v_demotion_rate(uint64_t) __METALDECL__;
+    gp_float i_combined_promotion_demotion_rate(uint64_t) __METALDECL__;
+    gp_float v_combined_promotion_demotion_rate(uint64_t) __METALDECL__;
+    gp_float i_promotion_rate(uint64_t) __METALDECL__;
+    gp_float v_promotion_rate(uint64_t) __METALDECL__;
     gp_float i_emission_rate() __METALDECL__;
     gp_float v_emission_rate() __METALDECL__;
     gp_float i_absorption_rate() __METALDECL__;
