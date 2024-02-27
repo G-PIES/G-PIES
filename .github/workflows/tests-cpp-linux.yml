@@ -15,7 +15,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: Jimver/cuda-toolkit@v0.2.14
+      - name: Install CUDA Toolkit
+        uses: Jimver/cuda-toolkit@v0.2.14
         id: cuda-toolkit
         with:
           cuda: '12.3.2'
@@ -28,24 +29,26 @@ jobs:
 
       - name: Build CPU targets
         run: make all_cpu CONFIGURATION=${{ matrix.configuration }}
-      - name: Build CUDA targets
-        run: make all_cuda CONFIGURATION=${{ matrix.configuration }}
       - name: Build DB targets
         run: make dbtests dbex
+      - name: Build CUDA targets
+        run: make all_cuda CONFIGURATION=${{ matrix.configuration }}
 
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: G-PIES ${{ matrix.configuration }}
+          path: |
+            build/${{ matrix.configuration }}/libclusterdynamics.a
+            build/${{ matrix.configuration }}/cd_example
+            build/${{ matrix.configuration }}/cd_tests
+            build/${{ matrix.configuration }}/okmc
+            bin/client_db.out
+            build/${{ matrix.configuration }}/libclusterdynamicscuda.a
+            build/${{ matrix.configuration }}/cd_cuda_example
+            build/${{ matrix.configuration }}/cdcuda_tests
+      
       - name: Run Cluster Dynamics Tests
         run: ./build/${{ matrix.configuration }}/cd_tests
       - name: Run Client Database Tests
         run: ./bin/db_tests.out
-
-      - name: Upload Cluster Dynamics Executable
-        uses: actions/upload-artifact@v2
-        with:
-          name: cluster_dynamics
-          path: bin/cluster_dynamics.out
-
-      - name: Upload Client Database Executable 
-        uses: actions/upload-artifact@v2
-        with:
-          name: client_db 
-          path: bin/client_db.out

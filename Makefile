@@ -298,17 +298,21 @@ LIB_EXT.os_macos   = .a
 LIB_EXT.os_windows = .lib
 get_lib_file       = $(BUILD_PATH)/$1$(LIB_EXT.os_$(TARGET_OS))
 
+# Recursive wildcard function
+# Source: https://stackoverflow.com/a/18258352
+rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+
 # -----------------------------------------------------------------------------
 # Cluster Dynamics Library
 ALL_LIB += libclusterdynamics
-CXX_FILES.libclusterdynamics = $(wildcard src/cluster_dynamics/*.cpp) $(shell find src/cluster_dynamics/cpu -type f -name '*.cpp')
+CXX_FILES.libclusterdynamics = $(wildcard src/cluster_dynamics/*.cpp) $(call rwildcard,src/cluster_dynamics/cpu,*.cpp)
 OBJ_FILES.libclusterdynamics = $(call get_obj_files,libclusterdynamics)
 $(OBJ_FILES.libclusterdynamics): INCLUDES += src/cluster_dynamics src/cluster_dynamics/cpu
 
 # -----------------------------------------------------------------------------
 # Cluster Dynamics CUDA Library
 ALL_LIB += libclusterdynamicscuda
-CXX_FILES.libclusterdynamicscuda = $(wildcard src/cluster_dynamics/*.cpp) $(shell find src/cluster_dynamics/cuda -type f -name '*.cpp')
+CXX_FILES.libclusterdynamicscuda = $(wildcard src/cluster_dynamics/*.cpp) $(call rwildcard,src/cluster_dynamics/cuda,*.cpp)
 OBJ_FILES.libclusterdynamicscuda = $(call get_obj_files,libclusterdynamicscuda)
 $(OBJ_FILES.libclusterdynamicscuda): COMPILER = nvcc
 $(OBJ_FILES.libclusterdynamicscuda): INCLUDES += src/cluster_dynamics src/cluster_dynamics/cuda
@@ -357,7 +361,7 @@ $(EXE_FILE.cd_cuda_example): LIBRARIES += clusterdynamicscuda
 # -----------------------------------------------------------------------------
 # OKMC
 ALL_EXE += okmc
-CXX_FILES.okmc = $(shell find src/okmc -type f -name '*.cpp')
+CXX_FILES.okmc = $(call rwildcard,src/okmc,*.cpp)
 OBJ_FILES.okmc = $(call get_obj_files,okmc)
 
 # -----------------------------------------------------------------------------
@@ -369,7 +373,7 @@ $$(OBJ_PATH)/$1/%.o: %.cpp
 endef
 
 $(foreach prog,$(ALL_EXE) $(ALL_LIB),$(eval $(call CXX_template,$(prog))))
--include $(shell test -d $(OBJ_PATH) && find $(OBJ_PATH) -type f -name '*.d')
+-include $(call rwildcard,$(OBJ_PATH)*.d)
 
 # -----------------------------------------------------------------------------
 # Generic executable target
