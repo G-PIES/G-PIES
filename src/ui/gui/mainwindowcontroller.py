@@ -34,7 +34,13 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
             self.stop_simulation()
 
         # To be initialized by GUI parameter entry handling
-        self.params = SimulationParams(10, 1.0, 0.00001, 4, runner_block_size=1000)
+        # I added in very simple error checking for the user param here
+        try:
+            userInputTime = float(self.lineEdit.text())
+        except ValueError:
+            userInputTime=1.0
+        
+        self.params = SimulationParams(10, userInputTime, 0.00001, 4, runner_block_size=1000)
         self.gc.init_graph(self.params.C)
 
         # Init shared memory for SimulationProcess / DataAccumulator communication
@@ -79,7 +85,7 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         print("simulation finished")
 
         if self.sim_running:
-            self.stop_simulation()
+           self.stop_simulation()
 
     def update_graph(self):
         elapsed = self.start_time.msecsTo(QDateTime.currentDateTime()) / 1000.0
