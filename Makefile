@@ -203,7 +203,7 @@ cdex: cd_example
 
 # Cluster Dynamics W/ CUDA Example
 .PHONY: cdcudaex
-cdex: cd_cuda_example
+cdcudaex: cd_cuda_example
 
 # Cluster Dynamics Example W/ Verbose Printing
 .PHONY: cdv
@@ -239,9 +239,7 @@ COMPILER = gcc
 
 INCLUDES = include
 
-CXXFLAGS.common     = -std=c++20 $(INCLUDES:%=-I%)
-CXXFLAGS.release    = -O3
-CXXFLAGS.debug      = -O0
+CXXFLAGS.common     = $(INCLUDES:%=-I%)
 CXXFLAGS.arch_amd64 = -DAMD64
 CXXFLAGS.arch_ia32  = -DIA32
 CXXFLAGS.arch_arm   = -DARM
@@ -250,22 +248,64 @@ CXXFLAGS.os_linux   = -DLINUX
 CXXFLAGS.os_macos   = -DOSX
 
 CXX.gcc = g++
-CXXFLAGS.gcc.common = -Wall -fno-fast-math -MMD -MP
-CXXFLAGS.gcc.debug  = -g3
+CXXFLAGS.gcc.common  = -std=c++20 -Wall -fno-fast-math -MMD -MP
+CXXFLAGS.gcc.release = -O3
+CXXFLAGS.gcc.debug   = -O0 -g3
 CXXFLAGS.gcc.debug.os_linux = -fsanitize=undefined -fsanitize=address
 CXXFLAGS.gcc.debug.os_macos = -fsanitize=undefined -fsanitize=address
 
 CXX.nvcc = nvcc
 CXXFLAGS.nvcc.common = -Werror all-warnings -DUSE_CUDA -x cu --expt-extended-lambda
+CXXFLAGS.nvcc.release = -O3
+CXXFLAGS.nvcc.debug   = -O0
 CXXFLAGS.nvcc.os_windows = -MD
 CXXFLAGS.nvcc.os_linux   = -MMD -MP
 CXXFLAGS.nvcc.os_macos   = -MMD -MP
+
+ifeq ($(TARGET_OS), windows)
+COMPILER = cl
+SHELL = cmd
+
+VSWHERE = C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe
+VC_BASE_PATH = $(shell $(VSWHERE) -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath)
+VC_VERSION = $(shell cmd /c type "$(VC_BASE_PATH)\VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt")
+VC_CL_PATH = $(VC_BASE_PATH)\VC\Tools\MSVC\$(VC_VERSION)
+
+reg_query = $(shell cmd /q /c for /F "tokens=1,2*" %%i in ('reg query "$1" /v $2') do (if "%%i"=="$2" echo %%k))
+WIN_SDK_VERSION = v10.0
+WIN_SDK_BASE_PATH       = $(call reg_query,HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\Windows\$(WIN_SDK_VERSION),InstallationFolder)
+WIN_SDK_PRODUCT_VERSION = $(call reg_query,HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\Windows\$(WIN_SDK_VERSION),ProductVersion).0
+
+CXX.cl = "$(VC_CL_PATH)\bin\Hostx64\x64\cl.exe"
+CXXFLAGS.cl.common = -nologo -std:c++20 \
+                     -I"$(VC_CL_PATH)\include" \
+                     -I"$(WIN_SDK_BASE_PATH)\Include\$(WIN_SDK_PRODUCT_VERSION)\ucrt"
+CXXFLAGS.cl.release = -O2
+CXXFLAGS.cl.debug   = -Od
+
+LD.cl = "$(VC_CL_PATH)\bin\Hostx64\x64\link.exe"
+LDFLAGS.cl.common = -nologo \
+                    -libpath:$(BUILD_PATH) $(EXTERN_LIBRARIES_PATH:%=-libpath:%) \
+					-libpath:"$(VC_CL_PATH)\lib\x64" \
+					-libpath:"$(WIN_SDK_BASE_PATH)\lib\$(WIN_SDK_PRODUCT_VERSION)\ucrt\x64" \
+					-libpath:"$(WIN_SDK_BASE_PATH)\lib\$(WIN_SDK_PRODUCT_VERSION)\um\x64" \
+					-libpath:"$(VC_CL_PATH)\lib\x64" \
+					$(LIBRARIES:%=%.lib) $(EXTERN_LIBRARIES:%=%.lib)
+
+AR.os_windows = "$(VC_CL_PATH)\bin\Hostx64\x64\lib.exe"
+ARFLAGS.os_windows = -nologo
+
+compile.cl = $(CXX) $(CXXFLAGS) -Fo$(dir $2) -c $1
+link.cl = $(LD) $(LDFLAGS) -out:$2 $1
+archive.os_windows = $(AR) -out:$2 $1
+endif
 
 calculate_compiler_options = $(strip $($1.common) $($1.$(CONFIGURATION)) \
 							 $($1.arch_$(TARGET_ARCH)) $($1.$(CONFIGURATION).arch_$(TARGET_ARCH)) \
 							 $($1.os_$(TARGET_OS)) $($1.$(CONFIGURATION).os_$(TARGET_OS)))
 CXX      = $(CXX.$(COMPILER))
 CXXFLAGS = $(strip $(call calculate_compiler_options,CXXFLAGS) $(call calculate_compiler_options,CXXFLAGS.$(COMPILER)))
+compile  = $(if $(compile.$(COMPILER)),$(compile.$(COMPILER)),$(CXX) $(CXXFLAGS) -c $1 -o $2)
 
 # -----------------------------------------------------------------------------
 # Linker parameters
@@ -274,7 +314,8 @@ LIBRARIES             =
 EXTERN_LIBRARIES      =
 EXTERN_LIBRARIES_PATH =
 
-LDFLAGS.common = -L$(BUILD_PATH) $(LIBRARIES:%=-l%) $(EXTERN_LIBRARIES_PATH:%=-L%) $(EXTERN_LIBRARIES:%=-l%)
+LDFLAGS.gcc.common  = -L$(BUILD_PATH) $(LIBRARIES:%=-l%) $(EXTERN_LIBRARIES_PATH:%=-L%) $(EXTERN_LIBRARIES:%=-l%)
+LDFLAGS.nvcc.common = -L$(BUILD_PATH) $(LIBRARIES:%=-l%) $(EXTERN_LIBRARIES_PATH:%=-L%) $(EXTERN_LIBRARIES:%=-l%)
 
 LDFLAGS.gcc.debug.os_linux = -fsanitize=undefined -fsanitize=address
 LDFLAGS.gcc.debug.os_macos = -fsanitize=undefined -fsanitize=address
@@ -284,11 +325,17 @@ LD.nvcc = nvcc
 
 LD = $(LD.$(COMPILER))
 LDFLAGS = $(strip $(call calculate_compiler_options,LDFLAGS) $(call calculate_compiler_options,LDFLAGS.$(COMPILER)))
+link = $(if $(link.$(COMPILER)),$(link.$(COMPILER)),$(LD) $(filter %$(OBJ_EXT.os_$(TARGET_OS)),$^) $(LDFLAGS) -o $2)
 
 # -----------------------------------------------------------------------------
-# Arciver parameters
-AR = ar
-ARFLAGS = -crvs
+# Archiver parameters
+AR.os_linux = ar
+AR.os_macos = ar
+ARFLAGS.os_linux = -crvs
+ARFLAGS.os_macos = -crvs
+AR      = $(AR.os_$(TARGET_OS))
+ARFLAGS = $(ARFLAGS.os_$(TARGET_OS))
+archive = $(if $(archive.os_$(TARGET_OS)),$(archive.os_$(TARGET_OS)),$(AR) $(ARFLAGS) $2 $1)
 
 # -----------------------------------------------------------------------------
 # Generic source and artifact paths
@@ -393,7 +440,7 @@ OBJ_FILES.okmc = $(call get_obj_files,okmc)
 define CXX_template
 $$(OBJ_PATH)/$1/%$(OBJ_EXT.os_$(TARGET_OS)): %.cpp
 	@$$(call mkdir,$$(@D))
-	$$(CXX) $$(CXXFLAGS) -c $$< -o $$@
+	$$(call compile,$$<,$$@)
 endef
 
 $(foreach prog,$(ALL_EXE) $(ALL_LIB),$(eval $(call CXX_template,$(prog))))
@@ -412,7 +459,7 @@ endif
 
 ALL_EXE_FILES = $(foreach exe,$(ALL_EXE),$(call get_exe_file,$(exe)))
 $(ALL_EXE_FILES): $(call get_exe_file,%): $$(foreach lib,$$(LIBRARIES),$$(call get_lib_file,lib$$(lib))) $$(OBJ_FILES.%)
-	$(LD) $(filter %$(OBJ_EXT.os_$(TARGET_OS)),$^) $(LDFLAGS) -o $@
+	$(call link,$^,$@)
 
 # -----------------------------------------------------------------------------
 # Generic library target
@@ -421,7 +468,7 @@ $(ALL_EXE_FILES): $(call get_exe_file,%): $$(foreach lib,$$(LIBRARIES),$$(call g
 define LIB_template
 $1: $(call get_lib_file,$1)
 $(call get_lib_file,$1): $$(OBJ_FILES.$1)
-	$$(AR) $$(ARFLAGS) $$@ $$(filter %$(OBJ_EXT.os_$(TARGET_OS)),$$^)
+	$$(call archive,$$^,$$@)
 endef
 
 $(foreach lib,$(ALL_LIB),$(eval $(call LIB_template,$(lib))))
