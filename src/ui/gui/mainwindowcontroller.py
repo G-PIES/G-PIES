@@ -40,7 +40,23 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         except ValueError:
             userInputTime=1.0
         
-        self.params = SimulationParams(10, userInputTime, 0.00001, 4, runner_block_size=1000)
+        try:
+            userInputC = int(self.lineEdit_2.text())
+        except ValueError:
+            userInputC=10
+        
+        try:
+            userInputStep = float(self.lineEdit_3.text())
+        except ValueError:
+            userInputStep=0.00001
+            
+        try:
+            userInputEntrySize = int(self.lineEdit_4.text())
+        except ValueError:
+            userInputEntrySize=4
+       
+        
+        self.params = SimulationParams(userInputC, userInputTime, userInputStep, userInputEntrySize, runner_block_size=1000)
         self.gc.init_graph(self.params.C)
 
         # Init shared memory for SimulationProcess / DataAccumulator communication
