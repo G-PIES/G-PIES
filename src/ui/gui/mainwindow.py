@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'mainwindow.ui'
+# Form implementation generated from reading ui file 'gui/mainwindow.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -36,14 +36,6 @@ class Ui_MainWindow(object):
         self.label = QtWidgets.QLabel(self.widget)
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 5, 0, 1, 1)
-        self.label_2 = QtWidgets.QLabel(self.widget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(1)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
-        self.label_2.setSizePolicy(sizePolicy)
-        self.label_2.setObjectName("label_2")
-        self.gridLayout.addWidget(self.label_2, 2, 1, 1, 1)
         self.line = QtWidgets.QFrame(self.widget)
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -91,10 +83,18 @@ class Ui_MainWindow(object):
         self.lineEdit_4.setObjectName("lineEdit_4")
         self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.lineEdit_4)
         self.gridLayout.addLayout(self.formLayout, 3, 0, 1, 1)
+        self.label_2 = QtWidgets.QLabel(self.widget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(1)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy)
+        self.label_2.setObjectName("label_2")
+        self.gridLayout.addWidget(self.label_2, 2, 1, 1, 1)
         self.horizontalLayout.addWidget(self.widget)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 849, 20))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 849, 24))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -108,14 +108,14 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "Time Elasped:                          Simulation Time:"))
-        self.label_2.setText(_translate("MainWindow", "Data about the Sim: "))
         self.pushButton_2.setText(_translate("MainWindow", "Start Simulation"))
         self.pushButton_3.setText(_translate("MainWindow", "Stop"))
         self.pushButton.setText(_translate("MainWindow", "Pause"))
         self.label_3.setText(_translate("MainWindow", "Sim Length"))
-        self.label_4.setText(_translate("MainWindow", "Param #2"))
-        self.label_5.setText(_translate("MainWindow", "Param #3"))
-        self.label_6.setText(_translate("MainWindow", "Param #4"))
+        self.label_4.setText(_translate("MainWindow", "Cluster Size"))
+        self.label_5.setText(_translate("MainWindow", "Time step (dt)"))
+        self.label_6.setText(_translate("MainWindow", "Entry Size"))
+        self.label_2.setText(_translate("MainWindow", "Data about the Sim: "))
 
 
 if __name__ == "__main__":
