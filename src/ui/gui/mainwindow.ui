@@ -37,19 +37,6 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QLabel" name="label_2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>1</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Data about the Sim: </string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="0" colspan="2">
         <widget class="Line" name="line">
          <property name="orientation">
@@ -100,7 +87,7 @@
          <item row="1" column="0">
           <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>Param #2</string>
+            <string>Cluster Size</string>
            </property>
           </widget>
          </item>
@@ -110,7 +97,7 @@
          <item row="2" column="0">
           <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>Param #3</string>
+            <string>Time step (dt)</string>
            </property>
           </widget>
          </item>
@@ -120,7 +107,7 @@
          <item row="3" column="0">
           <widget class="QLabel" name="label_6">
            <property name="text">
-            <string>Param #4</string>
+            <string>Entry Size</string>
            </property>
           </widget>
          </item>
@@ -128,6 +115,19 @@
           <widget class="QLineEdit" name="lineEdit_4"/>
          </item>
         </layout>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="label_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Data about the Sim: </string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -140,7 +140,7 @@
      <x>0</x>
      <y>0</y>
      <width>849</width>
-     <height>20</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>
