@@ -20,6 +20,7 @@ void material_cmp_print(const Material&, const Material&);
 void simulations_crud();
 void simulation_cmp_print(const HistorySimulation&, const HistorySimulation&);
 
+
 ClientDb db;
 Randomizer randomizer;
 
@@ -241,6 +242,7 @@ void simulations_crud() {
 }
 
 void reactor_cmp_print(const NuclearReactor& r1, const NuclearReactor& r2) {
+
     fprintf(stdout, "%s\t-\t%s\n", r1.species.c_str(), r2.species.c_str());
     fprintf(stdout, "%s\t-\t%s\n", r1.creation_datetime.c_str(),
             r2.creation_datetime.c_str());
