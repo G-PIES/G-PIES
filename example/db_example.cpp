@@ -8,6 +8,9 @@
 #include "utils/gpies_exception.hpp"
 #include "utils/randomizer.hpp"
 
+// used to turn of row deleting so we can inspect the database
+#define DELETE_ON false
+
 #define VEC_SIZE 4
 
 void reactors_crud();
@@ -88,6 +91,7 @@ void reactors_crud() {
         fprintf(stdout, "\n");
     }
 
+#if DELETE_ON
     fprintf(stdout, "* DELETE REACTORS\n\n");
 
     for (int i = 0; i < VEC_SIZE; ++i) {
@@ -97,6 +101,7 @@ void reactors_crud() {
     }
 
     fprintf(stdout, "\n");
+#endif
 }
 
 void materials_crud() {
@@ -146,6 +151,7 @@ void materials_crud() {
         fprintf(stdout, "\n");
     }
 
+#if DELETE_ON
     fprintf(stdout, "* DELETE MATERIALS\n\n");
 
     for (int i = 0; i < VEC_SIZE; ++i) {
@@ -155,6 +161,7 @@ void materials_crud() {
     }
 
     fprintf(stdout, "\n");
+#endif
 }
 
 void simulations_crud() {
@@ -198,6 +205,7 @@ void simulations_crud() {
         fprintf(stdout, "\n");
     }
 
+#if DELETE_ON
     fprintf(stdout, "* DELETE SIMULATIONS\n\n");
 
     for (int i = 0; i < VEC_SIZE; ++i) {
@@ -207,6 +215,7 @@ void simulations_crud() {
     }
 
     fprintf(stdout, "\n");
+#endif
 }
 
 void reactor_cmp_print(const NuclearReactor& r1, const NuclearReactor& r2) {

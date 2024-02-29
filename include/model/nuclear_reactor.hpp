@@ -1,9 +1,9 @@
 #ifndef NUCLEAR_REACTOR_HPP
 #define NUCLEAR_REACTOR_HPP
 
-#include <string>
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "utils/conversions.hpp"
 #include "utils/types.hpp"

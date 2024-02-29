@@ -34,7 +34,7 @@ class ClientDb {
     // Creates a reactor in the local database, assigning a value to
     // NuclearReactor.sqlite_id. |sqlite_code| can optionally be retrieved.
     // Returns true on success.
-    bool create_reactor(NuclearReactor &reactor, int *sqlite_code = nullptr);
+    bool create_reactor(NuclearReactor &reactor, int *sqlite_code = nullptr, bool is_preset = true);
 
     // Reads all reactors from the local database, populating |reactors|.
     // |sqlite_code| can optionally be retrieved.
@@ -68,7 +68,7 @@ class ClientDb {
     // Creates a material in the local database, assigning a value to
     // Material.sqlite_id. |sqlite_code| can optionally be retrieved. Returns
     // true on success.
-    bool create_material(Material &material, int *sqlite_code = nullptr);
+    bool create_material(Material &material, int *sqlite_code = nullptr, bool is_preset = true);
 
     // Reads all materials from the local database, populating |materials|.
     // |sqlite_code| can optionally be retrieved.
@@ -205,8 +205,8 @@ class ClientDb {
        statements.
     */
 
-    static void bind_reactor(sqlite3_stmt *, const NuclearReactor &);
-    static void bind_material(sqlite3_stmt *, const Material &);
+    static void bind_reactor(sqlite3_stmt *, const NuclearReactor &, bool = false);
+    static void bind_material(sqlite3_stmt *, const Material &, bool = false);
     static void bind_simulation(sqlite3_stmt *, const SimulationModel &);
 
     // --------------------------------------------------------------------------------------------

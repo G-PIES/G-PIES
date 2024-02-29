@@ -111,7 +111,8 @@ int ClientDb::delete_one(sqlite3_stmt *stmt,
 // COLUMN BINDING
 // --------------------------------------------------------------------------------------------
 
-void ClientDb::bind_reactor(sqlite3_stmt *stmt, const NuclearReactor &reactor) {
+void ClientDb::bind_reactor(sqlite3_stmt *stmt, const NuclearReactor &reactor,
+                            bool is_preset) {
     sqlite3_bind_text(stmt, 1, reactor.species.c_str(),
                       reactor.species.length(), nullptr);
     sqlite3_bind_double(stmt, 2, reactor.get_flux());
@@ -124,16 +125,20 @@ void ClientDb::bind_reactor(sqlite3_stmt *stmt, const NuclearReactor &reactor) {
     sqlite3_bind_double(stmt, 9, reactor.get_v_tri());
     sqlite3_bind_double(stmt, 10, reactor.get_v_quad());
     sqlite3_bind_double(stmt, 11, reactor.get_dislocation_density_evolution());
+
     // update
     if (is_valid_sqlite_id(reactor.sqlite_id))
         sqlite3_bind_int(stmt, 12, reactor.sqlite_id);
     // create
-    else
+    else {
         sqlite3_bind_text(stmt, 12, reactor.creation_datetime.c_str(),
                           reactor.creation_datetime.length(), nullptr);
+        sqlite3_bind_int(stmt, 13, static_cast<int>(is_preset));
+    }
 }
 
-void ClientDb::bind_material(sqlite3_stmt *stmt, const Material &material) {
+void ClientDb::bind_material(sqlite3_stmt *stmt, const Material &material,
+                             bool is_preset) {
     sqlite3_bind_text(stmt, 1, material.species.c_str(),
                       material.species.length(), nullptr);
     sqlite3_bind_double(stmt, 2, material.get_i_migration());
@@ -156,13 +161,16 @@ void ClientDb::bind_material(sqlite3_stmt *stmt, const Material &material) {
     sqlite3_bind_double(stmt, 19, material.get_lattice_param());
     sqlite3_bind_double(stmt, 20, material.get_burgers_vector());
     sqlite3_bind_double(stmt, 21, material.get_atomic_volume());
+
     // update
     if (is_valid_sqlite_id(material.sqlite_id))
         sqlite3_bind_int(stmt, 22, material.sqlite_id);
     // create
-    else
+    else {
         sqlite3_bind_text(stmt, 22, material.creation_datetime.c_str(),
                           material.creation_datetime.length(), nullptr);
+        sqlite3_bind_int(stmt, 23, static_cast<int>(is_preset));
+    }
 }
 
 void ClientDb::bind_simulation(sqlite3_stmt *stmt,
@@ -181,6 +189,7 @@ void ClientDb::bind_simulation(sqlite3_stmt *stmt,
                       SQLITE_TRANSIENT);
     sqlite3_bind_double(
         stmt, 6, static_cast<double>(simulation.cd_state.dislocation_density));
+
     // update
     if (is_valid_sqlite_id(simulation.sqlite_id))
         sqlite3_bind_int(stmt, 7, simulation.sqlite_id);
@@ -483,8 +492,8 @@ bool ClientDb::clear(int *sqlite_result_code) {
     return is_sqlite_success(sqlite_code);
 }
 
-bool ClientDb::create_reactor(NuclearReactor &reactor,
-                              int *sqlite_result_code) {
+bool ClientDb::create_reactor(NuclearReactor &reactor, int *sqlite_result_code,
+                              bool is_preset) {
     if (is_valid_sqlite_id(reactor.sqlite_id))
         throw ClientDbException("Failed to create reactor, it already exists.");
     if (!db) open();
@@ -497,7 +506,7 @@ bool ClientDb::create_reactor(NuclearReactor &reactor,
                            db_queries::create_reactor.size(), &stmt, nullptr);
     if (is_sqlite_error(sqlite_code)) err_create_reactor(stmt, reactor);
 
-    bind_reactor(stmt, reactor);
+    bind_reactor(stmt, reactor, is_preset);
 
     sqlite_code = create_one<NuclearReactor>(stmt, err_create_reactor, reactor);
 
@@ -591,7 +600,8 @@ bool ClientDb::delete_reactor(const NuclearReactor &reactor,
     return is_sqlite_success(sqlite_code);
 }
 
-bool ClientDb::create_material(Material &material, int *sqlite_result_code) {
+bool ClientDb::create_material(Material &material, int *sqlite_result_code,
+                               bool is_preset) {
     if (is_valid_sqlite_id(material.sqlite_id))
         throw ClientDbException(
             "Failed to create material, it already exists.");
@@ -605,7 +615,7 @@ bool ClientDb::create_material(Material &material, int *sqlite_result_code) {
                            db_queries::create_material.size(), &stmt, nullptr);
     if (is_sqlite_error(sqlite_code)) err_create_material(stmt, material);
 
-    bind_material(stmt, material);
+    bind_material(stmt, material, is_preset);
 
     sqlite_code = create_one<Material>(stmt, err_create_material, material);
 
@@ -707,6 +717,9 @@ bool ClientDb::create_simulation(SimulationModel &simulation,
     if (!db) open();
 
     int sqlite_code;
+
+    // TODO - create reactor & material (non-presets)
+
     sqlite3_stmt *stmt;
 
     sqlite_code = sqlite3_prepare_v2(db, db_queries::create_simulation.c_str(),

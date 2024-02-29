@@ -25,7 +25,8 @@ std::string init =
     "v_bi float DEFAULT 0.0,"
     "v_tri float DEFAULT 0.0,"
     "v_quad float DEFAULT 0.0,"
-    "dislocation_density_evolution float DEFAULT 0.0"
+    "dislocation_density_evolution float DEFAULT 0.0,"
+    "is_preset INTEGER"
     ");"
 
     "CREATE TABLE IF NOT EXISTS materials"
@@ -52,7 +53,8 @@ std::string init =
     "grain_size float DEFAULT 0.0,"
     "lattice_param float DEFAULT 0.0,"
     "burgers_vector float DEFAULT 0.0,"
-    "atomic_volume float DEFAULT 0.0"
+    "atomic_volume float DEFAULT 0.0,"
+    "is_preset INTEGER"
     ");"
 
     "CREATE TABLE IF NOT EXISTS simulations"
@@ -80,8 +82,8 @@ std::string last_insert_rowid = "SELECT last_insert_rowid();";
 std::string create_reactor =
     "INSERT INTO reactors ("
     "species, flux, temperature, recombination, i_bi, i_tri, i_quad, v_bi, "
-    "v_tri, v_quad, dislocation_density_evolution, creation_datetime"
-    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    "v_tri, v_quad, dislocation_density_evolution, creation_datetime, is_preset"
+    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 std::string read_reactors = "SELECT * FROM reactors;";
 
@@ -113,9 +115,9 @@ std::string create_material =
     "i_loop_bias, i_dislocation_bias, i_dislocation_bias_param, v_loop_bias, "
     "v_dislocation_bias, v_dislocation_bias_param, dislocation_density_0, "
     "grain_size, lattice_param, burgers_vector, atomic_volume, "
-    "creation_datetime"
+    "creation_datetime, is_preset"
     ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-    "?);";
+    "?, ?);";
 
 std::string read_materials = "SELECT * FROM materials;";
 

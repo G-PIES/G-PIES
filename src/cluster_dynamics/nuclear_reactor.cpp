@@ -1,4 +1,5 @@
 #include "model/nuclear_reactor.hpp"
+
 #include "nuclear_reactor_impl.hpp"
 #include "utils/datetime.hpp"
 
