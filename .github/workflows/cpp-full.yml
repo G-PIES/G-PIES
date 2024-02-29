@@ -23,6 +23,9 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
+      MAKE_TERMOUT: 1
+      CMAKE_COLOR_DIAGNOSTICS: ON
+      GTEST_COLOR: yes
       out_dir: ${{ startsWith(matrix.os, 'windows') && format('./out/{0}', matrix.configuration) || './out' }}
       cuda_install_method: ${{ startsWith(matrix.os, 'windows') && 'local' || 'network' }}
       cuda_packages: ${{ startsWith(matrix.os, 'windows') && '[ "nvcc", "cudart", "visual_studio_integration" ]' || '[ "nvcc" ]' }}
