@@ -5,6 +5,7 @@
 
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
+#include "model/history_simulation.hpp"
 
 class Randomizer {
  public:
@@ -15,7 +16,7 @@ class Randomizer {
                (static_cast<gp_float>(RAND_MAX / 100));
     }
 
-    void reactor_randomize(NuclearReactor &reactor) const {
+    void reactor_randomize(NuclearReactor& reactor) const {
         reactor.set_flux(randd());
         reactor.set_temperature(randd());
         reactor.set_recombination(randd());
@@ -28,7 +29,7 @@ class Randomizer {
         reactor.set_dislocation_density_evolution(randd());
     }
 
-    void material_randomize(Material &material) {
+    void material_randomize(Material& material) const {
         material.set_i_migration(randd());
         material.set_v_migration(randd());
         material.set_i_diffusion_0(randd());
@@ -49,6 +50,20 @@ class Randomizer {
         material.set_lattice_param(randd());
         material.set_burgers_vector(randd());
         material.set_atomic_volume(randd());
+    }
+
+    void simulation_randomize(HistorySimulation& simulation) const {
+        reactor_randomize(simulation.reactor);
+        material_randomize(simulation.material);
+        simulation.cd_state.time = randd();
+
+        int vec_size = rand() % 100000 + 4;
+        for (int i = 0; i < vec_size; ++i) {
+            simulation.cd_state.interstitials.push_back(randd());
+            simulation.cd_state.vacancies.push_back(randd());
+        }
+
+        simulation.cd_state.dislocation_density = randd();
     }
 };
 
