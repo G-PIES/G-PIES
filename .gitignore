@@ -45,28 +45,8 @@ resources
 # csv
 *.csv
 
-# databases
-./db
-db/*.db
-
-# dev directories
-./bin
-./build
-./lib
-./out
-
 #Documentation files
 docs/latex
-
-# gtest binaries
-!libgtest_main.a
-!libgtest.a
-
-# metal
-extern/metal-cpp
-*.ir
-*.air
-*.metallib
 
 # CMake
 CMakeLists.txt.user
