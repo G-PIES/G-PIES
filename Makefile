@@ -122,7 +122,7 @@ cdmetallib: bdirs
 	$(CC) $(CLANGFLAGS) -DGP_FLOAT=float src/cluster_dynamics/metal/cluster_dynamics_metal_kernel.cpp -c -o $(BUILD_DIR)/clusterdynamicsmetalkernel.o -Iextern/metal-cpp $(INCLUDE_FLAGS)
 	ar crs $(CDMETAL_LIB) $(BUILD_DIR)/clusterdynamicsmetal.o $(BUILD_DIR)/material.o $(BUILD_DIR)/nuclear_reactor.o $(BUILD_DIR)/clusterdynamicsmetalimpl.o $(BUILD_DIR)/clusterdynamicsmetalkernel.o
 
-# Client Database Example
+# Client Database CLI
 dblib: bdirs
 	$(CC) $(CCFLAGS) src/client_db/client_db.cpp -c -o $(BUILD_DIR)/clientdb.o $(INCLUDE_FLAGS)
 	$(CC) $(CCFLAGS) src/cluster_dynamics/material.cpp -c -o $(BUILD_DIR)/material.o $(INCLUDE_FLAGS)
@@ -136,12 +136,12 @@ dblib: bdirs
 # Executables 
 # NOTE: "make [target] R=1" will automatically run the executable following the build
 
-# Cluster Dynamics W/ Metal Example
+# Cluster Dynamics W/ Metal CLI
 cdmetalcli: cdmetallib
-	$(CC) $(CCFLAGS) -DGP_FLOAT=float cli/cd_cli.cpp -o $(BIN_DIR)/cd_metal_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamicsmetal -framework Metal -framework QuartzCore -framework Foundation
-	@[ "${R}" ] && ./$(BIN_DIR)/cd_metal_example$(EXE_EXT) || ( exit 0 )
+	$(CC) $(CCFLAGS) -DGP_FLOAT=float cli/cd_cli.cpp -o $(BIN_DIR)/cd_metal_cli$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamicsmetal -framework Metal -framework QuartzCore -framework Foundation
+	@[ "${R}" ] && ./$(BIN_DIR)/cd_metal_cli$(EXE_EXT) || ( exit 0 )
 
-# Database Example
+# Database CLI
 dbcli: dblib
 	$(CC) $(CCFLAGS) cli/db_cli.cpp -o $(BIN_DIR)/db_cli$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclientdb -lsqlite3
 	@[ "${R}" ] && ./$(BIN_DIR)/db_cli$(EXE_EXT) || ( exit 0 )
@@ -184,7 +184,7 @@ CONFIGURATION = release
 
 .PHONY: all_cpu all_cuda clean
 all_cpu: okmc cd_cli cd_tests libclusterdynamics
-all_cuda: cd_cuda_example cdcuda_tests libclusterdynamicscuda
+all_cuda: cd_cuda_cli cdcuda_tests libclusterdynamicscuda
 
 .PHONY: clean_build_dir
 clean: clean_build_dir
@@ -198,20 +198,20 @@ cdcudalib: libclusterdynamicscuda
 cdtests: cd_tests
 cdcudatests: cdcuda_tests
 
-# Cluster Dynamics Example
+# Cluster Dynamics CLI
 .PHONY: cdcli
 cdcli: cd_cli
 
-# Cluster Dynamics W/ CUDA Example
+# Cluster Dynamics W/ CUDA CLI
 .PHONY: cdcudaex
-cdcli: cd_cuda_example
+cdcli: cd_cuda_cli
 
-# Cluster Dynamics Example W/ Verbose Printing
+# Cluster Dynamics CLI W/ Verbose Printing
 .PHONY: cdv
 cdv: cd_cli
 cdv: CXXFLAGS += -D VPRINT=true -D VBREAK=true
 
-# Cluster Dynamics Example W/ CSV Output Formatting
+# Cluster Dynamics CLI W/ CSV Output Formatting
 .PHONY: cdcsv out_dir clean_out_dir
 cdcsv: out_dir cd_cli
 cdcsv: CXXFLAGS += -D CSV=true
@@ -343,21 +343,21 @@ $(EXE_FILE.cdcuda_tests): EXTERN_LIBRARIES += gtest gtest_main pthread
 $(EXE_FILE.cdcuda_tests): EXTERN_LIBRARIES_PATH += extern/googletest/lib/$(TARGET_OS)
 
 # -----------------------------------------------------------------------------
-# Cluster Dynamics Example
+# Cluster Dynamics CLI
 ALL_EXE += cd_cli
 CXX_FILES.cd_cli = cli/cd_cli.cpp
 OBJ_FILES.cd_cli = $(call get_obj_files,cd_cli)
 EXE_FILE.cd_cli = $(call get_exe_file,cd_cli)
 $(EXE_FILE.cd_cli): LIBRARIES += clusterdynamics
 
-# Cluster Dynamics W/ CUDA Example
-ALL_EXE += cd_cuda_example
-CXX_FILES.cd_cuda_example = cli/cd_cli.cpp
-OBJ_FILES.cd_cuda_example = $(call get_obj_files,cd_cuda_example)
-EXE_FILE.cd_cuda_example = $(call get_exe_file,cd_cuda_example)
-$(OBJ_FILES.cd_cuda_example): COMPILER = nvcc
-$(EXE_FILE.cd_cuda_example): COMPILER = nvcc
-$(EXE_FILE.cd_cuda_example): LIBRARIES += clusterdynamicscuda
+# Cluster Dynamics W/ CUDA CLI
+ALL_EXE += cd_cuda_cli
+CXX_FILES.cd_cuda_cli = cli/cd_cli.cpp
+OBJ_FILES.cd_cuda_cli = $(call get_obj_files,cd_cuda_cli)
+EXE_FILE.cd_cuda_cli = $(call get_exe_file,cd_cuda_cli)
+$(OBJ_FILES.cd_cuda_cli): COMPILER = nvcc
+$(EXE_FILE.cd_cuda_cli): COMPILER = nvcc
+$(EXE_FILE.cd_cuda_cli): LIBRARIES += clusterdynamicscuda
 
 # -----------------------------------------------------------------------------
 # OKMC
