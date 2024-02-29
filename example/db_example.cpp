@@ -13,9 +13,9 @@
 void reactors_crud();
 void reactor_cmp_print(const NuclearReactor&, const NuclearReactor&);
 void materials_crud();
-void material_cmp_print(Material&, Material&);
+void material_cmp_print(const Material&, const Material&);
 void simulations_crud();
-void simulation_cmp_print(SimulationModel&, SimulationModel&);
+void simulation_cmp_print(const SimulationModel&, const SimulationModel&);
 
 ClientDb db;
 Randomizer randomizer;
@@ -174,9 +174,6 @@ void simulations_crud() {
           "* EXISTING\t\t-\tREAD RESULT\n\n",
           (int)read_simulations.size(), sqlite_code);
 
-  SimulationModel* existing;
-  SimulationModel* read;
-
   for (int i = 0; i < VEC_SIZE; ++i) {
     simulation_cmp_print(simulations[i], read_simulations[i]);
     fprintf(stdout, "\n");
@@ -209,7 +206,7 @@ void simulations_crud() {
   fprintf(stdout, "\n");
 }
 
-void reactor_cmp_print(NuclearReactor& r1, NuclearReactor& r2) {
+void reactor_cmp_print(const NuclearReactor& r1, const NuclearReactor& r2) {
   fprintf(stdout, "%s\t-\t%s\n", r1.species.c_str(), r2.species.c_str());
   fprintf(stdout, "%s\t-\t%s\n", r1.creation_datetime.c_str(),
           r2.creation_datetime.c_str());
@@ -271,7 +268,7 @@ void material_cmp_print(const Material& r1, const Material& r2) {
           r2.get_atomic_volume());
 }
 
-void simulation_cmp_print(SimulationModel& r1, SimulationModel& r2) {
+void simulation_cmp_print(const SimulationModel& r1, const SimulationModel& r2) {
   fprintf(stdout, "%s\t-\t%s\n", r1.creation_datetime.c_str(),
           r2.creation_datetime.c_str());
   fprintf(stdout, "%d\t\t\t\t\t\t-\t%d\n", r1.id_reactor, r2.id_reactor);

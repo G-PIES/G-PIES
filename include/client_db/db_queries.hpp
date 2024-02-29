@@ -153,8 +153,8 @@ std::string delete_material = "DELETE FROM materials WHERE id_material = ?;";
 std::string create_simulation =
     "INSERT INTO simulations ("
     "id_reactor, id_material, simulation_time, interstitials, vacancies, "
-    "dislocation_density"
-    ") VALUES (?, ?, ?, ?, ?, ?);";
+    "dislocation_density, creation_datetime"
+    ") VALUES (?, ?, ?, ?, ?, ?, ?);";
 
 std::string read_simulations = "SELECT * FROM simulations;";
 

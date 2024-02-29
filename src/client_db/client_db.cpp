@@ -181,8 +181,13 @@ void ClientDb::bind_simulation(sqlite3_stmt *stmt,
                     SQLITE_TRANSIENT);
   sqlite3_bind_double(
       stmt, 6, static_cast<double>(simulation.cd_state.dislocation_density));
+  // update
   if (is_valid_sqlite_id(simulation.sqlite_id))
     sqlite3_bind_int(stmt, 7, simulation.sqlite_id);
+  // create
+  else
+    sqlite3_bind_text(stmt, 7, simulation.creation_datetime.c_str(),
+                      simulation.creation_datetime.length(), nullptr);
 }
 
 // --------------------------------------------------------------------------------------------

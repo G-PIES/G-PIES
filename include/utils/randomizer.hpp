@@ -27,7 +27,7 @@ class Randomizer {
     reactor.set_dislocation_density_evolution(randd());
   }
 
-  void material_randomize(Material& material) {
+  void material_randomize(Material& material) const {
     material.set_i_migration(randd());
     material.set_v_migration(randd());
     material.set_i_diffusion_0(randd());
@@ -50,7 +50,7 @@ class Randomizer {
     material.set_atomic_volume(randd());
   }
 
-  void simulation_randomize(SimulationModel& simulation) {
+  void simulation_randomize(SimulationModel& simulation) const {
     simulation.id_reactor = rand() % 10;
     simulation.id_material = rand() % 10;
     simulation.cd_state.time = randd();
