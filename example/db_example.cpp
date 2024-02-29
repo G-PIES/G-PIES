@@ -203,6 +203,7 @@ void simulations_crud() {
 
     // NOTE: HistorySimulation update is not currently supported
     // TODO - decide if HistorySimulation update is useful
+    /*
     fprintf(stdout, "* UPDATE / READ SIMULATIONS\n\n");
 
     for (int i = 0; i < VEC_SIZE; ++i) {
@@ -226,6 +227,7 @@ void simulations_crud() {
 
         fprintf(stdout, "\n");
     }
+    */
 
 #if DELETE_ON
     fprintf(stdout, "* DELETE SIMULATIONS\n\n");
