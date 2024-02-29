@@ -2,9 +2,9 @@
 #include <vector>
 
 #include "client_db/client_db.hpp"
+#include "model/history_simulation.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
-#include "model/simulation_model.hpp"
 #include "utils/gpies_exception.hpp"
 #include "utils/randomizer.hpp"
 
@@ -18,7 +18,7 @@ void reactor_cmp_print(const NuclearReactor&, const NuclearReactor&);
 void materials_crud();
 void material_cmp_print(const Material&, const Material&);
 void simulations_crud();
-void simulation_cmp_print(const SimulationModel&, const SimulationModel&);
+void simulation_cmp_print(const HistorySimulation&, const HistorySimulation&);
 
 ClientDb db;
 Randomizer randomizer;
@@ -167,7 +167,7 @@ void materials_crud() {
 void simulations_crud() {
     int sqlite_code = -1;
 
-    std::vector<SimulationModel> simulations(VEC_SIZE, SimulationModel());
+    std::vector<HistorySimulation> simulations(VEC_SIZE, HistorySimulation());
     for (int i = 0; i < VEC_SIZE; ++i) {
         simulations[i].material.species =
             "SIMULATION MATERIAL " + std::to_string(i);
@@ -181,7 +181,7 @@ void simulations_crud() {
     }
 
     fprintf(stdout, "\n");
-    std::vector<SimulationModel> read_simulations;
+    std::vector<HistorySimulation> read_simulations;
     db.read_simulations(read_simulations, &sqlite_code);
     fprintf(stdout,
             "* READ SIMULATIONS - count = %4d - sqlite code = %4d\n"
@@ -195,11 +195,14 @@ void simulations_crud() {
         reactor_cmp_print(simulations[i].reactor, read_simulations[i].reactor);
 
         fprintf(stdout, "\n");
-        material_cmp_print(simulations[i].material, read_simulations[i].material);
+        material_cmp_print(simulations[i].material,
+                           read_simulations[i].material);
 
         fprintf(stdout, "\n");
     }
 
+    // NOTE: HistorySimulation update is not currently supported
+    // TODO - decide if HistorySimulation update is useful
     fprintf(stdout, "* UPDATE / READ SIMULATIONS\n\n");
 
     for (int i = 0; i < VEC_SIZE; ++i) {
@@ -218,7 +221,8 @@ void simulations_crud() {
         reactor_cmp_print(simulations[i].reactor, read_simulations[i].reactor);
 
         fprintf(stdout, "\n");
-        material_cmp_print(simulations[i].material, read_simulations[i].material);
+        material_cmp_print(simulations[i].material,
+                           read_simulations[i].material);
 
         fprintf(stdout, "\n");
     }
@@ -299,8 +303,8 @@ void material_cmp_print(const Material& r1, const Material& r2) {
             r2.get_atomic_volume());
 }
 
-void simulation_cmp_print(const SimulationModel& r1,
-                          const SimulationModel& r2) {
+void simulation_cmp_print(const HistorySimulation& r1,
+                          const HistorySimulation& r2) {
     fprintf(stdout, "%s\t-\t%s\n", r1.creation_datetime.c_str(),
             r2.creation_datetime.c_str());
     fprintf(stdout, "%d\t\t\t\t\t\t-\t%d\n", r1.reactor.sqlite_id,

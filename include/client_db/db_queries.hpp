@@ -57,7 +57,7 @@ std::string init =
     "is_preset INTEGER"
     ");"
 
-    "CREATE TABLE IF NOT EXISTS simulations"
+    "CREATE TABLE IF NOT EXISTS history_simulations"
     "("
     "id_simulation INTEGER PRIMARY KEY,"
     "creation_datetime TEXT,"
@@ -70,7 +70,7 @@ std::string init =
     ");";
 
 std::string clear =
-    "DROP TABLE IF EXISTS simulations;"
+    "DROP TABLE IF EXISTS history_simulations;"
     "DROP TABLE IF EXISTS reactors;"
     "DROP TABLE IF EXISTS materials;"
     "DROP TABLE IF EXISTS simulation_materials;";
@@ -150,25 +150,31 @@ std::string update_material =
 
 std::string delete_material = "DELETE FROM materials WHERE id_material = ?;";
 
-// simulations CRUD
+// history_simulations CRUD
 
 std::string create_simulation =
-    "INSERT INTO simulations ("
+    "INSERT INTO history_simulations ("
     "id_reactor, id_material, simulation_time, interstitials, vacancies, "
     "dislocation_density, creation_datetime"
     ") VALUES (?, ?, ?, ?, ?, ?, ?);";
 
-std::string read_simulations = "SELECT * FROM simulations "
-    "INNER JOIN reactors ON reactors.id_reactor = simulations.id_reactor "
-    "INNER JOIN materials ON materials.id_material = simulations.id_material;";
+std::string read_simulations =
+    "SELECT * FROM history_simulations "
+    "INNER JOIN reactors ON reactors.id_reactor = "
+    "history_simulations.id_reactor "
+    "INNER JOIN materials ON materials.id_material = "
+    "history_simulations.id_material;";
 
-std::string read_simulation = "SELECT * FROM simulations "
-    "INNER JOIN reactors ON reactors.id_reactor = simulations.id_reactor "
-    "INNER JOIN materials ON materials.id_material = simulations.id_material "
-    "WHERE simulations.id_simulation = ?;";
+std::string read_simulation =
+    "SELECT * FROM history_simulations "
+    "INNER JOIN reactors ON reactors.id_reactor = "
+    "history_simulations.id_reactor "
+    "INNER JOIN materials ON materials.id_material = "
+    "history_simulations.id_material "
+    "WHERE history_simulations.id_simulation = ?;";
 
 std::string update_simulation =
-    "UPDATE simulations SET "
+    "UPDATE history_simulations SET "
     "id_reactor = ?, "
     "id_material = ?, "
     "simulation_time = ?, "
@@ -178,7 +184,7 @@ std::string update_simulation =
     "WHERE id_simulation = ?;";
 
 std::string delete_simulation =
-    "DELETE FROM simulations WHERE id_simulation = ?;";
+    "DELETE FROM history_simulations WHERE id_simulation = ?;";
 }  // namespace db_queries
 
 #endif  // DB_QUERIES_HPP

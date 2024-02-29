@@ -3,7 +3,7 @@
 
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
-#include "model/simulation_model.hpp"
+#include "model/history_simulation.hpp"
 
 class Randomizer {
  public:
@@ -50,7 +50,7 @@ class Randomizer {
         material.set_atomic_volume(randd());
     }
 
-    void simulation_randomize(SimulationModel& simulation) const {
+    void simulation_randomize(HistorySimulation& simulation) const {
         reactor_randomize(simulation.reactor);
         material_randomize(simulation.material);
         simulation.cd_state.time = randd();

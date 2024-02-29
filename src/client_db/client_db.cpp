@@ -7,9 +7,9 @@
 #include <vector>
 
 #include "client_db/db_queries.hpp"
+#include "model/history_simulation.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
-#include "model/simulation_model.hpp"
 #include "utils/blob_converter.hpp"
 
 // --------------------------------------------------------------------------------------------
@@ -126,11 +126,11 @@ void ClientDb::bind_reactor(sqlite3_stmt *stmt, const NuclearReactor &reactor,
     sqlite3_bind_double(stmt, 10, reactor.get_v_quad());
     sqlite3_bind_double(stmt, 11, reactor.get_dislocation_density_evolution());
 
-    // update
-    if (is_valid_sqlite_id(reactor.sqlite_id))
+    if (is_valid_sqlite_id(reactor.sqlite_id)) {
+        // update
         sqlite3_bind_int(stmt, 12, reactor.sqlite_id);
-    // create
-    else {
+    } else {
+        // create
         sqlite3_bind_text(stmt, 12, reactor.creation_datetime.c_str(),
                           reactor.creation_datetime.length(), nullptr);
         sqlite3_bind_int(stmt, 13, static_cast<int>(is_preset));
@@ -162,11 +162,11 @@ void ClientDb::bind_material(sqlite3_stmt *stmt, const Material &material,
     sqlite3_bind_double(stmt, 20, material.get_burgers_vector());
     sqlite3_bind_double(stmt, 21, material.get_atomic_volume());
 
-    // update
-    if (is_valid_sqlite_id(material.sqlite_id))
+    if (is_valid_sqlite_id(material.sqlite_id)) {
+        // update
         sqlite3_bind_int(stmt, 22, material.sqlite_id);
-    // create
-    else {
+    } else {
+        // create
         sqlite3_bind_text(stmt, 22, material.creation_datetime.c_str(),
                           material.creation_datetime.length(), nullptr);
         sqlite3_bind_int(stmt, 23, static_cast<int>(is_preset));
@@ -174,7 +174,7 @@ void ClientDb::bind_material(sqlite3_stmt *stmt, const Material &material,
 }
 
 void ClientDb::bind_simulation(sqlite3_stmt *stmt,
-                               const SimulationModel &simulation) {
+                               const HistorySimulation &simulation) {
     std::vector<char> interstitials_blob =
         BlobConverter::to_blob(simulation.cd_state.interstitials);
     std::vector<char> vacancies_blob =
@@ -281,7 +281,7 @@ void ClientDb::row_read_material(sqlite3_stmt *stmt, Material &material,
 // better to implement row reading by token, to completely avoid column
 // offsetting.
 void ClientDb::row_read_simulation(sqlite3_stmt *stmt,
-                                   SimulationModel &simulation,
+                                   HistorySimulation &simulation,
                                    int col_offset) {
     simulation.sqlite_id = sqlite3_column_int(stmt, col_offset + 0);
     simulation.creation_datetime =
@@ -407,7 +407,7 @@ void ClientDb::err_delete_material(sqlite3_stmt *stmt,
 }
 
 void ClientDb::err_create_simulation(sqlite3_stmt *stmt,
-                                     const SimulationModel &simulation) {
+                                     const HistorySimulation &simulation) {
     std::string errmsg =
         "Failed to create simulation @ " + simulation.creation_datetime + ".";
     sqlite3 *db = sqlite3_db_handle(stmt);
@@ -432,7 +432,7 @@ void ClientDb::err_read_simulation(sqlite3_stmt *stmt, const int sqlite_id) {
 }
 
 void ClientDb::err_update_simulation(sqlite3_stmt *stmt,
-                                     const SimulationModel &simulation) {
+                                     const HistorySimulation &simulation) {
     std::string errmsg = "Failed to update simulation w/ id " +
                          std::to_string(simulation.sqlite_id) + ".";
     sqlite3 *db = sqlite3_db_handle(stmt);
@@ -442,7 +442,7 @@ void ClientDb::err_update_simulation(sqlite3_stmt *stmt,
 }
 
 void ClientDb::err_delete_simulation(sqlite3_stmt *stmt,
-                                     const SimulationModel &simulation) {
+                                     const HistorySimulation &simulation) {
     std::string errmsg = "Failed to delete simulation w/ id " +
                          std::to_string(simulation.sqlite_id) + ".";
     sqlite3 *db = sqlite3_db_handle(stmt);
@@ -740,7 +740,7 @@ bool ClientDb::delete_material(const Material &material,
     return is_sqlite_success(sqlite_code);
 }
 
-bool ClientDb::create_simulation(SimulationModel &simulation,
+bool ClientDb::create_simulation(HistorySimulation &simulation,
                                  int *sqlite_result_code) {
     if (is_valid_sqlite_id(simulation.sqlite_id))
         throw ClientDbException(
@@ -762,13 +762,13 @@ bool ClientDb::create_simulation(SimulationModel &simulation,
     bind_simulation(stmt, simulation);
 
     sqlite_code =
-        create_one<SimulationModel>(stmt, err_create_simulation, simulation);
+        create_one<HistorySimulation>(stmt, err_create_simulation, simulation);
 
     if (sqlite_result_code) *sqlite_result_code = sqlite_code;
     return is_sqlite_success(sqlite_code);
 }
 
-bool ClientDb::read_simulations(std::vector<SimulationModel> &simulations,
+bool ClientDb::read_simulations(std::vector<HistorySimulation> &simulations,
                                 int *sqlite_result_code) {
     if (!db) open();
 
@@ -780,14 +780,15 @@ bool ClientDb::read_simulations(std::vector<SimulationModel> &simulations,
                            db_queries::read_simulations.size(), &stmt, nullptr);
     if (is_sqlite_error(sqlite_code)) err_read_simulations(stmt);
 
-    sqlite_code = read_all<SimulationModel>(stmt, row_read_simulation,
-                                            err_read_simulations, simulations);
+    sqlite_code = read_all<HistorySimulation>(
+        stmt, row_read_simulation, err_read_simulations, simulations);
 
     if (sqlite_result_code) *sqlite_result_code = sqlite_code;
     return is_sqlite_success(sqlite_code);
 }
 
-bool ClientDb::read_simulation(const int sqlite_id, SimulationModel &simulation,
+bool ClientDb::read_simulation(const int sqlite_id,
+                               HistorySimulation &simulation,
                                int *sqlite_result_code) {
     if (!is_valid_sqlite_id(sqlite_id))
         throw ClientDbException("Failed to read simulation. Invalid id.");
@@ -802,7 +803,7 @@ bool ClientDb::read_simulation(const int sqlite_id, SimulationModel &simulation,
                            db_queries::read_simulation.size(), &stmt, nullptr);
     if (is_sqlite_error(sqlite_code)) err_read_simulation(stmt, sqlite_id);
 
-    sqlite_code = read_one<SimulationModel>(
+    sqlite_code = read_one<HistorySimulation>(
         stmt, row_read_simulation, err_read_simulation, sqlite_id, simulation);
 
     if (sqlite_result_code) *sqlite_result_code = sqlite_code;
@@ -810,7 +811,7 @@ bool ClientDb::read_simulation(const int sqlite_id, SimulationModel &simulation,
            is_valid_sqlite_id(simulation.sqlite_id);
 }
 
-bool ClientDb::update_simulation(const SimulationModel &simulation,
+bool ClientDb::update_simulation(const HistorySimulation &simulation,
                                  int *sqlite_result_code) {
     if (!is_valid_sqlite_id(simulation.sqlite_id))
         throw ClientDbException("Failed to update simulation. Invalid id.");
@@ -828,13 +829,13 @@ bool ClientDb::update_simulation(const SimulationModel &simulation,
     bind_simulation(stmt, simulation);
 
     sqlite_code =
-        update_one<SimulationModel>(stmt, err_update_simulation, simulation);
+        update_one<HistorySimulation>(stmt, err_update_simulation, simulation);
 
     if (sqlite_result_code) *sqlite_result_code = sqlite_code;
     return is_sqlite_success(sqlite_code);
 }
 
-bool ClientDb::delete_simulation(const SimulationModel &simulation,
+bool ClientDb::delete_simulation(const HistorySimulation &simulation,
                                  int *sqlite_result_code) {
     if (!is_valid_sqlite_id(simulation.sqlite_id))
         throw ClientDbException("Failed to delete simulation. Invalid id.");
@@ -850,7 +851,7 @@ bool ClientDb::delete_simulation(const SimulationModel &simulation,
     if (is_sqlite_error(sqlite_code)) err_delete_simulation(stmt, simulation);
 
     sqlite_code =
-        delete_one<SimulationModel>(stmt, err_delete_simulation, simulation);
+        delete_one<HistorySimulation>(stmt, err_delete_simulation, simulation);
 
     if (sqlite_result_code) *sqlite_result_code = sqlite_code;
     return is_sqlite_success(sqlite_code);
