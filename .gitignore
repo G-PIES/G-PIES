@@ -81,5 +81,9 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 
-# Build artifacts
-build/*
+# Build Directories 
+build
+out
+lib
+bin
+db
