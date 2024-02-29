@@ -1,7 +1,6 @@
-include(FetchContent)
-
 find_package(SQLite3)
 if(NOT SQLite3_FOUND)
+  include(FetchContent)
   FetchContent_Declare(
     sqlite3
     URL https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip

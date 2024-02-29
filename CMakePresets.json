@@ -4,11 +4,13 @@
         {
             "name": "default",
             "cacheVariables": {
-                "BUILD_CUDA": false
+                "BUILD_CUDA": false,
+                "BUILD_METAL": false
             }
         },
         {
             "name": "cuda",
+            "inherits": "default",
             "cacheVariables": {
                 "BUILD_CUDA": true
             }
@@ -18,6 +20,13 @@
             "inherits": "cuda",
             "cacheVariables": {
                 "CUDA_ARCHITECTURES": "all-major"
+            }
+        },
+        {
+            "name": "metal",
+            "inherits": "default",
+            "cacheVariables": {
+                "BUILD_METAL": true
             }
         }
     ]

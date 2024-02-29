@@ -10,15 +10,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest ]
+        os: [ windows-latest, ubuntu-latest, macos-14 ]
         configuration: [ Debug, Release ]
         include:
           - os: windows-latest
             cuda: true
+            metal: false
           - os: ubuntu-latest
             cuda: true
-          - os: macos-latest
+            metal: false
+          - os: macos-14
             cuda: false
+            metal: true
 
     runs-on: ${{ matrix.os }}
 
@@ -29,7 +32,7 @@ jobs:
       out_dir: ${{ startsWith(matrix.os, 'windows') && format('./out/{0}', matrix.configuration) || './out' }}
       cuda_install_method: ${{ startsWith(matrix.os, 'windows') && 'local' || 'network' }}
       cuda_packages: ${{ startsWith(matrix.os, 'windows') && '[ "nvcc", "cudart", "visual_studio_integration" ]' || '[ "nvcc" ]' }}
-      cmake_preset: ${{ matrix.cuda && 'cuda-all-major' || 'default' }}
+      cmake_preset: ${{ matrix.cuda && 'cuda-all-major' || matrix.metal && 'metal' || 'default' }}
 
     steps:
       - name: Install CUDA Toolkit
