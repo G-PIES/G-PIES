@@ -1,19 +1,19 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 
-#include "model/model.hpp"
-#include "model/event.hpp"
 #include "exporter.hpp"
+#include "model/event.hpp"
+#include "model/model.hpp"
 
 class OkmcSimulationParameters {
-public:
+ public:
     double omega;
 };
 
 class OkmcSimulation {
-
-public:
+ public:
     OkmcSimulation();
 
     static double random_double();
@@ -22,11 +22,14 @@ public:
     OkmcSimulationParameters *parameters;
     Exporter *exporter;
 
-private:
+ private:
     double calculate_increment(Model *model);
-    std::vector<double> calculate_event_probabilities(Event *event, double time_increment);
-    static double calculate_event_probability(Event *event, int times, double time_increment);
-    static int calculate_number_of_times(std::vector<double> probabilities, double random_double);
+    std::vector<double> calculate_event_probabilities(Event *event,
+                                                      double time_increment);
+    static double calculate_event_probability(Event *event, int times,
+                                              double time_increment);
+    static int calculate_number_of_times(std::vector<double> probabilities,
+                                         double random_double);
     void process_out_of_box(Model *model);
     void process_interactions(Model *model);
 };

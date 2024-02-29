@@ -1,15 +1,12 @@
 #pragma once
 
-#include "../model_object.hpp"
 #include "../../vector3.hpp"
+#include "../model_object.hpp"
 
-enum DefectType {
-    Interstitial = 1,
-    Vacancy
-};
+enum DefectType { Interstitial = 1, Vacancy };
 
 class Defect : public ModelObject {
-public:
+ public:
     int size;
     DefectType type;
     Vector3<double> position;

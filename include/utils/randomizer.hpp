@@ -1,36 +1,19 @@
 #ifndef RANDOMIZER_HPP
 #define RANDOMIZER_HPP
 
-#include "nuclear_reactor.hpp"
-#include "material.hpp"
-#include "simulation_model.hpp"
+#include "model/material.hpp"
+#include "model/nuclear_reactor.hpp"
+#include "model/simulation_model.hpp"
 
-class Randomizer
-{
-public:
-   Randomizer()
-   {
-      srand(std::time(nullptr));
-   }
 
-   gp_float randd() const
-   {
-      return static_cast<gp_float>(rand()) / (static_cast<gp_float>(RAND_MAX / 100));
-   }
+class Randomizer {
+ public:
+    Randomizer() { srand(std::time(nullptr)); }
 
-   void reactor_randomize(NuclearReactor& reactor) const
-   {
-      reactor.set_flux(randd());
-      reactor.set_temperature(randd());
-      reactor.set_recombination(randd()) ;
-      reactor.set_i_bi(randd());
-      reactor.set_i_tri(randd());
-      reactor.set_i_quad(randd());
-      reactor.set_v_bi(randd());
-      reactor.set_v_tri(randd());
-      reactor.set_v_quad(randd());
-      reactor.set_dislocation_density_evolution(randd());
-   }
+    gp_float randd() const {
+        return static_cast<gp_float>(rand()) /
+               (static_cast<gp_float>(RAND_MAX / 100));
+    }
 
    void material_randomize(Material& material)
    {
@@ -73,4 +56,4 @@ public:
    }
 };
 
-#endif // RANDOMIZER_HPP
+#endif  // RANDOMIZER_HPP

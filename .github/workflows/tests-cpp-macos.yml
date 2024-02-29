@@ -1,0 +1,35 @@
+name: Build and run tests (macOS)
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [debug, release]
+
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build CPU targets
+        run: make all_cpu CONFIGURATION=${{ matrix.configuration }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: G-PIES ${{ matrix.configuration }}
+          path: |
+            build/${{ matrix.configuration }}/libclusterdynamics.a
+            build/${{ matrix.configuration }}/cd_example
+            build/${{ matrix.configuration }}/cd_tests
+            build/${{ matrix.configuration }}/okmc
+
+      - name: Run Cluster Dynamics Tests
+        run: ./build/${{ matrix.configuration }}/cd_tests

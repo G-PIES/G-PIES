@@ -1,0 +1,2 @@
+\newcommand{\ann}[2]{\begin{array}{l} \color{##8A0000}{\normalsize\vphantom{(G)}#1} \\[-2cm] \vphantom{(G)}#2 \end{array}}
+\newcommand{\dwn}[1]{\begin{array}{l} {} \\[-2cm] \vphantom{(D)}#1 \end{array}}

@@ -39,7 +39,8 @@ resources
 *.pdf
 
 # Local Configurations
-.vscode
+.vscode/*
+!.vscode/settings.json
 
 # csv
 *.csv
@@ -54,6 +55,9 @@ db/*.db
 ./lib
 ./out
 
+#Documentation files
+docs/latex
+
 # gtest binaries
 !libgtest_main.a
 !libgtest.a
@@ -63,3 +67,6 @@ extern/metal-cpp
 *.ir
 *.air
 *.metallib
+
+# Build artifacts
+build/*
