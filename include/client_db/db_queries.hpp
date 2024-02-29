@@ -13,19 +13,19 @@ namespace db_queries {
 std::string init =
     "CREATE TABLE IF NOT EXISTS reactors"
     "("
-        "id_reactor INTEGER PRIMARY KEY,"
-        "creation_datetime TEXT,"
-        "species text NOT NULL DEFAULT '',"
-        "flux float DEFAULT 0.0,"
-        "temperature float DEFAULT 0.0,"
-        "recombination float DEFAULT 0.0,"
-        "i_bi float DEFAULT 0.0,"
-        "i_tri float DEFAULT 0.0,"
-        "i_quad float DEFAULT 0.0,"
-        "v_bi float DEFAULT 0.0,"
-        "v_tri float DEFAULT 0.0,"
-        "v_quad float DEFAULT 0.0,"
-        "dislocation_density_evolution float DEFAULT 0.0"
+    "id_reactor INTEGER PRIMARY KEY,"
+    "creation_datetime TEXT,"
+    "species text NOT NULL DEFAULT '',"
+    "flux float DEFAULT 0.0,"
+    "temperature float DEFAULT 0.0,"
+    "recombination float DEFAULT 0.0,"
+    "i_bi float DEFAULT 0.0,"
+    "i_tri float DEFAULT 0.0,"
+    "i_quad float DEFAULT 0.0,"
+    "v_bi float DEFAULT 0.0,"
+    "v_tri float DEFAULT 0.0,"
+    "v_quad float DEFAULT 0.0,"
+    "dislocation_density_evolution float DEFAULT 0.0"
     ");"
 
     "CREATE TABLE IF NOT EXISTS materials"
@@ -57,14 +57,14 @@ std::string init =
 
     "CREATE TABLE IF NOT EXISTS simulations"
     "("
-        "id_simulation INTEGER PRIMARY KEY,"
-        "creation_datetime TEXT,"
-        "id_reactor INTEGER,"
-        "id_material INTEGER,"
-        "simulation_time float DEFAULT 0.0,"
-        "interstitials BLOB,"
-        "vacancies BLOB,"
-        "dislocation_density float DEFAULT 0.0"
+    "id_simulation INTEGER PRIMARY KEY,"
+    "creation_datetime TEXT,"
+    "id_reactor INTEGER,"
+    "id_material INTEGER,"
+    "simulation_time float DEFAULT 0.0,"
+    "interstitials BLOB,"
+    "vacancies BLOB,"
+    "dislocation_density float DEFAULT 0.0"
     ");";
 
 std::string clear =
@@ -152,7 +152,8 @@ std::string delete_material = "DELETE FROM materials WHERE id_material = ?;";
 
 std::string create_simulation =
     "INSERT INTO simulations ("
-    "id_reactor, id_material, simulation_time, interstitials, vacancies, dislocation_density"
+    "id_reactor, id_material, simulation_time, interstitials, vacancies, "
+    "dislocation_density"
     ") VALUES (?, ?, ?, ?, ?, ?);";
 
 std::string read_simulations = "SELECT * FROM simulations;";
@@ -172,6 +173,6 @@ std::string update_simulation =
 
 std::string delete_simulation =
     "DELETE FROM simulations WHERE id_simulation = ?;";
-}
+}  // namespace db_queries
 
 #endif  // DB_QUERIES_HPP
