@@ -2,14 +2,14 @@
 #define CA_PRIVATE_IMPLEMENTATION
 #define MTL_PRIVATE_IMPLEMENTATION
 
+#include "cluster_dynamics_metal_impl.hpp"
+
 #include <stdio.h>
 
 #include <Foundation/Foundation.hpp>
 #include <Metal/Metal.hpp>
 #include <QuartzCore/QuartzCore.hpp>
 #include <cstring>
-
-#include "cluster_dynamics_metal_impl.hpp"
 
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -48,7 +48,8 @@ bool ClusterDynamicsImpl::step(gp_float delta_time) {
      */
     memcpy(mtl_kernel.interstitials + 3, interstitials_out + 3,
            sizeof(gp_float) * (concentration_boundary - 1));
-    mtl_kernel.interstitials[2] += mtl_kernel.i_concentration_derivative(2) * delta_time;
+    mtl_kernel.interstitials[2] +=
+        mtl_kernel.i_concentration_derivative(2) * delta_time;
 
     memcpy(mtl_kernel.vacancies + 2, vacancies_out + 2,
            sizeof(gp_float) * (concentration_boundary - 1));
