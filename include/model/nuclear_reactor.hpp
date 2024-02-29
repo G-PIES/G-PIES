@@ -1,8 +1,6 @@
 #ifndef NUCLEAR_REACTOR_HPP
 #define NUCLEAR_REACTOR_HPP
 
-#include <algorithm>
-#include <memory>
 #include <string>
 #include <algorithm>
 #include <memory>
