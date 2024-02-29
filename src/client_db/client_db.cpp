@@ -1,11 +1,11 @@
 
-#include "client_db/client_db.hpp"
 
 #include <sqlite3.h>
 
 #include <string>
 #include <vector>
 
+#include "client_db/client_db.hpp"
 #include "client_db/db_queries.hpp"
 #include "model/history_simulation.hpp"
 #include "model/material.hpp"

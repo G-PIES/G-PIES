@@ -185,6 +185,32 @@ std::string update_simulation =
 
 std::string delete_simulation =
     "DELETE FROM history_simulations WHERE id_simulation = ?;";
+
+// simulation_materials CRUD
+
+std::string create_simulation_material =
+    "INSERT INTO simulation_materials ("
+    "id_simulation, id_material"
+    ") VALUES (?, ?);";
+
+std::string read_simulation_materials = "SELECT * FROM simulation_materials;";
+
+std::string read_simulation_material_by_id_simulation =
+    "SELECT * FROM simulation_materials WHERE id_simulation = ?;";
+
+std::string read_simulation_material_by_id_material =
+    "SELECT * FROM simulation_materials WHERE id_material = ?;";
+
+std::string update_simulation_material =
+    "UPDATE simulation_materials SET "
+    "id_simulation = ?, "
+    "id_material = ? "
+    "WHERE id_simulation = ? "
+    "AND id_material = ?;";
+
+std::string delete_simulation_material =
+    "DELETE FROM simulation_materials WHERE id_simulation = ? AND id_material "
+    "= ?;";
 }  // namespace db_queries
 
 #endif  // DB_QUERIES_HPP
