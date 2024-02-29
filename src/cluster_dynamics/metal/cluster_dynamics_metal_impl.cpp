@@ -24,9 +24,10 @@ bool ClusterDynamicsImpl::step(gp_float delta_time) {
     mtl_kernel.update_clusters_1(delta_time);
 
     // CPU memory to GPU memory
-    // copy from index 1 to concentration_boundary - 1
     gp_float* interstitials_in = (gp_float*)mtl_interstitials_in->contents();
     gp_float* vacancies_in = (gp_float*)mtl_vacancies_in->contents();
+
+    // copy from index 1 to concentration_boundary - 1
     memcpy(interstitials_in + 1, mtl_kernel.interstitials + 1,
            sizeof(gp_float) * concentration_boundary);
     memcpy(vacancies_in + 1, mtl_kernel.vacancies + 1,
@@ -38,8 +39,17 @@ bool ClusterDynamicsImpl::step(gp_float delta_time) {
     // copy from index 2 to concentration_boundary - 1
     gp_float* interstitials_out = (gp_float*)mtl_interstitials_out->contents();
     gp_float* vacancies_out = (gp_float*)mtl_vacancies_out->contents();
-    memcpy(mtl_kernel.interstitials + 2, interstitials_out + 2,
+
+    /* NOTE:
+     *   We are ignoring the size 2 interstitial cluster calculation. Size 2
+     *   interstitial clusters are represented as 2 size 1 clusters.
+     *   This is to address the instability of interstitial migration in a
+     *   size 2 cluster which can be problematic for the simulation.
+     */
+    memcpy(mtl_kernel.interstitials + 3, interstitials_out + 3,
            sizeof(gp_float) * (concentration_boundary - 1));
+    mtl_kernel.interstitials[2] += mtl_kernel.i_concentration_derivative(2) * delta_time;
+
     memcpy(mtl_kernel.vacancies + 2, vacancies_out + 2,
            sizeof(gp_float) * (concentration_boundary - 1));
 

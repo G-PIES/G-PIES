@@ -127,12 +127,12 @@ gp_float ClusterDynamicsMetalKernel::v_promotion_rate(uint64_t n)
 
 gp_float ClusterDynamicsMetalKernel::i_emission_rate() __METALDECL__ {
     gp_float time = 0.;
-    for (uint64_t in = 3; in < concentration_boundary - 1; ++in) {
+    for (uint64_t in = 4; in < concentration_boundary - 1; ++in) {
         time += ii_emission(in) * interstitials[in];
     }
 
-    time += 4. * ii_emission(2) * interstitials[2] +
-            iv_absorption(2) * vacancies[1] * interstitials[2];
+    time += 3. * ii_emission(3) * interstitials[3] +
+            2. * iv_absorption(3) * vacancies[1] * interstitials[3];
 
     return time;
 }
