@@ -12,7 +12,6 @@
 
 #include "cluster_dynamics_metal_args.hpp"
 #include "cluster_dynamics/cluster_dynamics_state.hpp"
-#include "constants.hpp"
 #include "material_impl.hpp"
 #include "nuclear_reactor_impl.hpp"
 #include "utils/constants.hpp"
