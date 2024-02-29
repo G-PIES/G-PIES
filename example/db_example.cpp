@@ -202,34 +202,6 @@ void simulations_crud() {
         fprintf(stdout, "\n");
     }
 
-    // NOTE: HistorySimulation update is not currently supported
-    // TODO - decide if HistorySimulation update is useful
-    /*
-    fprintf(stdout, "* UPDATE / READ SIMULATIONS\n\n");
-
-    for (int i = 0; i < VEC_SIZE; ++i) {
-        randomizer.simulation_randomize(simulations[i]);
-
-        db.update_simulation(simulations[i], &sqlite_code);
-        fprintf(stdout, "SIMULATION UPDATED\n");
-
-        db.read_simulation(simulations[i].sqlite_id, read_simulations[i],
-                           &sqlite_code);
-        fprintf(stdout, "READ SIMULATION\t-\tsqlite code = %4d\n", sqlite_code);
-
-        simulation_cmp_print(simulations[i], read_simulations[i]);
-
-        fprintf(stdout, "\n");
-        reactor_cmp_print(simulations[i].reactor, read_simulations[i].reactor);
-
-        fprintf(stdout, "\n");
-        material_cmp_print(simulations[i].material,
-                           read_simulations[i].material);
-
-        fprintf(stdout, "\n");
-    }
-    */
-
 #if DELETE_ON
     fprintf(stdout, "* DELETE SIMULATIONS\n\n");
 
