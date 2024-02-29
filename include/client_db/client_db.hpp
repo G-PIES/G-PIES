@@ -181,10 +181,10 @@ class ClientDb {
 
     // READ
     template <typename T>
-    int read_one(sqlite3_stmt *, void (*)(sqlite3_stmt *, T &),
+    int read_one(sqlite3_stmt *, void (*)(sqlite3_stmt *, T &, int),
                  void (*)(sqlite3_stmt *, const int), const int, T &);
     template <typename T>
-    int read_all(sqlite3_stmt *, void (*)(sqlite3_stmt *, T &),
+    int read_all(sqlite3_stmt *, void (*)(sqlite3_stmt *, T &, int),
                  void (*)(sqlite3_stmt *), std::vector<T> &);
 
     // UPDATE / DELETE
@@ -218,9 +218,9 @@ class ClientDb {
        row into an object.
     */
 
-    static void row_read_reactor(sqlite3_stmt *, NuclearReactor &);
-    static void row_read_material(sqlite3_stmt *, Material &);
-    static void row_read_simulation(sqlite3_stmt *, SimulationModel &);
+    static void row_read_reactor(sqlite3_stmt *, NuclearReactor &, int = 0);
+    static void row_read_material(sqlite3_stmt *, Material &, int = 0);
+    static void row_read_simulation(sqlite3_stmt *, SimulationModel &, int = 0);
 
     // --------------------------------------------------------------------------------------------
 

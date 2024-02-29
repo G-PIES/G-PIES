@@ -169,6 +169,10 @@ void simulations_crud() {
 
     std::vector<SimulationModel> simulations(VEC_SIZE, SimulationModel());
     for (int i = 0; i < VEC_SIZE; ++i) {
+        simulations[i].material.species =
+            "SIMULATION MATERIAL " + std::to_string(i);
+        simulations[i].reactor.species =
+            "SIMULATION REACTOR " + std::to_string(i);
         randomizer.simulation_randomize(simulations[i]);
         db.create_simulation(simulations[i], &sqlite_code);
 
@@ -186,6 +190,13 @@ void simulations_crud() {
 
     for (int i = 0; i < VEC_SIZE; ++i) {
         simulation_cmp_print(simulations[i], read_simulations[i]);
+
+        fprintf(stdout, "\n");
+        reactor_cmp_print(simulations[i].reactor, read_simulations[i].reactor);
+
+        fprintf(stdout, "\n");
+        material_cmp_print(simulations[i].material, read_simulations[i].material);
+
         fprintf(stdout, "\n");
     }
 
@@ -202,6 +213,13 @@ void simulations_crud() {
         fprintf(stdout, "READ SIMULATION\t-\tsqlite code = %4d\n", sqlite_code);
 
         simulation_cmp_print(simulations[i], read_simulations[i]);
+
+        fprintf(stdout, "\n");
+        reactor_cmp_print(simulations[i].reactor, read_simulations[i].reactor);
+
+        fprintf(stdout, "\n");
+        material_cmp_print(simulations[i].material, read_simulations[i].material);
+
         fprintf(stdout, "\n");
     }
 
@@ -285,8 +303,10 @@ void simulation_cmp_print(const SimulationModel& r1,
                           const SimulationModel& r2) {
     fprintf(stdout, "%s\t-\t%s\n", r1.creation_datetime.c_str(),
             r2.creation_datetime.c_str());
-    fprintf(stdout, "%d\t\t\t\t\t\t-\t%d\n", r1.id_reactor, r2.id_reactor);
-    fprintf(stdout, "%d\t\t\t\t\t\t-\t%d\n", r1.id_material, r2.id_material);
+    fprintf(stdout, "%d\t\t\t\t\t\t-\t%d\n", r1.reactor.sqlite_id,
+            r2.reactor.sqlite_id);
+    fprintf(stdout, "%d\t\t\t\t\t\t-\t%d\n", r1.material.sqlite_id,
+            r2.material.sqlite_id);
     fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.cd_state.time,
             r2.cd_state.time);
     fprintf(stdout, "%zu [%g, %g, %g, %g,...]\t-\t%zu [%g, %g, %g, %g,...]\n",

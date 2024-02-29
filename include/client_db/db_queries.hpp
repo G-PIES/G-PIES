@@ -158,10 +158,14 @@ std::string create_simulation =
     "dislocation_density, creation_datetime"
     ") VALUES (?, ?, ?, ?, ?, ?, ?);";
 
-std::string read_simulations = "SELECT * FROM simulations;";
+std::string read_simulations = "SELECT * FROM simulations "
+    "INNER JOIN reactors ON reactors.id_reactor = simulations.id_reactor "
+    "INNER JOIN materials ON materials.id_material = simulations.id_material;";
 
-std::string read_simulation =
-    "SELECT * FROM simulations WHERE id_simulation = ?;";
+std::string read_simulation = "SELECT * FROM simulations "
+    "INNER JOIN reactors ON reactors.id_reactor = simulations.id_reactor "
+    "INNER JOIN materials ON materials.id_material = simulations.id_material "
+    "WHERE simulations.id_simulation = ?;";
 
 std::string update_simulation =
     "UPDATE simulations SET "

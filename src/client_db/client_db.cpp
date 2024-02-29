@@ -36,7 +36,7 @@ int ClientDb::create_one(sqlite3_stmt *stmt,
 
 template <typename T>
 int ClientDb::read_one(sqlite3_stmt *stmt,
-                       void (*row_callback)(sqlite3_stmt *, T &),
+                       void (*row_callback)(sqlite3_stmt *, T &, int),
                        void (*err_callback)(sqlite3_stmt *, const int),
                        const int sqlite_id, T &object) {
     int sqlite_code;
@@ -46,7 +46,7 @@ int ClientDb::read_one(sqlite3_stmt *stmt,
 
     do {
         if (SQLITE_ROW == (sqlite_code = sqlite3_step(stmt)))
-            row_callback(stmt, object);
+            row_callback(stmt, object, 0);
         else if (is_sqlite_error(sqlite_code))
             err_callback(stmt, sqlite_id);
     } while (sqlite_code != SQLITE_DONE);
@@ -57,7 +57,7 @@ int ClientDb::read_one(sqlite3_stmt *stmt,
 
 template <typename T>
 int ClientDb::read_all(sqlite3_stmt *stmt,
-                       void (*row_callback)(sqlite3_stmt *, T &),
+                       void (*row_callback)(sqlite3_stmt *, T &, int),
                        void (*err_callback)(sqlite3_stmt *),
                        std::vector<T> &objects) {
     int sqlite_code;
@@ -65,7 +65,7 @@ int ClientDb::read_all(sqlite3_stmt *stmt,
     do {
         if (SQLITE_ROW == (sqlite_code = sqlite3_step(stmt))) {
             T obj;
-            row_callback(stmt, obj);
+            row_callback(stmt, obj, 0);
             objects.push_back(obj);
         } else if (is_sqlite_error(sqlite_code)) {
             err_callback(stmt);
@@ -180,8 +180,8 @@ void ClientDb::bind_simulation(sqlite3_stmt *stmt,
     std::vector<char> vacancies_blob =
         BlobConverter::to_blob(simulation.cd_state.vacancies);
 
-    sqlite3_bind_int(stmt, 1, simulation.id_reactor);
-    sqlite3_bind_int(stmt, 2, simulation.id_material);
+    sqlite3_bind_int(stmt, 1, simulation.reactor.sqlite_id);
+    sqlite3_bind_int(stmt, 2, simulation.material.sqlite_id);
     sqlite3_bind_double(stmt, 3, static_cast<double>(simulation.cd_state.time));
     sqlite3_bind_blob(stmt, 4, interstitials_blob.data(),
                       interstitials_blob.size(), SQLITE_TRANSIENT);
@@ -203,67 +203,94 @@ void ClientDb::bind_simulation(sqlite3_stmt *stmt,
 // ROW CALLBACKS
 // --------------------------------------------------------------------------------------------
 
-void ClientDb::row_read_reactor(sqlite3_stmt *stmt, NuclearReactor &reactor) {
-    reactor.sqlite_id = static_cast<int>(sqlite3_column_int(stmt, 0));
-    reactor.creation_datetime =
-        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
-    reactor.species =
-        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
-    reactor.set_flux((gp_float)sqlite3_column_double(stmt, 3));
-    reactor.set_temperature((gp_float)sqlite3_column_double(stmt, 4));
-    reactor.set_recombination((gp_float)sqlite3_column_double(stmt, 5));
-    reactor.set_i_bi((gp_float)sqlite3_column_double(stmt, 6));
-    reactor.set_i_tri((gp_float)sqlite3_column_double(stmt, 7));
-    reactor.set_i_quad((gp_float)sqlite3_column_double(stmt, 8));
-    reactor.set_v_bi((gp_float)sqlite3_column_double(stmt, 9));
-    reactor.set_v_tri((gp_float)sqlite3_column_double(stmt, 10));
-    reactor.set_v_quad((gp_float)sqlite3_column_double(stmt, 11));
+void ClientDb::row_read_reactor(sqlite3_stmt *stmt, NuclearReactor &reactor,
+                                int col_offset) {
+    reactor.sqlite_id =
+        static_cast<int>(sqlite3_column_int(stmt, col_offset + 0));
+    reactor.creation_datetime = reinterpret_cast<const char *>(
+        sqlite3_column_text(stmt, col_offset + 1));
+    reactor.species = reinterpret_cast<const char *>(
+        sqlite3_column_text(stmt, col_offset + 2));
+    reactor.set_flux((gp_float)sqlite3_column_double(stmt, col_offset + 3));
+    reactor.set_temperature(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 4));
+    reactor.set_recombination(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 5));
+    reactor.set_i_bi((gp_float)sqlite3_column_double(stmt, col_offset + 6));
+    reactor.set_i_tri((gp_float)sqlite3_column_double(stmt, col_offset + 7));
+    reactor.set_i_quad((gp_float)sqlite3_column_double(stmt, col_offset + 8));
+    reactor.set_v_bi((gp_float)sqlite3_column_double(stmt, col_offset + 9));
+    reactor.set_v_tri((gp_float)sqlite3_column_double(stmt, col_offset + 10));
+    reactor.set_v_quad((gp_float)sqlite3_column_double(stmt, col_offset + 11));
     reactor.set_dislocation_density_evolution(
-        (gp_float)sqlite3_column_double(stmt, 12));
+        (gp_float)sqlite3_column_double(stmt, col_offset + 12));
 }
 
-void ClientDb::row_read_material(sqlite3_stmt *stmt, Material &material) {
-    material.sqlite_id = static_cast<int>(sqlite3_column_int(stmt, 0));
-    material.creation_datetime =
-        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
-    material.species =
-        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
-    material.set_i_migration((gp_float)sqlite3_column_double(stmt, 3));
-    material.set_v_migration((gp_float)sqlite3_column_double(stmt, 4));
-    material.set_i_diffusion_0((gp_float)sqlite3_column_double(stmt, 5));
-    material.set_v_diffusion_0((gp_float)sqlite3_column_double(stmt, 6));
-    material.set_i_formation((gp_float)sqlite3_column_double(stmt, 7));
-    material.set_v_formation((gp_float)sqlite3_column_double(stmt, 8));
-    material.set_i_binding((gp_float)sqlite3_column_double(stmt, 9));
-    material.set_v_binding((gp_float)sqlite3_column_double(stmt, 10));
+void ClientDb::row_read_material(sqlite3_stmt *stmt, Material &material,
+                                 int col_offset) {
+    material.sqlite_id =
+        static_cast<int>(sqlite3_column_int(stmt, col_offset + 0));
+    material.creation_datetime = reinterpret_cast<const char *>(
+        sqlite3_column_text(stmt, col_offset + 1));
+    material.species = reinterpret_cast<const char *>(
+        sqlite3_column_text(stmt, col_offset + 2));
+    material.set_i_migration(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 3));
+    material.set_v_migration(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 4));
+    material.set_i_diffusion_0(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 5));
+    material.set_v_diffusion_0(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 6));
+    material.set_i_formation(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 7));
+    material.set_v_formation(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 8));
+    material.set_i_binding(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 9));
+    material.set_v_binding(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 10));
     material.set_recombination_radius(
-        (gp_float)sqlite3_column_double(stmt, 11));
-    material.set_i_loop_bias((gp_float)sqlite3_column_double(stmt, 12));
-    material.set_i_dislocation_bias((gp_float)sqlite3_column_double(stmt, 13));
+        (gp_float)sqlite3_column_double(stmt, col_offset + 11));
+    material.set_i_loop_bias(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 12));
+    material.set_i_dislocation_bias(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 13));
     material.set_i_dislocation_bias_param(
-        (gp_float)sqlite3_column_double(stmt, 14));
-    material.set_v_loop_bias((gp_float)sqlite3_column_double(stmt, 15));
-    material.set_v_dislocation_bias((gp_float)sqlite3_column_double(stmt, 16));
+        (gp_float)sqlite3_column_double(stmt, col_offset + 14));
+    material.set_v_loop_bias(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 15));
+    material.set_v_dislocation_bias(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 16));
     material.set_v_dislocation_bias_param(
-        (gp_float)sqlite3_column_double(stmt, 17));
+        (gp_float)sqlite3_column_double(stmt, col_offset + 17));
     material.set_dislocation_density_0(
-        (gp_float)sqlite3_column_double(stmt, 18));
-    material.set_grain_size((gp_float)sqlite3_column_double(stmt, 19));
-    material.set_lattice_param((gp_float)sqlite3_column_double(stmt, 20));
-    material.set_burgers_vector((gp_float)sqlite3_column_double(stmt, 21));
-    material.set_atomic_volume((gp_float)sqlite3_column_double(stmt, 22));
+        (gp_float)sqlite3_column_double(stmt, col_offset + 18));
+    material.set_grain_size(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 19));
+    material.set_lattice_param(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 20));
+    material.set_burgers_vector(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 21));
+    material.set_atomic_volume(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 22));
 }
 
+// NOTE: col_offset is not really needed here, it is merely added to have
+// matching arg signatures for the other row reading functions. It maybe be
+// better to implement row reading by token, to completely avoid column
+// offsetting.
 void ClientDb::row_read_simulation(sqlite3_stmt *stmt,
-                                   SimulationModel &simulation) {
-    simulation.sqlite_id = sqlite3_column_int(stmt, 0);
-    simulation.creation_datetime = (char *)sqlite3_column_text(stmt, 1);
-    simulation.id_reactor = sqlite3_column_int(stmt, 2);
-    simulation.id_material = sqlite3_column_int(stmt, 3);
-    simulation.cd_state.time = sqlite3_column_double(stmt, 4);
+                                   SimulationModel &simulation,
+                                   int col_offset) {
+    simulation.sqlite_id = sqlite3_column_int(stmt, col_offset + 0);
+    simulation.creation_datetime =
+        (char *)sqlite3_column_text(stmt, col_offset + 1);
 
-    const void *interstitials_blob = sqlite3_column_blob(stmt, 5);
-    int interstitials_blob_size = sqlite3_column_bytes(stmt, 5);
+    simulation.cd_state.time = sqlite3_column_double(stmt, col_offset + 4);
+
+    const void *interstitials_blob = sqlite3_column_blob(stmt, col_offset + 5);
+    int interstitials_blob_size = sqlite3_column_bytes(stmt, col_offset + 5);
     std::vector<char> interstitials_vec(
         static_cast<const char *>(interstitials_blob),
         static_cast<const char *>(interstitials_blob) +
@@ -271,14 +298,18 @@ void ClientDb::row_read_simulation(sqlite3_stmt *stmt,
     simulation.cd_state.interstitials =
         BlobConverter::from_blob(interstitials_vec);
 
-    const void *vacancies_blob = sqlite3_column_blob(stmt, 6);
-    int vacancies_blob_size = sqlite3_column_bytes(stmt, 6);
+    const void *vacancies_blob = sqlite3_column_blob(stmt, col_offset + 6);
+    int vacancies_blob_size = sqlite3_column_bytes(stmt, col_offset + 6);
     std::vector<char> vacancies_vec(
         static_cast<const char *>(vacancies_blob),
         static_cast<const char *>(vacancies_blob) + vacancies_blob_size);
     simulation.cd_state.vacancies = BlobConverter::from_blob(vacancies_vec);
 
-    simulation.cd_state.dislocation_density = sqlite3_column_double(stmt, 7);
+    simulation.cd_state.dislocation_density =
+        sqlite3_column_double(stmt, col_offset + 7);
+
+    row_read_reactor(stmt, simulation.reactor, col_offset + 8);
+    row_read_material(stmt, simulation.material, col_offset + 22);
 }
 
 // --------------------------------------------------------------------------------------------
@@ -716,10 +747,11 @@ bool ClientDb::create_simulation(SimulationModel &simulation,
             "Failed to create simulation, it already exists.");
     if (!db) open();
 
+    // create non-preset copies of the reactor and material
+    create_reactor(simulation.reactor, nullptr, false);
+    create_material(simulation.material, nullptr, false);
+
     int sqlite_code;
-
-    // TODO - create reactor & material (non-presets)
-
     sqlite3_stmt *stmt;
 
     sqlite_code = sqlite3_prepare_v2(db, db_queries::create_simulation.c_str(),

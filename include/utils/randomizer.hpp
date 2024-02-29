@@ -51,8 +51,8 @@ class Randomizer {
     }
 
     void simulation_randomize(SimulationModel& simulation) const {
-        simulation.id_reactor = rand() % 10;
-        simulation.id_material = rand() % 10;
+        reactor_randomize(simulation.reactor);
+        material_randomize(simulation.material);
         simulation.cd_state.time = randd();
 
         int vec_size = rand() % 100000 + 4;
