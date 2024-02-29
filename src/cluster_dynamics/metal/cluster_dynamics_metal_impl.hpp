@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "cluster_dynamics/cluster_dynamics_state.hpp"
-#include "cluster_dynamics/cluster_dynamics_metal_kernel.hpp"
+#include "cluster_dynamics_metal_kernel.hpp"
 #include "utils/constants.hpp"
 #include "material_impl.hpp"
 #include "nuclear_reactor_impl.hpp"
