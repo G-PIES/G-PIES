@@ -20,15 +20,20 @@ void WolframMathematicaExporter::export_model(Model *model) {
         [](ModelObject *object) {
             return object == nullptr ? 0 : static_cast<Defect *>(object)->size;
         });
-    int max_type = 2;
+    constexpr int max_type = 2;
 
-    std::vector<Defect *> defects_by_size[max_size][max_type];
+    std::vector<std::vector<Defect *>> defects_by_size[max_type];
+    for (int size = 0; size < max_size; size++) {
+        for (int type = 0; type < max_type; type++) {
+            defects_by_size[type].push_back({});
+        }
+    }
     for (ModelObject *object : objects) {
         Defect *defect = static_cast<Defect *>(object);
         if (defect == nullptr) {
             continue;
         }
-        defects_by_size[defect->size - 1][defect->type - 1].push_back(defect);
+        defects_by_size[defect->type - 1][defect->size - 1].push_back(defect);
     }
 
     out << "AppendTo[Objects, {";
@@ -36,7 +41,7 @@ void WolframMathematicaExporter::export_model(Model *model) {
         for (int type = 1; type <= max_type; type++) {
             out << "{";
             bool is_first = true;
-            for (Defect *defect : defects_by_size[size - 1][type - 1]) {
+            for (Defect *defect : defects_by_size[type - 1][size - 1]) {
                 if (is_first) {
                     is_first = false;
                 } else {
