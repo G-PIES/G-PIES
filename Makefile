@@ -128,7 +128,8 @@ dblib: bdirs
 
 # Cluster Dynamics Example
 cdex: cdlib
-	$(CC) $(CCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
+	$(CC) $(CCFLAGS) example/cd_example.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics -lsundials_cvodes \
+		-lsundials_nvecserial -lsundials_sunmatrixdense
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_example$(EXE_EXT) || ( exit 0 )
 
 # Cluster Dynamics Example W/ Verbose Printing
@@ -138,7 +139,8 @@ cdv: cdlib
 
 # Cluster Dynamics Example W/ CSV Output Formatting
 cdcsv: cdlib
-	$(CC) $(CCFLAGS) -D CSV=true example/cd_example.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
+	$(CC) $(CCFLAGS) -D CSV=true example/cd_example.cpp -o $(BIN_DIR)/cd_example$(EXE_EXT) $(INCLUDE_FLAGS) -L$(LIB_DIR)  -lclusterdynamics -lsundials_cvodes \
+		-lsundials_nvecserial -lsundials_sunmatrixdense
 	@[ "${R}" ] && ./$(BIN_DIR)/cd_example$(EXE_EXT) 1e-5 1 > $(OUT_DIR)/cd-output.csv || ( exit 0 )
 
 # Cluster Dynamics W/ CUDA Example

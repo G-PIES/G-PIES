@@ -56,10 +56,12 @@ void print_state(ClusterDynamicsState& state)
 
 void print_csv(ClusterDynamicsState& state)
 {
+    fprintf(stdout, "%g", state.time * 2.9e-7);
     for (uint64_t n = 1; n < concentration_boundary; ++n)
     {
-        fprintf(stdout, "%g,%llu,%g,%g\n", state.time, (unsigned long long) n, state.interstitials[n], state.vacancies[n]);
+        fprintf(stdout, ", %g, %g", state.interstitials[n], state.vacancies[n]);
     }
+    fprintf(stdout, "\n");
 }
 
 void profile()
@@ -97,6 +99,7 @@ int main(int argc, char* argv[])
     nuclear_reactors::OSIRIS(reactor);
 
     Material material;
+
     materials::SA304(material);
 
     // Default values
@@ -119,14 +122,19 @@ int main(int argc, char* argv[])
             break;
     }
     
-    sample_interval = delta_time;
+    sample_interval = simulation_time / 10000;
 
     ClusterDynamics cd(concentration_boundary, reactor, material);
 
     print_start_message();
 
     #if CSV
-    fprintf(stdout, "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
+    fprintf(stdout, "DPA, ");
+    for (uint64_t n = 1; n < concentration_boundary; ++n)
+    {
+        fprintf(stdout, "i%lu, v%lu,", n, n);
+    }
+    fprintf(stdout, "\n");
     #endif
 
     ClusterDynamicsState state;

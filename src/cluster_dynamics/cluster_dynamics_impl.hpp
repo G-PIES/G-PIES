@@ -48,6 +48,7 @@ public:
   double* dislocation_density;
 
   size_t concentration_boundary;
+  size_t state_size;
 
   double mean_dislocation_radius_val;
   double ii_sum_absorption_val;
@@ -58,7 +59,6 @@ public:
   double v_diffusion_val;
 
   SUNContext sunctx;
-  realtype t, tout;
   N_Vector y;
   N_Vector abstol;
   SUNMatrix A;
@@ -127,8 +127,6 @@ public:
   bool update_clusters(double);
   void step_init();
   bool validate(size_t) const;
-
-  int system(double, N_Vector, N_Vector, void*);
 
   // Interface functions
   ClusterDynamicsImpl(size_t concentration_boundary, NuclearReactor reactor, Material material);
