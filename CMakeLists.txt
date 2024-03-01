@@ -41,6 +41,8 @@ else()
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
+add_compile_definitions($<$<PLATFORM_ID:Windows>:_USE_MATH_DEFINES>)
+
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 
 add_subdirectory(./cli)
@@ -48,4 +50,5 @@ add_subdirectory(./src/client_db)
 add_subdirectory(./src/cluster_dynamics/cpu)
 add_subdirectory(./src/cluster_dynamics/cuda)
 add_subdirectory(./src/cluster_dynamics/metal)
+add_subdirectory(./src/okmc)
 add_subdirectory(./test)
