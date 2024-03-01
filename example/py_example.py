@@ -23,10 +23,24 @@ step = 0.00001
 # C - Concentration boundary 
 # simulation time - total simulation time
 # 0.00001 - time step from each iteration
-cd = pycd.Simulation(C, simulation_time, step);
+reactor = pycd.Sim_Reactor();
+material = pycd.Sim_Material();
+
+print("Material Obj: " + str(material))
+print("Reactor Obj: " + str(reactor))
+
+#Default material SA304 (for now..)
+#Deafult reactor OSIRIS (for now..)
+
+#Overloaded args - Custom reactor and custom material
+cd = pycd.Simulation(C, simulation_time, step, material, reactor);
+
+#Default Constructor
+#cd = pycd.Simulation(C, simulation_time, step);
 
 # prints out the object so we know Python has a reference point in memory for the class
-print(cd)
+print("Cluster Dynamics Obj: " + str(cd))
+
 
 # Main simulation loop
 while t < simulation_time:
