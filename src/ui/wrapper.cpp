@@ -16,14 +16,53 @@
 
 namespace py = pybind11;
 
+struct Sim_Reactor {
+    Sim_Reactor()
+    {
+        nuclear_reactors::OSIRIS(reactor); //For now..
+    }
+
+    NuclearReactor get_reactor()
+    {
+        return reactor;
+    }
+
+    NuclearReactor reactor;
+};
+
+
+struct Sim_Material {
+    Sim_Material()
+    {
+        materials::SA304(material); //For now..
+    }
+
+    Material get_material()
+    {
+        return material;
+    }
+
+    Material material;
+};
+
 // C++ wrapper file for the Python implementation of cluster dyanamics, based off of the example C++ cluster dynamics files.
 struct Simulation {
+    // Default Constructor
     Simulation(size_t concentration_boundary, double simulation_time, double delta_time) 
     : concentration_boundary(concentration_boundary), simulation_time(simulation_time), delta_time(delta_time)
     {
-        nuclear_reactors::OSIRIS(reactor);
-        materials::SA304(material);
-        cd = std::make_unique<ClusterDynamics>(concentration_boundary, reactor, material);
+        main_sim_reactor = Sim_Reactor();
+        main_sim_material = Sim_Material();
+        cd = std::make_unique<ClusterDynamics>(concentration_boundary, main_sim_reactor.get_reactor(), main_sim_material.get_material());
+    }
+
+    // Overloaded Constructor
+    Simulation(size_t concentration_boundary, double simulation_time, double delta_time, Sim_Material material, Sim_Reactor reactor) 
+    : concentration_boundary(concentration_boundary), simulation_time(simulation_time), delta_time(delta_time)
+    {
+        main_sim_material = material;
+        main_sim_reactor = reactor;
+        cd = std::make_unique<ClusterDynamics>(concentration_boundary, reactor.get_reactor(), material.get_material());
     }
 
     void run() 
@@ -104,10 +143,11 @@ struct Simulation {
     
     std::unique_ptr<ClusterDynamics> cd;
 
-    Material material;
-    NuclearReactor reactor;
+    Sim_Reactor main_sim_reactor;
+    Sim_Material main_sim_material;
     ClusterDynamicsState state;
 };
+
 
 // Binds the current backend Cluster Dynamics code with these wrapper functions
 PYBIND11_MODULE(pyclusterdynamics, m) {
@@ -116,10 +156,20 @@ PYBIND11_MODULE(pyclusterdynamics, m) {
     // The name of the python class object is Simulation
     py::class_<Simulation>(m, "Simulation")
         .def(py::init<size_t, double, double>())
+        .def(py::init<size_t, double, double, Sim_Material, Sim_Reactor>())
         .def("run", &Simulation::run) 
         .def("print_state", &Simulation::print_state)
         .def("string_state", &Simulation::string_state)
         .def("get_state_time", &Simulation::get_state_time)
         .def("get_int_idx", &Simulation::get_int_idx) // vacancies
         .def("get_vac_idx", &Simulation::get_vac_idx); // interstials
+    
+    py::class_<Sim_Reactor>(m, "Sim_Reactor")
+        .def(py::init<>())
+        .def("get_reactor", &Sim_Reactor::get_reactor);
+    
+    py::class_<Sim_Material>(m, "Sim_Material")
+        .def(py::init<>())
+        .def("get_material", &Sim_Material::get_material);
+
 }
