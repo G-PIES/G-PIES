@@ -16,6 +16,7 @@ if(BUILD_METAL)
       xcrun -sdk macosx metal
         -DGP_FLOAT=float
         -I${PROJECT_ROOT}/include
+        -I${PROJECT_ROOT}/include/utils
         -I${PROJECT_ROOT}/src/cluster_dynamics
         -I${PROJECT_ROOT}/src/cluster_dynamics/metal
         ${PROJECT_ROOT}/shader/metal/cluster_dynamics.metal

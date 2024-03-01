@@ -13,7 +13,7 @@ namespace db_queries {
 std::string init =
     "CREATE TABLE IF NOT EXISTS reactors"
     "("
-    "id_reactor INTEGER PRIMARY KEY AUTOINCREMENT,"
+    "id_reactor INTEGER PRIMARY KEY,"
     "creation_datetime TEXT,"
     "species text NOT NULL DEFAULT '',"
     "flux float DEFAULT 0.0,"
@@ -25,7 +25,8 @@ std::string init =
     "v_bi float DEFAULT 0.0,"
     "v_tri float DEFAULT 0.0,"
     "v_quad float DEFAULT 0.0,"
-    "dislocation_density_evolution float DEFAULT 0.0"
+    "dislocation_density_evolution float DEFAULT 0.0,"
+    "is_preset INTEGER"
     ");"
 
     "CREATE TABLE IF NOT EXISTS materials"
@@ -52,28 +53,24 @@ std::string init =
     "grain_size float DEFAULT 0.0,"
     "lattice_param float DEFAULT 0.0,"
     "burgers_vector float DEFAULT 0.0,"
-    "atomic_volume float DEFAULT 0.0"
+    "atomic_volume float DEFAULT 0.0,"
+    "is_preset INTEGER"
     ");"
 
-    "CREATE TABLE IF NOT EXISTS simulations"
+    "CREATE TABLE IF NOT EXISTS history_simulations"
     "("
     "id_simulation INTEGER PRIMARY KEY,"
     "creation_datetime TEXT,"
     "id_reactor INTEGER,"
-    "simulation_time FLOAT DEFAULT 0.0,"
-    "time_delta FLOAT DEFAULT 0.0,"
-    "data TEXT"
-    ");"
-
-    "CREATE TABLE IF NOT EXISTS simulation_materials"
-    "("
-    "id_simulation NOT NULL,"
-    "id_material NOT NULL,"
-    "PRIMARY KEY (id_simulation, id_material)"
+    "id_material INTEGER,"
+    "simulation_time float DEFAULT 0.0,"
+    "interstitials BLOB,"
+    "vacancies BLOB,"
+    "dislocation_density float DEFAULT 0.0"
     ");";
 
 std::string clear =
-    "DROP TABLE IF EXISTS simulations;"
+    "DROP TABLE IF EXISTS history_simulations;"
     "DROP TABLE IF EXISTS reactors;"
     "DROP TABLE IF EXISTS materials;"
     "DROP TABLE IF EXISTS simulation_materials;";
@@ -85,8 +82,8 @@ std::string last_insert_rowid = "SELECT last_insert_rowid();";
 std::string create_reactor =
     "INSERT INTO reactors ("
     "species, flux, temperature, recombination, i_bi, i_tri, i_quad, v_bi, "
-    "v_tri, v_quad, dislocation_density_evolution, creation_datetime"
-    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    "v_tri, v_quad, dislocation_density_evolution, creation_datetime, is_preset"
+    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 std::string read_reactors = "SELECT * FROM reactors;";
 
@@ -118,9 +115,9 @@ std::string create_material =
     "i_loop_bias, i_dislocation_bias, i_dislocation_bias_param, v_loop_bias, "
     "v_dislocation_bias, v_dislocation_bias_param, dislocation_density_0, "
     "grain_size, lattice_param, burgers_vector, atomic_volume, "
-    "creation_datetime"
+    "creation_datetime, is_preset"
     ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-    "?);";
+    "?, ?);";
 
 std::string read_materials = "SELECT * FROM materials;";
 
@@ -153,28 +150,41 @@ std::string update_material =
 
 std::string delete_material = "DELETE FROM materials WHERE id_material = ?;";
 
-// simulations CRUD
+// history_simulations CRUD
 
 std::string create_simulation =
-    "INSERT INTO simulations ("
-    "id_reactor, simulation_time, time_delta, data"
-    ") VALUES (?, ?, ?, ?);";
+    "INSERT INTO history_simulations ("
+    "id_reactor, id_material, simulation_time, interstitials, vacancies, "
+    "dislocation_density, creation_datetime"
+    ") VALUES (?, ?, ?, ?, ?, ?, ?);";
 
-std::string read_simulations = "SELECT * FROM simulations;";
+std::string read_simulations =
+    "SELECT * FROM history_simulations "
+    "INNER JOIN reactors ON reactors.id_reactor = "
+    "history_simulations.id_reactor "
+    "INNER JOIN materials ON materials.id_material = "
+    "history_simulations.id_material;";
 
 std::string read_simulation =
-    "SELECT * FROM simulations WHERE id_simulation = ?;";
+    "SELECT * FROM history_simulations "
+    "INNER JOIN reactors ON reactors.id_reactor = "
+    "history_simulations.id_reactor "
+    "INNER JOIN materials ON materials.id_material = "
+    "history_simulations.id_material "
+    "WHERE history_simulations.id_simulation = ?;";
 
 std::string update_simulation =
-    "UPDATE simulations SET "
+    "UPDATE history_simulations SET "
     "id_reactor = ?, "
+    "id_material = ?, "
     "simulation_time = ?, "
-    "time_delta = ?, "
-    "data = ? "
+    "interstitials = ?, "
+    "vacancies = ?, "
+    "dislocation_density = ? "
     "WHERE id_simulation = ?;";
 
 std::string delete_simulation =
-    "DELETE FROM simulations WHERE id_simulation = ?;";
+    "DELETE FROM history_simulations WHERE id_simulation = ?;";
 
 // simulation_materials CRUD
 
