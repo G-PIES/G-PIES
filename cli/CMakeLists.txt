@@ -3,6 +3,7 @@ target_include_directories(cd_cli PRIVATE ../src/cluster_dynamics)
 target_link_libraries(cd_cli clusterdynamics)
 
 add_executable(db_cli ./db_cli.cpp)
+target_include_directories(db_cli PRIVATE ${SQLite3_INCLUDE_DIRS})
 target_include_directories(db_cli PRIVATE ../src/cluster_dynamics)
 target_link_libraries(db_cli clientdb)
 target_link_libraries(db_cli clusterdynamics)
