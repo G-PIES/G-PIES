@@ -7,6 +7,7 @@
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
 #include "utils/timer.hpp"
+#include "client_db/client_db.hpp"
 
 #ifndef VPRINT
 #define VPRINT false
@@ -178,6 +179,7 @@ void update_for_sensitivity_analysis(ClusterDynamics &cd,
 }
 
 int main(int argc, char* argv[]) {
+    ClientDb db;
     NuclearReactor reactor;
     nuclear_reactors::OSIRIS(reactor);
 

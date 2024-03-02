@@ -192,9 +192,10 @@ clean_build_dir:
 	rm -rf $(BUILD_DIR)
 
 # Cluster Dynamics Library and tests
-.PHONY: cdlib cdcudalib cdtests cdcudatests
+.PHONY: cdlib cdcudalib libclientdb cdtests cdcudatests
 cdlib: libclusterdynamics
 cdcudalib: libclusterdynamicscuda
+clientdblib: libclientdb
 cdtests: cd_tests
 cdcudatests: cdcuda_tests
 
@@ -319,6 +320,14 @@ $(OBJ_FILES.libclusterdynamicscuda): COMPILER = nvcc
 $(OBJ_FILES.libclusterdynamicscuda): INCLUDES += src/cluster_dynamics src/cluster_dynamics/cuda
 
 # -----------------------------------------------------------------------------
+# Client Database Library 
+ALL_LIB += libclientdb
+CXX_FILES.libclientdb = $(wildcard src/client_db/*.cpp)
+OBJ_FILES.libclientdb = $(call get_obj_files,libclientdb)
+$(OBJ_FILES.libclientdb): INCLUDES += include/utils 
+$(OBJ_FILES.libclientdb): LIBRARIES += sqlite3
+
+# -----------------------------------------------------------------------------
 # GoogleTest Cluster Dynamics Unit Tests
 ALL_EXE += cd_tests
 CXX_FILES.cd_tests = test/cd_tests.cpp
@@ -348,7 +357,8 @@ ALL_EXE += cd_cli
 CXX_FILES.cd_cli = cli/cd_cli.cpp
 OBJ_FILES.cd_cli = $(call get_obj_files,cd_cli)
 EXE_FILE.cd_cli = $(call get_exe_file,cd_cli)
-$(EXE_FILE.cd_cli): LIBRARIES += clusterdynamics
+$(EXE_FILE.cd_cli): LIBRARIES += clusterdynamics clientdb
+$(EXE_FILE.cd_cli): EXTERN_LIBRARIES += sqlite3
 
 # Cluster Dynamics W/ CUDA CLI
 ALL_EXE += cd_cuda_cli
