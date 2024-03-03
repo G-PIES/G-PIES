@@ -1,4 +1,4 @@
-if(BUILD_METAL)
+if(GP_BUILD_METAL)
 
   file(GLOB SRC_FILES ./*.cpp ../*.cpp)
   add_library(clusterdynamicsmetal STATIC ${SRC_FILES})

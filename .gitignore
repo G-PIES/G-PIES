@@ -62,6 +62,7 @@ CTestTestfile.cmake
 _deps
 
 # Build Directories 
+.build
 build
 out
 lib

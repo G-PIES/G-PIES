@@ -221,7 +221,7 @@ int main(int argc, char* argv[]) {
 
             #if CSV
             fprintf(stdout,
-                "Time (s),Cluster Size," +
+                "Time (s),Cluster Size,"
                 "Interstitials / cm^3,Vacancies / cm^3\n");
             #endif
 
