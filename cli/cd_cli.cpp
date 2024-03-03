@@ -179,7 +179,17 @@ void update_for_sensitivity_analysis(ClusterDynamics &cd,
 }
 
 int main(int argc, char* argv[]) {
-    ClientDb db;
+    ClientDb db(DEFAULT_CLIENT_DB_PATH, false);
+
+    #include "utils/randomizer.hpp"
+    Randomizer randomizer;
+
+    // Open SQLite connection
+    db.init();
+
+    // uncomment to clear all data in SQLite db
+    //db.clear();
+
     NuclearReactor reactor;
     nuclear_reactors::OSIRIS(reactor);
 
@@ -210,6 +220,13 @@ int main(int argc, char* argv[]) {
         default:
             break;
     }
+
+    /*
+    HistorySimulation simulation;
+    db.read_simulation(1, simulation);
+    print_state(simulation.cd_state);
+    return 0;
+    */
 
     sample_interval = delta_time;
 
@@ -299,6 +316,18 @@ int main(int argc, char* argv[]) {
         #if !VPRINT && !CSV
         print_state(state);
         #endif
+        // --------------------------------------------------------------------------------------------
+
+        // --------------------------------------------------------------------------------------------
+        // Write simulation result to the database
+        HistorySimulation history_simulation(
+            reactor,
+            material,
+            state
+        );
+        //randomizer.simulation_randomize(history_simulation);
+
+        db.create_simulation(history_simulation);
         // --------------------------------------------------------------------------------------------
     }
 

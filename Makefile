@@ -324,8 +324,8 @@ $(OBJ_FILES.libclusterdynamicscuda): INCLUDES += src/cluster_dynamics src/cluste
 ALL_LIB += libclientdb
 CXX_FILES.libclientdb = $(wildcard src/client_db/*.cpp)
 OBJ_FILES.libclientdb = $(call get_obj_files,libclientdb)
-$(OBJ_FILES.libclientdb): INCLUDES += include/utils 
-$(OBJ_FILES.libclientdb): LIBRARIES += sqlite3
+$(OBJ_FILES.libclientdb): INCLUDES += include/utils
+$(OBJ_FILES.libclientdb): EXTERN_LIBRARIES += sqlite3
 
 # -----------------------------------------------------------------------------
 # GoogleTest Cluster Dynamics Unit Tests

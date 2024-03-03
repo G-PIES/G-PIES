@@ -48,6 +48,19 @@ struct ClusterDynamicsState {
     /** @brief The current density of the dislocation network in \todo UNITS
      */
     gp_float dislocation_density = 0.0;
+
+    ClusterDynamicsState& operator=(const ClusterDynamicsState& other) {
+        if (this == &other) return *this;
+
+        valid = other.valid;
+        time = other.time;
+        dpa = other.dpa;
+        dislocation_density = other.dislocation_density;
+        interstitials = std::vector(other.interstitials.begin(), other.interstitials.end());
+        vacancies = std::vector(other.vacancies.begin(), other.vacancies.end());
+
+        return *this;
+    }
 };
 
 #endif  // CLUSTER_DYNAMICS_STATE_HPP
