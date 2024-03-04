@@ -176,24 +176,24 @@ void ClientDb::bind_material(sqlite3_stmt *stmt, const Material &material,
 
 void ClientDb::bind_simulation(sqlite3_stmt *stmt,
                                const HistorySimulation &simulation) {
-  /*
   std::vector<char> interstitials_blob =
       BlobConverter::to_blob(simulation.cd_state.interstitials);
   std::vector<char> vacancies_blob =
       BlobConverter::to_blob(simulation.cd_state.vacancies);
-  */
 
-  std::string interstitials_csv =
-      BlobConverter::to_csv(simulation.cd_state.interstitials);
-  std::string vacancies_csv =
-      BlobConverter::to_csv(simulation.cd_state.vacancies);
+  /*
+std::string interstitials_csv =
+    BlobConverter::to_csv(simulation.cd_state.interstitials);
+std::string vacancies_csv =
+    BlobConverter::to_csv(simulation.cd_state.vacancies);
+  */
 
   sqlite3_bind_int(stmt, 1, simulation.reactor.sqlite_id);
   sqlite3_bind_int(stmt, 2, simulation.material.sqlite_id);
   sqlite3_bind_double(stmt, 3, static_cast<double>(simulation.cd_state.time));
-  sqlite3_bind_blob(stmt, 4, interstitials_csv.c_str(),
-                    interstitials_csv.size(), SQLITE_TRANSIENT);
-  sqlite3_bind_blob(stmt, 5, vacancies_csv.data(), vacancies_csv.size(),
+  sqlite3_bind_blob(stmt, 4, interstitials_blob.data(),
+                    interstitials_blob.size(), SQLITE_TRANSIENT);
+  sqlite3_bind_blob(stmt, 5, vacancies_blob.data(), vacancies_blob.size(),
                     SQLITE_TRANSIENT);
   sqlite3_bind_double(
       stmt, 6, static_cast<double>(simulation.cd_state.dislocation_density));
@@ -298,19 +298,18 @@ void ClientDb::row_read_simulation(sqlite3_stmt *stmt,
 
   const void *interstitials_blob = sqlite3_column_blob(stmt, col_offset + 5);
   int interstitials_blob_size = sqlite3_column_bytes(stmt, col_offset + 5);
-  std::string interstitials_csv(
+  std::vector<char> interstitials_vec(
       static_cast<const char *>(interstitials_blob),
       static_cast<const char *>(interstitials_blob) + interstitials_blob_size);
-
   simulation.cd_state.interstitials =
-      BlobConverter::from_csv(interstitials_csv);
+      BlobConverter::from_blob(interstitials_vec);
 
   const void *vacancies_blob = sqlite3_column_blob(stmt, col_offset + 6);
   int vacancies_blob_size = sqlite3_column_bytes(stmt, col_offset + 6);
-  std::string vacancies_csv(
+  std::vector<char> vacancies_vec(
       static_cast<const char *>(vacancies_blob),
       static_cast<const char *>(vacancies_blob) + vacancies_blob_size);
-  simulation.cd_state.vacancies = BlobConverter::from_csv(vacancies_csv);
+  simulation.cd_state.vacancies = BlobConverter::from_blob(vacancies_vec);
 
   simulation.cd_state.dislocation_density =
       sqlite3_column_double(stmt, col_offset + 7);
