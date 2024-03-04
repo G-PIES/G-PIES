@@ -15,11 +15,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Generate the buildsystem
-        run: cmake -B ./build -S . --preset default -DCMAKE_BUILD_TYPE=Debug
-
       - name: Build
-        run: cmake --build ./build -j4
+        run: ./build.sh
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

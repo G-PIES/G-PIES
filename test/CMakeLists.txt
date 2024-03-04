@@ -14,7 +14,7 @@ target_include_directories(cd_tests PRIVATE ../src/cluster_dynamics/cpu)
 target_link_libraries(cd_tests clusterdynamics)
 target_link_libraries(cd_tests GTest::gtest_main)
 
-if(BUILD_CUDA)
+if(GP_BUILD_CUDA)
   add_executable(cd_cuda_tests ./cd_tests.cpp)
   set_source_files_properties(./cd_tests.cpp PROPERTIES LANGUAGE CUDA)
   target_compile_definitions(cd_cuda_tests PRIVATE USE_CUDA)

@@ -4,15 +4,17 @@
         {
             "name": "default",
             "cacheVariables": {
-                "BUILD_CUDA": false,
-                "BUILD_METAL": false
+                "GP_BUILD_CUDA": false,
+                "GP_BUILD_METAL": false,
+                "GP_VERBOSE": false,
+                "GP_CSV": false
             }
         },
         {
             "name": "cuda",
             "inherits": "default",
             "cacheVariables": {
-                "BUILD_CUDA": true
+                "GP_BUILD_CUDA": true
             }
         },
         {
@@ -26,7 +28,7 @@
             "name": "metal",
             "inherits": "default",
             "cacheVariables": {
-                "BUILD_METAL": true
+                "GP_BUILD_METAL": true
             }
         }
     ]

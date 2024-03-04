@@ -1,4 +1,4 @@
-if(BUILD_CUDA)
+if(GP_BUILD_CUDA)
 
   file(GLOB SRC_FILES ./*.cpp ../*.cpp)
 
