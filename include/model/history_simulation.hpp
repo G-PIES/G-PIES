@@ -10,14 +10,12 @@
 #include "utils/types.hpp"
 
 struct HistorySimulation {
-    HistorySimulation() : sqlite_id(-1) {
-        datetime::utc_now(creation_datetime);
-    }
-    int sqlite_id;
-    std::string creation_datetime;
-    NuclearReactor reactor;
-    Material material;
-    ClusterDynamicsState cd_state;
+  HistorySimulation() : sqlite_id(-1) { datetime::utc_now(creation_datetime); }
+  int sqlite_id;
+  std::string creation_datetime;
+  NuclearReactor reactor;
+  Material material;
+  ClusterDynamicsState cd_state;
 };
 
 #endif  // HISTORY_SIMULATION_HPP
