@@ -30,7 +30,7 @@ jobs:
       - name: Build CPU targets
         run: make all_cpu CONFIGURATION=${{ matrix.configuration }}
       - name: Build DB targets
-        run: make dbtests dbex
+        run: make dbtests dbcli
       - name: Build CUDA targets
         run: make all_cuda CONFIGURATION=${{ matrix.configuration }}
 
