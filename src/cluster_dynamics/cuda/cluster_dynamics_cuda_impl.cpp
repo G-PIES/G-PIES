@@ -1,7 +1,7 @@
 #include "cluster_dynamics_cuda_impl.hpp"
 
 #include <stdio.h>
-
+#include <algorithm>
 #include <cstring>
 
 // --------------------------------------------------------------------------------------------
