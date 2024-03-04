@@ -25,7 +25,7 @@ class BlobConverter {
     static std::string to_csv(const std::vector<gp_float>& vec) {
         std::stringstream ss;
         size_t len = vec.size();
-        for (int i = 0; i < len - 1; ++i) {
+        for (size_t i = 0; i < len - 1; ++i) {
             ss << vec[i] << ',';
         }
         ss << vec[len - 1];

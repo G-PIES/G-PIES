@@ -186,6 +186,9 @@ std::string update_simulation =
 std::string delete_simulation =
     "DELETE FROM history_simulations WHERE id_simulation = ?;";
 
+std::string delete_simulations =
+    "DELETE FROM history_simulations;";
+
 // simulation_materials CRUD
 
 std::string create_simulation_material =

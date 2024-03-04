@@ -863,6 +863,25 @@ bool ClientDb::delete_simulation(const HistorySimulation &simulation,
     return is_sqlite_success(sqlite_code);
 }
 
+bool ClientDb::delete_simulations(int *sqlite_result_code) {
+    if (!db) open();
+
+    int sqlite_code;
+    char *sqlite_errmsg;
+
+    sqlite_code = sqlite3_exec(db, db_queries::delete_simulations.c_str(),
+        nullptr, nullptr, &sqlite_errmsg);
+
+
+    if (is_sqlite_error(sqlite_code)) {
+        throw ClientDbException("Failed to delete simulations.", sqlite_errmsg,
+                                sqlite_code, db_queries::delete_simulations);
+    }
+
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
+}
+
 bool ClientDb::open(int *sqlite_result_code) {
     int sqlite_code;
 

@@ -107,7 +107,6 @@ class ClientDb {
     // Reads all simulations from the local database, populating |simulations|.
     // |sqlite_code| can optionally be retrieved.
     // Returns true on success.
-
     bool read_simulations(std::vector<HistorySimulation> &simulations,
                           int *sqlite_code = nullptr);
 
@@ -128,6 +127,11 @@ class ClientDb {
     // Returns true on success.
     bool delete_simulation(const HistorySimulation &simulation,
                            int *sqlite_code = nullptr);
+
+    // Attempts to delete all simulations in the local database.
+    // |sqlite_code| can optionally be retrieved.
+    // Returns true on success.
+    bool delete_simulations(int *sqlite_code = nullptr);
 
     // --------------------------------------------------------------------------------------------
 
@@ -183,7 +187,6 @@ class ClientDb {
 
     // READ
     template <typename T>
-
     int read_one(sqlite3_stmt *, void (*)(sqlite3_stmt *, T &, int),
                  void (*)(sqlite3_stmt *, const int), const int, T &);
     template <typename T>
@@ -255,6 +258,7 @@ class ClientDb {
                                       const HistorySimulation &);
     static void err_delete_simulation(sqlite3_stmt *,
                                       const HistorySimulation &);
+    static void err_delete_simulations(sqlite3_stmt *);
 
     // --------------------------------------------------------------------------------------------
 
