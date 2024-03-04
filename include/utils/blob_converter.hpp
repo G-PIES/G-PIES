@@ -2,6 +2,7 @@
 #define BLOB_CONVERTER_HPP
 
 #include <cstring>
+#include <string>
 #include <sstream>
 #include <vector>
 
