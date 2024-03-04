@@ -69,20 +69,29 @@ void print_csv(ClusterDynamicsState& state) {
   fprintf(stdout, "\n");
 }
 
-void print_simulation_history(ClientDb& db) {
+void print_simulation_history(ClientDb& db, bool print_details) {
   std::vector<HistorySimulation> simulations;
   db.read_simulations(simulations);
 
-  fprintf(stdout, "\nSimulation History\tCount: %llu\n\n",
+  fprintf(stdout, "\nSimulation History\tCount: %llu\n",
           static_cast<long long unsigned int>(simulations.size()));
 
   if (!simulations.empty()) {
-    fprintf(stdout, "ID\tReactor\t\tMaterial\tSimulation Time\t\tCreated\n");
+    fprintf(stdout,
+            "ID ~ Concentration Boundary ~ Simulation Time ~ Delta "
+            "Time ~ Reactor ~ Material ~ Creation Datetime\n\n");
 
     for (HistorySimulation s : simulations) {
-      fprintf(stdout, "%d\t%s\t\t%s\t\t%13g\t\t%s\n", s.sqlite_id,
-              s.reactor.species.c_str(), s.material.species.c_str(),
-              s.cd_state.time, s.creation_datetime.c_str());
+      fprintf(stdout, "%d ~ %llu ~ %g ~ %g ~ %s ~ %s ~ %s\n", s.sqlite_id,
+              static_cast<unsigned long long>(s.concentration_boundary),
+              s.simulation_time, s.delta_time, s.reactor.species.c_str(),
+              s.material.species.c_str(), s.creation_datetime.c_str());
+
+        // Print the state(s) of the simulation
+        if (print_details) {
+          print_state(s.cd_state);
+          fprintf(stdout, "\n\n");
+        }
     }
 
     fprintf(stdout, "\n");
@@ -254,25 +263,34 @@ int main(int argc, char* argv[]) {
   // --------------------------------------------------------------------------------------------
   // DATABASE OPERATIONS
   if (argc > 2 && !strcmp("-db", argv[1])) {
-    sample_interval = delta_time;
-
     if (!strcmp("history", argv[2])) {
+      bool print_details = argc > 3 && !strcmp("--detail", argv[3]);
+
       // print simulation history
-      print_simulation_history(db);
+      print_simulation_history(db, print_details);
     } else if (!strcmp("run", argv[2]) && argc > 3) {
       // rerun a previous simulation
       int sim_sqlite_id = strtod(argv[3], NULL);
       HistorySimulation sim;
       if (db.read_simulation(sim_sqlite_id, sim)) {
-        // TODO - database needs to store delta_time and concentration_boundary
         // TODO - support storing sensitivity analysis
         fprintf(stdout, "Running simulation %d\n", sim_sqlite_id);
+        concentration_boundary = sim.concentration_boundary;
+        simulation_time = sim.simulation_time;
+
+        // TODO - Support sample interval and set a max resolution to avoid
+        // bloating the database. For this to work we will need a list of
+        // ClusterDynamicState objects and a SQLite intersection table.
+        delta_time = sample_interval = sim.delta_time;
+
         run_simulation(sim.reactor, sim.material);
       } else {
         fprintf(stderr, "Could not find simulation %d\n", sim_sqlite_id);
       }
     } else if (!strcmp("clear", argv[2])) {
-      db.delete_simulations();
+      if (db.delete_simulations()) {
+        fprintf(stdout, "Simulation History Cleared.\n");
+      }
     }
 
     return 0;
@@ -356,7 +374,9 @@ int main(int argc, char* argv[]) {
 
     // --------------------------------------------------------------------------------------------
     // Write simulation result to the database
-    HistorySimulation history_simulation(reactor, material, state);
+    HistorySimulation history_simulation(concentration_boundary,
+                                         simulation_time, delta_time, reactor,
+                                         material, state);
 
     db.create_simulation(history_simulation);
     // --------------------------------------------------------------------------------------------
