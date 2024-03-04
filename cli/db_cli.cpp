@@ -26,8 +26,8 @@ Randomizer randomizer;
 
 int main() {
     try {
-        db.init();
         db.clear();
+        db.init();
 
         std::cout << "\nREACTORS CRUD -----------------------------------\n";
         reactors_crud();
