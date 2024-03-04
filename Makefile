@@ -71,7 +71,7 @@ DB_LIB = $(LIB_DIR)/libclientdb$(LIB_EXT)
 
 # ----------------------------------------------------------------------------------------
 
-.PHONY: bdirs clean lib cli cuda all cd cdlib cdcudalib dblib cdv cdcsv cdcudaex dbcli dbtests cluster_dynamics client_db
+.PHONY: bdirs clean lib cli cuda all cd cdlib cdcudalib dblib cdv cdcsv cdcudacli dbcli dbtests cluster_dynamics client_db
 
 # ----------------------------------------------------------------------------------------
 # Utilties 
@@ -100,7 +100,7 @@ lib: cdlib cdcudalib dblib
 
 cli: cdcli dbcli
 
-cuda: cdcudalib cdcudaex
+cuda: cdcudalib cdcudacli
 
 all: lib cli cuda
 
@@ -204,7 +204,7 @@ cdcudatests: cdcuda_tests
 cdcli: cd_cli
 
 # Cluster Dynamics W/ CUDA CLI
-.PHONY: cdcudaex
+.PHONY: cdcudacli
 cdcli: cd_cuda_cli
 
 # Cluster Dynamics CLI W/ Verbose Printing
