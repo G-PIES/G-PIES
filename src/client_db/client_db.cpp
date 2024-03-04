@@ -181,7 +181,8 @@ void ClientDb::bind_simulation(sqlite3_stmt *stmt,
   std::vector<char> vacancies_blob =
       BlobConverter::to_blob(simulation.cd_state.vacancies);
 
-  sqlite3_bind_int(stmt, 1, static_cast<int>(simulation.concentration_boundary));
+  sqlite3_bind_int(stmt, 1,
+                   static_cast<int>(simulation.concentration_boundary));
   sqlite3_bind_double(stmt, 2, static_cast<double>(simulation.simulation_time));
   sqlite3_bind_double(stmt, 3, static_cast<double>(simulation.delta_time));
   sqlite3_bind_int(stmt, 4, simulation.reactor.sqlite_id);
@@ -192,14 +193,9 @@ void ClientDb::bind_simulation(sqlite3_stmt *stmt,
                     SQLITE_TRANSIENT);
   sqlite3_bind_double(
       stmt, 8, static_cast<double>(simulation.cd_state.dislocation_density));
-
-  // update
-  if (is_valid_sqlite_id(simulation.sqlite_id))
-    sqlite3_bind_int(stmt, 9, simulation.sqlite_id);
-  // create
-  else
-    sqlite3_bind_text(stmt, 9, simulation.creation_datetime.c_str(),
-                      simulation.creation_datetime.length(), nullptr);
+  sqlite3_bind_double(stmt, 9, static_cast<double>(simulation.cd_state.dpa));
+  sqlite3_bind_text(stmt, 10, simulation.creation_datetime.c_str(),
+                    simulation.creation_datetime.length(), nullptr);
 }
 
 // --------------------------------------------------------------------------------------------
@@ -289,10 +285,11 @@ void ClientDb::row_read_simulation(sqlite3_stmt *stmt,
   col_offset = 0;
   simulation.sqlite_id = sqlite3_column_int(stmt, col_offset + 0);
 
-  simulation.creation_datetime =
-      (char *)sqlite3_column_text(stmt, 1);
-  simulation.concentration_boundary = static_cast<size_t>(sqlite3_column_int(stmt, 2));
-  simulation.simulation_time = static_cast<gp_float>(sqlite3_column_double(stmt, 3));
+  simulation.creation_datetime = (char *)sqlite3_column_text(stmt, 1);
+  simulation.concentration_boundary =
+      static_cast<size_t>(sqlite3_column_int(stmt, 2));
+  simulation.simulation_time =
+      static_cast<gp_float>(sqlite3_column_double(stmt, 3));
   simulation.delta_time = static_cast<gp_float>(sqlite3_column_double(stmt, 4));
 
   // columns 5 & 6 are for reactor & material foreign keys
@@ -312,11 +309,12 @@ void ClientDb::row_read_simulation(sqlite3_stmt *stmt,
       static_cast<const char *>(vacancies_blob) + vacancies_blob_size);
   simulation.cd_state.vacancies = BlobConverter::from_blob(vacancies_vec);
 
-  simulation.cd_state.dislocation_density =
-      sqlite3_column_double(stmt, 9);
-  
-  row_read_reactor(stmt, simulation.reactor, 10);
-  row_read_material(stmt, simulation.material, 24);
+  simulation.cd_state.dislocation_density = sqlite3_column_double(stmt, 9);
+
+  simulation.cd_state.dpa = sqlite3_column_double(stmt, 10);
+
+  row_read_reactor(stmt, simulation.reactor, 11);
+  row_read_material(stmt, simulation.material, 25);
 }
 
 // --------------------------------------------------------------------------------------------

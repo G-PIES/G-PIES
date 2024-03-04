@@ -334,4 +334,6 @@ void simulation_cmp_print(const HistorySimulation& r1,
             r2.cd_state.vacancies[2], r2.cd_state.vacancies[3]);
     fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.cd_state.dislocation_density,
             r2.cd_state.dislocation_density);
+    fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.cd_state.dpa,
+            r2.cd_state.dpa);
 }

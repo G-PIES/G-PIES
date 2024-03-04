@@ -68,7 +68,8 @@ std::string init =
     "id_material INTEGER,"
     "interstitials BLOB,"
     "vacancies BLOB,"
-    "dislocation_density FLOAT DEFAULT 0.0"
+    "dislocation_density FLOAT DEFAULT 0.0,"
+    "density_per_atom FLOAT DEFAULT 0.0"
     ");";
 
 std::string clear =
@@ -158,8 +159,8 @@ std::string create_simulation =
     "INSERT INTO history_simulations ("
     "concentration_boundary, simulation_time, delta_time, id_reactor, "
     "id_material, interstitials, vacancies, "
-    "dislocation_density, creation_datetime"
-    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    "dislocation_density, density_per_atom, creation_datetime"
+    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 std::string read_simulations =
     "SELECT * FROM history_simulations "
