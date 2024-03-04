@@ -1,13 +1,16 @@
-#include "client_db/client_db.hpp"
+
 
 #include <sqlite3.h>
 
 #include <string>
 #include <vector>
 
+#include "client_db/client_db.hpp"
 #include "client_db/db_queries.hpp"
+#include "model/history_simulation.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
+#include "utils/blob_converter.hpp"
 
 // --------------------------------------------------------------------------------------------
 // TEMPLATE FUNCTIONS
@@ -33,7 +36,7 @@ int ClientDb::create_one(sqlite3_stmt *stmt,
 
 template <typename T>
 int ClientDb::read_one(sqlite3_stmt *stmt,
-                       void (*row_callback)(sqlite3_stmt *, T &),
+                       void (*row_callback)(sqlite3_stmt *, T &, int),
                        void (*err_callback)(sqlite3_stmt *, const int),
                        const int sqlite_id, T &object) {
     int sqlite_code;
@@ -43,7 +46,7 @@ int ClientDb::read_one(sqlite3_stmt *stmt,
 
     do {
         if (SQLITE_ROW == (sqlite_code = sqlite3_step(stmt)))
-            row_callback(stmt, object);
+            row_callback(stmt, object, 0);
         else if (is_sqlite_error(sqlite_code))
             err_callback(stmt, sqlite_id);
     } while (sqlite_code != SQLITE_DONE);
@@ -54,7 +57,7 @@ int ClientDb::read_one(sqlite3_stmt *stmt,
 
 template <typename T>
 int ClientDb::read_all(sqlite3_stmt *stmt,
-                       void (*row_callback)(sqlite3_stmt *, T &),
+                       void (*row_callback)(sqlite3_stmt *, T &, int),
                        void (*err_callback)(sqlite3_stmt *),
                        std::vector<T> &objects) {
     int sqlite_code;
@@ -62,7 +65,7 @@ int ClientDb::read_all(sqlite3_stmt *stmt,
     do {
         if (SQLITE_ROW == (sqlite_code = sqlite3_step(stmt))) {
             T obj;
-            row_callback(stmt, obj);
+            row_callback(stmt, obj, 0);
             objects.push_back(obj);
         } else if (is_sqlite_error(sqlite_code)) {
             err_callback(stmt);
@@ -108,7 +111,8 @@ int ClientDb::delete_one(sqlite3_stmt *stmt,
 // COLUMN BINDING
 // --------------------------------------------------------------------------------------------
 
-void ClientDb::bind_reactor(sqlite3_stmt *stmt, const NuclearReactor &reactor) {
+void ClientDb::bind_reactor(sqlite3_stmt *stmt, const NuclearReactor &reactor,
+                            bool is_preset) {
     sqlite3_bind_text(stmt, 1, reactor.species.c_str(),
                       reactor.species.length(), nullptr);
     sqlite3_bind_double(stmt, 2, reactor.get_flux());
@@ -121,16 +125,20 @@ void ClientDb::bind_reactor(sqlite3_stmt *stmt, const NuclearReactor &reactor) {
     sqlite3_bind_double(stmt, 9, reactor.get_v_tri());
     sqlite3_bind_double(stmt, 10, reactor.get_v_quad());
     sqlite3_bind_double(stmt, 11, reactor.get_dislocation_density_evolution());
-    // update
-    if (is_valid_sqlite_id(reactor.sqlite_id))
+
+    if (is_valid_sqlite_id(reactor.sqlite_id)) {
+        // update
         sqlite3_bind_int(stmt, 12, reactor.sqlite_id);
-    // create
-    else
+    } else {
+        // create
         sqlite3_bind_text(stmt, 12, reactor.creation_datetime.c_str(),
                           reactor.creation_datetime.length(), nullptr);
+        sqlite3_bind_int(stmt, 13, static_cast<int>(is_preset));
+    }
 }
 
-void ClientDb::bind_material(sqlite3_stmt *stmt, const Material &material) {
+void ClientDb::bind_material(sqlite3_stmt *stmt, const Material &material,
+                             bool is_preset) {
     sqlite3_bind_text(stmt, 1, material.species.c_str(),
                       material.species.length(), nullptr);
     sqlite3_bind_double(stmt, 2, material.get_i_migration());
@@ -153,68 +161,155 @@ void ClientDb::bind_material(sqlite3_stmt *stmt, const Material &material) {
     sqlite3_bind_double(stmt, 19, material.get_lattice_param());
     sqlite3_bind_double(stmt, 20, material.get_burgers_vector());
     sqlite3_bind_double(stmt, 21, material.get_atomic_volume());
-    // update
-    if (is_valid_sqlite_id(material.sqlite_id))
+
+    if (is_valid_sqlite_id(material.sqlite_id)) {
+        // update
         sqlite3_bind_int(stmt, 22, material.sqlite_id);
-    // create
-    else
+    } else {
+        // create
         sqlite3_bind_text(stmt, 22, material.creation_datetime.c_str(),
                           material.creation_datetime.length(), nullptr);
+        sqlite3_bind_int(stmt, 23, static_cast<int>(is_preset));
+    }
+}
+
+void ClientDb::bind_simulation(sqlite3_stmt *stmt,
+                               const HistorySimulation &simulation) {
+    std::vector<char> interstitials_blob =
+        BlobConverter::to_blob(simulation.cd_state.interstitials);
+    std::vector<char> vacancies_blob =
+        BlobConverter::to_blob(simulation.cd_state.vacancies);
+
+    sqlite3_bind_int(stmt, 1, simulation.reactor.sqlite_id);
+    sqlite3_bind_int(stmt, 2, simulation.material.sqlite_id);
+    sqlite3_bind_double(stmt, 3, static_cast<double>(simulation.cd_state.time));
+    sqlite3_bind_blob(stmt, 4, interstitials_blob.data(),
+                      interstitials_blob.size(), SQLITE_TRANSIENT);
+    sqlite3_bind_blob(stmt, 5, vacancies_blob.data(), vacancies_blob.size(),
+                      SQLITE_TRANSIENT);
+    sqlite3_bind_double(
+        stmt, 6, static_cast<double>(simulation.cd_state.dislocation_density));
+
+    // update
+    if (is_valid_sqlite_id(simulation.sqlite_id))
+        sqlite3_bind_int(stmt, 7, simulation.sqlite_id);
+    // create
+    else
+        sqlite3_bind_text(stmt, 7, simulation.creation_datetime.c_str(),
+                          simulation.creation_datetime.length(), nullptr);
 }
 
 // --------------------------------------------------------------------------------------------
 // ROW CALLBACKS
 // --------------------------------------------------------------------------------------------
 
-void ClientDb::row_read_reactor(sqlite3_stmt *stmt, NuclearReactor &reactor) {
-    reactor.sqlite_id = static_cast<int>(sqlite3_column_int(stmt, 0));
-    reactor.creation_datetime =
-        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
-    reactor.species =
-        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
-    reactor.set_flux((gp_float)sqlite3_column_double(stmt, 3));
-    reactor.set_temperature((gp_float)sqlite3_column_double(stmt, 4));
-    reactor.set_recombination((gp_float)sqlite3_column_double(stmt, 5));
-    reactor.set_i_bi((gp_float)sqlite3_column_double(stmt, 6));
-    reactor.set_i_tri((gp_float)sqlite3_column_double(stmt, 7));
-    reactor.set_i_quad((gp_float)sqlite3_column_double(stmt, 8));
-    reactor.set_v_bi((gp_float)sqlite3_column_double(stmt, 9));
-    reactor.set_v_tri((gp_float)sqlite3_column_double(stmt, 10));
-    reactor.set_v_quad((gp_float)sqlite3_column_double(stmt, 11));
+void ClientDb::row_read_reactor(sqlite3_stmt *stmt, NuclearReactor &reactor,
+                                int col_offset) {
+    reactor.sqlite_id =
+        static_cast<int>(sqlite3_column_int(stmt, col_offset + 0));
+    reactor.creation_datetime = reinterpret_cast<const char *>(
+        sqlite3_column_text(stmt, col_offset + 1));
+    reactor.species = reinterpret_cast<const char *>(
+        sqlite3_column_text(stmt, col_offset + 2));
+    reactor.set_flux((gp_float)sqlite3_column_double(stmt, col_offset + 3));
+    reactor.set_temperature(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 4));
+    reactor.set_recombination(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 5));
+    reactor.set_i_bi((gp_float)sqlite3_column_double(stmt, col_offset + 6));
+    reactor.set_i_tri((gp_float)sqlite3_column_double(stmt, col_offset + 7));
+    reactor.set_i_quad((gp_float)sqlite3_column_double(stmt, col_offset + 8));
+    reactor.set_v_bi((gp_float)sqlite3_column_double(stmt, col_offset + 9));
+    reactor.set_v_tri((gp_float)sqlite3_column_double(stmt, col_offset + 10));
+    reactor.set_v_quad((gp_float)sqlite3_column_double(stmt, col_offset + 11));
     reactor.set_dislocation_density_evolution(
-        (gp_float)sqlite3_column_double(stmt, 12));
+        (gp_float)sqlite3_column_double(stmt, col_offset + 12));
 }
 
-void ClientDb::row_read_material(sqlite3_stmt *stmt, Material &material) {
-    material.sqlite_id = static_cast<int>(sqlite3_column_int(stmt, 0));
-    material.creation_datetime =
-        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
-    material.species =
-        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
-    material.set_i_migration((gp_float)sqlite3_column_double(stmt, 3));
-    material.set_v_migration((gp_float)sqlite3_column_double(stmt, 4));
-    material.set_i_diffusion_0((gp_float)sqlite3_column_double(stmt, 5));
-    material.set_v_diffusion_0((gp_float)sqlite3_column_double(stmt, 6));
-    material.set_i_formation((gp_float)sqlite3_column_double(stmt, 7));
-    material.set_v_formation((gp_float)sqlite3_column_double(stmt, 8));
-    material.set_i_binding((gp_float)sqlite3_column_double(stmt, 9));
-    material.set_v_binding((gp_float)sqlite3_column_double(stmt, 10));
+void ClientDb::row_read_material(sqlite3_stmt *stmt, Material &material,
+                                 int col_offset) {
+    material.sqlite_id =
+        static_cast<int>(sqlite3_column_int(stmt, col_offset + 0));
+    material.creation_datetime = reinterpret_cast<const char *>(
+        sqlite3_column_text(stmt, col_offset + 1));
+    material.species = reinterpret_cast<const char *>(
+        sqlite3_column_text(stmt, col_offset + 2));
+    material.set_i_migration(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 3));
+    material.set_v_migration(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 4));
+    material.set_i_diffusion_0(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 5));
+    material.set_v_diffusion_0(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 6));
+    material.set_i_formation(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 7));
+    material.set_v_formation(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 8));
+    material.set_i_binding(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 9));
+    material.set_v_binding(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 10));
     material.set_recombination_radius(
-        (gp_float)sqlite3_column_double(stmt, 11));
-    material.set_i_loop_bias((gp_float)sqlite3_column_double(stmt, 12));
-    material.set_i_dislocation_bias((gp_float)sqlite3_column_double(stmt, 13));
+        (gp_float)sqlite3_column_double(stmt, col_offset + 11));
+    material.set_i_loop_bias(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 12));
+    material.set_i_dislocation_bias(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 13));
     material.set_i_dislocation_bias_param(
-        (gp_float)sqlite3_column_double(stmt, 14));
-    material.set_v_loop_bias((gp_float)sqlite3_column_double(stmt, 15));
-    material.set_v_dislocation_bias((gp_float)sqlite3_column_double(stmt, 16));
+        (gp_float)sqlite3_column_double(stmt, col_offset + 14));
+    material.set_v_loop_bias(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 15));
+    material.set_v_dislocation_bias(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 16));
     material.set_v_dislocation_bias_param(
-        (gp_float)sqlite3_column_double(stmt, 17));
+        (gp_float)sqlite3_column_double(stmt, col_offset + 17));
     material.set_dislocation_density_0(
-        (gp_float)sqlite3_column_double(stmt, 18));
-    material.set_grain_size((gp_float)sqlite3_column_double(stmt, 19));
-    material.set_lattice_param((gp_float)sqlite3_column_double(stmt, 20));
-    material.set_burgers_vector((gp_float)sqlite3_column_double(stmt, 21));
-    material.set_atomic_volume((gp_float)sqlite3_column_double(stmt, 22));
+        (gp_float)sqlite3_column_double(stmt, col_offset + 18));
+    material.set_grain_size(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 19));
+    material.set_lattice_param(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 20));
+    material.set_burgers_vector(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 21));
+    material.set_atomic_volume(
+        (gp_float)sqlite3_column_double(stmt, col_offset + 22));
+}
+
+// NOTE: col_offset is not really needed here, it is merely added to have
+// matching arg signatures for the other row reading functions. It maybe be
+// better to implement row reading by token, to completely avoid column
+// offsetting.
+void ClientDb::row_read_simulation(sqlite3_stmt *stmt,
+                                   HistorySimulation &simulation,
+                                   int col_offset) {
+    simulation.sqlite_id = sqlite3_column_int(stmt, col_offset + 0);
+    simulation.creation_datetime =
+        (char *)sqlite3_column_text(stmt, col_offset + 1);
+
+    simulation.cd_state.time = sqlite3_column_double(stmt, col_offset + 4);
+
+    const void *interstitials_blob = sqlite3_column_blob(stmt, col_offset + 5);
+    int interstitials_blob_size = sqlite3_column_bytes(stmt, col_offset + 5);
+    std::vector<char> interstitials_vec(
+        static_cast<const char *>(interstitials_blob),
+        static_cast<const char *>(interstitials_blob) +
+            interstitials_blob_size);
+    simulation.cd_state.interstitials =
+        BlobConverter::from_blob(interstitials_vec);
+
+    const void *vacancies_blob = sqlite3_column_blob(stmt, col_offset + 6);
+    int vacancies_blob_size = sqlite3_column_bytes(stmt, col_offset + 6);
+    std::vector<char> vacancies_vec(
+        static_cast<const char *>(vacancies_blob),
+        static_cast<const char *>(vacancies_blob) + vacancies_blob_size);
+    simulation.cd_state.vacancies = BlobConverter::from_blob(vacancies_vec);
+
+    simulation.cd_state.dislocation_density =
+        sqlite3_column_double(stmt, col_offset + 7);
+
+    row_read_reactor(stmt, simulation.reactor, col_offset + 8);
+    row_read_material(stmt, simulation.material, col_offset + 22);
 }
 
 // --------------------------------------------------------------------------------------------
@@ -311,6 +406,51 @@ void ClientDb::err_delete_material(sqlite3_stmt *stmt,
                             sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
 }
 
+void ClientDb::err_create_simulation(sqlite3_stmt *stmt,
+                                     const HistorySimulation &simulation) {
+    std::string errmsg =
+        "Failed to create simulation @ " + simulation.creation_datetime + ".";
+    sqlite3 *db = sqlite3_db_handle(stmt);
+
+    throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db),
+                            sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
+}
+
+void ClientDb::err_read_simulations(sqlite3_stmt *stmt) {
+    sqlite3 *db = sqlite3_db_handle(stmt);
+    throw ClientDbException("Failed to read simulations.", sqlite3_errmsg(db),
+                            sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
+}
+
+void ClientDb::err_read_simulation(sqlite3_stmt *stmt, const int sqlite_id) {
+    std::string errmsg =
+        "Failed to read simulation w/ id " + std::to_string(sqlite_id) + ".";
+    sqlite3 *db = sqlite3_db_handle(stmt);
+
+    throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db),
+                            sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
+}
+
+void ClientDb::err_update_simulation(sqlite3_stmt *stmt,
+                                     const HistorySimulation &simulation) {
+    std::string errmsg = "Failed to update simulation w/ id " +
+                         std::to_string(simulation.sqlite_id) + ".";
+    sqlite3 *db = sqlite3_db_handle(stmt);
+
+    throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db),
+                            sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
+}
+
+void ClientDb::err_delete_simulation(sqlite3_stmt *stmt,
+                                     const HistorySimulation &simulation) {
+    std::string errmsg = "Failed to delete simulation w/ id " +
+                         std::to_string(simulation.sqlite_id) + ".";
+    sqlite3 *db = sqlite3_db_handle(stmt);
+
+    throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db),
+                            sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
+}
+
 // --------------------------------------------------------------------------------------------
 // UTILITIES
 // --------------------------------------------------------------------------------------------
@@ -383,8 +523,8 @@ bool ClientDb::clear(int *sqlite_result_code) {
     return is_sqlite_success(sqlite_code);
 }
 
-bool ClientDb::create_reactor(NuclearReactor &reactor,
-                              int *sqlite_result_code) {
+bool ClientDb::create_reactor(NuclearReactor &reactor, int *sqlite_result_code,
+                              bool is_preset) {
     if (is_valid_sqlite_id(reactor.sqlite_id))
         throw ClientDbException("Failed to create reactor, it already exists.");
     if (!db) open();
@@ -397,7 +537,7 @@ bool ClientDb::create_reactor(NuclearReactor &reactor,
                            db_queries::create_reactor.size(), &stmt, nullptr);
     if (is_sqlite_error(sqlite_code)) err_create_reactor(stmt, reactor);
 
-    bind_reactor(stmt, reactor);
+    bind_reactor(stmt, reactor, is_preset);
 
     sqlite_code = create_one<NuclearReactor>(stmt, err_create_reactor, reactor);
 
@@ -491,7 +631,8 @@ bool ClientDb::delete_reactor(const NuclearReactor &reactor,
     return is_sqlite_success(sqlite_code);
 }
 
-bool ClientDb::create_material(Material &material, int *sqlite_result_code) {
+bool ClientDb::create_material(Material &material, int *sqlite_result_code,
+                               bool is_preset) {
     if (is_valid_sqlite_id(material.sqlite_id))
         throw ClientDbException(
             "Failed to create material, it already exists.");
@@ -505,7 +646,7 @@ bool ClientDb::create_material(Material &material, int *sqlite_result_code) {
                            db_queries::create_material.size(), &stmt, nullptr);
     if (is_sqlite_error(sqlite_code)) err_create_material(stmt, material);
 
-    bind_material(stmt, material);
+    bind_material(stmt, material, is_preset);
 
     sqlite_code = create_one<Material>(stmt, err_create_material, material);
 
@@ -594,6 +735,123 @@ bool ClientDb::delete_material(const Material &material,
     if (is_sqlite_error(sqlite_code)) err_delete_material(stmt, material);
 
     sqlite_code = delete_one<Material>(stmt, err_delete_material, material);
+
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
+}
+
+bool ClientDb::create_simulation(HistorySimulation &simulation,
+                                 int *sqlite_result_code) {
+    if (is_valid_sqlite_id(simulation.sqlite_id))
+        throw ClientDbException(
+            "Failed to create simulation, it already exists.");
+    if (!db) open();
+
+    // create non-preset copies of the reactor and material
+    create_reactor(simulation.reactor, nullptr, false);
+    create_material(simulation.material, nullptr, false);
+
+    int sqlite_code;
+    sqlite3_stmt *stmt;
+
+    sqlite_code = sqlite3_prepare_v2(db, db_queries::create_simulation.c_str(),
+                                     db_queries::create_simulation.size(),
+                                     &stmt, nullptr);
+    if (is_sqlite_error(sqlite_code)) err_create_simulation(stmt, simulation);
+
+    bind_simulation(stmt, simulation);
+
+    sqlite_code =
+        create_one<HistorySimulation>(stmt, err_create_simulation, simulation);
+
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
+}
+
+bool ClientDb::read_simulations(std::vector<HistorySimulation> &simulations,
+                                int *sqlite_result_code) {
+    if (!db) open();
+
+    int sqlite_code;
+    sqlite3_stmt *stmt;
+
+    sqlite_code =
+        sqlite3_prepare_v2(db, db_queries::read_simulations.c_str(),
+                           db_queries::read_simulations.size(), &stmt, nullptr);
+    if (is_sqlite_error(sqlite_code)) err_read_simulations(stmt);
+
+    sqlite_code = read_all<HistorySimulation>(
+        stmt, row_read_simulation, err_read_simulations, simulations);
+
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
+}
+
+bool ClientDb::read_simulation(const int sqlite_id,
+                               HistorySimulation &simulation,
+                               int *sqlite_result_code) {
+    if (!is_valid_sqlite_id(sqlite_id))
+        throw ClientDbException("Failed to read simulation. Invalid id.");
+
+    if (!db) open();
+
+    int sqlite_code;
+    sqlite3_stmt *stmt;
+
+    sqlite_code =
+        sqlite3_prepare_v2(db, db_queries::read_simulation.c_str(),
+                           db_queries::read_simulation.size(), &stmt, nullptr);
+    if (is_sqlite_error(sqlite_code)) err_read_simulation(stmt, sqlite_id);
+
+    sqlite_code = read_one<HistorySimulation>(
+        stmt, row_read_simulation, err_read_simulation, sqlite_id, simulation);
+
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code) &&
+           is_valid_sqlite_id(simulation.sqlite_id);
+}
+
+bool ClientDb::update_simulation(const HistorySimulation &simulation,
+                                 int *sqlite_result_code) {
+    if (!is_valid_sqlite_id(simulation.sqlite_id))
+        throw ClientDbException("Failed to update simulation. Invalid id.");
+
+    if (!db) open();
+
+    int sqlite_code;
+    sqlite3_stmt *stmt;
+
+    sqlite_code = sqlite3_prepare_v2(db, db_queries::update_simulation.c_str(),
+                                     db_queries::update_simulation.size(),
+                                     &stmt, nullptr);
+    if (is_sqlite_error(sqlite_code)) err_update_simulation(stmt, simulation);
+
+    bind_simulation(stmt, simulation);
+
+    sqlite_code =
+        update_one<HistorySimulation>(stmt, err_update_simulation, simulation);
+
+    if (sqlite_result_code) *sqlite_result_code = sqlite_code;
+    return is_sqlite_success(sqlite_code);
+}
+
+bool ClientDb::delete_simulation(const HistorySimulation &simulation,
+                                 int *sqlite_result_code) {
+    if (!is_valid_sqlite_id(simulation.sqlite_id))
+        throw ClientDbException("Failed to delete simulation. Invalid id.");
+
+    if (!db) open();
+
+    int sqlite_code;
+    sqlite3_stmt *stmt;
+
+    sqlite_code = sqlite3_prepare_v2(db, db_queries::delete_simulation.c_str(),
+                                     db_queries::delete_simulation.size(),
+                                     &stmt, nullptr);
+    if (is_sqlite_error(sqlite_code)) err_delete_simulation(stmt, simulation);
+
+    sqlite_code =
+        delete_one<HistorySimulation>(stmt, err_delete_simulation, simulation);
 
     if (sqlite_result_code) *sqlite_result_code = sqlite_code;
     return is_sqlite_success(sqlite_code);
