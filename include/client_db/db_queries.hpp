@@ -176,16 +176,6 @@ std::string read_simulation =
     "history_simulations.id_material "
     "WHERE history_simulations.id_simulation = ?;";
 
-std::string update_simulation =
-    "UPDATE history_simulations SET "
-    "id_reactor = ?, "
-    "id_material = ?, "
-    "simulation_time = ?, "
-    "interstitials = ?, "
-    "vacancies = ?, "
-    "dislocation_density = ? "
-    "WHERE id_simulation = ?;";
-
 std::string delete_simulation =
     "DELETE FROM history_simulations WHERE id_simulation = ?;";
 

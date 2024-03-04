@@ -437,16 +437,6 @@ void ClientDb::err_read_simulation(sqlite3_stmt *stmt, const int sqlite_id) {
                           sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
 }
 
-void ClientDb::err_update_simulation(sqlite3_stmt *stmt,
-                                     const HistorySimulation &simulation) {
-  std::string errmsg = "Failed to update simulation w/ id " +
-                       std::to_string(simulation.sqlite_id) + ".";
-  sqlite3 *db = sqlite3_db_handle(stmt);
-
-  throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db),
-                          sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
-}
-
 void ClientDb::err_delete_simulation(sqlite3_stmt *stmt,
                                      const HistorySimulation &simulation) {
   std::string errmsg = "Failed to delete simulation w/ id " +
@@ -813,30 +803,6 @@ bool ClientDb::read_simulation(const int sqlite_id,
   if (sqlite_result_code) *sqlite_result_code = sqlite_code;
   return is_sqlite_success(sqlite_code) &&
          is_valid_sqlite_id(simulation.sqlite_id);
-}
-
-bool ClientDb::update_simulation(const HistorySimulation &simulation,
-                                 int *sqlite_result_code) {
-  if (!is_valid_sqlite_id(simulation.sqlite_id))
-    throw ClientDbException("Failed to update simulation. Invalid id.");
-
-  if (!db) open();
-
-  int sqlite_code;
-  sqlite3_stmt *stmt;
-
-  sqlite_code =
-      sqlite3_prepare_v2(db, db_queries::update_simulation.c_str(),
-                         db_queries::update_simulation.size(), &stmt, nullptr);
-  if (is_sqlite_error(sqlite_code)) err_update_simulation(stmt, simulation);
-
-  bind_simulation(stmt, simulation);
-
-  sqlite_code =
-      update_one<HistorySimulation>(stmt, err_update_simulation, simulation);
-
-  if (sqlite_result_code) *sqlite_result_code = sqlite_code;
-  return is_sqlite_success(sqlite_code);
 }
 
 bool ClientDb::delete_simulation(const HistorySimulation &simulation,

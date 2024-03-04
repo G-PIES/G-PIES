@@ -116,12 +116,6 @@ class ClientDb {
     bool read_simulation(const int sqlite_id, HistorySimulation &simulation,
                          int *sqlite_code = nullptr);
 
-    // Attempts to update a simulation in the local database, matching to
-    // |simulation.sqlite_id|. |sqlite_code| can optionally be retrieved.
-    // Returns true on success.
-    bool update_simulation(const HistorySimulation &simulation,
-                           int *sqlite_code = nullptr);
-
     // Attempts to delete a simulation in the local database, matching to
     // |simulation.sqlite_id|. |sqlite_code| can optionally be retrieved.
     // Returns true on success.
@@ -254,11 +248,8 @@ class ClientDb {
                                       const HistorySimulation &);
     static void err_read_simulations(sqlite3_stmt *);
     static void err_read_simulation(sqlite3_stmt *, const int);
-    static void err_update_simulation(sqlite3_stmt *,
-                                      const HistorySimulation &);
     static void err_delete_simulation(sqlite3_stmt *,
                                       const HistorySimulation &);
-    static void err_delete_simulations(sqlite3_stmt *);
 
     // --------------------------------------------------------------------------------------------
 
