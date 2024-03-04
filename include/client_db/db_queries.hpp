@@ -16,16 +16,16 @@ std::string init =
     "id_reactor INTEGER PRIMARY KEY,"
     "creation_datetime TEXT,"
     "species text NOT NULL DEFAULT '',"
-    "flux float DEFAULT 0.0,"
-    "temperature float DEFAULT 0.0,"
-    "recombination float DEFAULT 0.0,"
-    "i_bi float DEFAULT 0.0,"
-    "i_tri float DEFAULT 0.0,"
-    "i_quad float DEFAULT 0.0,"
-    "v_bi float DEFAULT 0.0,"
-    "v_tri float DEFAULT 0.0,"
-    "v_quad float DEFAULT 0.0,"
-    "dislocation_density_evolution float DEFAULT 0.0,"
+    "flux FLOAT DEFAULT 0.0,"
+    "temperature FLOAT DEFAULT 0.0,"
+    "recombination FLOAT DEFAULT 0.0,"
+    "i_bi FLOAT DEFAULT 0.0,"
+    "i_tri FLOAT DEFAULT 0.0,"
+    "i_quad FLOAT DEFAULT 0.0,"
+    "v_bi FLOAT DEFAULT 0.0,"
+    "v_tri FLOAT DEFAULT 0.0,"
+    "v_quad FLOAT DEFAULT 0.0,"
+    "dislocation_density_evolution FLOAT DEFAULT 0.0,"
     "is_preset INTEGER"
     ");"
 
@@ -34,26 +34,26 @@ std::string init =
     "id_material INTEGER PRIMARY KEY,"
     "creation_datetime TEXT,"
     "species text NOT NULL DEFAULT '',"
-    "i_migration float DEFAULT 0.0,"
-    "v_migration float DEFAULT 0.0,"
-    "i_diffusion_0 float DEFAULT 0.0,"
-    "v_diffusion_0 float DEFAULT 0.0,"
-    "i_formation float DEFAULT 0.0,"
-    "v_formation float DEFAULT 0.0,"
-    "i_binding float DEFAULT 0.0,"
-    "v_binding float DEFAULT 0.0,"
-    "recombination_radius float DEFAULT 0.0,"
-    "i_loop_bias float DEFAULT 0.0,"
-    "i_dislocation_bias float DEFAULT 0.0,"
-    "i_dislocation_bias_param float DEFAULT 0.0,"
-    "v_loop_bias float DEFAULT 0.0,"
-    "v_dislocation_bias float DEFAULT 0.0,"
-    "v_dislocation_bias_param float DEFAULT 0.0,"
-    "dislocation_density_0 float DEFAULT 0.0,"
-    "grain_size float DEFAULT 0.0,"
-    "lattice_param float DEFAULT 0.0,"
-    "burgers_vector float DEFAULT 0.0,"
-    "atomic_volume float DEFAULT 0.0,"
+    "i_migration FLOAT DEFAULT 0.0,"
+    "v_migration FLOAT DEFAULT 0.0,"
+    "i_diffusion_0 FLOAT DEFAULT 0.0,"
+    "v_diffusion_0 FLOAT DEFAULT 0.0,"
+    "i_formation FLOAT DEFAULT 0.0,"
+    "v_formation FLOAT DEFAULT 0.0,"
+    "i_binding FLOAT DEFAULT 0.0,"
+    "v_binding FLOAT DEFAULT 0.0,"
+    "recombination_radius FLOAT DEFAULT 0.0,"
+    "i_loop_bias FLOAT DEFAULT 0.0,"
+    "i_dislocation_bias FLOAT DEFAULT 0.0,"
+    "i_dislocation_bias_param FLOAT DEFAULT 0.0,"
+    "v_loop_bias FLOAT DEFAULT 0.0,"
+    "v_dislocation_bias FLOAT DEFAULT 0.0,"
+    "v_dislocation_bias_param FLOAT DEFAULT 0.0,"
+    "dislocation_density_0 FLOAT DEFAULT 0.0,"
+    "grain_size FLOAT DEFAULT 0.0,"
+    "lattice_param FLOAT DEFAULT 0.0,"
+    "burgers_vector FLOAT DEFAULT 0.0,"
+    "atomic_volume FLOAT DEFAULT 0.0,"
     "is_preset INTEGER"
     ");"
 
@@ -61,12 +61,14 @@ std::string init =
     "("
     "id_simulation INTEGER PRIMARY KEY,"
     "creation_datetime TEXT,"
+    "concentration_boundary INTEGER DEFAULT 0,"
+    "simulation_time FLOAT DEFAULT 0.0,"
+    "delta_time FLOAT DEFAULT 0.0,"
     "id_reactor INTEGER,"
     "id_material INTEGER,"
-    "simulation_time float DEFAULT 0.0,"
     "interstitials BLOB,"
     "vacancies BLOB,"
-    "dislocation_density float DEFAULT 0.0"
+    "dislocation_density FLOAT DEFAULT 0.0"
     ");";
 
 std::string clear =
@@ -154,9 +156,10 @@ std::string delete_material = "DELETE FROM materials WHERE id_material = ?;";
 
 std::string create_simulation =
     "INSERT INTO history_simulations ("
-    "id_reactor, id_material, simulation_time, interstitials, vacancies, "
+    "concentration_boundary, simulation_time, delta_time, id_reactor, "
+    "id_material, interstitials, vacancies, "
     "dislocation_density, creation_datetime"
-    ") VALUES (?, ?, ?, ?, ?, ?, ?);";
+    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 std::string read_simulations =
     "SELECT * FROM history_simulations "
@@ -186,8 +189,7 @@ std::string update_simulation =
 std::string delete_simulation =
     "DELETE FROM history_simulations WHERE id_simulation = ?;";
 
-std::string delete_simulations =
-    "DELETE FROM history_simulations;";
+std::string delete_simulations = "DELETE FROM history_simulations;";
 
 // simulation_materials CRUD
 
