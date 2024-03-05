@@ -4,5 +4,5 @@
 
 class WolframMathematicaExporter : public Exporter {
  public:
-    void export_model(Model *model) override;
+  void export_model(Model *model) override;
 };

@@ -20,15 +20,15 @@
  * \f$
  */
 gp_float ClusterDynamicsImpl::i_concentration_derivative(size_t n) const {
-    return
-        // (1)
-        i_defect_production(n)
-        // (2)
-        + i_demotion_rate(n + 1) * interstitials[n + 1]
-        //    (3)
-        - i_combined_promotion_demotion_rate(n) * interstitials[n]
-        //    (4)
-        + i_promotion_rate(n - 1) * interstitials[n - 1];
+  return
+      // (1)
+      i_defect_production(n)
+      // (2)
+      + i_demotion_rate(n + 1) * interstitials[n + 1]
+      //    (3)
+      - i_combined_promotion_demotion_rate(n) * interstitials[n]
+      //    (4)
+      + i_promotion_rate(n - 1) * interstitials[n - 1];
 }
 
 /** @brief Returns the rate of change of the concentration of vacancy clusters
@@ -51,17 +51,17 @@ gp_float ClusterDynamicsImpl::i_concentration_derivative(size_t n) const {
  * The Pokor paper's equation 2a only defines the derivative of interstitial
  * cluster concentrations. However, the paper implies that it also works for
  * vacancy clusters in the line immediately preceding the definition of 2a.
-*/
+ */
 gp_float ClusterDynamicsImpl::v_concentration_derivative(size_t n) const {
-    return
-        // (1)
-        v_defect_production(n)
-        // (2)
-        + v_demotion_rate(n + 1) * vacancies[n + 1]
-        // (3)
-        - v_combined_promotion_demotion_rate(n) * vacancies[n]
-        // (4)
-        + v_promotion_rate(n - 1) * vacancies[n - 1];
+  return
+      // (1)
+      v_defect_production(n)
+      // (2)
+      + v_demotion_rate(n + 1) * vacancies[n + 1]
+      // (3)
+      - v_combined_promotion_demotion_rate(n) * vacancies[n]
+      // (4)
+      + v_promotion_rate(n - 1) * vacancies[n - 1];
 }
 
 /** @brief Returns the rate of change in the concentration of size 1
@@ -80,21 +80,21 @@ gp_float ClusterDynamicsImpl::v_concentration_derivative(size_t n) const {
  *    \ann{5}{\frac{C_i(1)}{\tau^a_i}}\dwn{+}
  *    \ann{6}{\frac{1}{\tau^e_i}}
  *  \f$
-*/
+ */
 gp_float ClusterDynamicsImpl::i1_concentration_derivative() const {
-    return
-        // (1)
-        i_defect_production(1)
-        // (2)
-        - annihilation_rate() * interstitials[1] * vacancies[1]
-        // (3)
-        - interstitials[1] * i_dislocation_annihilation_rate()
-        // (4)
-        - interstitials[1] * i_grain_boundary_annihilation_rate()
-        // (5)
-         - interstitials[1] * i_absorption_rate()
-        // (6)
-        + i_emission_rate();
+  return
+      // (1)
+      i_defect_production(1)
+      // (2)
+      - annihilation_rate() * interstitials[1] * vacancies[1]
+      // (3)
+      - interstitials[1] * i_dislocation_annihilation_rate()
+      // (4)
+      - interstitials[1] * i_grain_boundary_annihilation_rate()
+      // (5)
+      - interstitials[1] * i_absorption_rate()
+      // (6)
+      + i_emission_rate();
 }
 
 /** @brief Returns the rate of change in the concentration of size 1 vacancy
@@ -115,19 +115,19 @@ gp_float ClusterDynamicsImpl::i1_concentration_derivative() const {
  *  \f$
  */
 gp_float ClusterDynamicsImpl::v1_concentration_derivative() const {
-    return
-        // (1)
-        v_defect_production(1)
-        // (2)
-        - annihilation_rate() * interstitials[1] * vacancies[1]
-        // (3)
-        - vacancies[1] * v_dislocation_annihilation_rate()
-        // (4)
-        - vacancies[1] * v_grain_boundary_annihilation_rate()
-        // (5)
-        - vacancies[1] * v_absorption_rate()
-        // (6)
-        + v_emission_rate();
+  return
+      // (1)
+      v_defect_production(1)
+      // (2)
+      - annihilation_rate() * interstitials[1] * vacancies[1]
+      // (3)
+      - vacancies[1] * v_dislocation_annihilation_rate()
+      // (4)
+      - vacancies[1] * v_grain_boundary_annihilation_rate()
+      // (5)
+      - vacancies[1] * v_absorption_rate()
+      // (6)
+      + v_emission_rate();
 }
 
 // --------------------------------------------------------------------------------------------
@@ -155,21 +155,21 @@ gp_float ClusterDynamicsImpl::v1_concentration_derivative() const {
  * instead.
  */
 gp_float ClusterDynamicsImpl::dislocation_density_derivative() const {
-    gp_float gain = 0.0;
-    for (size_t n = 1; n < concentration_boundary; ++n) {
-        gain += cluster_radius(n) * ii_absorption(n) * interstitials[n] *
-                dislocation_promotion_probability(n);
-    }
+  gp_float gain = 0.0;
+  for (size_t n = 1; n < concentration_boundary; ++n) {
+    gain += cluster_radius(n) * ii_absorption(n) * interstitials[n] *
+            dislocation_promotion_probability(n);
+  }
 
-    gain *= 2. * M_PI / material.atomic_volume;
+  gain *= 2. * M_PI / material.atomic_volume;
 
-    return
-        // (1)
-        gain
-        // (2)
-        - reactor.dislocation_density_evolution *
-              std::pow(material.burgers_vector, 2.) *
-              std::pow(dislocation_density, 3. / 2.);
+  return
+      // (1)
+      gain
+      // (2)
+      - reactor.dislocation_density_evolution *
+            std::pow(material.burgers_vector, 2.) *
+            std::pow(dislocation_density, 3. / 2.);
 }
 
 /** @brief Returns the rate of production of interstital defects from the
@@ -188,20 +188,25 @@ gp_float ClusterDynamicsImpl::dislocation_density_derivative() const {
  * \f$
  */
 gp_float ClusterDynamicsImpl::i_defect_production(size_t n) const {
-    switch (n) {
-        //             (1)                     (2)
-        case 1: return reactor.recombination * reactor.flux *
-                       //    (3)            (4)
-                       (1. - reactor.i_tri - reactor.i_quad);
-        case 2: return 0;
-        case 3: return reactor.recombination * reactor.flux * reactor.i_tri;
-        case 4: return reactor.recombination * reactor.flux * reactor.i_quad;
+  switch (n) {
+    //             (1)                     (2)
+    case 1:
+      return reactor.recombination * reactor.flux *
+             //    (3)            (4)
+             (1. - reactor.i_tri - reactor.i_quad);
+    case 2:
+      return 0;
+    case 3:
+      return reactor.recombination * reactor.flux * reactor.i_tri;
+    case 4:
+      return reactor.recombination * reactor.flux * reactor.i_quad;
 
-        default: break;
-    }
+    default:
+      break;
+  }
 
-    // cluster sizes > greater than 4 always zero
-    return 0.;
+  // cluster sizes > greater than 4 always zero
+  return 0.;
 }
 
 /** @brief Returns the rate of production of vacancies defects from the
@@ -226,28 +231,26 @@ gp_float ClusterDynamicsImpl::i_defect_production(size_t n) const {
  * similar expression is written for \f$G_v(n)\f$.'
  */
 gp_float ClusterDynamicsImpl::v_defect_production(size_t n) const {
-    switch (n) {
-        //             (1)                     (2)
-        case 1:
-            return reactor.recombination * reactor.flux *
-                   //    (3)            (4)             (5)
-                   (1. - reactor.v_bi - reactor.v_tri - reactor.v_quad);
-        case 2:
-            return reactor.recombination * reactor.flux * reactor.v_bi;
-        case 3:
-            return reactor.recombination * reactor.flux * reactor.v_tri;
-        case 4:
-            return reactor.recombination * reactor.flux * reactor.v_quad;
+  switch (n) {
+    //             (1)                     (2)
+    case 1:
+      return reactor.recombination * reactor.flux *
+             //    (3)            (4)             (5)
+             (1. - reactor.v_bi - reactor.v_tri - reactor.v_quad);
+    case 2:
+      return reactor.recombination * reactor.flux * reactor.v_bi;
+    case 3:
+      return reactor.recombination * reactor.flux * reactor.v_tri;
+    case 4:
+      return reactor.recombination * reactor.flux * reactor.v_quad;
 
-        default:
-            break;
-    }
+    default:
+      break;
+  }
 
-    // cluster sizes > greater than 4 always zero
-    return 0.;
+  // cluster sizes > greater than 4 always zero
+  return 0.;
 }
-
-
 
 /** @brief Returns the combined rate of emission of an interstitial and
  * absorption of a vacancy by an interstitial loop of size (n).
@@ -263,18 +266,16 @@ gp_float ClusterDynamicsImpl::v_defect_production(size_t n) const {
  *  \ann{1}{\beta_{i,v}(n+1)}\ann{2}{C_v(1)}\dwn{+}
  *  \ann{3}{\alpha_{i,i}(n+1)}
  * \f$
-*/
+ */
 gp_float ClusterDynamicsImpl::i_demotion_rate(size_t n) const {
-    return
-        // (1)
-        iv_absorption(n) *
-        // (2)
-        vacancies[1] +
-        // (3)
-        ii_emission(n);
+  return
+      // (1)
+      iv_absorption(n) *
+          // (2)
+          vacancies[1] +
+      // (3)
+      ii_emission(n);
 }
-
-
 
 /** @brief Returns the combined rate of emission of an interstitial and
  * absorption of a vacancy by an interstitial loop of size (n),
@@ -289,15 +290,15 @@ gp_float ClusterDynamicsImpl::i_demotion_rate(size_t n) const {
  *  \ann{1}{\beta_{v,i}(n+1)}\ann{2}{C_i(1)}\dwn{+}
  *  \ann{3}{\alpha_{v,v}(n+1)}
  * \f$
-*/
+ */
 gp_float ClusterDynamicsImpl::v_demotion_rate(size_t n) const {
-    return
-        // (1)
-        vi_absorption(n) *
-        // (2)
-        interstitials[1] +
-        // (3)
-        vv_emission(n);
+  return
+      // (1)
+      vi_absorption(n) *
+          // (2)
+          interstitials[1] +
+      // (3)
+      vv_emission(n);
 }
 
 /** @brief Returns the rate that an interstitial cluster of size n can evolve
@@ -315,16 +316,16 @@ gp_float ClusterDynamicsImpl::v_demotion_rate(size_t n) const {
  *    \ann{2}{\beta_{i,i}(n)C_i(1)}\dwn{+}
  *    \ann{4}{\alpha_{i,i}(n)}
  *  \f$
-*/
+ */
 gp_float ClusterDynamicsImpl::i_combined_promotion_demotion_rate(
     size_t n) const {
-    return
-        // (1)
-        iv_absorption(n) * vacancies[1]
-        // (2)
-        + ii_absorption(n) * interstitials[1]
-        // (3)
-        + ii_emission(n);
+  return
+      // (1)
+      iv_absorption(n) * vacancies[1]
+      // (2)
+      + ii_absorption(n) * interstitials[1]
+      // (3)
+      + ii_emission(n);
 }
 
 /** @brief Returns the rate that a vacancy cluster of size n can evolve toward a
@@ -342,16 +343,16 @@ gp_float ClusterDynamicsImpl::i_combined_promotion_demotion_rate(
  *    \ann{2}{\beta_{v,v}(n)C_v(1)}
  *    \ann{3}{\alpha_{v,v}(n)}
  *  \f$
-*/
+ */
 gp_float ClusterDynamicsImpl::v_combined_promotion_demotion_rate(
     size_t n) const {
-    return
-        // (1)
-        vi_absorption(n) * interstitials[1]
-        // (2)
-        + vv_absorption(n) * vacancies[1]
-        // (3)
-        + vv_emission(n);
+  return
+      // (1)
+      vi_absorption(n) * interstitials[1]
+      // (2)
+      + vv_absorption(n) * vacancies[1]
+      // (3)
+      + vv_emission(n);
 }
 
 /** @brief Returns the rate that an interstitial cluster of size n - 1 can
@@ -380,15 +381,15 @@ gp_float ClusterDynamicsImpl::v_combined_promotion_demotion_rate(
  *  using \f$P_{unf}(n)\f$, in a similar way to the Sakaguchi paper to
  *  determine what percentage of promoted clusters become part of the
  *  dislocation network.
-*/
+ */
 gp_float ClusterDynamicsImpl::i_promotion_rate(size_t n) const {
-    return
-        // (1)
-        ii_absorption(n)
-        // (2)
-        * interstitials[1]
-        // (3)
-        * (1 - dislocation_promotion_probability(n + 1));
+  return
+      // (1)
+      ii_absorption(n)
+      // (2)
+      * interstitials[1]
+      // (3)
+      * (1 - dislocation_promotion_probability(n + 1));
 }
 
 /** @brief Returns the rate that a vacancy cluster of size n - 1 can evolve into
@@ -404,13 +405,13 @@ gp_float ClusterDynamicsImpl::i_promotion_rate(size_t n) const {
  *   \ann{2}{C_v(1)}
  * \f$
  *
-*/
+ */
 gp_float ClusterDynamicsImpl::v_promotion_rate(size_t n) const {
-    return
-        // (1)
-        vv_absorption(n) *
-        // (2)
-        vacancies[1];
+  return
+      // (1)
+      vv_absorption(n) *
+      // (2)
+      vacancies[1];
 }
 
 /** @brief Returns one over the characteristic time for emitting an interstitial
@@ -429,32 +430,33 @@ gp_float ClusterDynamicsImpl::v_promotion_rate(size_t n) const {
  *
  *  <b>Notes</b>
  *
- *  This is modified to assume that clusters of size 2 cannot exist, and so any attempt to create one
- *  will result in clusters of size 2.
+ *  This is modified to assume that clusters of size 2 cannot exist, and so any
+ * attempt to create one will result in clusters of size 2.
  *
- *  (1) Combines the rates of emission of single interstitials by interstitial clusters of size > 3.
+ *  (1) Combines the rates of emission of single interstitials by interstitial
+ * clusters of size > 3.
  *
- *  (2) Represents the rate of emission of single interstitials by interstitial clusters of size = 3,
- *      which will generate 3 interstitials.
+ *  (2) Represents the rate of emission of single interstitials by interstitial
+ * clusters of size = 3, which will generate 3 interstitials.
  *
- *  (3) Represents the rate that interstitials are produced by interstitial clusters of size 3 absorbing a
- *  vacancy.
-*/
+ *  (3) Represents the rate that interstitials are produced by interstitial
+ * clusters of size 3 absorbing a vacancy.
+ */
 gp_float ClusterDynamicsImpl::i_emission_rate() const {
-    gp_float rate = 0.;
-    for (size_t in = 4; in < concentration_boundary - 1; ++in) {
-        rate +=
+  gp_float rate = 0.;
+  for (size_t in = 4; in < concentration_boundary - 1; ++in) {
+    rate +=
         // (1)
         ii_emission(in) * interstitials[in];
-    }
+  }
 
-    rate +=
-        // (2)
-        3. * ii_emission(3) * interstitials[3]
-        // (3)
-        + 2. * iv_absorption(3) * vacancies[1] * interstitials[3];
+  rate +=
+      // (2)
+      3. * ii_emission(3) * interstitials[3]
+      // (3)
+      + 2. * iv_absorption(3) * vacancies[1] * interstitials[3];
 
-    return rate;
+  return rate;
 }
 
 /** @brief Returns one over the characteristic time for emitting an vacancy by
@@ -473,30 +475,32 @@ gp_float ClusterDynamicsImpl::i_emission_rate() const {
  *
  *  <b>Notes</b>
  *
- *  (1) Combines the rates of emission of single vacancies by vacancy clusters of size > 2.
+ *  (1) Combines the rates of emission of single vacancies by vacancy clusters
+ * of size > 2.
  *
- *  (2) Represents the rate of emission of single vacancies by vacancy clusters of size = 2.
- *  This cannot be included in (1) because size 2 clusters create 2 single vacancies when they emit
- *  one. There is a bug which is possibly related to this term, see i_emission_rate().
+ *  (2) Represents the rate of emission of single vacancies by vacancy clusters
+ * of size = 2. This cannot be included in (1) because size 2 clusters create 2
+ * single vacancies when they emit one. There is a bug which is possibly related
+ * to this term, see i_emission_rate().
  *
- *  (3) Represents the rate that vacancies are produced by vacancy clusters of size 2 absorbing a
- *  vacancy.
-*/
+ *  (3) Represents the rate that vacancies are produced by vacancy clusters of
+ * size 2 absorbing a vacancy.
+ */
 gp_float ClusterDynamicsImpl::v_emission_rate() const {
-    gp_float rate = 0.;
-    for (size_t vn = 3; vn < concentration_boundary - 1; ++vn) {
-      rate +=
-         // (1)
-         vv_emission(vn) * vacancies[vn];
-    }
-
+  gp_float rate = 0.;
+  for (size_t vn = 3; vn < concentration_boundary - 1; ++vn) {
     rate +=
+        // (1)
+        vv_emission(vn) * vacancies[vn];
+  }
+
+  rate +=
       // (2)
       4. * vv_emission(2) * vacancies[2]
       // (3)
       + vi_absorption(2) * interstitials[1] * vacancies[2];
 
-    return rate;
+  return rate;
 }
 
 /** @brief Returns 1 over the characteristic time for absorbing an interstitial
@@ -513,23 +517,23 @@ gp_float ClusterDynamicsImpl::v_emission_rate() const {
  *  \f$
  *
  *  <b>Notes</b>
- * 
- *  A modification of the original equation is made here. The case of two size 1 interstitials
- *  combining is excluded as impossible on the assumption that size 2 interstitials are so
- *  unstable they are essentially size 3 clusters.
  *
-*/
+ *  A modification of the original equation is made here. The case of two size 1
+ * interstitials combining is excluded as impossible on the assumption that size
+ * 2 interstitials are so unstable they are essentially size 3 clusters.
+ *
+ */
 gp_float ClusterDynamicsImpl::i_absorption_rate() const {
-    gp_float rate = 0.0;
-    for (size_t in = 2; in < concentration_boundary - 1; ++in) {
-      rate +=
-         // (1)
-         ii_absorption(in) * interstitials[in]
-         // (2)
-         + vi_absorption(in) * vacancies[in];
-    }
+  gp_float rate = 0.0;
+  for (size_t in = 2; in < concentration_boundary - 1; ++in) {
+    rate +=
+        // (1)
+        ii_absorption(in) * interstitials[in]
+        // (2)
+        + vi_absorption(in) * vacancies[in];
+  }
 
-    return rate;
+  return rate;
 }
 
 /** @brief Returns 1 over the characteristic time for absorbing a vacancy by
@@ -544,18 +548,18 @@ gp_float ClusterDynamicsImpl::i_absorption_rate() const {
  *    \ann{1}{\sum_{n>0} \beta_{v,v}(n) C_v(n)}\dwn{+}
  *    \ann{2}{\sum_{n>1} \beta_{i,v}(n) C_i(n)}
  *  \f$
-*/
+ */
 gp_float ClusterDynamicsImpl::v_absorption_rate() const {
-    gp_float rate = vv_absorption(1) * vacancies[1];
-    for (size_t vn = 2; vn < concentration_boundary - 1; ++vn) {
-      rate +=
-         // (1)
-         vv_absorption(vn) * vacancies[vn]
-         // (2)
-         + iv_absorption(vn) * interstitials[vn];
-    }
+  gp_float rate = vv_absorption(1) * vacancies[1];
+  for (size_t vn = 2; vn < concentration_boundary - 1; ++vn) {
+    rate +=
+        // (1)
+        vv_absorption(vn) * vacancies[vn]
+        // (2)
+        + iv_absorption(vn) * interstitials[vn];
+  }
 
-    return rate;
+  return rate;
 }
 
 // --------------------------------------------------------------------------------------------
@@ -572,13 +576,13 @@ gp_float ClusterDynamicsImpl::v_absorption_rate() const {
  *  \f$
  */
 gp_float ClusterDynamicsImpl::annihilation_rate() const {
-    return
-        // (1)
-        4. * M_PI *
-        // (2)
-        (i_diffusion_val + v_diffusion_val) *
-        // (3)
-        material.recombination_radius;
+  return
+      // (1)
+      4. * M_PI *
+      // (2)
+      (i_diffusion_val + v_diffusion_val) *
+      // (3)
+      material.recombination_radius;
 }
 // --------------------------------------------------------------------------------------------
 
@@ -597,13 +601,13 @@ gp_float ClusterDynamicsImpl::annihilation_rate() const {
  * \f$
  */
 gp_float ClusterDynamicsImpl::i_dislocation_annihilation_rate() const {
-    return
-        // (1)
-        dislocation_density *
-        // (2)
-        i_diffusion_val *
-        // (3)
-        material.i_dislocation_bias;
+  return
+      // (1)
+      dislocation_density *
+      // (2)
+      i_diffusion_val *
+      // (3)
+      material.i_dislocation_bias;
 }
 
 /** @brief Returns the 1 over the characteristic time for annihilation of
@@ -625,13 +629,13 @@ gp_float ClusterDynamicsImpl::i_dislocation_annihilation_rate() const {
  * \f$
  */
 gp_float ClusterDynamicsImpl::v_dislocation_annihilation_rate() const {
-    return
-        // (1)
-        dislocation_density *
-        // (2)
-        v_diffusion_val *
-        // (3)
-        material.v_dislocation_bias;
+  return
+      // (1)
+      dislocation_density *
+      // (2)
+      v_diffusion_val *
+      // (3)
+      material.v_dislocation_bias;
 }
 // --------------------------------------------------------------------------------------------
 
@@ -655,18 +659,18 @@ gp_float ClusterDynamicsImpl::v_dislocation_annihilation_rate() const {
  *
  */
 gp_float ClusterDynamicsImpl::i_grain_boundary_annihilation_rate() const {
-    return
-        // (1)
-        6. * i_diffusion_val *
-        sqrt(
-            // (2)
-            dislocation_density * material.i_dislocation_bias
-            // (3)
-            + ii_sum_absorption_val
-            // (4)
-            + vi_sum_absorption_val) /
-        // (5)
-        material.grain_size;
+  return
+      // (1)
+      6. * i_diffusion_val *
+      sqrt(
+          // (2)
+          dislocation_density * material.i_dislocation_bias
+          // (3)
+          + ii_sum_absorption_val
+          // (4)
+          + vi_sum_absorption_val) /
+      // (5)
+      material.grain_size;
 }
 
 // --------------------------------------------------------------------------------------------
@@ -688,18 +692,18 @@ gp_float ClusterDynamicsImpl::i_grain_boundary_annihilation_rate() const {
  *  \f$
  */
 gp_float ClusterDynamicsImpl::v_grain_boundary_annihilation_rate() const {
-    return
-        // (1)
-        6. * v_diffusion_val *
-        sqrt(
-            // (2)
-            dislocation_density * material.v_dislocation_bias
-            // (3)
-            + vv_sum_absorption_val
-            // (4)
-            + iv_sum_absorption_val) /
-        // (5)
-        material.grain_size;
+  return
+      // (1)
+      6. * v_diffusion_val *
+      sqrt(
+          // (2)
+          dislocation_density * material.v_dislocation_bias
+          // (3)
+          + vv_sum_absorption_val
+          // (4)
+          + iv_sum_absorption_val) /
+      // (5)
+      material.grain_size;
 }
 
 /** @brief Returns the rate of emission of an interstitial by an interstital
@@ -718,15 +722,15 @@ gp_float ClusterDynamicsImpl::v_grain_boundary_annihilation_rate() const {
  *  \f$
  */
 gp_float ClusterDynamicsImpl::ii_emission(size_t n) const {
-    return
-        // (1)
-        2. * M_PI * cluster_radius(n) *
-        // (2)
-        i_bias_factor(n) *
-        // (3)
-        i_diffusion_val / material.atomic_volume *
-        // (4)
-        exp(-i_binding_energy(n) / (BOLTZMANN_EV_KELVIN * reactor.temperature));
+  return
+      // (1)
+      2. * M_PI * cluster_radius(n) *
+      // (2)
+      i_bias_factor(n) *
+      // (3)
+      i_diffusion_val / material.atomic_volume *
+      // (4)
+      exp(-i_binding_energy(n) / (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
 
 /** @brief Returns the rate of absorption of an interstitial by an interstital
@@ -744,13 +748,13 @@ gp_float ClusterDynamicsImpl::ii_emission(size_t n) const {
  * \f$
  */
 gp_float ClusterDynamicsImpl::ii_absorption(size_t n) const {
-    return
-        // (1)
-        2. * M_PI * cluster_radius(n) *
-        // (2)
-        i_bias_factor(n) *
-        // (3)
-        i_diffusion_val;
+  return
+      // (1)
+      2. * M_PI * cluster_radius(n) *
+      // (2)
+      i_bias_factor(n) *
+      // (3)
+      i_diffusion_val;
 }
 
 /** @brief Returns the rate of absorption of a vacancy by an interstitial
@@ -768,13 +772,13 @@ gp_float ClusterDynamicsImpl::ii_absorption(size_t n) const {
  * \f$
  */
 gp_float ClusterDynamicsImpl::iv_absorption(size_t n) const {
-    return
-        // (1)
-        2. * M_PI * cluster_radius(n) *
-        // (2)
-        v_bias_factor(n) *
-        // (3)
-        v_diffusion_val;
+  return
+      // (1)
+      2. * M_PI * cluster_radius(n) *
+      // (2)
+      v_bias_factor(n) *
+      // (3)
+      v_diffusion_val;
 }
 
 /** @brief Returns the rate of emission of an interstitial by an interstital
@@ -793,15 +797,15 @@ gp_float ClusterDynamicsImpl::iv_absorption(size_t n) const {
  *  \f$
  */
 gp_float ClusterDynamicsImpl::vv_emission(size_t n) const {
-    return
-        // (1)
-        2. * M_PI * cluster_radius(n) *
-        // (2)
-        v_bias_factor(n) *
-        // (3)
-        v_diffusion_val *
-        // (4)
-        exp(-v_binding_energy(n) / (BOLTZMANN_EV_KELVIN * reactor.temperature));
+  return
+      // (1)
+      2. * M_PI * cluster_radius(n) *
+      // (2)
+      v_bias_factor(n) *
+      // (3)
+      v_diffusion_val *
+      // (4)
+      exp(-v_binding_energy(n) / (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
 
 /** @brief Returns the rate of absorption of a vacancy by a vacancy cluster of
@@ -819,13 +823,13 @@ gp_float ClusterDynamicsImpl::vv_emission(size_t n) const {
  *  \f$
  */
 gp_float ClusterDynamicsImpl::vv_absorption(size_t n) const {
-    return
-        // (1)
-        2. * M_PI * cluster_radius(n) *
-        // (2)
-        v_bias_factor(n) *
-        // (3)
-        v_diffusion_val;
+  return
+      // (1)
+      2. * M_PI * cluster_radius(n) *
+      // (2)
+      v_bias_factor(n) *
+      // (3)
+      v_diffusion_val;
 }
 
 /** @brief Returns the rate of absorption of an interstitial by a vacancy
@@ -843,7 +847,7 @@ gp_float ClusterDynamicsImpl::vv_absorption(size_t n) const {
  * \f$
  */
 gp_float ClusterDynamicsImpl::vi_absorption(size_t n) const {
-    return 2. * M_PI * cluster_radius(n) * i_bias_factor(n) * i_diffusion_val;
+  return 2. * M_PI * cluster_radius(n) * i_bias_factor(n) * i_diffusion_val;
 }
 
 /** @brief Returns the bias factor for an interstitial cluster of size (n).
@@ -863,19 +867,19 @@ gp_float ClusterDynamicsImpl::vi_absorption(size_t n) const {
  * \f$
  */
 gp_float ClusterDynamicsImpl::i_bias_factor(size_t n) const {
-    return
-        // (1)
-        material.i_dislocation_bias +
-        (
-            // (2)
-            std::sqrt(material.burgers_vector /
-                      (8. * M_PI * material.lattice_param)) *
-                // (3)
-                material.i_loop_bias -
-            // (4)
-            material.i_dislocation_bias) *
-            // (5)
-            1. / std::pow((gp_float)n, material.i_dislocation_bias_param / 2.);
+  return
+      // (1)
+      material.i_dislocation_bias +
+      (
+          // (2)
+          std::sqrt(material.burgers_vector /
+                    (8. * M_PI * material.lattice_param)) *
+              // (3)
+              material.i_loop_bias -
+          // (4)
+          material.i_dislocation_bias) *
+          // (5)
+          1. / std::pow((gp_float)n, material.i_dislocation_bias_param / 2.);
 }
 
 /** @brief Returns the bias factor of a vacancy cluster of size (n).
@@ -895,13 +899,12 @@ gp_float ClusterDynamicsImpl::i_bias_factor(size_t n) const {
  * \f$
  */
 gp_float ClusterDynamicsImpl::v_bias_factor(size_t n) const {
-    return material.v_dislocation_bias +
-           (std::sqrt(material.burgers_vector /
-                      (8. * M_PI * material.lattice_param)) *
-                material.v_loop_bias -
-            material.v_dislocation_bias) *
-               1. /
-               std::pow((gp_float)n, material.v_dislocation_bias_param / 2.);
+  return material.v_dislocation_bias +
+         (std::sqrt(material.burgers_vector /
+                    (8. * M_PI * material.lattice_param)) *
+              material.v_loop_bias -
+          material.v_dislocation_bias) *
+             1. / std::pow((gp_float)n, material.v_dislocation_bias_param / 2.);
 }
 
 /** @brief Returnst the binding energy for an interstitial cluster of size (n).
@@ -919,12 +922,11 @@ gp_float ClusterDynamicsImpl::v_bias_factor(size_t n) const {
  *  \f$
  */
 gp_float ClusterDynamicsImpl::i_binding_energy(size_t n) const {
-    return
-        // (1)
-        material.i_formation
-        // (2)
-        +
-        (material.i_binding - material.i_formation) / (std::pow(2., .8) - 1.) *
+  return
+      // (1)
+      material.i_formation
+      // (2)
+      + (material.i_binding - material.i_formation) / (std::pow(2., .8) - 1.) *
             // (3)
             (std::pow((gp_float)n, .8) - std::pow((gp_float)n - 1., .8));
 }
@@ -944,13 +946,13 @@ gp_float ClusterDynamicsImpl::i_binding_energy(size_t n) const {
  *  \f$
  */
 gp_float ClusterDynamicsImpl::v_binding_energy(size_t n) const {
-    return
-        // (1)
-        material.v_formation
-        // (2)
-        + (material.v_binding - material.v_formation) / (std::pow(2., .8) - 1) *
-              // (3)
-              (std::pow((gp_float)n, .8) - std::pow((gp_float)n - 1., .8));
+  return
+      // (1)
+      material.v_formation
+      // (2)
+      + (material.v_binding - material.v_formation) / (std::pow(2., .8) - 1) *
+            // (3)
+            (std::pow((gp_float)n, .8) - std::pow((gp_float)n - 1., .8));
 }
 
 /** @brief Returns the diffusion coefficient for single interstitials.
@@ -968,10 +970,10 @@ gp_float ClusterDynamicsImpl::v_binding_energy(size_t n) const {
  *  \f$
  */
 gp_float ClusterDynamicsImpl::i_diffusion() const {
-    //     (1)                      (2)
-    return material.i_diffusion_0 *
-           std::exp(-material.i_migration /
-                    (BOLTZMANN_EV_KELVIN * reactor.temperature));
+  //     (1)                      (2)
+  return material.i_diffusion_0 *
+         std::exp(-material.i_migration /
+                  (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
 
 /** @brief Returns the diffusion coefficient for single vacancies.
@@ -989,10 +991,10 @@ gp_float ClusterDynamicsImpl::i_diffusion() const {
  *  \f$
  */
 gp_float ClusterDynamicsImpl::v_diffusion() const {
-    //     (1)                      (2)
-    return material.v_diffusion_0 *
-           std::exp(-material.v_migration /
-                    (BOLTZMANN_EV_KELVIN * reactor.temperature));
+  //     (1)                      (2)
+  return material.v_diffusion_0 *
+         std::exp(-material.v_migration /
+                  (BOLTZMANN_EV_KELVIN * reactor.temperature));
 }
 
 /** Returns the mean dislocation cell radius of the system.
@@ -1011,15 +1013,15 @@ gp_float ClusterDynamicsImpl::v_diffusion() const {
  * \f$
  */
 gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const {
-    gp_float r_0_factor = 0.;
-    for (size_t i = 1; i < concentration_boundary; ++i) {
-        r_0_factor += cluster_radius(i) * interstitials[i];
-    }
+  gp_float r_0_factor = 0.;
+  for (size_t i = 1; i < concentration_boundary; ++i) {
+    r_0_factor += cluster_radius(i) * interstitials[i];
+  }
 
-    // (1)                                           (2)          (3)
-    return 1 /
-           std::sqrt((2. * M_PI * M_PI / material.atomic_volume) * r_0_factor +
-                     M_PI * dislocation_density);
+  // (1)                                           (2)          (3)
+  return 1 /
+         std::sqrt((2. * M_PI * M_PI / material.atomic_volume) * r_0_factor +
+                   M_PI * dislocation_density);
 }
 
 // --------------------------------------------------------------------------------------------
@@ -1045,13 +1047,13 @@ gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const {
  */
 gp_float ClusterDynamicsImpl::dislocation_promotion_probability(
     size_t n) const {
-    gp_float dr = cluster_radius(n + 1) - cluster_radius(n);
+  gp_float dr = cluster_radius(n + 1) - cluster_radius(n);
 
-    //      (1)                           (2)
-    return (2. * cluster_radius(n) * dr + std::pow(dr, 2.))
-           //    (3)                                                    (4)
-           / (std::pow(M_PI * mean_dislocation_radius_val / 2., 2) -
-              std::pow(cluster_radius(n), 2.));
+  //      (1)                           (2)
+  return (2. * cluster_radius(n) * dr + std::pow(dr, 2.))
+         //    (3)                                                    (4)
+         / (std::pow(M_PI * mean_dislocation_radius_val / 2., 2) -
+            std::pow(cluster_radius(n), 2.));
 }
 
 // --------------------------------------------------------------------------------------------
@@ -1069,8 +1071,8 @@ gp_float ClusterDynamicsImpl::dislocation_promotion_probability(
  * \f$
  */
 gp_float ClusterDynamicsImpl::cluster_radius(size_t n) const {
-    return std::sqrt(std::sqrt(3.) * std::pow(material.lattice_param, 2.) *
-                     (gp_float)n / (4. * M_PI));
+  return std::sqrt(std::sqrt(3.) * std::pow(material.lattice_param, 2.) *
+                   (gp_float)n / (4. * M_PI));
 }
 // --------------------------------------------------------------------------------------------
 
@@ -1083,92 +1085,92 @@ gp_float ClusterDynamicsImpl::cluster_radius(size_t n) const {
 // --------------------------------------------------------------------------------------------
 
 void ClusterDynamicsImpl::step_init() {
-    i_diffusion_val = i_diffusion();
-    v_diffusion_val = v_diffusion();
-    ii_sum_absorption_val = ii_sum_absorption(concentration_boundary - 1);
-    iv_sum_absorption_val = iv_sum_absorption(concentration_boundary - 1);
-    vi_sum_absorption_val = vi_sum_absorption(concentration_boundary - 1);
-    vv_sum_absorption_val = vv_sum_absorption(concentration_boundary - 1);
-    mean_dislocation_radius_val = mean_dislocation_cell_radius();
+  i_diffusion_val = i_diffusion();
+  v_diffusion_val = v_diffusion();
+  ii_sum_absorption_val = ii_sum_absorption(concentration_boundary - 1);
+  iv_sum_absorption_val = iv_sum_absorption(concentration_boundary - 1);
+  vi_sum_absorption_val = vi_sum_absorption(concentration_boundary - 1);
+  vv_sum_absorption_val = vv_sum_absorption(concentration_boundary - 1);
+  mean_dislocation_radius_val = mean_dislocation_cell_radius();
 }
 
 bool ClusterDynamicsImpl::step(gp_float delta_time) {
-    step_init();
+  step_init();
 
-    bool state_is_valid = update_clusters_1(delta_time);
-    update_clusters(delta_time);
-    dislocation_density += dislocation_density_derivative() * delta_time;
+  bool state_is_valid = update_clusters_1(delta_time);
+  update_clusters(delta_time);
+  dislocation_density += dislocation_density_derivative() * delta_time;
 
-    interstitials = interstitials_temp;
-    vacancies = vacancies_temp;
+  interstitials = interstitials_temp;
+  vacancies = vacancies_temp;
 
-    return state_is_valid;
+  return state_is_valid;
 }
 
 bool ClusterDynamicsImpl::update_clusters_1(gp_float delta_time) {
-    interstitials_temp[1] += i1_concentration_derivative() * delta_time;
-    vacancies_temp[1] += v1_concentration_derivative() * delta_time;
-    return validate(1);
+  interstitials_temp[1] += i1_concentration_derivative() * delta_time;
+  vacancies_temp[1] += v1_concentration_derivative() * delta_time;
+  return validate(1);
 }
 
 bool ClusterDynamicsImpl::update_clusters(gp_float delta_time) {
-    bool state_is_valid = true;
+  bool state_is_valid = true;
 
-    vacancies_temp[2] += v_concentration_derivative(2) * delta_time;
+  vacancies_temp[2] += v_concentration_derivative(2) * delta_time;
 
-    for (size_t n = 3; n < concentration_boundary; ++n) {
-        interstitials_temp[n] += i_concentration_derivative(n) * delta_time;
-        vacancies_temp[n] += v_concentration_derivative(n) * delta_time;
+  for (size_t n = 3; n < concentration_boundary; ++n) {
+    interstitials_temp[n] += i_concentration_derivative(n) * delta_time;
+    vacancies_temp[n] += v_concentration_derivative(n) * delta_time;
 
-        state_is_valid = state_is_valid && validate(n);
-    }
+    state_is_valid = state_is_valid && validate(n);
+  }
 
-    return state_is_valid;
+  return state_is_valid;
 }
 
 ClusterDynamicsImpl::~ClusterDynamicsImpl() {}
 
 gp_float ClusterDynamicsImpl::ii_sum_absorption(size_t nmax) const {
-    gp_float emission = 0.;
-    for (size_t vn = 1; vn < nmax; ++vn) {
-        emission += ii_absorption(vn) * interstitials[vn];
-    }
+  gp_float emission = 0.;
+  for (size_t vn = 1; vn < nmax; ++vn) {
+    emission += ii_absorption(vn) * interstitials[vn];
+  }
 
-    return emission;
+  return emission;
 }
 
 gp_float ClusterDynamicsImpl::iv_sum_absorption(size_t nmax) const {
-    gp_float emission = 0.;
-    for (size_t n = 1; n < nmax; ++n) {
-        emission += iv_absorption(n) * interstitials[n];
-    }
+  gp_float emission = 0.;
+  for (size_t n = 1; n < nmax; ++n) {
+    emission += iv_absorption(n) * interstitials[n];
+  }
 
-    return emission;
+  return emission;
 }
 
 gp_float ClusterDynamicsImpl::vv_sum_absorption(size_t nmax) const {
-    gp_float emission = 0.;
-    for (size_t n = 1; n < nmax; ++n) {
-        emission += vv_absorption(n) * vacancies[n];
-    }
+  gp_float emission = 0.;
+  for (size_t n = 1; n < nmax; ++n) {
+    emission += vv_absorption(n) * vacancies[n];
+  }
 
-    return emission;
+  return emission;
 }
 
 gp_float ClusterDynamicsImpl::vi_sum_absorption(size_t nmax) const {
-    gp_float emission = 0.;
-    for (size_t n = 1; n < nmax; ++n) {
-        emission += vi_absorption(n) * vacancies[n];
-    }
+  gp_float emission = 0.;
+  for (size_t n = 1; n < nmax; ++n) {
+    emission += vi_absorption(n) * vacancies[n];
+  }
 
-    return emission;
+  return emission;
 }
 
 bool ClusterDynamicsImpl::validate(size_t n) const {
-    return !std::isnan(interstitials_temp[n]) &&
-           !std::isinf(interstitials_temp[n]) &&
-           !std::isnan(vacancies_temp[n]) && !std::isinf(vacancies_temp[n]) &&
-           !(interstitials_temp[n] < 0) && !(vacancies_temp[n] < 0);
+  return !std::isnan(interstitials_temp[n]) &&
+         !std::isinf(interstitials_temp[n]) && !std::isnan(vacancies_temp[n]) &&
+         !std::isinf(vacancies_temp[n]) && !(interstitials_temp[n] < 0) &&
+         !(vacancies_temp[n] < 0);
 }
 
 // --------------------------------------------------------------------------------------------
@@ -1195,34 +1197,34 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
 
 ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time,
                                               gp_float total_time) {
-    bool state_is_valid = true;
+  bool state_is_valid = true;
 
-    for (gp_float endtime = time + total_time; time < endtime;
-         time += delta_time) {
-        dpa += delta_time * reactor.flux;
-        state_is_valid = step(delta_time);
-        if (!state_is_valid) break;
-    }
+  for (gp_float endtime = time + total_time; time < endtime;
+       time += delta_time) {
+    dpa += delta_time * reactor.flux;
+    state_is_valid = step(delta_time);
+    if (!state_is_valid) break;
+  }
 
-    return ClusterDynamicsState{
-        .valid = state_is_valid,
-        .time = time,
-        .dpa = dpa,
-        .interstitials = std::vector<gp_float>(interstitials.begin(),
-                                               interstitials.end() - 1),
-        .vacancies =
-            std::vector<gp_float>(vacancies.begin(), vacancies.end() - 1),
-        .dislocation_density = dislocation_density};
+  return ClusterDynamicsState{
+      .valid = state_is_valid,
+      .time = time,
+      .dpa = dpa,
+      .interstitials =
+          std::vector<gp_float>(interstitials.begin(), interstitials.end() - 1),
+      .vacancies =
+          std::vector<gp_float>(vacancies.begin(), vacancies.end() - 1),
+      .dislocation_density = dislocation_density};
 }
 
 MaterialImpl ClusterDynamicsImpl::get_material() const { return material; }
 
 void ClusterDynamicsImpl::set_material(const MaterialImpl &material) {
-    this->material = MaterialImpl(material);
+  this->material = MaterialImpl(material);
 }
 
 NuclearReactorImpl ClusterDynamicsImpl::get_reactor() const { return reactor; }
 
 void ClusterDynamicsImpl::set_reactor(const NuclearReactorImpl &reactor) {
-    this->reactor = NuclearReactorImpl(reactor);
+  this->reactor = NuclearReactorImpl(reactor);
 }
