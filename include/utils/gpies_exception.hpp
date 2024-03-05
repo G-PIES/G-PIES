@@ -5,9 +5,9 @@
 
 class GpiesException {
  public:
-    explicit GpiesException(const std::string &message) : message(message) {}
+  explicit GpiesException(const std::string &message) : message(message) {}
 
-    std::string message;
+  std::string message;
 };
 
 #endif  // GPIES_EXCEPTION
