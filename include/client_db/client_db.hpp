@@ -2,7 +2,6 @@
 #define CLIENT_DB_HPP
 
 #include <sqlite3.h>
-
 #include <string>
 #include <vector>
 
