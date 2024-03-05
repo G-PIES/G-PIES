@@ -253,7 +253,7 @@ CXXFLAGS.os_macos   = -DOSX
 
 CXX.gcc = g++
 CXXFLAGS.gcc.common = -Wall -fno-fast-math
-CXXFLAGS.gcc.debug  = -g3 -fsanitize=undefined
+CXXFLAGS.gcc.debug  = -g3
 
 CXX.nvcc = nvcc
 CXXFLAGS.nvcc.common = -Werror all-warnings -DUSE_CUDA -x cu --expt-extended-lambda
@@ -271,7 +271,7 @@ EXTERN_LIBRARIES_PATH =
 
 LDFLAGS.common  = -L$(BUILD_PATH) $(LIBRARIES:%=-l%) $(EXTERN_LIBRARIES_PATH:%=-L%) $(EXTERN_LIBRARIES:%=-l%)
 
-LDFLAGS.gcc.debug   = -fsanitize=undefined -fsanitize=address
+LDFLAGS.gcc.debug   =
 
 LD.gcc = g++
 LD.nvcc = nvcc
