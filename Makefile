@@ -205,7 +205,7 @@ cdcli: cd_cli
 
 # Cluster Dynamics W/ CUDA CLI
 .PHONY: cdcudacli
-cdcli: cd_cuda_cli
+cdcudacli: cd_cuda_cli
 
 # Cluster Dynamics CLI W/ Verbose Printing
 .PHONY: cdv
@@ -367,7 +367,8 @@ OBJ_FILES.cd_cuda_cli = $(call get_obj_files,cd_cuda_cli)
 EXE_FILE.cd_cuda_cli = $(call get_exe_file,cd_cuda_cli)
 $(OBJ_FILES.cd_cuda_cli): COMPILER = nvcc
 $(EXE_FILE.cd_cuda_cli): COMPILER = nvcc
-$(EXE_FILE.cd_cuda_cli): LIBRARIES += clusterdynamicscuda
+$(EXE_FILE.cd_cuda_cli): LIBRARIES += clusterdynamicscuda clientdb
+$(EXE_FILE.cd_cuda_cli): EXTERN_LIBRARIES += sqlite3
 
 # -----------------------------------------------------------------------------
 # OKMC
