@@ -87,11 +87,11 @@ void print_simulation_history(ClientDb& db, bool print_details) {
               s.simulation_time, s.delta_time, s.reactor.species.c_str(),
               s.material.species.c_str(), s.creation_datetime.c_str());
 
-        // Print the state(s) of the simulation
-        if (print_details) {
-          print_state(s.cd_state);
-          fprintf(stdout, "\n\n");
-        }
+      // Print the state(s) of the simulation
+      if (print_details) {
+        print_state(s.cd_state);
+        fprintf(stdout, "\n\n");
+      }
     }
 
     fprintf(stdout, "\n");
