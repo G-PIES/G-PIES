@@ -39,7 +39,8 @@ resources
 *.pdf
 
 # Local Configurations
-.vscode
+.vscode/*
+!.vscode/settings.json
 
 #pycache
 __pycache__
@@ -57,6 +58,18 @@ db/*.db
 ./lib
 ./out
 
+#Documentation files
+docs/latex
+
 # gtest binaries
 !libgtest_main.a
 !libgtest.a
+
+# metal
+extern/metal-cpp
+*.ir
+*.air
+*.metallib
+
+# Build artifacts
+build/*
