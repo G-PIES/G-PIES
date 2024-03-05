@@ -8,9 +8,9 @@
 #include <cmath>
 #include <array>
 
-#include "cluster_dynamics.hpp"
-#include "material.hpp"
-#include "nuclear_reactor.hpp"
+#include "cluster_dynamics/cluster_dynamics.hpp"
+#include "model/material.hpp"
+#include "model/nuclear_reactor.hpp"
 
 #include "timer.hpp"
 

@@ -49,7 +49,7 @@ endif
 # Variables
 
 CC = g++
-CCFLAGS += -std=c++17 -fno-fast-math -Werror -Wall -Wextra
+CCFLAGS += -std=c++17 -fno-fast-math -Werror -Wall -Wextra -fPIC
 NVCCFLAGS += -std=c++17 -DUSE_CUDA -x cu -Werror all-warnings
 CLANGFLAGS = $(CCFLAGS) -DUSE_METAL
 
@@ -72,7 +72,7 @@ PY_LIB = `python3 -m pybind11 --includes`
 
 # ----------------------------------------------------------------------------------------
 
-.PHONY: bdirs clean lib cli cuda all cd cdlib cdcudalib dblib cdv cdcsv cdcudaex dbcli dbtests cluster_dynamics client_db
+.PHONY: bdirs clean lib cli cuda all cd cdlib pylib cdcudalib dblib cdv cdcsv cdcudaex dbcli dbtests cluster_dynamics client_db
 
 # ----------------------------------------------------------------------------------------
 # Utilties 
@@ -132,7 +132,7 @@ dblib: bdirs
 
 # Python Library
 pylib: cdlib
-	g++ -O3 -Wall -shared $(CCFLAGS) -fPIC $(PY_LIB) src/ui/wrapper.cpp -o $(LIB_DIR)/pyclusterdynamics.so $(INCLUDE_FLAGS) -L$(LIB_DIR) -lclusterdynamics
+	g++ -fPIC -O3 -Wall -shared $(PY_LIB) src/ui/wrapper.cpp -o $(LIB_DIR)/pyclusterdynamics.so $(INCLUDE_FLAGS) -Lbuild/release -lclusterdynamics
 # ----------------------------------------------------------------------------------------
 
 
@@ -255,7 +255,7 @@ CXXFLAGS.os_linux   = -DLINUX
 CXXFLAGS.os_macos   = -DOSX
 
 CXX.gcc = g++
-CXXFLAGS.gcc.common = -Wall -fno-fast-math
+CXXFLAGS.gcc.common = -Wall -fno-fast-math -fpic
 CXXFLAGS.gcc.debug  = -g3 -fsanitize=undefined -fsanitize=address
 
 CXX.nvcc = nvcc
