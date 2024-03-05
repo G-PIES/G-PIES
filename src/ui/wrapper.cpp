@@ -165,11 +165,9 @@ PYBIND11_MODULE(pyclusterdynamics, m) {
         .def("get_vac_idx", &Simulation::get_vac_idx); // interstials
     
     py::class_<Sim_Reactor>(m, "Sim_Reactor")
-        .def(py::init<>())
-        .def("get_reactor", &Sim_Reactor::get_reactor);
+        .def(py::init<>());
     
     py::class_<Sim_Material>(m, "Sim_Material")
-        .def(py::init<>())
-        .def("get_material", &Sim_Material::get_material);
+        .def(py::init<>());
 
 }
