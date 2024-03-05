@@ -45,28 +45,26 @@ resources
 # csv
 *.csv
 
-# databases
-./db
-db/*.db
-
-# dev directories
-./bin
-./build
-./lib
-./out
-
 #Documentation files
 docs/latex
 
-# gtest binaries
-!libgtest_main.a
-!libgtest.a
+# CMake
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
 
-# metal
-extern/metal-cpp
-*.ir
-*.air
-*.metallib
-
-# Build artifacts
-build/*
+# Build Directories 
+.build
+build
+out
+lib
+bin
+db

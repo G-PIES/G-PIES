@@ -11,10 +11,10 @@
 ClusterDynamics::ClusterDynamics(size_t concentration_boundary,
                                  const NuclearReactor &reactor,
                                  const Material &material) {
-    this->reactor = reactor;
-    this->material = material;
-    _impl = std::make_unique<ClusterDynamicsImpl>(
-        concentration_boundary, *reactor._impl, *material._impl);
+  this->reactor = reactor;
+  this->material = material;
+  _impl = std::make_unique<ClusterDynamicsImpl>(
+      concentration_boundary, *reactor._impl, *material._impl);
 }
 
 /** We cannot use the default destructor that the header would've defined
@@ -26,19 +26,19 @@ ClusterDynamics::~ClusterDynamics() {}
 
 ClusterDynamicsState ClusterDynamics::run(gp_float delta_time,
                                           gp_float total_time) {
-    return _impl->run(delta_time, total_time);
+  return _impl->run(delta_time, total_time);
 }
 
 Material ClusterDynamics::get_material() const { return material; }
 
 void ClusterDynamics::set_material(const Material &material) {
-    this->material = material;
-    _impl->set_material(*material._impl);
+  this->material = material;
+  _impl->set_material(*material._impl);
 }
 
 NuclearReactor ClusterDynamics::get_reactor() const { return reactor; }
 
 void ClusterDynamics::set_reactor(const NuclearReactor &reactor) {
-    this->reactor = reactor;
-    _impl->set_reactor(*reactor._impl);
+  this->reactor = reactor;
+  _impl->set_reactor(*reactor._impl);
 }

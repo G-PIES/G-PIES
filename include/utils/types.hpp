@@ -7,4 +7,4 @@
 
 typedef GP_FLOAT gp_float;
 
-#endif // TYPES_HPP
+#endif  // TYPES_HPP
