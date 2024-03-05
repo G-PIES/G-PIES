@@ -38,7 +38,7 @@ void print_start_message() {
           static_cast<int>(concentration_boundary));
 }
 
-void print_state(const ClusterDynamicsState &state) {
+void print_state(const ClusterDynamicsState& state) {
   if (!state.valid)
     fprintf(stdout, "\nINVALID SIM @ Time=%g", state.time);
   else
@@ -61,7 +61,7 @@ void print_state(const ClusterDynamicsState &state) {
           state.dislocation_density);
 }
 
-void print_csv(ClusterDynamicsState &state) {
+void print_csv(ClusterDynamicsState& state) {
   fprintf(stdout, "%g", state.dpa);
   for (uint64_t n = 1; n < concentration_boundary; ++n) {
     fprintf(stdout, ",%g,%g", state.interstitials[n], state.vacancies[n]);
@@ -110,7 +110,7 @@ enum var_code {
   e_dislocationDensityEvolution
 };
 
-var_code hashit(std::string const &varString) {
+var_code hashit(std::string const& varString) {
   if (varString == "i_migration") return e_iMigration;
   if (varString == "v_migration") return e_vMigration;
   if (varString == "i_formation") return e_iFormation;
@@ -125,9 +125,9 @@ var_code hashit(std::string const &varString) {
   return e_noMatch;
 }
 
-void update_for_sensitivity_analysis(ClusterDynamics &cd,
-                                     NuclearReactor &reactor,
-                                     Material &material, const gp_float delta) {
+void update_for_sensitivity_analysis(ClusterDynamics& cd,
+                                     NuclearReactor& reactor,
+                                     Material& material, const gp_float delta) {
   switch (hashit(sensitivity_analysis_variable)) {
     case e_iMigration:
       material.set_i_migration(material.get_i_migration() + delta);
@@ -176,8 +176,8 @@ void update_for_sensitivity_analysis(ClusterDynamics &cd,
   }
 }
 
-bool has_option(const std::vector<std::string_view> &args,
-                const std::string_view &option_name) {
+bool has_option(const std::vector<std::string_view>& args,
+                const std::string_view& option_name) {
   for (auto it = args.begin(), end = args.end(); it != end; ++it) {
     if (*it == option_name) return true;
   }
@@ -185,8 +185,8 @@ bool has_option(const std::vector<std::string_view> &args,
   return false;
 }
 
-std::string_view get_option(const std::vector<std::string_view> &args,
-                            const std::string_view &option_name) {
+std::string_view get_option(const std::vector<std::string_view>& args,
+                            const std::string_view& option_name) {
   for (auto it = args.begin(), end = args.end(); it != end; ++it) {
     if (*it == option_name)
       if (it + 1 != end) return *(it + 1);
@@ -195,7 +195,7 @@ std::string_view get_option(const std::vector<std::string_view> &args,
   return "";
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   const std::vector<std::string_view> args(argv, argv + argc);
 
   NuclearReactor reactor;
@@ -240,8 +240,9 @@ int main(int argc, char *argv[]) {
       print_start_message();
 
 #if CSV
-      fprintf(stdout, "Time (s),Cluster Size," +
-                          "Interstitials / cm^3,Vacancies / cm^3\n");
+      fprintf(stdout,
+              "Time (s),Cluster Size,"
+              "Interstitials / cm^3,Vacancies / cm^3\n");
 #endif
 
       ClusterDynamicsState state;
