@@ -253,7 +253,7 @@ CXXFLAGS.os_macos   = -DOSX
 
 CXX.gcc = g++
 CXXFLAGS.gcc.common = -Wall -fno-fast-math
-CXXFLAGS.gcc.debug  = -g3 -fsanitize=undefined -fsanitize=address
+CXXFLAGS.gcc.debug  = -g3 -fsanitize=undefined
 
 CXX.nvcc = nvcc
 CXXFLAGS.nvcc.common = -Werror all-warnings -DUSE_CUDA -x cu --expt-extended-lambda
