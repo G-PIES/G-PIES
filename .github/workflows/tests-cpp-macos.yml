@@ -27,7 +27,7 @@ jobs:
           name: G-PIES ${{ matrix.configuration }}
           path: |
             build/${{ matrix.configuration }}/libclusterdynamics.a
-            build/${{ matrix.configuration }}/cd_example
+            build/${{ matrix.configuration }}/cd_cli
             build/${{ matrix.configuration }}/cd_tests
             build/${{ matrix.configuration }}/okmc
 
