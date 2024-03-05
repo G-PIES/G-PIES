@@ -2,6 +2,7 @@
 #include <cmath>
 #include <cstring>
 #include <iostream>
+#include <boost/program_options.hpp>
 
 #include "cluster_dynamics/cluster_dynamics.hpp"
 #include "model/material.hpp"
@@ -177,7 +178,32 @@ void update_for_sensitivity_analysis(ClusterDynamics &cd,
     }
 }
 
+bool has_option(
+    const std::vector<std::string_view>& args, 
+    const std::string_view& option_name) {
+    for (auto it = args.begin(), end = args.end(); it != end; ++it) {
+        if (*it == option_name)
+            return true;
+    }
+    
+    return false;
+}
+
+std::string_view get_option(
+    const std::vector<std::string_view>& args, 
+    const std::string_view& option_name) {
+    for (auto it = args.begin(), end = args.end(); it != end; ++it) {
+        if (*it == option_name)
+            if (it + 1 != end)
+                return *(it + 1);
+    }
+    
+    return "";
+}
+
 int main(int argc, char* argv[]) {
+    const std::vector<std::string_view> args(argv, argv + argc);
+
     NuclearReactor reactor;
     nuclear_reactors::OSIRIS(reactor);
 

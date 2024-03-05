@@ -26,6 +26,11 @@ if(GP_BUILD_METAL)
   set(METAL_INCLUDE_DIRS ${metal-cpp_SOURCE_DIR})
 endif()
 
+find_package(Boost)
+if(Boost_FOUND)
+  set(Boost_LIBRARY_TARGET Boost)
+endif()
+
 find_package(SQLite3)
 if(SQLite3_FOUND)
   set(SQLite3_LIBRARY_TARGET SQLite::SQLite3)
