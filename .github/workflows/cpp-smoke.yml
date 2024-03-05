@@ -1,0 +1,30 @@
+name: Build and run tests (smoke)
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      MAKE_TERMOUT: 1
+      CMAKE_COLOR_DIAGNOSTICS: ON
+      GTEST_COLOR: yes
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: ./build.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: G-PIES
+          path: ./out/*
+      
+      - name: Run Cluster Dynamics Tests
+        run: ./out/cd_tests
+      - name: Run DB Tests
+        run: ./out/db_tests
