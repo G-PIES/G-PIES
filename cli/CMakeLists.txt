@@ -14,6 +14,7 @@ if(GP_BUILD_CUDA)
   target_compile_definitions(cd_cuda_cli PRIVATE USE_CUDA)
   target_include_directories(cd_cuda_cli PRIVATE ../src/cluster_dynamics)
   target_link_libraries(cd_cuda_cli clusterdynamicscuda)
+  target_link_libraries(cd_cuda_cli clientdb)
 endif()
 
 if(GP_BUILD_METAL)
@@ -21,6 +22,7 @@ if(GP_BUILD_METAL)
   target_compile_definitions(cd_metal_cli PRIVATE USE_METAL)
   target_include_directories(cd_metal_cli PRIVATE ../src/cluster_dynamics)
   target_link_libraries(cd_metal_cli clusterdynamicsmetal)
+  target_link_libraries(cd_metal_cli clientdb)
   target_link_libraries(cd_metal_cli
     "-framework Metal"
     "-framework Foundation"
