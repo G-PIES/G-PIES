@@ -40,12 +40,12 @@ jobs:
           name: G-PIES ${{ matrix.configuration }}
           path: |
             build/${{ matrix.configuration }}/libclusterdynamics.a
-            build/${{ matrix.configuration }}/cd_example
+            build/${{ matrix.configuration }}/cd_cli
             build/${{ matrix.configuration }}/cd_tests
             build/${{ matrix.configuration }}/okmc
             bin/client_db.out
             build/${{ matrix.configuration }}/libclusterdynamicscuda.a
-            build/${{ matrix.configuration }}/cd_cuda_example
+            build/${{ matrix.configuration }}/cd_cuda_cli
             build/${{ matrix.configuration }}/cdcuda_tests
       
       - name: Run Cluster Dynamics Tests
