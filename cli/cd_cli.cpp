@@ -261,7 +261,13 @@ int main(int argc, char* argv[]) {
       "display/clear simulation history")
     ("run-hist,r", po::value<int>()->implicit_value(0),
       "run a simulation from the history")
-    ("sensitivity,s", "sensitivity analysis mode");
+    ("sensitivity,s", "sensitivity analysis mode"),
+    ("sensitivity-var,v", po::value<std::string>(),
+      "variable to do sensitivity analysis mode on (required sensitivity analysis)"),
+    ("number-of-loops,n", po::value<int>()->implicit_value(2),
+      "number of loops you want to run in sensititivy analysis mode (required sensitivty analysis)"),
+    ("delta-sensitivty-analysis,d", po::value<int>()->implicit_value(0),
+      "amount to change the sensitivity-var by for each loop (required sensitivity analysis)");
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -316,7 +322,16 @@ int main(int argc, char* argv[]) {
       fprintf(stderr, "Could not find simulation %d\n", sim_sqlite_id);
     }
   } else if (vm.count("sensitivity")) {
-    // SENSITIVITY ANALYSIS
+    // Set sensitivity analysis mode to true
+    sensitivity_analysis_mode = true;
+    if (vm.count("sensitivity-var") && vm.count("number-of-loops") && vm.count("delta-sensitivty-analysis")){
+      sensitivity_analysis_variable = vm["sensitivity-var"].as<std::string>();
+      num_of_simulation_loops = vm["number-of-loops"].as<int>();
+      delta_sensitivity_analysis = vm["delta-sensitivty-analysis"].as<int>();
+    }
+    else{
+      printf("Missing required arguments for sensitivity analysis, running normal simulation");
+    }
   } else {
     // CLUSTER DYNAMICS
   }
@@ -329,12 +344,6 @@ int main(int argc, char* argv[]) {
 
   // Override default values with CLI arguments
   switch (argc) {
-    case 8:
-      delta_sensitivity_analysis = strtod(argv[7], NULL);
-      num_of_simulation_loops = strtod(argv[6], NULL);
-      sensitivity_analysis_variable = argv[5];
-      sensitivity_analysis_mode = true;  // argv[4] should be -s
-                                         // fall through
     case 4:
       concentration_boundary = strtod(argv[3], NULL);
       // fall through
@@ -357,10 +366,10 @@ int main(int argc, char* argv[]) {
 
       print_start_message();
 
-#if CSV
-      fprintf(stdout, "Time (s),Cluster Size," +
-                          "Interstitials / cm^3,Vacancies / cm^3\n");
-#endif
+      #if CSV
+            fprintf(stdout, "Time (s),Cluster Size," +
+                                "Interstitials / cm^3,Vacancies / cm^3\n");
+      #endif
 
       ClusterDynamicsState state;
       update_for_sensitivity_analysis(cd, reactor, material,
@@ -370,26 +379,26 @@ int main(int argc, char* argv[]) {
         // run simulation for this time slice
         state = cd.run(delta_time, sample_interval);
 
-#if VPRINT
-        print_state(state);
-#elif CSV
-        print_csv(state);
-#endif
+        #if VPRINT
+                print_state(state);
+        #elif CSV
+                print_csv(state);
+        #endif
 
-        if (!state.valid) {
-          break;
-        }
+                if (!state.valid) {
+                  break;
+                }
 
-#if VBREAK
-        fgetc(stdin);
-#endif
+        #if VBREAK
+                fgetc(stdin);
+        #endif
       }
 
-// ----------------------------------------------------------------
-// print results
-#if !VPRINT && !CSV
-      print_state(state);
-#endif
+      // ----------------------------------------------------------------
+      // print results
+      #if !VPRINT && !CSV
+            print_state(state);
+      #endif
       // ----------------------------------------------------------------
     }
     // --------------------------------------------------------------------
