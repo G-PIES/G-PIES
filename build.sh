@@ -62,16 +62,16 @@ if [ "$HELP" ]; then
   echo "Examples:"
   echo ""
   echo "  # Build all CPU targets"
-  echo "  $0 ./build.sh"
+  echo "  $0"
   echo ""
   echo "  # Build all CPU and Metal targets"
-  echo "  $0 ./build.sh --cpu --metal"
+  echo "  $0 --cpu --metal"
   echo ""
   echo "  # Build and run Cluster Dynamics CLI with CUDA"
-  echo "  $0 ./build.sh --cuda --run cdcli"
+  echo "  $0 --cuda --run cdcli"
   echo ""
   echo "  # Build and run Cluster Dynamics CLI in CSV mode and clean everything before"
-  echo "  $0 ./build.sh -cfr --csv cdcli"
+  echo "  $0 -cfr --csv cdcli"
   echo ""
   echo "Targets:"
   echo "  cd                  The Cluster Dynamics library"
@@ -103,7 +103,7 @@ if [ "$HELP" ]; then
   echo "                      Cannot be usage together with --release."
   echo "  --release           Build release build (max optimizations)."
   echo "                      Cannot be usage together with --debug."
-  exit
+  exit $ERROR
 fi
 
 if [ "$DEBUG" -a "$RELEASE" ]; then
