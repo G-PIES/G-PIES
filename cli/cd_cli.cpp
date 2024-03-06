@@ -252,31 +252,26 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
   return state;
 }
 
-// --------------------------------------------------------------------------------------------
-// Boost argument parsing
-bool has_option(const std::vector<std::string_view>& args,
-                const std::string_view& option_name) {
-  for (auto it = args.begin(), end = args.end(); it != end; ++it) {
-    if (*it == option_name) return true;
-  }
-
-  return false;
-}
-
-std::string_view get_option(const std::vector<std::string_view>& args,
-                            const std::string_view& option_name) {
-  for (auto it = args.begin(), end = args.end(); it != end; ++it) {
-    if (*it == option_name)
-      if (it + 1 != end) return *(it + 1);
-  }
-
-  return "";
-}
-// --------------------------------------------------------------------------------------------
-
 int main(int argc, char* argv[]) {
-  const std::vector<std::string_view> args(argv, argv + argc);
+  // Declare the supported options
+  po::options_description desc("G-PIES options");
+  desc.add_options()
+    ("help", "display help message")
+    ("history,h", po::value<std::string>()->implicit_value("display"),
+      "display/clear simulation history")
+    ("run-hist,r", po::value<int>()->implicit_value(0),
+      "run a simulation from the history")
+    ("sensitivity,s", "sensitivity analysis mode");
+
   po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+  po::notify(vm);   
+
+  // Help message
+  if (vm.count("help")) {
+    std::cout << desc << "\n";
+    return 1;
+  }
 
   ClientDb db(DEFAULT_CLIENT_DB_PATH, false);
   // Open SQLite connection and create database
@@ -288,59 +283,43 @@ int main(int argc, char* argv[]) {
   delta_time = 1e-5;
 
   // --------------------------------------------------------------------------------------------
-  if (has_option(args, "-db")) {
+  // arg parsing
+  if (vm.count("history")) {
+    std::string db_cmd = vm["history"].as<std::string>();
     // DATABASE
-    if (has_option(args, "history")) {
-      // Clear history
-      if (has_option(args, "--clear")) {
-        if (db.delete_simulations()) {
-          fprintf(stdout, "Simulation History Cleared.\n");
-        }
-      } else {
-      }
-    } else if (has_option(args, "run")) {
-    }
-  } else if (has_option(args, "-s")) {
-    // SENSITIVITY ANALYSIS
-  } else {
-    // CLUSTER DYNAMICS
-  }
-  // --------------------------------------------------------------------------------------------
-
-  if (argc > 2 && !strcmp("-db", argv[1])) {
-    if (!strcmp("history", argv[2])) {
-      bool print_details = argc > 3 && !strcmp("--detail", argv[3]);
-
+    if ("display" == db_cmd) {
       // print simulation history
-      print_simulation_history(db, print_details);
-    } else if (!strcmp("run", argv[2]) && argc > 3) {
-      // rerun a previous simulation
-      int sim_sqlite_id = strtod(argv[3], NULL);
-      HistorySimulation sim;
-      if (db.read_simulation(sim_sqlite_id, sim)) {
-        // TODO - support storing sensitivity analysis
-        fprintf(stdout, "Running simulation %d\n", sim_sqlite_id);
-        concentration_boundary = sim.concentration_boundary;
-        simulation_time = sim.simulation_time;
-
-        // TODO - Support sample interval and set a max resolution to avoid
-        // bloating the database. For this to work we will need a list of
-        // ClusterDynamicState objects and a SQLite intersection table.
-        delta_time = sample_interval = sim.delta_time;
-
-        run_simulation(sim.reactor, sim.material);
-      } else {
-        fprintf(stderr, "Could not find simulation %d\n", sim_sqlite_id);
-      }
-    } else if (!strcmp("clear", argv[2])) {
+      print_simulation_history(db, static_cast<bool>(vm.count("detail")));
+    } else if (vm.count("clear")) {
+      // clear history
       if (db.delete_simulations()) {
         fprintf(stdout, "Simulation History Cleared.\n");
       }
     }
+  } else if (vm.count("run-hist")) {
+    // rerun a previous simulation
+    int sim_sqlite_id = vm["run-hist"].as<int>();
+    HistorySimulation sim;
+    if (db.read_simulation(sim_sqlite_id, sim)) {
+      // TODO - support storing sensitivity analysis
+      fprintf(stdout, "Running simulation %d\n", sim_sqlite_id);
+      concentration_boundary = sim.concentration_boundary;
+      simulation_time = sim.simulation_time;
 
-    return 0;
+      // TODO - Support sample interval and set a max resolution to avoid
+      // bloating the database. For this to work we will need a list of
+      // ClusterDynamicState objects and a SQLite intersection table.
+      delta_time = sample_interval = sim.delta_time;
+
+      run_simulation(sim.reactor, sim.material);
+    } else {
+      fprintf(stderr, "Could not find simulation %d\n", sim_sqlite_id);
+    }
+  } else if (vm.count("sensitivity")) {
+    // SENSITIVITY ANALYSIS
+  } else {
+    // CLUSTER DYNAMICS
   }
-  // --------------------------------------------------------------------------------------------
 
   NuclearReactor reactor;
   nuclear_reactors::OSIRIS(reactor);
