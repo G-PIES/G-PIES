@@ -26,7 +26,7 @@ if(GP_BUILD_METAL)
   set(METAL_INCLUDE_DIRS ${metal-cpp_SOURCE_DIR})
 endif()
 
-find_package(Boost)
+find_package(Boost COMPONENTS program_options REQUIRED)
 if(Boost_FOUND)
   set(Boost_LIBRARY_TARGET Boost)
 endif()

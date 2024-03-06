@@ -10,6 +10,8 @@
 #include "model/nuclear_reactor.hpp"
 #include "utils/timer.hpp"
 
+namespace po = boost::program_options;
+
 #ifndef VPRINT
 #define VPRINT false
 #endif
@@ -274,6 +276,7 @@ std::string_view get_option(const std::vector<std::string_view>& args,
 
 int main(int argc, char* argv[]) {
   const std::vector<std::string_view> args(argv, argv + argc);
+  po::variables_map vm;
 
   ClientDb db(DEFAULT_CLIENT_DB_PATH, false);
   // Open SQLite connection and create database
@@ -287,6 +290,16 @@ int main(int argc, char* argv[]) {
   // --------------------------------------------------------------------------------------------
   if (has_option(args, "-db")) {
     // DATABASE
+    if (has_option(args, "history")) {
+      // Clear history
+      if (has_option(args, "--clear")) {
+        if (db.delete_simulations()) {
+          fprintf(stdout, "Simulation History Cleared.\n");
+        }
+      } else {
+      }
+    } else if (has_option(args, "run")) {
+    }
   } else if (has_option(args, "-s")) {
     // SENSITIVITY ANALYSIS
   } else {
