@@ -251,6 +251,7 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
 }
 
 // --------------------------------------------------------------------------------------------
+// Boost argument parsing
 bool has_option(const std::vector<std::string_view>& args,
                 const std::string_view& option_name) {
   for (auto it = args.begin(), end = args.end(); it != end; ++it) {
@@ -284,7 +285,15 @@ int main(int argc, char* argv[]) {
   delta_time = 1e-5;
 
   // --------------------------------------------------------------------------------------------
-  // DATABASE OPERATIONS
+  if (has_option(args, "-db")) {
+    // DATABASE
+  } else if (has_option(args, "-s")) {
+    // SENSITIVITY ANALYSIS
+  } else {
+    // CLUSTER DYNAMICS
+  }
+  // --------------------------------------------------------------------------------------------
+
   if (argc > 2 && !strcmp("-db", argv[1])) {
     if (!strcmp("history", argv[2])) {
       bool print_details = argc > 3 && !strcmp("--detail", argv[3]);
