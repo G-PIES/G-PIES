@@ -42,7 +42,8 @@ endif()
 
 set(CMAKE_CXX_STANDARD 20)
 add_compile_definitions($<$<PLATFORM_ID:Windows>:_USE_MATH_DEFINES>)
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/Wall;/WX>")
+# TODO: Consider replacing /W4 with /Wall
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/W4;/WX>")
 add_compile_options("$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall;-Wextra;-Werror>")
 add_compile_options("$<$<COMPILE_LANGUAGE:CUDA>:-Werror;all-warnings>")
 
