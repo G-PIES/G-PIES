@@ -29,6 +29,14 @@ endif()
 find_package(Boost COMPONENTS program_options REQUIRED)
 if(Boost_FOUND)
   set(Boost_LIBRARY_TARGET Boost)
+else()
+  FetchContent_Declare(
+    Boost
+    GIT_REPOSITORY https://github.com/boostorg/boost.git
+    GIT_TAG boost-1.80.0
+  )
+  FetchContent_MakeAvailable(Boost)
+  set(Boost_LIBRARY_TARGET Boost)
 endif()
 
 find_package(SQLite3)
