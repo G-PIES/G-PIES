@@ -62,16 +62,16 @@ if [ "$HELP" ]; then
   echo "Examples:"
   echo ""
   echo "  # Build all CPU targets"
-  echo "  $0 ./build.sh"
+  echo "  $0"
   echo ""
   echo "  # Build all CPU and Metal targets"
-  echo "  $0 ./build.sh --cpu --metal"
+  echo "  $0 --cpu --metal"
   echo ""
   echo "  # Build and run Cluster Dynamics CLI with CUDA"
-  echo "  $0 ./build.sh --cuda --run cdcli"
+  echo "  $0 --cuda --run cdcli"
   echo ""
   echo "  # Build and run Cluster Dynamics CLI in CSV mode and clean everything before"
-  echo "  $0 ./build.sh -cfr --csv cdcli"
+  echo "  $0 -cfr --csv cdcli"
   echo ""
   echo "Targets:"
   echo "  cd                  The Cluster Dynamics library"
@@ -103,7 +103,7 @@ if [ "$HELP" ]; then
   echo "                      Cannot be usage together with --release."
   echo "  --release           Build release build (max optimizations)."
   echo "                      Cannot be usage together with --debug."
-  exit
+  exit $ERROR
 fi
 
 if [ "$DEBUG" -a "$RELEASE" ]; then
@@ -120,10 +120,6 @@ fi
 
 if [ "$VERBOSE" -a "$CSV" ]; then
   echo_error "Both --verbose and --csv cannot be used at the same time."
-fi
-
-if [ "$CSV" ]; then
-  RUN_OPTIONS="1e-5 1 > out/cd-output.csv"
 fi
 
 for target in "${TARGETS[@]}"; do
@@ -191,11 +187,20 @@ if [ "$RUN" -a "${#TARGETS_TO_RUN[@]}" -gt 1 ]; then
 fi
 
 if [ "$ERROR" ]; then
-  exit 1
+  exit $ERROR
 fi
 
 CMAKE_CONFIGURE_OPTIONS="-B .build -S ."
 CMAKE_BUILD_OPTIONS="--build .build -j 4"
+
+OUT_PATH="out"
+if [ "$RELEASE" ]; then
+  CMAKE_CONFIGURE_OPTIONS+=" -DCMAKE_BUILD_TYPE=Release"
+  CMAKE_BUILD_OPTIONS+=" --config Release"
+else
+  CMAKE_CONFIGURE_OPTIONS+=" -DCMAKE_BUILD_TYPE=Debug"
+  CMAKE_BUILD_OPTIONS+=" --config Debug"
+fi
 
 if [ "$CUDA_ALL" ]; then
   CMAKE_CONFIGURE_OPTIONS+=" --preset cuda-all-major"
@@ -212,15 +217,8 @@ if [ "$VERBOSE" ]; then
 fi
 
 if [ "$CSV" ]; then
+  RUN_OPTIONS="1e-5 1 > $OUT_PATH/cd-output.csv"
   CMAKE_CONFIGURE_OPTIONS+=" -DGP_CSV:BOOL=true"
-fi
-
-if [ "$RELEASE" ]; then
-  CMAKE_CONFIGURE_OPTIONS+=" -DCMAKE_BUILD_TYPE=Release"
-  CMAKE_BUILD_OPTIONS+=" --config Release"
-else
-  CMAKE_CONFIGURE_OPTIONS+=" -DCMAKE_BUILD_TYPE=Debug"
-  CMAKE_BUILD_OPTIONS+=" --config Debug"
 fi
 
 for target in "${TARGETS_TO_BUILD[@]}"; do
@@ -235,12 +233,12 @@ if [ "$CLEAN" ]; then
     echo ""
     if [ "$REPLY" = "y" -o "$REPLY" = "Y" ]; then
       FORCE=1
-    else
-      exit
     fi
   fi
   if [ "$FORCE" ]; then
     rm -rf .build out db
+  else
+    exit
   fi
 fi
 
