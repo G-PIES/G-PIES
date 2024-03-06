@@ -780,7 +780,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
       dislocation_density(material.dislocation_density_0),
       material(material),
       reactor(reactor),
-      indices(concentration_boundary - 1, 0.0),
+      indices(concentration_boundary - 1, 0),
       host_interstitials(concentration_boundary + 1, 0.0),
       host_vacancies(concentration_boundary + 1, 0.0) {
   ClusterDynamicsImpl *raw_self;
