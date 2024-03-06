@@ -188,17 +188,30 @@ if "%option_clean%" neq "" (
 )
 
 call cmake %cmake_configure_options%
+if errorlevel 1 (
+  call :echo_error "cmake returned %ERRORLEVEL%"
+  goto :exit
+)
+
 call cmake %cmake_build_options%
+if errorlevel 1 (
+  call :echo_error "cmake returned %ERRORLEVEL%"
+  goto :exit
+)
 
 if "%option_run%" neq "" (
   call %out_path%\%target_to_run%.exe %run_options%
+  if errorlevel 1 (
+    set error=1
+  )
 )
 
 :exit
-  endlocal
   if "%error%" neq "" (
+    endlocal
     exit /b 1
   ) else (
+    endlocal
     exit /b 0
   )
 
