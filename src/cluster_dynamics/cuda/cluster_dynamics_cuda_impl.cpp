@@ -712,7 +712,7 @@ bool ClusterDynamicsImpl::update_clusters(gp_float delta_time) {
 
 ClusterDynamicsImpl::~ClusterDynamicsImpl() { thrust::device_free(self); }
 
-gp_float ClusterDynamicsImpl::ii_sum_absorption(size_t nmax) const {
+gp_float ClusterDynamicsImpl::ii_sum_absorption(size_t) const {
   auto self = this->self;
   return thrust::transform_reduce(
       indices.begin(), indices.end(),
@@ -722,7 +722,7 @@ gp_float ClusterDynamicsImpl::ii_sum_absorption(size_t nmax) const {
       0.0, thrust::plus<gp_float>());
 }
 
-gp_float ClusterDynamicsImpl::iv_sum_absorption(size_t nmax) const {
+gp_float ClusterDynamicsImpl::iv_sum_absorption(size_t) const {
   auto self = this->self;
   return thrust::transform_reduce(
       indices.begin(), indices.end(),
@@ -732,7 +732,7 @@ gp_float ClusterDynamicsImpl::iv_sum_absorption(size_t nmax) const {
       0.0, thrust::plus<gp_float>());
 }
 
-gp_float ClusterDynamicsImpl::vv_sum_absorption(size_t nmax) const {
+gp_float ClusterDynamicsImpl::vv_sum_absorption(size_t) const {
   auto self = this->self;
   return thrust::transform_reduce(
       indices.begin(), indices.end(),
@@ -742,7 +742,7 @@ gp_float ClusterDynamicsImpl::vv_sum_absorption(size_t nmax) const {
       0.0, thrust::plus<gp_float>());
 }
 
-gp_float ClusterDynamicsImpl::vi_sum_absorption(size_t nmax) const {
+gp_float ClusterDynamicsImpl::vi_sum_absorption(size_t) const {
   auto self = this->self;
   return thrust::transform_reduce(
       indices.begin(), indices.end(),
