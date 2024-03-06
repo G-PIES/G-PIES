@@ -122,10 +122,6 @@ if [ "$VERBOSE" -a "$CSV" ]; then
   echo_error "Both --verbose and --csv cannot be used at the same time."
 fi
 
-if [ "$CSV" ]; then
-  RUN_OPTIONS="1e-5 1 > out/cd-output.csv"
-fi
-
 for target in "${TARGETS[@]}"; do
   case $target in
     cd)
@@ -191,11 +187,20 @@ if [ "$RUN" -a "${#TARGETS_TO_RUN[@]}" -gt 1 ]; then
 fi
 
 if [ "$ERROR" ]; then
-  exit 1
+  exit $ERROR
 fi
 
 CMAKE_CONFIGURE_OPTIONS="-B .build -S ."
 CMAKE_BUILD_OPTIONS="--build .build -j 4"
+
+OUT_PATH="out"
+if [ "$RELEASE" ]; then
+  CMAKE_CONFIGURE_OPTIONS+=" -DCMAKE_BUILD_TYPE=Release"
+  CMAKE_BUILD_OPTIONS+=" --config Release"
+else
+  CMAKE_CONFIGURE_OPTIONS+=" -DCMAKE_BUILD_TYPE=Debug"
+  CMAKE_BUILD_OPTIONS+=" --config Debug"
+fi
 
 if [ "$CUDA_ALL" ]; then
   CMAKE_CONFIGURE_OPTIONS+=" --preset cuda-all-major"
@@ -212,15 +217,8 @@ if [ "$VERBOSE" ]; then
 fi
 
 if [ "$CSV" ]; then
+  RUN_OPTIONS="1e-5 1 > $OUT_PATH/cd-output.csv"
   CMAKE_CONFIGURE_OPTIONS+=" -DGP_CSV:BOOL=true"
-fi
-
-if [ "$RELEASE" ]; then
-  CMAKE_CONFIGURE_OPTIONS+=" -DCMAKE_BUILD_TYPE=Release"
-  CMAKE_BUILD_OPTIONS+=" --config Release"
-else
-  CMAKE_CONFIGURE_OPTIONS+=" -DCMAKE_BUILD_TYPE=Debug"
-  CMAKE_BUILD_OPTIONS+=" --config Debug"
 fi
 
 for target in "${TARGETS_TO_BUILD[@]}"; do
@@ -235,12 +233,12 @@ if [ "$CLEAN" ]; then
     echo ""
     if [ "$REPLY" = "y" -o "$REPLY" = "Y" ]; then
       FORCE=1
-    else
-      exit
     fi
   fi
   if [ "$FORCE" ]; then
     rm -rf .build out db
+  else
+    exit
   fi
 fi
 
