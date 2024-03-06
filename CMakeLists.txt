@@ -42,6 +42,9 @@ endif()
 
 set(CMAKE_CXX_STANDARD 20)
 add_compile_definitions($<$<PLATFORM_ID:Windows>:_USE_MATH_DEFINES>)
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/Wall;/WX>")
+add_compile_options("$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall;-Wextra;-Werror>")
+add_compile_options("$<$<COMPILE_LANGUAGE:CUDA>:-Werror;all-warnings>")
 
 set(GP_VERBOSE false CACHE BOOL "Enable verbose output.")
 if(GP_VERBOSE)
