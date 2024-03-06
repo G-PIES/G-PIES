@@ -71,7 +71,7 @@ DB_LIB = $(LIB_DIR)/libclientdb$(LIB_EXT)
 
 # ----------------------------------------------------------------------------------------
 
-.PHONY: bdirs clean lib cli cuda all cd cdlib cdcudalib dblib cdv cdcsv cdcudaex dbcli dbtests cluster_dynamics client_db
+.PHONY: bdirs clean lib cli cuda all cd cdlib cdcudalib dblib cdv cdcsv cdcudacli dbcli dbtests cluster_dynamics client_db
 
 # ----------------------------------------------------------------------------------------
 # Utilties 
@@ -100,7 +100,7 @@ lib: cdlib cdcudalib dblib
 
 cli: cdcli dbcli
 
-cuda: cdcudalib cdcudaex
+cuda: cdcudalib cdcudacli
 
 all: lib cli cuda
 
@@ -192,9 +192,10 @@ clean_build_dir:
 	rm -rf $(BUILD_DIR)
 
 # Cluster Dynamics Library and tests
-.PHONY: cdlib cdcudalib cdtests cdcudatests
+.PHONY: cdlib cdcudalib libclientdb cdtests cdcudatests
 cdlib: libclusterdynamics
 cdcudalib: libclusterdynamicscuda
+clientdblib: libclientdb
 cdtests: cd_tests
 cdcudatests: cdcuda_tests
 
@@ -203,8 +204,8 @@ cdcudatests: cdcuda_tests
 cdcli: cd_cli
 
 # Cluster Dynamics W/ CUDA CLI
-.PHONY: cdcudaex
-cdcli: cd_cuda_cli
+.PHONY: cdcudacli
+cdcudacli: cd_cuda_cli
 
 # Cluster Dynamics CLI W/ Verbose Printing
 .PHONY: cdv
@@ -252,7 +253,7 @@ CXXFLAGS.os_macos   = -DOSX
 
 CXX.gcc = g++
 CXXFLAGS.gcc.common = -Wall -fno-fast-math
-CXXFLAGS.gcc.debug  = -g3 -fsanitize=undefined -fsanitize=address
+CXXFLAGS.gcc.debug  = -g3
 
 CXX.nvcc = nvcc
 CXXFLAGS.nvcc.common = -Werror all-warnings -DUSE_CUDA -x cu --expt-extended-lambda
@@ -270,7 +271,7 @@ EXTERN_LIBRARIES_PATH =
 
 LDFLAGS.common  = -L$(BUILD_PATH) $(LIBRARIES:%=-l%) $(EXTERN_LIBRARIES_PATH:%=-L%) $(EXTERN_LIBRARIES:%=-l%)
 
-LDFLAGS.gcc.debug   = -fsanitize=undefined -fsanitize=address
+LDFLAGS.gcc.debug   =
 
 LD.gcc = g++
 LD.nvcc = nvcc
@@ -319,6 +320,14 @@ $(OBJ_FILES.libclusterdynamicscuda): COMPILER = nvcc
 $(OBJ_FILES.libclusterdynamicscuda): INCLUDES += src/cluster_dynamics src/cluster_dynamics/cuda
 
 # -----------------------------------------------------------------------------
+# Client Database Library 
+ALL_LIB += libclientdb
+CXX_FILES.libclientdb = $(wildcard src/client_db/*.cpp)
+OBJ_FILES.libclientdb = $(call get_obj_files,libclientdb)
+$(OBJ_FILES.libclientdb): INCLUDES += include/utils
+$(OBJ_FILES.libclientdb): EXTERN_LIBRARIES += sqlite3
+
+# -----------------------------------------------------------------------------
 # GoogleTest Cluster Dynamics Unit Tests
 ALL_EXE += cd_tests
 CXX_FILES.cd_tests = test/cd_tests.cpp
@@ -348,7 +357,8 @@ ALL_EXE += cd_cli
 CXX_FILES.cd_cli = cli/cd_cli.cpp
 OBJ_FILES.cd_cli = $(call get_obj_files,cd_cli)
 EXE_FILE.cd_cli = $(call get_exe_file,cd_cli)
-$(EXE_FILE.cd_cli): LIBRARIES += clusterdynamics
+$(EXE_FILE.cd_cli): LIBRARIES += clusterdynamics clientdb
+$(EXE_FILE.cd_cli): EXTERN_LIBRARIES += sqlite3
 
 # Cluster Dynamics W/ CUDA CLI
 ALL_EXE += cd_cuda_cli
@@ -357,7 +367,8 @@ OBJ_FILES.cd_cuda_cli = $(call get_obj_files,cd_cuda_cli)
 EXE_FILE.cd_cuda_cli = $(call get_exe_file,cd_cuda_cli)
 $(OBJ_FILES.cd_cuda_cli): COMPILER = nvcc
 $(EXE_FILE.cd_cuda_cli): COMPILER = nvcc
-$(EXE_FILE.cd_cuda_cli): LIBRARIES += clusterdynamicscuda
+$(EXE_FILE.cd_cuda_cli): LIBRARIES += clusterdynamicscuda clientdb
+$(EXE_FILE.cd_cuda_cli): EXTERN_LIBRARIES += sqlite3
 
 # -----------------------------------------------------------------------------
 # OKMC

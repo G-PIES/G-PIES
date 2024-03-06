@@ -4,6 +4,7 @@
 #include <cstring>
 #include <iostream>
 
+#include "client_db/client_db.hpp"
 #include "cluster_dynamics/cluster_dynamics.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
@@ -67,6 +68,35 @@ void print_csv(ClusterDynamicsState& state) {
     fprintf(stdout, ",%g,%g", state.interstitials[n], state.vacancies[n]);
   }
   fprintf(stdout, "\n");
+}
+
+void print_simulation_history(ClientDb& db, bool print_details) {
+  std::vector<HistorySimulation> simulations;
+  db.read_simulations(simulations);
+
+  fprintf(stdout, "\nSimulation History\tCount: %llu\n",
+          static_cast<long long unsigned int>(simulations.size()));
+
+  if (!simulations.empty()) {
+    fprintf(stdout,
+            "ID ~ Concentration Boundary ~ Simulation Time ~ Delta "
+            "Time ~ Reactor ~ Material ~ Creation Datetime\n\n");
+
+    for (HistorySimulation s : simulations) {
+      fprintf(stdout, "%d ~ %llu ~ %g ~ %g ~ %s ~ %s ~ %s\n", s.sqlite_id,
+              static_cast<unsigned long long>(s.concentration_boundary),
+              s.simulation_time, s.delta_time, s.reactor.species.c_str(),
+              s.material.species.c_str(), s.creation_datetime.c_str());
+
+      // Print the state(s) of the simulation
+      if (print_details) {
+        print_state(s.cd_state);
+        fprintf(stdout, "\n\n");
+      }
+    }
+
+    fprintf(stdout, "\n");
+  }
 }
 
 void profile() {
@@ -176,6 +206,52 @@ void update_for_sensitivity_analysis(ClusterDynamics& cd,
   }
 }
 
+ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
+                                    const Material& material) {
+  ClusterDynamics cd(concentration_boundary, reactor, material);
+
+  print_start_message();
+
+#if CSV
+  fprintf(stdout,
+          "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
+#endif
+
+  ClusterDynamicsState state;
+  // --------------------------------------------------------------------------------------------
+  // main simulation loop
+  for (gp_float t = 0; t < simulation_time; t = state.time) {
+    // run simulation for this time slice
+    state = cd.run(delta_time, sample_interval);
+
+#if VPRINT
+    print_state(state);
+#elif CSV
+    print_csv(state);
+#endif
+
+    if (!state.valid) {
+      break;
+    }
+
+#if VBREAK
+    fgetc(stdin);
+#endif
+  }
+  // --------------------------------------------------------------------------------------------
+
+  // --------------------------------------------------------------------------------------------
+  // print results
+#if !VPRINT && !CSV
+  print_state(state);
+#endif
+  // --------------------------------------------------------------------------------------------
+
+  return state;
+}
+
+
+// --------------------------------------------------------------------------------------------
 bool has_option(const std::vector<std::string_view>& args,
                 const std::string_view& option_name) {
   for (auto it = args.begin(), end = args.end(); it != end; ++it) {
@@ -194,20 +270,62 @@ std::string_view get_option(const std::vector<std::string_view>& args,
 
   return "";
 }
+// --------------------------------------------------------------------------------------------
 
 int main(int argc, char* argv[]) {
   const std::vector<std::string_view> args(argv, argv + argc);
+
+  ClientDb db(DEFAULT_CLIENT_DB_PATH, false);
+  // Open SQLite connection and create database
+  db.init();
+
+  // Default values
+  concentration_boundary = 10;
+  simulation_time = 1.;
+  delta_time = 1e-5;
+
+  // --------------------------------------------------------------------------------------------
+  // DATABASE OPERATIONS
+  if (argc > 2 && !strcmp("-db", argv[1])) {
+    if (!strcmp("history", argv[2])) {
+      bool print_details = argc > 3 && !strcmp("--detail", argv[3]);
+
+      // print simulation history
+      print_simulation_history(db, print_details);
+    } else if (!strcmp("run", argv[2]) && argc > 3) {
+      // rerun a previous simulation
+      int sim_sqlite_id = strtod(argv[3], NULL);
+      HistorySimulation sim;
+      if (db.read_simulation(sim_sqlite_id, sim)) {
+        // TODO - support storing sensitivity analysis
+        fprintf(stdout, "Running simulation %d\n", sim_sqlite_id);
+        concentration_boundary = sim.concentration_boundary;
+        simulation_time = sim.simulation_time;
+
+        // TODO - Support sample interval and set a max resolution to avoid
+        // bloating the database. For this to work we will need a list of
+        // ClusterDynamicState objects and a SQLite intersection table.
+        delta_time = sample_interval = sim.delta_time;
+
+        run_simulation(sim.reactor, sim.material);
+      } else {
+        fprintf(stderr, "Could not find simulation %d\n", sim_sqlite_id);
+      }
+    } else if (!strcmp("clear", argv[2])) {
+      if (db.delete_simulations()) {
+        fprintf(stdout, "Simulation History Cleared.\n");
+      }
+    }
+
+    return 0;
+  }
+  // --------------------------------------------------------------------------------------------
 
   NuclearReactor reactor;
   nuclear_reactors::OSIRIS(reactor);
 
   Material material;
   materials::SA304(material);
-
-  // Default values
-  concentration_boundary = 10;
-  simulation_time = 1.;
-  delta_time = 1e-5;
 
   // Override default values with CLI arguments
   switch (argc) {
@@ -240,9 +358,8 @@ int main(int argc, char* argv[]) {
       print_start_message();
 
 #if CSV
-      fprintf(stdout,
-              "Time (s),Cluster Size,"
-              "Interstitials / cm^3,Vacancies / cm^3\n");
+      fprintf(stdout, "Time (s),Cluster Size," +
+                          "Interstitials / cm^3,Vacancies / cm^3\n");
 #endif
 
       ClusterDynamicsState state;
@@ -277,43 +394,15 @@ int main(int argc, char* argv[]) {
     }
     // --------------------------------------------------------------------
   } else {
-    ClusterDynamics cd(concentration_boundary, reactor, material);
+    ClusterDynamicsState state = run_simulation(reactor, material);
 
-    print_start_message();
-
-#if CSV
-    fprintf(stdout,
-            "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
-#endif
-
-    ClusterDynamicsState state;
     // --------------------------------------------------------------------------------------------
-    // main simulation loop
-    for (gp_float t = 0; t < simulation_time; t = state.time) {
-      // run simulation for this time slice
-      state = cd.run(delta_time, sample_interval);
+    // Write simulation result to the database
+    HistorySimulation history_simulation(concentration_boundary,
+                                         simulation_time, delta_time, reactor,
+                                         material, state);
 
-#if VPRINT
-      print_state(state);
-#elif CSV
-      print_csv(state);
-#endif
-
-      if (!state.valid) {
-        break;
-      }
-
-#if VBREAK
-      fgetc(stdin);
-#endif
-    }
-// --------------------------------------------------------------------------------------------
-
-// --------------------------------------------------------------------------------------------
-// print results
-#if !VPRINT && !CSV
-    print_state(state);
-#endif
+    db.create_simulation(history_simulation);
     // --------------------------------------------------------------------------------------------
   }
 
