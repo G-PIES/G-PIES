@@ -250,7 +250,6 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
   return state;
 }
 
-
 // --------------------------------------------------------------------------------------------
 bool has_option(const std::vector<std::string_view>& args,
                 const std::string_view& option_name) {
