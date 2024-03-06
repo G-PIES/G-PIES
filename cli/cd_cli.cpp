@@ -218,7 +218,7 @@ int main(int argc, char *argv[]) {
       print_start_message();
 
 #if CSV
-      fprintf(stdout, "Time (s),Cluster Size," +
+      fprintf(stdout, "Time (s),Cluster Size,"
                       "Interstitials / cm^3,Vacancies / cm^3\n");
 #endif
 
