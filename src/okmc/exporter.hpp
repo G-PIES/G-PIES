@@ -4,5 +4,5 @@
 
 class Exporter {
  public:
-    virtual void export_model(Model *model) = 0;
+  virtual void export_model(Model *model) = 0;
 };

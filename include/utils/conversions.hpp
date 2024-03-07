@@ -13,4 +13,4 @@
 // picometer to centimeter conversion
 #define PM_CM_CONV(pm) (pm * 1e-10)
 
-#endif // CONVERSION_HPP
+#endif  // CONVERSION_HPP

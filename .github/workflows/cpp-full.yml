@@ -1,0 +1,63 @@
+name: Build and run tests
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macos-14 ]
+        configuration: [ debug, release ]
+        include:
+          - os: windows-latest
+            cuda: true
+            metal: false
+          - os: ubuntu-latest
+            cuda: true
+            metal: false
+          - os: macos-14
+            cuda: false
+            metal: true
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      MAKE_TERMOUT: 1
+      CMAKE_COLOR_DIAGNOSTICS: ON
+      GTEST_COLOR: yes
+      out_dir: ${{ startsWith(matrix.os, 'windows') && format('./out/{0}', matrix.configuration) || './out' }}
+      cuda_install_method: ${{ startsWith(matrix.os, 'windows') && 'local' || 'network' }}
+      cuda_packages: ${{ startsWith(matrix.os, 'windows') && '[ "nvcc", "cudart", "visual_studio_integration" ]' || '[ "nvcc" ]' }}
+      build_script: ${{ startsWith(matrix.os, 'windows') && '.\build.cmd' || './build.sh' }}
+      build_options: ${{ matrix.cuda && '--cuda-all-major --cpu' || matrix.metal && '--metal --cpu' || '--cpu' }}
+
+    steps:
+      - name: Install CUDA Toolkit
+        uses: Jimver/cuda-toolkit@v0.2.14
+        with:
+          cuda: '12.3.2'
+          method: network
+          sub-packages: ${{ env.cuda_packages }}
+          log-file-suffix: ${{ matrix.configuration }}-${{ matrix.os }}-log.txt
+        if: ${{ matrix.cuda }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: ${{ env.build_script }} ${{ env.build_options }} --${{ matrix.configuration }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: G-PIES ${{ matrix.configuration }} ${{ matrix.os }}
+          path: ${{ env.out_dir }}/*
+      
+      - name: Run Cluster Dynamics Tests
+        run: ${{ env.out_dir }}/cd_tests
+      - name: Run DB Tests
+        run: ${{ env.out_dir }}/db_tests
