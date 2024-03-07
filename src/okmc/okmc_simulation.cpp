@@ -96,7 +96,7 @@ double OkmcSimulation::calculate_event_probability(Event *event, int times,
 
 int OkmcSimulation::calculate_number_of_times(std::vector<double> probabilities,
                                               double random_double) {
-  unsigned int index = 0;
+  size_t index = 0;
   for (; index < probabilities.size(); index++) {
     if (probabilities[index] > random_double) {
       return index;
@@ -121,14 +121,14 @@ void OkmcSimulation::process_out_of_box(Model *model) {
 void OkmcSimulation::process_interactions(Model *model) {
   double random_walk_distance = model->parameters->random_walk_distance;
 
-  unsigned int object_count = model->objects.size();
+  size_t object_count = model->objects.size();
 
-  for (unsigned int i = 0; i < object_count; i++) {
+  for (size_t i = 0; i < object_count; i++) {
     Defect *first = static_cast<Defect *>(model->objects[i]);
     if (first == nullptr) {
       continue;
     }
-    for (unsigned int j = i + 1; j < object_count; j++) {
+    for (size_t j = i + 1; j < object_count; j++) {
       Defect *second = static_cast<Defect *>(model->objects[j]);
       if (second == nullptr) {
         continue;
