@@ -261,11 +261,11 @@ int main(int argc, char* argv[]) {
       "display/clear simulation history")
     ("run-hist,r", po::value<int>()->implicit_value(0),
       "run a simulation from the history")
-    ("sensitivity,s", "sensitivity analysis mode"),
+    ("sensitivity,s", "sensitivity analysis mode")
     ("sensitivity-var,v", po::value<std::string>(),
-      "variable to do sensitivity analysis mode on (required sensitivity analysis)"),
+      "variable to do sensitivity analysis mode on (required sensitivity analysis)")
     ("number-of-loops,n", po::value<int>()->implicit_value(2),
-      "number of loops you want to run in sensititivy analysis mode (required sensitivty analysis)"),
+      "number of loops you want to run in sensititivy analysis mode (required sensitivty analysis)")
     ("delta-sensitivty-analysis,d", po::value<int>()->implicit_value(0),
       "amount to change the sensitivity-var by for each loop (required sensitivity analysis)");
 
