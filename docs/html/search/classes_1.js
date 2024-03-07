@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['gpiesexception_234',['GpiesException',['../classGpiesException.html',1,'']]]
+  ['clusterdynamics_244',['ClusterDynamics',['../classClusterDynamics.html',1,'']]],
+  ['clusterdynamicsimpl_245',['ClusterDynamicsImpl',['../classClusterDynamicsImpl.html',1,'']]],
+  ['clusterdynamicsstate_246',['ClusterDynamicsState',['../structClusterDynamicsState.html',1,'']]]
 ];

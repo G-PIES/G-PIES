@@ -87,21 +87,19 @@ $(function() {
 <a href="gpies__exception_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef GPIES_EXCEPTION</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define GPIES_EXCEPTION</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
-<div class="line"><a name="l00005"></a><span class="lineno"><a class="line" href="classGpiesException.html">    5</a></span>&#160;<span class="keyword">class </span><a class="code" href="classGpiesException.html">GpiesException</a></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;{</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="classGpiesException.html#aa746e911cee8cfc7a0fe17061203f672">    8</a></span>&#160;    <span class="keyword">explicit</span> <a class="code" href="classGpiesException.html#aa746e911cee8cfc7a0fe17061203f672">GpiesException</a>(<span class="keyword">const</span> std::string&amp; <a class="code" href="classGpiesException.html#a4d2941bf6b88eb883e55c4b8d70ff190">message</a>)</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    : <a class="code" href="classGpiesException.html#a4d2941bf6b88eb883e55c4b8d70ff190">message</a>(<a class="code" href="classGpiesException.html#a4d2941bf6b88eb883e55c4b8d70ff190">message</a>) {}</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="classGpiesException.html#a4d2941bf6b88eb883e55c4b8d70ff190">   11</a></span>&#160;    std::string <a class="code" href="classGpiesException.html#a4d2941bf6b88eb883e55c4b8d70ff190">message</a>;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;};</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#endif // GPIES_EXCEPTION</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
+<div class="line"><a name="l00006"></a><span class="lineno"><a class="line" href="classGpiesException.html">    6</a></span>&#160;<span class="keyword">class </span><a class="code" href="classGpiesException.html">GpiesException</a> {</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="classGpiesException.html#aa746e911cee8cfc7a0fe17061203f672">    8</a></span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classGpiesException.html#aa746e911cee8cfc7a0fe17061203f672">GpiesException</a>(<span class="keyword">const</span> std::string &amp;<a class="code" href="classGpiesException.html#a4d2941bf6b88eb883e55c4b8d70ff190">message</a>) : <a class="code" href="classGpiesException.html#a4d2941bf6b88eb883e55c4b8d70ff190">message</a>(<a class="code" href="classGpiesException.html#a4d2941bf6b88eb883e55c4b8d70ff190">message</a>) {}</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
+<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="classGpiesException.html#a4d2941bf6b88eb883e55c4b8d70ff190">   10</a></span>&#160;  std::string <a class="code" href="classGpiesException.html#a4d2941bf6b88eb883e55c4b8d70ff190">message</a>;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;};</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#endif  // GPIES_EXCEPTION</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassGpiesException_html_a4d2941bf6b88eb883e55c4b8d70ff190"><div class="ttname"><a href="classGpiesException.html#a4d2941bf6b88eb883e55c4b8d70ff190">GpiesException::message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition:</b> <a href="gpies__exception_8hpp_source.html#l00011">gpies_exception.hpp:11</a></div></div>
-<div class="ttc" id="aclassGpiesException_html"><div class="ttname"><a href="classGpiesException.html">GpiesException</a></div><div class="ttdef"><b>Definition:</b> <a href="gpies__exception_8hpp_source.html#l00005">gpies_exception.hpp:5</a></div></div>
+<div class="ttc" id="aclassGpiesException_html_a4d2941bf6b88eb883e55c4b8d70ff190"><div class="ttname"><a href="classGpiesException.html#a4d2941bf6b88eb883e55c4b8d70ff190">GpiesException::message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition:</b> <a href="gpies__exception_8hpp_source.html#l00010">gpies_exception.hpp:10</a></div></div>
+<div class="ttc" id="aclassGpiesException_html"><div class="ttname"><a href="classGpiesException.html">GpiesException</a></div><div class="ttdef"><b>Definition:</b> <a href="gpies__exception_8hpp_source.html#l00006">gpies_exception.hpp:6</a></div></div>
 <div class="ttc" id="aclassGpiesException_html_aa746e911cee8cfc7a0fe17061203f672"><div class="ttname"><a href="classGpiesException.html#aa746e911cee8cfc7a0fe17061203f672">GpiesException::GpiesException</a></div><div class="ttdeci">GpiesException(const std::string &amp;message)</div><div class="ttdef"><b>Definition:</b> <a href="gpies__exception_8hpp_source.html#l00008">gpies_exception.hpp:8</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

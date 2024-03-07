@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['randomizer_239',['Randomizer',['../classRandomizer.html',1,'']]]
+  ['material_249',['Material',['../structMaterial.html',1,'']]],
+  ['materialimpl_250',['MaterialImpl',['../structMaterialImpl.html',1,'']]]
 ];
