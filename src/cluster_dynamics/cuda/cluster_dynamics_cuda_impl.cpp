@@ -712,7 +712,7 @@ bool ClusterDynamicsImpl::update_clusters(gp_float delta_time) {
 
 ClusterDynamicsImpl::~ClusterDynamicsImpl() { thrust::device_free(self); }
 
-gp_float ClusterDynamicsImpl::ii_sum_absorption(size_t nmax) const {
+gp_float ClusterDynamicsImpl::ii_sum_absorption(size_t) const {
   auto self = this->self;
   return thrust::transform_reduce(
       indices.begin(), indices.end(),
@@ -722,7 +722,7 @@ gp_float ClusterDynamicsImpl::ii_sum_absorption(size_t nmax) const {
       0.0, thrust::plus<gp_float>());
 }
 
-gp_float ClusterDynamicsImpl::iv_sum_absorption(size_t nmax) const {
+gp_float ClusterDynamicsImpl::iv_sum_absorption(size_t) const {
   auto self = this->self;
   return thrust::transform_reduce(
       indices.begin(), indices.end(),
@@ -732,7 +732,7 @@ gp_float ClusterDynamicsImpl::iv_sum_absorption(size_t nmax) const {
       0.0, thrust::plus<gp_float>());
 }
 
-gp_float ClusterDynamicsImpl::vv_sum_absorption(size_t nmax) const {
+gp_float ClusterDynamicsImpl::vv_sum_absorption(size_t) const {
   auto self = this->self;
   return thrust::transform_reduce(
       indices.begin(), indices.end(),
@@ -742,7 +742,7 @@ gp_float ClusterDynamicsImpl::vv_sum_absorption(size_t nmax) const {
       0.0, thrust::plus<gp_float>());
 }
 
-gp_float ClusterDynamicsImpl::vi_sum_absorption(size_t nmax) const {
+gp_float ClusterDynamicsImpl::vi_sum_absorption(size_t) const {
   auto self = this->self;
   return thrust::transform_reduce(
       indices.begin(), indices.end(),
@@ -780,7 +780,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
       dislocation_density(material.dislocation_density_0),
       material(material),
       reactor(reactor),
-      indices(concentration_boundary - 1, 0.0),
+      indices(concentration_boundary - 1, 0),
       host_interstitials(concentration_boundary + 1, 0.0),
       host_vacancies(concentration_boundary + 1, 0.0) {
   ClusterDynamicsImpl *raw_self;

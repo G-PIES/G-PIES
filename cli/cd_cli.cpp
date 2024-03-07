@@ -344,8 +344,14 @@ int main(int argc, char* argv[]) {
 
   // Override default values with CLI arguments
   switch (argc) {
+    case 8:
+      delta_sensitivity_analysis = strtod(argv[7], NULL);
+      num_of_simulation_loops = strtod(argv[6], NULL);
+      sensitivity_analysis_variable = argv[5];
+      sensitivity_analysis_mode = true;  // argv[4] should be -s
+                                         // fall through
     case 4:
-      concentration_boundary = strtod(argv[3], NULL);
+      concentration_boundary = strtoul(argv[3], NULL, 10);
       // fall through
     case 3:
       simulation_time = strtod(argv[2], NULL);
@@ -366,10 +372,10 @@ int main(int argc, char* argv[]) {
 
       print_start_message();
 
-      #if CSV
-            fprintf(stdout, "Time (s),Cluster Size," +
-                                "Interstitials / cm^3,Vacancies / cm^3\n");
-      #endif
+#if CSV
+      fprintf(stdout, "Time (s),Cluster Size,"
+                      "Interstitials / cm^3,Vacancies / cm^3\n");
+#endif
 
       ClusterDynamicsState state;
       update_for_sensitivity_analysis(cd, reactor, material,

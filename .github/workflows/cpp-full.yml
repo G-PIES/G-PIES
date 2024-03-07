@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-14 ]
-        configuration: [ Debug, Release ]
+        configuration: [ debug, release ]
         include:
           - os: windows-latest
             cuda: true
@@ -32,7 +32,8 @@ jobs:
       out_dir: ${{ startsWith(matrix.os, 'windows') && format('./out/{0}', matrix.configuration) || './out' }}
       cuda_install_method: ${{ startsWith(matrix.os, 'windows') && 'local' || 'network' }}
       cuda_packages: ${{ startsWith(matrix.os, 'windows') && '[ "nvcc", "cudart", "visual_studio_integration" ]' || '[ "nvcc" ]' }}
-      cmake_preset: ${{ matrix.cuda && 'cuda-all-major' || matrix.metal && 'metal' || 'default' }}
+      build_script: ${{ startsWith(matrix.os, 'windows') && '.\build.cmd' || './build.sh' }}
+      build_options: ${{ matrix.cuda && '--cuda-all-major --cpu' || matrix.metal && '--metal --cpu' || '--cpu' }}
 
     steps:
       - name: Install CUDA Toolkit
@@ -47,11 +48,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Generate the buildsystem
-        run: cmake -B ./build -S . --preset ${{ env.cmake_preset }} -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
-
       - name: Build
-        run: cmake --build ./build -j4 --config ${{ matrix.configuration }}
+        run: ${{ env.build_script }} ${{ env.build_options }} --${{ matrix.configuration }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
