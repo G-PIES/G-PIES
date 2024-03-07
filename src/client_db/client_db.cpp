@@ -898,7 +898,8 @@ void ClientDb::make_db_dir() {
   const mode_t nMode = 0733;
   int err_code = 0;
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#if defined(WIN32) || defined(_WIN32) || \
+    defined(__WIN32) && !defined(__CYGWIN__)
   err_code = _mkdir(path.c_str());  // can be used on Windows
 #else
   err_code = mkdir(path.c_str(), nMode);  // can be used on non-Windows
@@ -911,7 +912,8 @@ void ClientDb::make_db_dir() {
   }
 }
 
-ClientDb::ClientDb(const std::string &db_path, const bool lazy) : path(db_path) {
+ClientDb::ClientDb(const std::string &db_path, const bool lazy)
+    : path(db_path) {
   if (lazy)
     db = nullptr;
   else
