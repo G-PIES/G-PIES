@@ -181,8 +181,8 @@ gp_float ClusterDynamicsImpl::dislocation_density_derivative() const {
  *
  * \f$
  * \dwn{G_i(1)=}\ann{1}{\eta}
- * \ann{2}{G_{dpa}}\dwn{(1-}\ann{3}{f_{i3}}\dwn{-}\ann{4}{f_{i4})}\\
- * G_i(2)=0\\
+ * \ann{2}{G_{dpa}}\dwn{(1-}\ann{3}{f_{i2}}\dwn{-}\ann{4}{f_{i3})}\ann{5}{f_{i4})}\\
+ * G_i(2)=\eta G_{dpa}f_{i2}\\
  * G_i(3)=\eta G_{dpa}f_{i3}\\
  * G_i(4)=\eta G_{dpa}f_{i4}
  * \f$
@@ -192,10 +192,10 @@ gp_float ClusterDynamicsImpl::i_defect_production(size_t n) const {
     //             (1)                     (2)
     case 1:
       return reactor.recombination * reactor.flux *
-             //    (3)            (4)
-             (1. - reactor.i_tri - reactor.i_quad);
+             //    (3)            (4)             (5)
+             (1. - reactor.i_bi - reactor.i_tri - reactor.i_quad);
     case 2:
-      return 0;
+      return reactor.recombination * reactor.flux * reactor.i_bi;
     case 3:
       return reactor.recombination * reactor.flux * reactor.i_tri;
     case 4:
@@ -424,27 +424,24 @@ gp_float ClusterDynamicsImpl::v_promotion_rate(size_t n) const {
  *  \f$
  *    \dwn{\frac{1}{\tau^e_i(n)} = }
  *    \ann{1}{\sum_{n>2} \alpha_{i,i}(n) C_i(n)}\dwn{+}
- *    \ann{2}{3 \alpha_{i,i}(3) C_i(3)}\dwn{+}
- *    \ann{3}{2 \beta_{i,v}(3) C_v(1) C_i(3)}
+ *    \ann{2}{2 \alpha_{i,i}(2) C_i(2)}\dwn{+}
+ *    \ann{3}{\beta_{i,v}(2) C_v(1) C_i(2)}
  *  \f$
  *
  *  <b>Notes</b>
  *
- *  This is modified to assume that clusters of size 2 cannot exist, and so any
- * attempt to create one will result in clusters of size 2.
- *
  *  (1) Combines the rates of emission of single interstitials by interstitial
- * clusters of size > 3.
+ * clusters of size > 2.
  *
  *  (2) Represents the rate of emission of single interstitials by interstitial
- * clusters of size = 3, which will generate 3 interstitials.
+ * clusters of size = 2, which will generate 2 interstitials.
  *
  *  (3) Represents the rate that interstitials are produced by interstitial
- * clusters of size 3 absorbing a vacancy.
+ * clusters of size 2 absorbing a vacancy.
  */
 gp_float ClusterDynamicsImpl::i_emission_rate() const {
   gp_float rate = 0.;
-  for (size_t in = 4; in < concentration_boundary - 1; ++in) {
+  for (size_t in = 3; in < concentration_boundary - 1; ++in) {
     rate +=
         // (1)
         ii_emission(in) * interstitials[in];
@@ -452,9 +449,9 @@ gp_float ClusterDynamicsImpl::i_emission_rate() const {
 
   rate +=
       // (2)
-      3. * ii_emission(3) * interstitials[3]
+      2. * ii_emission(2) * interstitials[2]
       // (3)
-      + 2. * iv_absorption(3) * vacancies[1] * interstitials[3];
+      + iv_absorption(2) * vacancies[1] * interstitials[2];
 
   return rate;
 }
@@ -479,9 +476,7 @@ gp_float ClusterDynamicsImpl::i_emission_rate() const {
  * of size > 2.
  *
  *  (2) Represents the rate of emission of single vacancies by vacancy clusters
- * of size = 2. This cannot be included in (1) because size 2 clusters create 2
- * single vacancies when they emit one. There is a bug which is possibly related
- * to this term, see i_emission_rate().
+ * of size = 2, which results in 2 vacancies.
  *
  *  (3) Represents the rate that vacancies are produced by vacancy clusters of
  * size 2 absorbing a vacancy.
@@ -496,7 +491,7 @@ gp_float ClusterDynamicsImpl::v_emission_rate() const {
 
   rate +=
       // (2)
-      4. * vv_emission(2) * vacancies[2]
+      2. * vv_emission(2) * vacancies[2]
       // (3)
       + vi_absorption(2) * interstitials[1] * vacancies[2];
 
