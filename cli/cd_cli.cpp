@@ -270,7 +270,7 @@ int main(int argc, char* argv[]) {
       print_simulation_history(db, print_details);
     } else if (!strcmp("run", argv[2]) && argc > 3) {
       // rerun a previous simulation
-      int sim_sqlite_id = strtod(argv[3], NULL);
+      int sim_sqlite_id = strtoul(argv[3], NULL, 10);
       HistorySimulation sim;
       if (db.read_simulation(sim_sqlite_id, sim)) {
         // TODO - support storing sensitivity analysis
