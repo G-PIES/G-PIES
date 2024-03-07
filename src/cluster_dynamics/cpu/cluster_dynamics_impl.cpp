@@ -82,6 +82,7 @@ gp_float ClusterDynamicsImpl::v_concentration_derivative(size_t n) const {
  *  \f$
  */
 gp_float ClusterDynamicsImpl::i1_concentration_derivative() const {
+  //fprintf(stderr, "\n%g", *dislocation_density);
   return
       // (1)
       i_defect_production(1)
@@ -1011,7 +1012,7 @@ gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const {
   // (1)                                           (2)          (3)
   return 1 /
          std::sqrt((2. * M_PI * M_PI / material.atomic_volume) * r_0_factor +
-                   M_PI * *dislocation_density);
+                   M_PI * (*dislocation_density));
 }
 
 // --------------------------------------------------------------------------------------------
@@ -1123,8 +1124,6 @@ int ClusterDynamicsImpl::system([[maybe_unused]] double t, N_Vector v_state, N_V
 {
     ClusterDynamicsImpl* cd = static_cast<ClusterDynamicsImpl*>(user_data);
 
-    cd->step_init();
-
     double* state = N_VGetArrayPointer(v_state);
     double* state_derivatives = N_VGetArrayPointer(v_state_derivatives);
 
@@ -1132,25 +1131,25 @@ int ClusterDynamicsImpl::system([[maybe_unused]] double t, N_Vector v_state, N_V
     cd->vacancies = state + cd->concentration_boundary + 2;
     cd->dislocation_density = state + cd->state_size - 1;
 
+    cd->step_init();
+
     double* i_derivatives = state_derivatives;
     double* v_derivatives = state_derivatives + cd->concentration_boundary + 2;
     double* dislocation_derivative = state_derivatives + 2 * (cd->concentration_boundary + 1);
 
-    i_derivatives[1] = 0.0;//cd->i1_concentration_derivative();
-
+    i_derivatives[1] = cd->i1_concentration_derivative();
     for (size_t i = 2; i < cd->concentration_boundary + 1; ++i)
     {
-        i_derivatives[i] = 0.0;//cd->i_concentration_derivative(i);
+        i_derivatives[i] = cd->i_concentration_derivative(i);
     }
 
-    v_derivatives[1] = 0.0;//cd->v1_concentration_derivative();
+    v_derivatives[1] = cd->v1_concentration_derivative();
     for (size_t i = 2; i < cd->concentration_boundary + 1; ++i)
     {
-        v_derivatives[i] = 0.0;//cd->v_concentration_derivative(i);
+        v_derivatives[i] = cd->v_concentration_derivative(i);
     }
 
-    *dislocation_derivative = 1.0;//cd->dislocation_density_derivative();
-    fprintf(stderr, "\n%g", *cd->dislocation_density);
+    *dislocation_derivative = 0.0; //cd->dislocation_density_derivative();
 
     return 0;
 }
@@ -1177,7 +1176,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
     if (sunerr)
     {
         /// \todo The docs suggest SUNGetErrMsg(sunerr)
-        fprintf(stderr, "Failed to create CVODES memory.");
+        fprintf(stderr, "Failed to create CVODES context.");
     }
 
     /* Create the initial state */
@@ -1186,7 +1185,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
 
     /* Set State Aliases */
     interstitials = N_VGetArrayPointer(state);
-    vacancies = N_VGetArrayPointer(state) + concentration_boundary + 2;
+    vacancies = N_VGetArrayPointer(state) + (concentration_boundary + 1) + 1;
     dislocation_density = N_VGetArrayPointer(state) + state_size - 1;
 
     /* Initialize State Values */
@@ -1203,12 +1202,12 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
     sunerr = CVodeInit(cvodes_memory_block, system, 0, state);
     if (sunerr)
     {
-        fprintf(stderr, "Failed to set CVODES tolerances.");
+        fprintf(stderr, "Failed to allocate CVODES memory.");
     }
 
     /* Call CVodeSVtolerances to specify the scalar relative tolerance
      * and scalar absolute tolerances */
-    sunerr = CVodeSStolerances(cvodes_memory_block, 1.0, 1.0);
+    sunerr = CVodeSStolerances(cvodes_memory_block, 1e-3, 1.0);
     if (sunerr)
     {
         fprintf(stderr, "Failed to set CVODES tolerances.");
