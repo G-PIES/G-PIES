@@ -209,8 +209,10 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
   print_start_message();
 
 #if CSV
-  fprintf(stdout,
-          "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
+  fprintf(stdout, "Time (s)");
+  for (size_t i = 1; i < concentration_boundary; ++i)
+    fprintf(stdout, ", i%lu, v%lu", i, i);
+  fprintf(stdout, "\n");
 #endif
 
   ClusterDynamicsState state;

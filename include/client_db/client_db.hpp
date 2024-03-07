@@ -158,7 +158,7 @@ class ClientDb {
   // Specify the |db_path| where the SQLite database resides
   // |lazy| will wait to open the database until |init| is called.
   ClientDb(const char *db_path = DEFAULT_CLIENT_DB_PATH,
-           const bool lazy = true);
+           const bool lazy = true) noexcept;
   ~ClientDb();
 
  private:

@@ -20,7 +20,6 @@ class ClusterDynamicsImpl {
   gp_float dpa;
 
   N_Vector state;
-
   SUNContext sun_context;
   SUNMatrix jacobian_matrix;
   SUNLinearSolver linear_solver;

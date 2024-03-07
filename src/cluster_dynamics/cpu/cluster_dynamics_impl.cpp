@@ -507,19 +507,14 @@ gp_float ClusterDynamicsImpl::v_emission_rate() const {
  *
  *  \f$
  *    \dwn{\frac{1}{\tau^a_i(n)} =}
- *    \ann{1}{\sum_{n>1} \beta_{i,i}(n) C_i(n)}\dwn{+}
+ *    \ann{1}{\sum_{n>0} \beta_{i,i}(n) C_i(n)}\dwn{+}
  *    \ann{2}{\sum_{n>1} \beta_{v,i}(n) C_v(n)}
  *  \f$
- *
- *  <b>Notes</b>
- *
- *  A modification of the original equation is made here. The case of two size 1
- * interstitials combining is excluded as impossible on the assumption that size
- * 2 interstitials are so unstable they are essentially size 3 clusters.
  *
  */
 gp_float ClusterDynamicsImpl::i_absorption_rate() const {
   gp_float rate = 0.0;
+  rate += ii_absorption(1) * interstitials[1];
   for (size_t in = 2; in < concentration_boundary - 1; ++in) {
     rate +=
         // (1)
@@ -1139,21 +1134,23 @@ int ClusterDynamicsImpl::system([[maybe_unused]] double t, N_Vector v_state, N_V
 
     double* i_derivatives = state_derivatives;
     double* v_derivatives = state_derivatives + cd->concentration_boundary + 2;
-    double* dislocation_derivative = state_derivatives + 2 * (cd->concentration_boundary + 1) + 1;
+    double* dislocation_derivative = state_derivatives + 2 * (cd->concentration_boundary + 1);
 
-    i_derivatives[1] = cd->i1_concentration_derivative();
+    i_derivatives[1] = 0.0;//cd->i1_concentration_derivative();
+
     for (size_t i = 2; i < cd->concentration_boundary + 1; ++i)
     {
-        i_derivatives[i] = cd->i_concentration_derivative(i);
+        i_derivatives[i] = 0.0;//cd->i_concentration_derivative(i);
     }
 
-    v_derivatives[1] = cd->v1_concentration_derivative();
+    v_derivatives[1] = 0.0;//cd->v1_concentration_derivative();
     for (size_t i = 2; i < cd->concentration_boundary + 1; ++i)
     {
-        v_derivatives[i] = cd->v_concentration_derivative(i);
+        v_derivatives[i] = 0.0;//cd->v_concentration_derivative(i);
     }
 
-    *dislocation_derivative = cd->dislocation_density_derivative();
+    *dislocation_derivative = 1.0;//cd->dislocation_density_derivative();
+    fprintf(stderr, "\n%g", *cd->dislocation_density);
 
     return 0;
 }
@@ -1211,7 +1208,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
 
     /* Call CVodeSVtolerances to specify the scalar relative tolerance
      * and scalar absolute tolerances */
-    sunerr = CVodeSStolerances(cvodes_memory_block, 1e-3, 1e-3);
+    sunerr = CVodeSStolerances(cvodes_memory_block, 1.0, 1.0);
     if (sunerr)
     {
         fprintf(stderr, "Failed to set CVODES tolerances.");
