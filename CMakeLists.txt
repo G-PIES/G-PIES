@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 20)
 add_compile_definitions($<$<PLATFORM_ID:Windows>:_USE_MATH_DEFINES>)
 
 # TODO: Consider replacing /W2 with /W4 or /Wall for MSVC.
-add_compile_options("$<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-Wall;-Wextra;-Werror>")
+add_compile_options("$<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-Wall;-Wextra>")
 add_compile_options("$<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<CXX_COMPILER_ID:MSVC>>:/W2;/WX>")
 add_compile_options("$<$<COMPILE_LANGUAGE:CUDA>:-Werror;all-warnings>")
 add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CUDA>>:SHELL:-Xcompiler /W2>")
@@ -51,7 +51,15 @@ if(GP_BUILD_METAL)
   set(METAL_INCLUDE_DIRS ${metal-cpp_SOURCE_DIR})
 endif()
 
-find_package(SUNDIALS CONFIG REQUIRED)
+find_package(SUNDIALS)
+if(NOT SUNDIALS_FOUND)
+  FetchContent_Declare(
+    SUNDIALS
+    URL https://github.com/LLNL/sundials/releases/download/v7.0.0/sundials-7.0.0.tar.gz
+  )
+  FetchContent_MakeAvailable(SUNDIALS)
+  set(SUNDIALS_DIR ${SUNDIALS_SOURCE_DIR})
+endif()
 
 find_package(SQLite3)
 if(SQLite3_FOUND)

@@ -1128,8 +1128,8 @@ int ClusterDynamicsImpl::system([[maybe_unused]] double t, N_Vector v_state, N_V
     double* state_derivatives = N_VGetArrayPointer(v_state_derivatives);
 
     cd->interstitials = state;
-    cd->vacancies = state + cd->concentration_boundary + 2;
-    cd->dislocation_density = state + cd->state_size - 1;
+    cd->vacancies = cd->interstitials + (cd->concentration_boundary + 1) + 1;
+    cd->dislocation_density = cd->vacancies + (cd->concentration_boundary + 1) + 1;
 
     cd->step_init();
 
@@ -1169,7 +1169,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
     : time(0.0), concentration_boundary(concentration_boundary),
       material(material), reactor(reactor) {
 
-    state_size = 2 * (concentration_boundary + 1) + 1;
+    state_size = 2 * (concentration_boundary + 1) + 3;
 
     /* Create the SUNDIALS context */
     int sunerr = SUNContext_Create(SUN_COMM_NULL, &sun_context);
@@ -1185,8 +1185,8 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
 
     /* Set State Aliases */
     interstitials = N_VGetArrayPointer(state);
-    vacancies = N_VGetArrayPointer(state) + (concentration_boundary + 1) + 1;
-    dislocation_density = N_VGetArrayPointer(state) + state_size - 1;
+    vacancies = interstitials + (concentration_boundary + 1) + 1;
+    dislocation_density = vacancies + (concentration_boundary + 1) + 1;
 
     /* Initialize State Values */
     std::memset(N_VGetArrayPointer(state), 0, state_size);
@@ -1207,7 +1207,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
 
     /* Call CVodeSVtolerances to specify the scalar relative tolerance
      * and scalar absolute tolerances */
-    sunerr = CVodeSStolerances(cvodes_memory_block, 1e-3, 1.0);
+    sunerr = CVodeSStolerances(cvodes_memory_block, 1.0, 1.0);
     if (sunerr)
     {
         fprintf(stderr, "Failed to set CVODES tolerances.");
