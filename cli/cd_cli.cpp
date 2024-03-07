@@ -254,13 +254,10 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
 
 int main(int argc, char* argv[]) {
   // Declare the supported options
-  po::options_description desc("G-PIES options");
-  desc.add_options()
+  po::options_description all_options("General options");
+  all_options.add_options()
     ("help", "display help message")
-    ("history,h", po::value<std::string>()->implicit_value("display"),
-      "display/clear simulation history")
-    ("run-hist,r", po::value<int>()->implicit_value(0),
-      "run a simulation from the history")
+    ("db,d", "database options")
     ("sensitivity,s", "sensitivity analysis mode")
     ("sensitivity-var,v", po::value<std::string>(),
       "variable to do sensitivity analysis mode on (required sensitivity analysis)")
@@ -269,13 +266,22 @@ int main(int argc, char* argv[]) {
     ("delta-sensitivty-analysis,d", po::value<int>()->implicit_value(0),
       "amount to change the sensitivity-var by for each loop (required sensitivity analysis)");
 
+  po::options_description db_options("Database options [--db]");
+  db_options.add_options()
+    ("history,h", "display simulation history")
+    ("run,r", po::value<int>()->value_name("id"),
+      "run a simulation from the history by [id]")
+    ("clear,c", "clear simulation history");
+
+  all_options.add(db_options);
+
   po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
+  po::store(po::parse_command_line(argc, argv, all_options), vm);
   po::notify(vm);   
 
   // Help message
   if (vm.count("help")) {
-    std::cout << desc << "\n";
+    std::cout << all_options << "\n";
     return 1;
   }
 
