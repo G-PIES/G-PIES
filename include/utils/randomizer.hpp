@@ -55,7 +55,9 @@ class Randomizer {
   void simulation_randomize(HistorySimulation& simulation) const {
     reactor_randomize(simulation.reactor);
     material_randomize(simulation.material);
-    simulation.cd_state.time = randd();
+    simulation.concentration_boundary = rand() % 10000;
+    simulation.simulation_time = randd();
+    simulation.delta_time = randd();
 
     int vec_size = rand() % 100000 + 4;
     for (int i = 0; i < vec_size; ++i) {
