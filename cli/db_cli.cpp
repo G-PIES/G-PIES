@@ -196,34 +196,6 @@ void simulations_crud() {
     fprintf(stdout, "\n");
   }
 
-  // NOTE: HistorySimulation update is not currently supported
-  // TODO - decide if HistorySimulation update is useful
-  /*
-  fprintf(stdout, "* UPDATE / READ SIMULATIONS\n\n");
-
-  for (int i = 0; i < VEC_SIZE; ++i) {
-      randomizer.simulation_randomize(simulations[i]);
-
-      db.update_simulation(simulations[i], &sqlite_code);
-      fprintf(stdout, "SIMULATION UPDATED\n");
-
-      db.read_simulation(simulations[i].sqlite_id, read_simulations[i],
-                         &sqlite_code);
-      fprintf(stdout, "READ SIMULATION\t-\tsqlite code = %4d\n", sqlite_code);
-
-      simulation_cmp_print(simulations[i], read_simulations[i]);
-
-      fprintf(stdout, "\n");
-      reactor_cmp_print(simulations[i].reactor, read_simulations[i].reactor);
-
-      fprintf(stdout, "\n");
-      material_cmp_print(simulations[i].material,
-                         read_simulations[i].material);
-
-      fprintf(stdout, "\n");
-  }
-  */
-
 #if DELETE_ON
   fprintf(stdout, "* DELETE SIMULATIONS\n\n");
 
@@ -307,7 +279,12 @@ void simulation_cmp_print(const HistorySimulation& r1,
           r2.reactor.sqlite_id);
   fprintf(stdout, "%d\t\t\t\t\t\t-\t%d\n", r1.material.sqlite_id,
           r2.material.sqlite_id);
-  fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.cd_state.time, r2.cd_state.time);
+  fprintf(stdout, "%llu\t\t\t\t\t\t-\t%llu\n",
+          static_cast<unsigned long long>(r1.concentration_boundary),
+          static_cast<unsigned long long>(r2.concentration_boundary));
+  fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.simulation_time,
+          r2.simulation_time);
+  fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.delta_time, r2.delta_time);
   fprintf(stdout, "%zu [%g, %g, %g, %g,...]\t-\t%zu [%g, %g, %g, %g,...]\n",
           r1.cd_state.interstitials.size(), r1.cd_state.interstitials[0],
           r1.cd_state.interstitials[1], r1.cd_state.interstitials[2],
@@ -322,4 +299,5 @@ void simulation_cmp_print(const HistorySimulation& r1,
           r2.cd_state.vacancies[2], r2.cd_state.vacancies[3]);
   fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.cd_state.dislocation_density,
           r2.cd_state.dislocation_density);
+  fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.cd_state.dpa, r2.cd_state.dpa);
 }
