@@ -26,6 +26,8 @@ if(GP_BUILD_METAL)
   set(METAL_INCLUDE_DIRS ${metal-cpp_SOURCE_DIR})
 endif()
 
+find_package(SUNDIALS CONFIG REQUIRED)
+
 find_package(SQLite3)
 if(SQLite3_FOUND)
   set(SQLite3_LIBRARY_TARGET SQLite::SQLite3)

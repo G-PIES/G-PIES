@@ -9,18 +9,29 @@
 #include "nuclear_reactor_impl.hpp"
 #include "utils/constants.hpp"
 
+#include <cvodes/cvodes.h>
+#include <nvector/nvector_serial.h>
+#include <sunlinsol/sunlinsol_dense.h>
+#include <sunmatrix/sunmatrix_dense.h> 
+
 class ClusterDynamicsImpl {
  public:
   gp_float time;
   gp_float dpa;
 
-  std::vector<gp_float> interstitials;
-  std::vector<gp_float> interstitials_temp;
-  std::vector<gp_float> vacancies;
-  std::vector<gp_float> vacancies_temp;
+  N_Vector state;
 
+  SUNContext sun_context;
+  SUNMatrix jacobian_matrix;
+  SUNLinearSolver linear_solver;
+  void* cvodes_memory_block;
+
+  gp_float* interstitials;
+  gp_float* vacancies;
+  gp_float* dislocation_density;
+
+  size_t state_size;
   size_t concentration_boundary;
-  gp_float dislocation_density;
 
   /// @brief Precomputed in step_init() using mean_dislocation_cell_radius()
   gp_float mean_dislocation_radius_val;
@@ -83,11 +94,8 @@ class ClusterDynamicsImpl {
   gp_float vv_sum_absorption(size_t) const;
 
   // Simulation Operation Functions
-  bool update_clusters_1(gp_float);
-  bool update_clusters(gp_float);
   void step_init();
-  bool step(gp_float);
-  bool validate(size_t) const;
+  static int system(double t, N_Vector state, N_Vector state_derivatives, void* user_data);
 
   // Interface functions
   ClusterDynamicsImpl(size_t concentration_boundary,
@@ -95,7 +103,7 @@ class ClusterDynamicsImpl {
                       const MaterialImpl &material);
   ~ClusterDynamicsImpl();
 
-  ClusterDynamicsState run(gp_float delta_time, gp_float total_time);
+  ClusterDynamicsState run(gp_float total_time);
   MaterialImpl get_material() const;
   void set_material(const MaterialImpl &material);
   NuclearReactorImpl get_reactor() const;

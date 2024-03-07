@@ -33,12 +33,6 @@ class ClusterDynamicsTest : public ::testing::Test {
   virtual void TearDown() {}
 };
 
-TEST_F(ClusterDynamicsTest, ResultIsValid) {
-  ClusterDynamics cd(100, reactor, material);
-  ClusterDynamicsState state = cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
-  ASSERT_EQ(state.valid, true);
-}
-
 TEST_F(ClusterDynamicsTest, CorrectEndtime) {
   ClusterDynamics cd(100, reactor, material);
 
@@ -78,7 +72,7 @@ TEST_F(ClusterDynamicsTest, ResultUnchanged) {
 
 TEST_F(ClusterDynamicsTest, i_concentration_derivative_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   // Starts from cluster size = 2
   gp_float expected[5] = {2.7011322486896344e-11, 1.7373139700233559e-08,
@@ -97,7 +91,7 @@ TEST_F(ClusterDynamicsTest, i_concentration_derivative_test) {
 
 TEST_F(ClusterDynamicsTest, v_concentration_derivative_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   // Starts from cluster size = 2
   gp_float expected[5] = {5.2199999999999989e-09, 2.6099999999999995e-09,
@@ -116,7 +110,7 @@ TEST_F(ClusterDynamicsTest, v_concentration_derivative_test) {
 
 TEST_F(ClusterDynamicsTest, i1_concentration_derivative_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 6.4461184990181082e-08;
   gp_float actual = cd.i1_concentration_derivative();
@@ -126,7 +120,7 @@ TEST_F(ClusterDynamicsTest, i1_concentration_derivative_test) {
 
 TEST_F(ClusterDynamicsTest, v1_concentration_derivative_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 7.7429999999999973e-08;
   gp_float actual = cd.v1_concentration_derivative();
@@ -136,7 +130,7 @@ TEST_F(ClusterDynamicsTest, v1_concentration_derivative_test) {
 
 TEST_F(ClusterDynamicsTest, i_demotion_rate_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   // Starts from cluster size = 2
   gp_float expected[5] = {155.23748555687555, 2.8931555643430293,
@@ -156,7 +150,7 @@ TEST_F(ClusterDynamicsTest, i_demotion_rate_test) {
 
 TEST_F(ClusterDynamicsTest, v_demotion_rate_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   // Starts from cluster size = 2
   gp_float expected[5] = {1.0622831180514798e-23, 2.857269498818864e-24,
@@ -176,7 +170,7 @@ TEST_F(ClusterDynamicsTest, v_demotion_rate_test) {
 
 TEST_F(ClusterDynamicsTest, i_combined_promotion_demotion_rate_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   // Starts from cluster size = 2
   gp_float expected[5] = {128124.97669171244, 155.23748555687555,
@@ -196,7 +190,7 @@ TEST_F(ClusterDynamicsTest, i_combined_promotion_demotion_rate_test) {
 
 TEST_F(ClusterDynamicsTest, v_combined_promotion_demotion_rate_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   // Starts from cluster size = 2
   gp_float expected[5] = {1.0192365323843148e-22, 1.0622832410351147e-23,
@@ -216,7 +210,7 @@ TEST_F(ClusterDynamicsTest, v_combined_promotion_demotion_rate_test) {
 
 TEST_F(ClusterDynamicsTest, i_promotion_rate_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   // Starts from cluster size = 2
   gp_float expected[5] = {9.9257693757640059e-26, 9.924512146122923e-26,
@@ -236,7 +230,7 @@ TEST_F(ClusterDynamicsTest, i_promotion_rate_test) {
 
 TEST_F(ClusterDynamicsTest, v_promotion_rate_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   // Starts from cluster size = 2
   gp_float expected[5] = {1.1324832325802889e-30, 1.1875681802007069e-30,
@@ -336,7 +330,7 @@ TEST_F(ClusterDynamicsTest, vv_emission_test) {
 
 TEST_F(ClusterDynamicsTest, ii_absorption_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   // Starts from cluster size = 1
   gp_float expected[3] = {1.5417473401310976e-13, 1.5415520574903579e-13,
@@ -353,7 +347,7 @@ TEST_F(ClusterDynamicsTest, ii_absorption_test) {
 
 TEST_F(ClusterDynamicsTest, vi_absorption_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   // Starts from cluster size = 1
   gp_float expected[3] = {1.5417473401310976e-13, 1.5415520574903579e-13,
@@ -370,7 +364,7 @@ TEST_F(ClusterDynamicsTest, vi_absorption_test) {
 
 TEST_F(ClusterDynamicsTest, iv_absorption_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   // Starts from cluster size = 1
   gp_float expected[3] = {1.4625897359941745e-18, 1.5337313446993508e-18,
@@ -387,7 +381,7 @@ TEST_F(ClusterDynamicsTest, iv_absorption_test) {
 
 TEST_F(ClusterDynamicsTest, vv_absorption_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   // Starts from cluster size = 1
   gp_float expected[3] = {1.4625897359941745e-18, 1.5337313446993508e-18,
@@ -404,7 +398,7 @@ TEST_F(ClusterDynamicsTest, vv_absorption_test) {
 
 TEST_F(ClusterDynamicsTest, i_dislocation_annihilation_rate_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 1.3898960585069451e-20;
   gp_float actual = cd.i_dislocation_annihilation_rate();
@@ -414,7 +408,7 @@ TEST_F(ClusterDynamicsTest, i_dislocation_annihilation_rate_test) {
 
 TEST_F(ClusterDynamicsTest, v_dislocation_annihilation_rate_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 2.0452274646486708e-25;
   gp_float actual = cd.v_dislocation_annihilation_rate();
@@ -424,7 +418,7 @@ TEST_F(ClusterDynamicsTest, v_dislocation_annihilation_rate_test) {
 
 TEST_F(ClusterDynamicsTest, i_grain_boundary_annihilation_rate_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 7.3710369608603651e-11;
   gp_float actual = cd.i_grain_boundary_annihilation_rate();
@@ -434,7 +428,7 @@ TEST_F(ClusterDynamicsTest, i_grain_boundary_annihilation_rate_test) {
 
 TEST_F(ClusterDynamicsTest, v_grain_boundary_annihilation_rate_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 1.2033063175360925e-15;
   gp_float actual = cd.v_grain_boundary_annihilation_rate();
@@ -444,7 +438,7 @@ TEST_F(ClusterDynamicsTest, v_grain_boundary_annihilation_rate_test) {
 
 TEST_F(ClusterDynamicsTest, i_emission_rate_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 8.1184990181147742e-11;
   gp_float actual = cd.i_emission_rate();
@@ -454,7 +448,7 @@ TEST_F(ClusterDynamicsTest, i_emission_rate_test) {
 
 TEST_F(ClusterDynamicsTest, v_emission_rate_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 2.1588731998897621e-35;
   gp_float actual = cd.v_emission_rate();
@@ -464,7 +458,7 @@ TEST_F(ClusterDynamicsTest, v_emission_rate_test) {
 
 TEST_F(ClusterDynamicsTest, i_absorption_rate_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 4.9961636205194337e-26;
   gp_float actual = cd.i_absorption_rate();
@@ -474,7 +468,7 @@ TEST_F(ClusterDynamicsTest, i_absorption_rate_test) {
 
 TEST_F(ClusterDynamicsTest, v_absorption_rate_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 1.6441170027726276e-30;
   gp_float actual = cd.v_absorption_rate();
@@ -616,52 +610,9 @@ TEST_F(ClusterDynamicsTest, cluster_radius_test) {
   EXPECT_DOUBLE_EQ(expected[4], actual[4]);
 }
 
-TEST_F(ClusterDynamicsTest, update_clusters_1_test) {
-  ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.update_clusters_1(1e-5);
-
-  // Starts from cluster size = 2
-  gp_float i_expected = 0.0;
-  gp_float v_expected = 0.0;
-  gp_float i_actual = cd.interstitials[1];
-  gp_float v_actual = cd.vacancies[1];
-
-  EXPECT_DOUBLE_EQ(i_expected, i_actual);
-  EXPECT_DOUBLE_EQ(v_expected, v_actual);
-}
-
-TEST_F(ClusterDynamicsTest, update_clusters_test) {
-  ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.update_clusters(1e-5);
-
-  // Starts from cluster size = 2
-  gp_float i_expected[5] = {0.0, 1.7399999999999999e-13, 5.2199999999999995e-14,
-                            0.0, 0.0};
-  gp_float v_expected[5] = {5.2199999999999995e-14, 2.6099999999999997e-14,
-                            1.74e-14, 0.0, 0.0};
-  gp_float i_actual[5];
-  gp_float v_actual[5];
-  for (int i = 0; i < 5; ++i) {
-    i_actual[i] = cd.interstitials_temp[i + 2];
-    v_actual[i] = cd.vacancies_temp[i + 2];
-  }
-
-  EXPECT_DOUBLE_EQ(i_expected[0], i_actual[0]);
-  EXPECT_DOUBLE_EQ(i_expected[1], i_actual[1]);
-  EXPECT_DOUBLE_EQ(i_expected[2], i_actual[2]);
-  EXPECT_DOUBLE_EQ(i_expected[3], i_actual[3]);
-  EXPECT_DOUBLE_EQ(i_expected[4], i_actual[4]);
-
-  EXPECT_DOUBLE_EQ(v_expected[0], v_actual[0]);
-  EXPECT_DOUBLE_EQ(v_expected[1], v_actual[1]);
-  EXPECT_DOUBLE_EQ(v_expected[2], v_actual[2]);
-  EXPECT_DOUBLE_EQ(v_expected[3], v_actual[3]);
-  EXPECT_DOUBLE_EQ(v_expected[4], v_actual[4]);
-}
-
 TEST_F(ClusterDynamicsTest, mean_dislocation_cell_radius_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 0.0064902708966673205;
   gp_float actual = cd.mean_dislocation_cell_radius();
@@ -671,7 +622,7 @@ TEST_F(ClusterDynamicsTest, mean_dislocation_cell_radius_test) {
 
 TEST_F(ClusterDynamicsTest, ii_sum_absorption_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 1.3440457113561326e-25;
   gp_float actual = cd.ii_sum_absorption(cd.concentration_boundary - 1);
@@ -681,7 +632,7 @@ TEST_F(ClusterDynamicsTest, ii_sum_absorption_test) {
 
 TEST_F(ClusterDynamicsTest, vi_sum_absorption_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 1.3419225537357197e-25;
   gp_float actual = cd.vi_sum_absorption(cd.concentration_boundary - 1);
@@ -691,7 +642,7 @@ TEST_F(ClusterDynamicsTest, vi_sum_absorption_test) {
 
 TEST_F(ClusterDynamicsTest, iv_sum_absorption_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 1.3032955788203968e-30;
   gp_float actual = cd.iv_sum_absorption(cd.concentration_boundary - 1);
@@ -701,56 +652,10 @@ TEST_F(ClusterDynamicsTest, iv_sum_absorption_test) {
 
 TEST_F(ClusterDynamicsTest, vv_sum_absorption_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
+  cd.run(SIM_RUN_TIME);
 
   gp_float expected = 1.2824366959852804e-30;
   gp_float actual = cd.vv_sum_absorption(cd.concentration_boundary - 1);
 
   EXPECT_DOUBLE_EQ(expected, actual);
-}
-
-TEST_F(ClusterDynamicsTest, step_test) {
-  ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.step(1e-5);
-
-  // Starts from cluster size = 1
-  gp_float i_expected[5] = {6.4379999999999994e-13, 0.0, 1.7399999999999999e-13,
-                            5.2199999999999995e-14, 0.0};
-  gp_float v_expected[5] = {
-      7.7429999999999974e-13,
-      5.2199999999999995e-14,
-      2.6099999999999997e-14,
-      1.74e-14,
-      0.0,
-  };
-  gp_float i_actual[5];
-  gp_float v_actual[5];
-  for (int i = 0; i < 5; ++i) {
-    i_actual[i] = cd.interstitials_temp[i + 1];
-    v_actual[i] = cd.vacancies_temp[i + 1];
-  }
-
-  EXPECT_DOUBLE_EQ(i_expected[0], i_actual[0]);
-  EXPECT_DOUBLE_EQ(i_expected[1], i_actual[1]);
-  EXPECT_DOUBLE_EQ(i_expected[2], i_actual[2]);
-  EXPECT_DOUBLE_EQ(i_expected[3], i_actual[3]);
-  EXPECT_DOUBLE_EQ(i_expected[4], i_actual[4]);
-
-  EXPECT_DOUBLE_EQ(v_expected[0], v_actual[0]);
-  EXPECT_DOUBLE_EQ(v_expected[1], v_actual[1]);
-  EXPECT_DOUBLE_EQ(v_expected[2], v_actual[2]);
-  EXPECT_DOUBLE_EQ(v_expected[3], v_actual[3]);
-  EXPECT_DOUBLE_EQ(v_expected[4], v_actual[4]);
-}
-
-TEST_F(ClusterDynamicsTest, validation_test) {
-  ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
-  cd.interstitials_temp[1] = NAN;
-  cd.interstitials_temp[3] = INFINITY;
-  cd.interstitials_temp[4] = -1.0;
-
-  EXPECT_FALSE(cd.validate(1));
-  EXPECT_TRUE(cd.validate(2));
-  EXPECT_FALSE(cd.validate(3));
-  EXPECT_FALSE(cd.validate(4));
 }

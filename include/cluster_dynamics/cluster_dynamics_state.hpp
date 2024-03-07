@@ -9,14 +9,6 @@
  * simulation.
  */
 struct ClusterDynamicsState {
-  /** @brief False if this is in an invalid state. True otherwise.
-   *
-   * The state is considered invalid if any of the interstitial or
-   * vacancy concentrations or the dislocation density are nan,
-   * infinity, or negative.
-   */
-  bool valid = true;
-
   /** Marks how much time in seconds has been simulated to create this state.
    */
   gp_float time = 0.0;
