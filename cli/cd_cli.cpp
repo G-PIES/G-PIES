@@ -257,7 +257,7 @@ int main(int argc, char* argv[]) {
   po::options_description all_options("General options");
   all_options.add_options()
     ("help", "display help message")
-    ("db,d", "database options")
+    ("db", "database options")
     ("sensitivity,s", "sensitivity analysis mode")
     ("sensitivity-var,v", po::value<std::string>(),
       "variable to do sensitivity analysis mode on (required sensitivity analysis)")
@@ -298,19 +298,16 @@ int main(int argc, char* argv[]) {
   // arg parsing
   if (vm.count("history")) {
     std::string db_cmd = vm["history"].as<std::string>();
-    // DATABASE
-    if ("display" == db_cmd) {
-      // print simulation history
-      print_simulation_history(db, static_cast<bool>(vm.count("detail")));
-    } else if (vm.count("clear")) {
-      // clear history
-      if (db.delete_simulations()) {
-        fprintf(stdout, "Simulation History Cleared.\n");
-      }
+    // print simulation history
+    print_simulation_history(db, static_cast<bool>(vm.count("detail")));
+  } else if (vm.count("clear")) {
+    // clear history
+    if (db.delete_simulations()) {
+      fprintf(stdout, "Simulation History Cleared.\n");
     }
-  } else if (vm.count("run-hist")) {
+  } else if (vm.count("run")) {
     // rerun a previous simulation
-    int sim_sqlite_id = vm["run-hist"].as<int>();
+    int sim_sqlite_id = vm["run"].as<int>();
     HistorySimulation sim;
     if (db.read_simulation(sim_sqlite_id, sim)) {
       // TODO - support storing sensitivity analysis
