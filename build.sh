@@ -110,10 +110,6 @@ if [ "$DEBUG" -a "$RELEASE" ]; then
   echo_error "Both --debug and --release cannot be used at the same time."
 fi
 
-if [ "$CUDA" -a "$METAL" ]; then
-  echo_error "Both --cuda and --metal cannot be used at the same time."
-fi
-
 if [ ! "$CUDA" -a ! "$METAL" ]; then
   CPU=1
 fi
@@ -202,14 +198,22 @@ else
   CMAKE_BUILD_OPTIONS+=" --config Debug"
 fi
 
-if [ "$CUDA_ALL" ]; then
-  CMAKE_CONFIGURE_OPTIONS+=" --preset cuda-all-major"
-elif [ "$CUDA" ]; then
-  CMAKE_CONFIGURE_OPTIONS+=" --preset cuda"
-elif [ "$METAL" ]; then
-  CMAKE_CONFIGURE_OPTIONS+=" --preset metal"
+if [ "$CUDA" ]; then
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_CUDA=true"
 else
-  CMAKE_CONFIGURE_OPTIONS+=" --preset default"
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_CUDA=false"
+fi
+
+if [ "$CUDA_ALL" ]; then
+  CMAKE_CONFIGURE_OPTIONS+=" -DCUDA_ARCHITECTURES=all-major"
+else
+  CMAKE_CONFIGURE_OPTIONS+=" -DCUDA_ARCHITECTURES=native"
+fi
+
+if [ "$METAL" ]; then
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_METAL=true"
+else
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_METAL=false"
 fi
 
 if [ "$VERBOSE" ]; then

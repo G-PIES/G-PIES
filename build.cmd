@@ -80,10 +80,6 @@ if "%option_debug%%option_release%" equ "11" (
   call :echo_error "Both --debug and --release cannot be used at the same time."
 )
 
-if "%option_cuda%%option_metal%" equ "11" (
-  call :echo_error "Both --cuda and --metal cannot be used at the same time."
-)
-
 if "%option_cuda%%option_metal%" equ "" (
   set option_cpu=1
 )
@@ -146,14 +142,22 @@ if "%option_release%" neq "" (
   set out_path=out\Debug
 )
 
-if "%option_cuda_all%" neq "" (
-  set cmake_configure_options=%cmake_configure_options% --preset cuda-all-major
-) else if "%option_cuda%" neq "" (
-  set cmake_configure_options=%cmake_configure_options% --preset cuda
-) else if "%option_metal%" neq "" (
-  set cmake_configure_options=%cmake_configure_options% --preset metal
+if "%option_cuda%" neq "" (
+  set cmake_configure_options=%cmake_configure_options% -DGP_BUILD_CUDA=true
 ) else (
-  set cmake_configure_options=%cmake_configure_options% --preset default
+  set cmake_configure_options=%cmake_configure_options% -DGP_BUILD_CUDA=false
+)
+
+if "%option_cuda_all%" neq "" (
+  set cmake_configure_options=%cmake_configure_options% -DCUDA_ARCHITECTURES=all-major
+) else (
+  set cmake_configure_options=%cmake_configure_options% -DCUDA_ARCHITECTURES=native
+)
+
+if "%option_metal%" neq "" (
+  set cmake_configure_options=%cmake_configure_options% -DGP_BUILD_METAL=true
+) else (
+  set cmake_configure_options=%cmake_configure_options% -DGP_BUILD_METAL=false
 )
 
 if "%option_verbose%" neq "" (
