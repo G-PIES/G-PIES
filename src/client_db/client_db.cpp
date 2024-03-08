@@ -3,10 +3,15 @@
 #include "client_db/client_db.hpp"
 
 #include <sqlite3.h>
-#include <sys/stat.h>
-
 #include <string>
 #include <vector>
+
+#if defined(WIN32) || defined(_WIN32) || \
+    defined(__WIN32) && !defined(__CYGWIN__)
+  #include <direct.h>
+#else
+  #include <sys/stat.h>
+#endif
 
 #include "client_db/db_queries.hpp"
 #include "model/history_simulation.hpp"
