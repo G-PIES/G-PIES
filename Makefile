@@ -256,7 +256,7 @@ CXXFLAGS.os_linux   = -DLINUX
 CXXFLAGS.os_macos   = -DOSX
 
 CXX.gcc = g++
-CXXFLAGS.gcc.common = -Wall -fno-fast-math
+CXXFLAGS.gcc.common = -Wall -fno-fast-math -fPIC
 CXXFLAGS.gcc.debug  = -g3
 
 CXX.nvcc = nvcc
