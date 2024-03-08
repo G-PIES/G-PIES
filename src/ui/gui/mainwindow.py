@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'gui/mainwindow.ui'
+# Form implementation generated from reading ui file 'mainwindow.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QFormLayout
 
 
 class Ui_MainWindow(object):
@@ -33,17 +34,20 @@ class Ui_MainWindow(object):
         self.widget.setObjectName("widget")
         self.gridLayout = QtWidgets.QGridLayout(self.widget)
         self.gridLayout.setObjectName("gridLayout")
-        self.label = QtWidgets.QLabel(self.widget)
-        self.label.setObjectName("label")
-        self.gridLayout.addWidget(self.label, 5, 0, 1, 1)
-        self.line = QtWidgets.QFrame(self.widget)
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line.setObjectName("line")
-        self.gridLayout.addWidget(self.line, 1, 0, 1, 2)
+        self.label_2 = QtWidgets.QLabel(self.widget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(1)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy)
+        self.label_2.setObjectName("label_2")
+        self.gridLayout.addWidget(self.label_2, 2, 1, 1, 1)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.gridLayout.addLayout(self.verticalLayout_2, 0, 0, 1, 2)
+        self.label = QtWidgets.QLabel(self.widget)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 5, 0, 1, 1)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.pushButton_2 = QtWidgets.QPushButton(self.widget)
@@ -83,18 +87,21 @@ class Ui_MainWindow(object):
         self.lineEdit_4.setObjectName("lineEdit_4")
         self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.lineEdit_4)
         self.gridLayout.addLayout(self.formLayout, 3, 0, 1, 1)
-        self.label_2 = QtWidgets.QLabel(self.widget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(1)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
-        self.label_2.setSizePolicy(sizePolicy)
-        self.label_2.setObjectName("label_2")
-        self.gridLayout.addWidget(self.label_2, 2, 1, 1, 1)
+        self.line = QtWidgets.QFrame(self.widget)
+        self.line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line.setObjectName("line")
+        self.gridLayout.addWidget(self.line, 1, 0, 1, 2)
+        
+        
+        self.pushButton_4 = QtWidgets.QPushButton(self.widget)
+        self.pushButton_4.setObjectName("pushButton_4")
+        
+        self.gridLayout.addWidget(self.pushButton_4, 4, 0, 1, 1)
         self.horizontalLayout.addWidget(self.widget)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 849, 24))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 849, 20))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -107,6 +114,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.label_2.setText(_translate("MainWindow", "Data about the Sim: "))
         self.label.setText(_translate("MainWindow", "Time Elasped:                          Simulation Time:"))
         self.pushButton_2.setText(_translate("MainWindow", "Start Simulation"))
         self.pushButton_3.setText(_translate("MainWindow", "Stop"))
@@ -115,7 +123,27 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "Cluster Size"))
         self.label_5.setText(_translate("MainWindow", "Time step (dt)"))
         self.label_6.setText(_translate("MainWindow", "Entry Size"))
-        self.label_2.setText(_translate("MainWindow", "Data about the Sim: "))
+        self.pushButton_4.setText(_translate("MainWindow", "Simulation Settings Placeholder Button"))
+
+
+class InputDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.first = QtWidgets.QLineEdit(self)
+        self.second = QtWidgets.QLineEdit(self)
+        buttonBox = QtWidgets.QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
+
+        layout = QFormLayout(self)
+        layout.addRow("First text", self.first)
+        layout.addRow("Second text", self.second)
+        layout.addWidget(buttonBox)
+
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+
+    def getInputs(self):
+        return (self.first.text(), self.second.text())
 
 
 if __name__ == "__main__":
@@ -123,6 +151,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
+    dialog = InputDialog()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())

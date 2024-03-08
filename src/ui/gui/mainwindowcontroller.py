@@ -9,6 +9,7 @@ from gui.simulation.simulationprocess import SimulationProcess
 from gui.simulation.simulationparams import SimulationParams
 from gui.visualization.dataaccumulator import DataAccumulator
 from gui.visualization.graphcontroller import GraphController
+from gui.mainwindow import InputDialog
 
 
 class MainWindowController(QMainWindow, Ui_MainWindow):
@@ -28,7 +29,16 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
     def init_connections(self):
         self.pushButton_2.clicked.connect(self.start_simulation)
         self.pushButton_3.clicked.connect(self.stop_simulation)
+        self.pushButton_4.clicked.connect(self.get_settings)
+        
+    def get_settings(self):
+        input_dialog = InputDialog(self)
+        result = input_dialog.exec_()
 
+        inputs = input_dialog.getInputs()
+        print("First text:", inputs[0])
+        print("Second text:", inputs[1])
+    
     def start_simulation(self):
         if self.sim_running:
             self.stop_simulation()
