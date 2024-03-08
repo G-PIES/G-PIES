@@ -895,15 +895,16 @@ bool ClientDb::is_valid_sqlite_id(const int sqlite_id) { return 0 < sqlite_id; }
 int ClientDb::changes() { return sqlite3_changes(db); }
 
 void ClientDb::make_db_dir() {
-  const mode_t n_mode = 0733;
   int err = 0;
 
 #if defined(WIN32) || defined(_WIN32) || \
     defined(__WIN32) && !defined(__CYGWIN__)
   err = _mkdir(path.c_str());  // can be used on Windows
 #else
+  const mode_t n_mode = 0733;
   err = mkdir(path.c_str(), n_mode);  // can be used on non-Windows
 #endif
+
   if (err) {
     if (EEXIST != errno) {
       std::string err_msg =
