@@ -165,11 +165,15 @@ if "%option_metal%" neq "" (
 
 if "%option_verbose%" neq "" (
   set cmake_configure_options=%cmake_configure_options% -DGP_VERBOSE:BOOL=true
+) else (
+  set cmake_configure_options=%cmake_configure_options% -DGP_VERBOSE:BOOL=false
 )
 
 if "%option_csv%" neq "" (
   set cmake_configure_options=%cmake_configure_options% -DGP_CSV:BOOL=true
   set "run_options=1e-5 1 > %out_path%\cd-output.csv"
+) else (
+  set cmake_configure_options=%cmake_configure_options% -DGP_CSV:BOOL=false
 )
 
 if "%no_sanizier%" neq "" (

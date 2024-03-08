@@ -204,9 +204,9 @@ else
 fi
 
 if [ "$CUDA" ]; then
-  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_CUDA=true"
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_CUDA:BOOL=true"
 else
-  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_CUDA=false"
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_CUDA:BOOL=false"
 fi
 
 if [ "$CUDA_ALL" ]; then
@@ -223,11 +223,15 @@ fi
 
 if [ "$VERBOSE" ]; then
   CMAKE_CONFIGURE_OPTIONS+=" -DGP_VERBOSE:BOOL=true"
+else
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_VERBOSE:BOOL=false"
 fi
 
 if [ "$CSV" ]; then
   RUN_OPTIONS="1e-5 1 > $OUT_PATH/cd-output.csv"
   CMAKE_CONFIGURE_OPTIONS+=" -DGP_CSV:BOOL=true"
+else
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_CSV:BOOL=false"
 fi
 
 if [ "$NO_SANITIZER" ]; then
