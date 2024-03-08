@@ -73,6 +73,7 @@ if "%option_help%" neq "" (
   echo                       Cannot be usage together with --release.
   echo   --release           Build release build ^(max optimizations^).
   echo                       Cannot be usage together with --debug.
+  echo   --no-sanitizier     Do not use sanitizer for debug builds.
   echo   --cmake-verbose     Enable verbose output in the build process.
   echo                       (CMAKE_VERBOSE_MAKEFILE=ON)
   goto :exit
@@ -171,6 +172,12 @@ if "%option_csv%" neq "" (
   set "run_options=1e-5 1 > %out_path%\cd-output.csv"
 )
 
+if "%no_sanizier%" neq "" (
+  set cmake_configure_options=%cmake_configure_options% -DGP_NO_SANITIZER:BOOL=true
+) else (
+  set cmake_configure_options=%cmake_configure_options% -DGP_NO_SANITIZER:BOOL=false
+)
+
 if "%cmake_verbose%" neq "" (
   set cmake_configure_options=%cmake_configure_options% -DCMAKE_VERBOSE_MAKEFILE:BOOL=true
 ) else (
@@ -258,6 +265,7 @@ goto :eof
   if "%1" equ "--metal"          set "option_metal=1"   && goto :eof
   if "%1" equ "--debug"          set "option_debug=1"   && goto :eof
   if "%1" equ "--release"        set "option_release=1" && goto :eof
+  if "%1" equ "--no-sanitizer"   set "no_sanitizer=1"   && goto :eof
   if "%1" equ "--cmake-verbose"  set "cmake_verbose=1"  && goto :eof
   call :echo_error "Unknown option %1"
 goto :eof
