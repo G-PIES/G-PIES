@@ -53,12 +53,21 @@ endif()
 
 find_package(SUNDIALS)
 if(NOT SUNDIALS_FOUND)
+  set(EXAMPLES_ENABLE_C OFF)
+  set(BUILD_ARKODE OFF)
+  set(BUILD_IDA OFF)
+  set(BUILD_IDAS OFF)
+  set(BUILD_KINSOL OFF)
+  set(BUILD_SHARED_LIBS OFF)
   FetchContent_Declare(
     SUNDIALS
     URL https://github.com/LLNL/sundials/releases/download/v7.0.0/sundials-7.0.0.tar.gz
   )
+  
+  set(HOLDER ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/.build/lib)
   FetchContent_MakeAvailable(SUNDIALS)
-  set(SUNDIALS_DIR ${SUNDIALS_SOURCE_DIR})
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${HOLDER})
 endif()
 
 find_package(SQLite3)
