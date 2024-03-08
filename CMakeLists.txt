@@ -51,7 +51,7 @@ if(GP_BUILD_METAL)
   set(METAL_INCLUDE_DIRS ${metal-cpp_SOURCE_DIR})
 endif()
 
-find_package(SUNDIALS)
+find_package(SUNDIALS CONFIG)
 if(NOT SUNDIALS_FOUND)
   set(EXAMPLES_ENABLE_C OFF)
   set(BUILD_ARKODE OFF)
