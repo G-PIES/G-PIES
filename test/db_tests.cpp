@@ -12,7 +12,7 @@ class ClientDbTest : public ::testing::Test {
   ClientDb db;
   int sqlite_code = 0;
 
-  ClientDbTest() : db(DEFAULT_CLIENT_DB_PATH, false) {}
+  ClientDbTest() : db(DEV_DEFAULT_CLIENT_DB_PATH, false) {}
 
   virtual ~ClientDbTest() {}
 

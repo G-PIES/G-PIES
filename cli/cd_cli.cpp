@@ -251,7 +251,7 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
 
 // TODO - argument parsing & refactor of main
 int main(int argc, char* argv[]) {
-  ClientDb db(DEFAULT_CLIENT_DB_PATH, false);
+  ClientDb db(DEV_DEFAULT_CLIENT_DB_PATH, false);
   // Open SQLite connection and create database
   db.init();
 
