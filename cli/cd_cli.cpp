@@ -271,6 +271,7 @@ int main(int argc, char* argv[]) {
 
   po::options_description db_options("Database options [--db]");
   db_options.add_options()("history,h", "display simulation history")(
+      "history-detail", "display detailed simulation history")(
       "run,r", po::value<int>()->value_name("id"),
       "run a simulation from the history by [id]")("clear,c",
                                                    "clear simulation history");
@@ -305,11 +306,15 @@ int main(int argc, char* argv[]) {
   if (vm.count("db")) {  // DATABASE
     if (vm.count("history")) {
       // print simulation history
-      print_simulation_history(db, static_cast<bool>(vm.count("detail")));
+      print_simulation_history(db, false);
+    } else if (vm.count("history-detail")) {
+      // print detailed simulation history
+      print_simulation_history(db, true);
     } else if (vm.count("clear")) {
       // clear history
       if (db.delete_simulations()) {
-        fprintf(stdout, "Simulation History Cleared.\n");
+        fprintf(stdout, "Simulation History Cleared. %d Simulations Deleted.\n",
+                db.changes());
       }
     } else if (vm.count("run")) {
       // rerun a previous simulation by database id
