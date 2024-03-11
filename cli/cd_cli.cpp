@@ -306,7 +306,7 @@ int main(int argc, char* argv[]) {
   csv = static_cast<bool>(vm.count("csv"));
   step_print = static_cast<bool>(vm.count("step-print"));
 
-  ClientDb db(DEFAULT_CLIENT_DB_PATH, false);
+  ClientDb db(DEV_DEFAULT_CLIENT_DB_PATH, false);
   // Open SQLite connection and create database
   db.init();
 
