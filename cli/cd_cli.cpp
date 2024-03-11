@@ -347,8 +347,8 @@ int main(int argc, char* argv[]) {
         delta_sensitivity_analysis = vm["delta-sensitivty-analysis"].as<int>();
       } else {
         fprintf(stderr,
-            "Missing required arguments for sensitivity analysis, running "
-            "normal simulation");
+                "Missing required arguments for sensitivity analysis, running "
+                "normal simulation");
       }
     }
 
