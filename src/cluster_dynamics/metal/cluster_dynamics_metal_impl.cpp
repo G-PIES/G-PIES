@@ -47,7 +47,7 @@ bool ClusterDynamicsImpl::step(gp_float delta_time) {
    *   size 2 cluster which can be problematic for the simulation.
    */
   memcpy(mtl_kernel.interstitials + 3, interstitials_out + 3,
-         sizeof(gp_float) * (concentration_boundary - 1));
+         sizeof(gp_float) * (concentration_boundary - 2));
   mtl_kernel.interstitials[2] +=
       mtl_kernel.i_concentration_derivative(2) * delta_time;
 
