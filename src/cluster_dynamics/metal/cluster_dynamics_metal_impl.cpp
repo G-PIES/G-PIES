@@ -111,8 +111,6 @@ ClusterDynamicsImpl::~ClusterDynamicsImpl() {
 
 ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time,
                                               gp_float total_time) {
-  bool state_is_valid = true;
-
   for (gp_float endtime = time + total_time; time < endtime;
        time += delta_time) {
     step(delta_time);
@@ -120,7 +118,6 @@ ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time,
   }
 
   return ClusterDynamicsState{
-      .valid = state_is_valid,
       .time = time,
       .interstitials = std::vector<gp_float>(
           mtl_kernel.interstitials,

@@ -33,11 +33,7 @@ class ClusterDynamicsTest : public ::testing::Test {
   virtual void TearDown() {}
 };
 
-TEST_F(ClusterDynamicsTest, ResultIsValid) {
-  ClusterDynamics cd(100, reactor, material);
-  ClusterDynamicsState state = cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
-  ASSERT_EQ(state.valid, true);
-}
+// TODO - Unit Tests that expect ClusterDynamicsException to be thrown
 
 TEST_F(ClusterDynamicsTest, CorrectEndtime) {
   ClusterDynamics cd(100, reactor, material);

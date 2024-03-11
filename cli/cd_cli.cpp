@@ -39,15 +39,11 @@ void print_start_message() {
 }
 
 void print_state(const ClusterDynamicsState& state) {
-  if (!state.valid)
-    fprintf(stdout, "\nINVALID SIM @ Time=%g", state.time);
-  else
-    fprintf(stdout, "\nTime=%g", state.time);
+  fprintf(stdout, "\nTime=%g", state.time);
 
   if (state.interstitials.size() != concentration_boundary ||
       state.vacancies.size() != concentration_boundary) {
-    fprintf(stderr, "\nError: Output data is incorrect size.\n");
-    return;
+    throw ClusterDynamicsException("Output data is incorrectly sized.", state);
   }
 
   fprintf(stdout, "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n");
@@ -229,10 +225,6 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
     print_csv(state);
 #endif
 
-    if (!state.valid) {
-      break;
-    }
-
 #if VBREAK
     fgetc(stdin);
 #endif
@@ -354,10 +346,6 @@ int main(int argc, char* argv[]) {
           print_csv(state);
 #endif
 
-          if (!state.valid) {
-            break;
-          }
-
 #if VBREAK
           fgetc(stdin);
 #endif
@@ -396,7 +384,7 @@ int main(int argc, char* argv[]) {
               << "SQLite Message: " << e.sqlite_errmsg << "\n";
     std::exit(EXIT_FAILURE);
   } catch (const GpiesException& e) {
-    std::cerr << "An unexpected error occured.\n"
+    std::cerr << "An error occured.\n"
               << "Details: " << e.message << "\n";
     std::exit(EXIT_FAILURE);
   } catch (const std::exception& e) {
