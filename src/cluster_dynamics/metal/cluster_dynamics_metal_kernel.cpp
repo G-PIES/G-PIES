@@ -58,9 +58,9 @@ gp_float ClusterDynamicsMetalKernel::i_defect_production(uint64_t n)
   switch (n) {
     case 1:
       return reactor.recombination * reactor.flux *
-             (1. - reactor.i_bi - reactor.i_tri - reactor.i_quad);
+             (1. - reactor.i_tri - reactor.i_quad);
     case 2:
-      return reactor.recombination * reactor.flux * reactor.i_bi;
+      return 0.;
     case 3:
       return reactor.recombination * reactor.flux * reactor.i_tri;
     case 4:
