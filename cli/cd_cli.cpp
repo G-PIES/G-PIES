@@ -12,17 +12,8 @@
 
 namespace po = boost::program_options;
 
-#ifndef VPRINT
-#define VPRINT false
-#endif
-
-#ifndef VBREAK
-#define VBREAK false
-#endif
-
-#ifndef CSV
-#define CSV false
-#endif
+bool csv = false;
+bool step_print = false;
 
 size_t concentration_boundary;
 bool sensitivity_analysis_mode = false;
@@ -64,12 +55,23 @@ void print_state(const ClusterDynamicsState& state) {
           state.dislocation_density);
 }
 
-void print_csv(ClusterDynamicsState& state) {
+void print_csv(const ClusterDynamicsState& state) {
   fprintf(stdout, "%g", state.dpa);
   for (uint64_t n = 1; n < concentration_boundary; ++n) {
     fprintf(stdout, ",%g,%g", state.interstitials[n], state.vacancies[n]);
   }
   fprintf(stdout, "\n");
+}
+
+void step_print_prompt(const ClusterDynamicsState& state) {
+  if (csv) {
+    print_csv(state);
+  } else {
+    print_state(state);
+  }
+
+  fprintf(stdout, "ENTER/RETURN to continue > ");
+  fgetc(stdin);
 }
 
 void print_simulation_history(ClientDb& db, bool print_details) {
@@ -229,27 +231,23 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
     // run simulation for this time slice
     state = cd.run(delta_time, sample_interval);
 
-#if VPRINT
-    print_state(state);
-#elif CSV
-    print_csv(state);
-#endif
+    if (step_print) {
+      step_print_prompt(state);
+    } else if (csv) {
+      print_csv(state);
+    }
 
     if (!state.valid) {
       break;
     }
-
-#if VBREAK
-    fgetc(stdin);
-#endif
   }
   // --------------------------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------------------------
   // print results
-#if !VPRINT && !CSV
-  print_state(state);
-#endif
+  if (!csv && !step_print) {
+    print_state(state);
+  }
   // --------------------------------------------------------------------------------------------
 
   return state;
@@ -259,7 +257,9 @@ int main(int argc, char* argv[]) {
   // Declare the supported options
   po::options_description all_options("General options");
   all_options.add_options()("help", "display help message")(
-      "db", "database options")("sensitivity,s", "sensitivity analysis mode")(
+      "csv", "csv output formatting")(
+      "step-print", "print state at every time step")("db", "database options")(
+      "sensitivity,s", "sensitivity analysis mode")(
       "sensitivity-var,v", po::value<std::string>(),
       "variable to do sensitivity analysis mode on (required sensitivity "
       "analysis)")("number-of-loops,n", po::value<int>()->implicit_value(2),
@@ -300,6 +300,9 @@ int main(int argc, char* argv[]) {
   concentration_boundary = 10;
   simulation_time = 1.;
   delta_time = 1e-5;
+
+  csv = static_cast<bool>(vm.count("csv"));
+  step_print = static_cast<bool>(vm.count("step-print"));
 
   // --------------------------------------------------------------------------------------------
   // arg parsing
@@ -362,11 +365,11 @@ int main(int argc, char* argv[]) {
 
       print_start_message();
 
-#if CSV
-      fprintf(stdout,
-              "Time (s),Cluster Size,"
-              "Interstitials / cm^3,Vacancies / cm^3\n");
-#endif
+      if (csv) {
+        fprintf(stdout,
+                "Time (s),Cluster Size,"
+                "Interstitials / cm^3,Vacancies / cm^3\n");
+      }
 
       ClusterDynamicsState state;
       update_for_sensitivity_analysis(cd, reactor, material,
@@ -376,26 +379,22 @@ int main(int argc, char* argv[]) {
         // run simulation for this time slice
         state = cd.run(delta_time, sample_interval);
 
-#if VPRINT
-        print_state(state);
-#elif CSV
-        print_csv(state);
-#endif
+        if (step_print) {
+          step_print_prompt(state);
+        } else if (csv) {
+          print_csv(state);
+        }
 
         if (!state.valid) {
           break;
         }
-
-#if VBREAK
-        fgetc(stdin);
-#endif
       }
 
       // ----------------------------------------------------------------
       // print results
-#if !VPRINT && !CSV
-      print_state(state);
-#endif
+      if (!step_print && !csv) {
+        print_state(state);
+      }
       // ----------------------------------------------------------------
     }
     // --------------------------------------------------------------------
