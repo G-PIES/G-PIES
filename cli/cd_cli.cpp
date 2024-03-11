@@ -383,6 +383,10 @@ int main(int argc, char* argv[]) {
       db.create_simulation(history_simulation);
       // --------------------------------------------------------------------------------------------
     }
+  } catch (const ClusterDynamicsException& e) {
+    std::cerr << "A simulation error occured.\n"
+      << "Details: " << e.message << "\n";
+    std::exit(EXIT_FAILURE);
   } catch (const ClientDbException& e) {
     std::cerr << "A database error occured.\n" 
       << e.message << "\n"
@@ -390,7 +394,7 @@ int main(int argc, char* argv[]) {
       << "SQLite Message: " << e.sqlite_errmsg << "\n";
     std::exit(EXIT_FAILURE);
   } catch (const GpiesException& e) {
-    std::cerr << "A simulation error occured.\n"
+    std::cerr << "An unexpected error occured.\n"
       << "Details: " << e.message << "\n";
     std::exit(EXIT_FAILURE);
   } catch (const std::exception& e) {
