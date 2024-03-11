@@ -2,6 +2,7 @@
 #include <boost/program_options.hpp>
 #include <cmath>
 #include <cstring>
+#include <fstream>
 #include <iostream>
 
 #include "client_db/client_db.hpp"
@@ -216,10 +217,10 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
 
   print_start_message();
 
-#if CSV
-  fprintf(stdout,
-          "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
-#endif
+  if (csv) {
+    fprintf(stdout,
+            "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
+  }
 
   // TODO - support sample interval
   sample_interval = delta_time;
@@ -257,8 +258,10 @@ int main(int argc, char* argv[]) {
   // Declare the supported options
   po::options_description all_options("General options");
   all_options.add_options()("help", "display help message")(
-      "csv", "csv output formatting")(
-      "step-print", "print state at every time step")("db", "database options")(
+      "csv", "csv output formatting")("step-print",
+                                      "print state at every time step")(
+      "output-file", po::value<std::string>()->value_name("filename"),
+      "write output to a file")("db", "database options")(
       "sensitivity,s", "sensitivity analysis mode")(
       "sensitivity-var,v", po::value<std::string>(),
       "variable to do sensitivity analysis mode on (required sensitivity "
@@ -288,6 +291,19 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  // Redirect output to file
+  if (vm.count("output-file")) {
+    std::string filename = vm["output-file"].as<std::string>();
+    std::ofstream file;
+    file.open(filename, std::ios::out);
+    std::cout.rdbuf(file.rdbuf());
+    std::cerr.rdbuf(file.rdbuf());
+  } 
+
+  // Output formatting
+  csv = static_cast<bool>(vm.count("csv"));
+  step_print = static_cast<bool>(vm.count("step-print"));
+
   ClientDb db(DEFAULT_CLIENT_DB_PATH, false);
   // Open SQLite connection and create database
   db.init();
@@ -300,9 +316,6 @@ int main(int argc, char* argv[]) {
   concentration_boundary = 10;
   simulation_time = 1.;
   delta_time = 1e-5;
-
-  csv = static_cast<bool>(vm.count("csv"));
-  step_print = static_cast<bool>(vm.count("step-print"));
 
   // --------------------------------------------------------------------------------------------
   // arg parsing
