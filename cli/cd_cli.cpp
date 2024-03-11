@@ -385,21 +385,23 @@ int main(int argc, char* argv[]) {
     }
   } catch (const ClusterDynamicsException& e) {
     std::cerr << "A simulation error occured.\n"
-      << "Details: " << e.message << "\n";
+              << "Details: " << e.message << "\n"
+              << "Last Simulation State:\n";
+    print_state(e.err_state);
     std::exit(EXIT_FAILURE);
   } catch (const ClientDbException& e) {
-    std::cerr << "A database error occured.\n" 
-      << e.message << "\n"
-      << "SQLite Code: " << e.sqlite_code << "\n"
-      << "SQLite Message: " << e.sqlite_errmsg << "\n";
+    std::cerr << "A database error occured.\n"
+              << e.message << "\n"
+              << "SQLite Code: " << e.sqlite_code << "\n"
+              << "SQLite Message: " << e.sqlite_errmsg << "\n";
     std::exit(EXIT_FAILURE);
   } catch (const GpiesException& e) {
     std::cerr << "An unexpected error occured.\n"
-      << "Details: " << e.message << "\n";
+              << "Details: " << e.message << "\n";
     std::exit(EXIT_FAILURE);
   } catch (const std::exception& e) {
     std::cerr << "An unexpected error occured.\n"
-      << "Details: " << e.what() << "\n";
+              << "Details: " << e.what() << "\n";
     std::exit(EXIT_FAILURE);
   } catch (...) {
     std::cerr << "An unexpected error occured.\n";

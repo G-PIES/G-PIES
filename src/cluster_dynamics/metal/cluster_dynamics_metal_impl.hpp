@@ -43,7 +43,9 @@ class ClusterDynamicsImpl {
 
   size_t concentration_boundary;
 
-  bool step(gp_float);
+  void step(gp_float);
+  void validate_all() const;
+  void validate(size_t) const;
 
   // Interface functions
   ClusterDynamicsImpl(size_t, const NuclearReactorImpl &, const MaterialImpl &);

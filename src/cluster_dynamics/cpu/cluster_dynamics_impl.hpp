@@ -83,11 +83,11 @@ class ClusterDynamicsImpl {
   gp_float vv_sum_absorption(size_t) const;
 
   // Simulation Operation Functions
-  bool update_clusters_1(gp_float);
-  bool update_clusters(gp_float);
+  void update_clusters_1(gp_float);
+  void update_clusters(gp_float);
   void step_init();
-  bool step(gp_float);
-  bool validate(size_t) const;
+  void step(gp_float);
+  void validate(size_t) const;
 
   // Interface functions
   ClusterDynamicsImpl(size_t concentration_boundary,

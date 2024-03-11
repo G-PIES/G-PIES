@@ -97,7 +97,8 @@ class ClusterDynamicsImpl {
   bool update_clusters(gp_float);
   void step_init();
   bool step(gp_float);
-  bool validate(size_t) const;
+  void validate_all() const;
+  void validate(size_t) const;
 
   // Interface functions
   ClusterDynamicsImpl(size_t concentration_boundary,

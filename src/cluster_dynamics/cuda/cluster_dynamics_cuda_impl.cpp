@@ -1,6 +1,8 @@
 #include "cluster_dynamics_cuda_impl.hpp"
+#include "cluster_dynamics/cluster_dynamics.hpp"
 
 #include <stdio.h>
+
 #include <algorithm>
 #include <cstring>
 
@@ -666,10 +668,10 @@ void ClusterDynamicsImpl::step_init() {
   vv_sum_absorption_val = vv_sum_absorption(concentration_boundary - 1);
 }
 
-bool ClusterDynamicsImpl::step(gp_float delta_time) {
+void ClusterDynamicsImpl::step(gp_float delta_time) {
   step_init();
 
-  bool state_is_valid = update_clusters_1(delta_time);
+  update_clusters_1(delta_time);
   update_clusters(delta_time);
   dislocation_density += dislocation_density_derivative() * delta_time;
 
@@ -680,17 +682,15 @@ bool ClusterDynamicsImpl::step(gp_float delta_time) {
              cudaMemcpyHostToDevice);
   cudaMemcpy(thrust::raw_pointer_cast(self), this, sizeof(ClusterDynamicsImpl),
              cudaMemcpyHostToDevice);
-
-  return state_is_valid;
 }
 
-bool ClusterDynamicsImpl::update_clusters_1(gp_float delta_time) {
+void ClusterDynamicsImpl::update_clusters_1(gp_float delta_time) {
   interstitials_temp[1] += i1_concentration_derivative() * delta_time;
   vacancies_temp[1] += v1_concentration_derivative() * delta_time;
   return validate(1);
 }
 
-bool ClusterDynamicsImpl::update_clusters(gp_float delta_time) {
+void ClusterDynamicsImpl::update_clusters(gp_float delta_time) {
   auto self = this->self;
 
   thrust::transform(indices.begin() + 1, indices.end(),
@@ -706,8 +706,6 @@ bool ClusterDynamicsImpl::update_clusters(gp_float delta_time) {
                       return self->vacancies[idx] +
                              self->v_concentration_derivative(idx) * delta_time;
                     });
-
-  return true;  // TODO - Validate results
 }
 
 ClusterDynamicsImpl::~ClusterDynamicsImpl() { thrust::device_free(self); }
@@ -752,11 +750,27 @@ gp_float ClusterDynamicsImpl::vi_sum_absorption(size_t) const {
       0.0, thrust::plus<gp_float>());
 }
 
-bool ClusterDynamicsImpl::validate(size_t n) const {
-  return !std::isnan(interstitials_temp[n]) &&
-         !std::isinf(interstitials_temp[n]) && !std::isnan(vacancies_temp[n]) &&
-         !std::isinf(vacancies_temp[n]) && !(interstitials_temp[n] < 0) &&
-         !(vacancies_temp[n] < 0);
+void ClusterDynamicsImpl::validate_all() const {
+  for (size_t n = 1; n < concentration_boundary; ++n) {
+    validate(n);
+  }
+}
+
+void ClusterDynamicsImpl::validate(size_t n) const {
+  if (std::isnan(interstitials_temp[n]) || std::isnan(vacancies_temp[n]) ||
+      std::isinf(interstitials_temp[n]) || std::isinf(vacancies_temp[n]) ||
+      vacancies_temp[n] < 0. || vacancies_temp[n] < 0.) {
+    throw ClusterDynamicsException(
+        "Simulation Validation Failed For Cluster Size " + std::to_string(n) +
+            ".",
+        ClusterDynamicsState{
+            .time = time,
+            .interstitials = std::vector<gp_float>(
+                interstitials_temp.begin(), interstitials_temp.end() - 1),
+            .vacancies = std::vector<gp_float>(vacancies_temp.begin(),
+                                                vacancies_temp.end() - 1),
+            .dislocation_density = dislocation_density});
+  }
 }
 
 // --------------------------------------------------------------------------------------------
@@ -793,19 +807,16 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
 
 ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time,
                                               gp_float total_time) {
-  bool state_is_valid = true;
-
   for (gp_float endtime = time + total_time; time < endtime;
        time += delta_time) {
-    state_is_valid = step(delta_time);
-    if (!state_is_valid) break;
+    step(delta_time);
+    validate_all();
   }
 
   host_interstitials = interstitials;
   host_vacancies = vacancies;
 
   return ClusterDynamicsState{
-      .valid = state_is_valid,
       .time = time,
       .interstitials = std::vector<gp_float>(host_interstitials.begin(),
                                              host_interstitials.end() - 1),

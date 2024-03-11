@@ -11,6 +11,8 @@
 #include <QuartzCore/QuartzCore.hpp>
 #include <cstring>
 
+#include "cluster_dynamics/cluster_dynamics.hpp"
+
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 /*
@@ -19,9 +21,10 @@
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-bool ClusterDynamicsImpl::step(gp_float delta_time) {
+void ClusterDynamicsImpl::step(gp_float delta_time) {
   mtl_kernel.step_init();
   mtl_kernel.update_clusters_1(delta_time);
+  validate(1);
 
   // CPU memory to GPU memory
   gp_float* interstitials_in = (gp_float*)mtl_interstitials_in->contents();
@@ -55,8 +58,33 @@ bool ClusterDynamicsImpl::step(gp_float delta_time) {
          sizeof(gp_float) * (concentration_boundary - 1));
 
   mtl_kernel.update_dislocation_density(delta_time);
+}
 
-  return true;  // TODO - exception handling
+void ClusterDynamicsImpl::validate_all() const {
+  for (size_t n = 1; n < concentration_boundary; ++n) {
+    validate(n);
+  }
+}
+
+void ClusterDynamicsImpl::validate(size_t n) const {
+  if (std::isnan(mtl_kernel.interstitials[n]) ||
+      std::isnan(mtl_kernel.vacancies[n]) ||
+      std::isinf(mtl_kernel.interstitials[n]) ||
+      std::isinf(mtl_kernel.vacancies[n]) || mtl_kernel.interstitials[n] < 0. ||
+      mtl_kernel.vacancies[n] < 0.) {
+    throw ClusterDynamicsException(
+        "Simulation Validation Failed For Cluster Size " + std::to_string(n) +
+            ".",
+        ClusterDynamicsState{
+            .time = time,
+            .interstitials = std::vector<gp_float>(
+                mtl_kernel.interstitials,
+                mtl_kernel.interstitials + concentration_boundary),
+            .vacancies = std::vector<gp_float>(
+                mtl_kernel.vacancies,
+                mtl_kernel.vacancies + concentration_boundary),
+            .dislocation_density = mtl_kernel.dislocation_density});
+  }
 }
 
 // --------------------------------------------------------------------------------------------
@@ -89,8 +117,8 @@ ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time,
 
   for (gp_float endtime = time + total_time; time < endtime;
        time += delta_time) {
-    state_is_valid = step(delta_time);
-    if (!state_is_valid) break;
+    step(delta_time);
+    validate_all();
   }
 
   return ClusterDynamicsState{
