@@ -2,6 +2,7 @@
 #define CLUSTER_DYNAMICS_HPP
 
 #include <memory>
+#include <string>
 
 #include "cluster_dynamics_state.hpp"
 #include "model/material.hpp"
