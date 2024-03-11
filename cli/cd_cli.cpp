@@ -13,6 +13,9 @@
 
 namespace po = boost::program_options;
 
+std::ofstream output_file;
+std::ostream os(std::cout.rdbuf());
+
 bool csv = false;
 bool step_print = false;
 
@@ -26,42 +29,42 @@ gp_float delta_time;
 gp_float sample_interval;  // How often (in seconds) to record the state
 
 void print_start_message() {
-  fprintf(stderr, "\nSimulation Started: ");
-  fprintf(stderr, "delta_time: %g, ", delta_time);
-  fprintf(stderr, "simulation_time: %g, ", simulation_time);
-  fprintf(stderr, "concentration_boundary: %4d\n",
-          static_cast<int>(concentration_boundary));
+  std::cout << "\nSimulation Started\n"
+            << "delta_time: " << delta_time
+            << " simulation_time: " << simulation_time
+            << " concentration_boundary: "
+            << static_cast<int>(concentration_boundary) << std::endl;
 }
 
 void print_state(const ClusterDynamicsState& state) {
   if (!state.valid)
-    fprintf(stdout, "\nINVALID SIM @ Time=%g", state.time);
+    std::cerr << "\nINVALID SIM @ Time=" << state.time;
   else
-    fprintf(stdout, "\nTime=%g", state.time);
+    os << "\nTime=" << state.time;
 
   if (state.interstitials.size() != concentration_boundary ||
       state.vacancies.size() != concentration_boundary) {
-    fprintf(stderr, "\nError: Output data is incorrect size.\n");
+    std::cerr << "\nError: Output data is incorrect size.\n";
     return;
   }
 
-  fprintf(stdout, "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n");
+  os << "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n";
   for (uint64_t n = 1; n < concentration_boundary; ++n) {
-    fprintf(stdout, "%llu\t\t\t\t\t%13g\t\t\t  %15g\n\n",
-            (long long unsigned int)n, state.interstitials[n],
-            state.vacancies[n]);
+    os << (long long unsigned int)n << "\t\t\t\t\t"
+              << std::setprecision(13) << state.interstitials[n] << "\t\t\t"
+              << std::setprecision(15) << state.vacancies[n] << std::endl;
   }
 
-  fprintf(stderr, "\nDislocation Network Density: %g\n\n",
-          state.dislocation_density);
+  os << "\nDislocation Network Density: " << state.dislocation_density
+            << std::endl;
 }
 
 void print_csv(const ClusterDynamicsState& state) {
-  fprintf(stdout, "%g", state.dpa);
+  os << state.dpa;
   for (uint64_t n = 1; n < concentration_boundary; ++n) {
-    fprintf(stdout, ",%g,%g", state.interstitials[n], state.vacancies[n]);
+    os << "," << state.interstitials[n] << "," << state.vacancies[n];
   }
-  fprintf(stdout, "\n");
+  os << std::endl;
 }
 
 void step_print_prompt(const ClusterDynamicsState& state) {
@@ -71,36 +74,37 @@ void step_print_prompt(const ClusterDynamicsState& state) {
     print_state(state);
   }
 
-  fprintf(stdout, "ENTER/RETURN to continue > ");
-  fgetc(stdin);
+  std::cout << "ENTER/RETURN to continue > ";
+  std::cin.get();
 }
 
 void print_simulation_history(ClientDb& db, bool print_details) {
   std::vector<HistorySimulation> simulations;
   db.read_simulations(simulations);
 
-  fprintf(stdout, "\nSimulation History\tCount: %llu\n",
-          static_cast<long long unsigned int>(simulations.size()));
+  os << "\nSimulation History\tCount: "
+            << static_cast<long long unsigned int>(simulations.size())
+            << std::endl;
 
   if (!simulations.empty()) {
-    fprintf(stdout,
-            "ID ~ Concentration Boundary ~ Simulation Time ~ Delta "
-            "Time ~ Reactor ~ Material ~ Creation Datetime\n\n");
+    os << "ID ~ Concentration Boundary ~ Simulation Time ~ Delta "
+                 "Time ~ Reactor ~ Material ~ Creation Datetime\n\n";
 
     for (HistorySimulation s : simulations) {
-      fprintf(stdout, "%d ~ %llu ~ %g ~ %g ~ %s ~ %s ~ %s\n", s.sqlite_id,
-              static_cast<unsigned long long>(s.concentration_boundary),
-              s.simulation_time, s.delta_time, s.reactor.species.c_str(),
-              s.material.species.c_str(), s.creation_datetime.c_str());
+      os << s.sqlite_id << " ~ "
+                << static_cast<unsigned long long>(s.concentration_boundary)
+                << " ~ " << s.simulation_time << " ~ " << s.delta_time << " ~ "
+                << s.reactor.species << " ~ " << s.material.species << " ~ "
+                << s.creation_datetime << std::endl;
 
       // Print the state(s) of the simulation
       if (print_details) {
         print_state(s.cd_state);
-        fprintf(stdout, "\n\n");
+        os << "\n\n";
       }
     }
 
-    fprintf(stdout, "\n");
+    os << std::endl;
   }
 }
 
@@ -120,14 +124,14 @@ void profile() {
   cd.run(1e-5, 1e-5);
 
   for (int n = 100; n < 400000; n += 10000) {
-    fprintf(stderr, "N=%d\n", n);
+    os << "N=" << n << std::endl;
     ClusterDynamics cd(n, reactor, material);
 
     timer.Start();
     state = cd.run(1e-5, 1e-5);
     gp_float time = timer.Stop();
 
-    fprintf(stdout, "\n%g", time);
+    os << std::endl << time;
   }
 }
 
@@ -218,8 +222,8 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
   print_start_message();
 
   if (csv) {
-    fprintf(stdout,
-            "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
+    os
+        << "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n";
   }
 
   // TODO - support sample interval
@@ -294,11 +298,9 @@ int main(int argc, char* argv[]) {
   // Redirect output to file
   if (vm.count("output-file")) {
     std::string filename = vm["output-file"].as<std::string>();
-    std::ofstream file;
-    file.open(filename, std::ios::out);
-    std::cout.rdbuf(file.rdbuf());
-    std::cerr.rdbuf(file.rdbuf());
-  } 
+    output_file.open(filename);
+    if (output_file.is_open()) os.rdbuf(output_file.rdbuf());
+  }
 
   // Output formatting
   csv = static_cast<bool>(vm.count("csv"));
@@ -329,8 +331,8 @@ int main(int argc, char* argv[]) {
     } else if (vm.count("clear")) {
       // clear history
       if (db.delete_simulations()) {
-        fprintf(stdout, "Simulation History Cleared. %d Simulations Deleted.\n",
-                db.changes());
+        std::cout << "Simulation History Cleared." << db.changes()
+                  << " Simulations Deleted.\n";
       }
     } else if (vm.count("run")) {
       // rerun a previous simulation by database id
@@ -338,7 +340,7 @@ int main(int argc, char* argv[]) {
       HistorySimulation sim;
       if (db.read_simulation(sim_sqlite_id, sim)) {
         // TODO - support storing sensitivity analysis
-        fprintf(stdout, "Running simulation %d\n", sim_sqlite_id);
+        std::cout << "Running simulation " << sim_sqlite_id << std::endl;
         concentration_boundary = sim.concentration_boundary;
         simulation_time = sim.simulation_time;
 
@@ -349,7 +351,7 @@ int main(int argc, char* argv[]) {
 
         run_simulation(sim.reactor, sim.material);
       } else {
-        fprintf(stderr, "Could not find simulation %d\n", sim_sqlite_id);
+        std::cerr << "Could not find simulation " << sim_sqlite_id << std::endl;
       }
     }
   } else if (vm.count("sensitivity")) {  // SENSITIVITY ANALYSIS
@@ -362,9 +364,9 @@ int main(int argc, char* argv[]) {
         num_of_simulation_loops = vm["number-of-loops"].as<int>();
         delta_sensitivity_analysis = vm["delta-sensitivty-analysis"].as<int>();
       } else {
-        fprintf(stderr,
-                "Missing required arguments for sensitivity analysis, running "
-                "normal simulation");
+        std::cerr
+            << "Missing required arguments for sensitivity analysis, running "
+               "normal simulation";
       }
     }
 
@@ -379,9 +381,8 @@ int main(int argc, char* argv[]) {
       print_start_message();
 
       if (csv) {
-        fprintf(stdout,
-                "Time (s),Cluster Size,"
-                "Interstitials / cm^3,Vacancies / cm^3\n");
+        os << "Time (s),Cluster Size,"
+                     "Interstitials / cm^3,Vacancies / cm^3\n";
       }
 
       ClusterDynamicsState state;
@@ -423,6 +424,8 @@ int main(int argc, char* argv[]) {
     db.create_simulation(history_simulation);
     // --------------------------------------------------------------------------------------------
   }
+
+  if (output_file.is_open()) output_file.close();
 
   return 0;
 }
