@@ -48,8 +48,6 @@ bool ClusterDynamicsImpl::step(gp_float delta_time) {
    */
   memcpy(mtl_kernel.interstitials + 3, interstitials_out + 3,
          sizeof(gp_float) * (concentration_boundary - 2));
-  mtl_kernel.interstitials[2] +=
-      mtl_kernel.i_concentration_derivative(2) * delta_time;
 
   memcpy(mtl_kernel.vacancies + 2, vacancies_out + 2,
          sizeof(gp_float) * (concentration_boundary - 1));
@@ -134,6 +132,11 @@ void ClusterDynamicsImpl::mtl_init_kernel(const NuclearReactorImpl& reactor,
   mtl_kernel.material = material;
   mtl_kernel.concentration_boundary = concentration_boundary;
   mtl_kernel.dislocation_density = material.dislocation_density_0;
+
+  for (size_t i = 0; i < concentration_boundary + 1; ++i) {
+    mtl_kernel.interstitials[i] = 0.;
+    mtl_kernel.vacancies[i] = 0.;
+  }
 }
 
 void ClusterDynamicsImpl::mtl_init_lib() {
