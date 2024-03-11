@@ -35,8 +35,8 @@ class ClusterDynamicsTest : public ::testing::Test {
 
 TEST_F(ClusterDynamicsTest, ResultIsValid) {
   ClusterDynamics cd(100, reactor, material);
-  ClusterDynamicsState state = cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
-  ASSERT_EQ(state.valid, true);
+  EXPECT_NO_THROW(ClusterDynamicsState state =
+                      cd.run(SIM_DELTA_TIME, SIM_RUN_TIME););
 }
 
 TEST_F(ClusterDynamicsTest, CorrectEndtime) {
@@ -749,8 +749,7 @@ TEST_F(ClusterDynamicsTest, validation_test) {
   cd.interstitials_temp[3] = INFINITY;
   cd.interstitials_temp[4] = -1.0;
 
-  EXPECT_FALSE(cd.validate(1));
-  EXPECT_TRUE(cd.validate(2));
-  EXPECT_FALSE(cd.validate(3));
-  EXPECT_FALSE(cd.validate(4));
+  EXPECT_THROW(cd.validate(1), ClusterDynamicsException);
+  EXPECT_THROW(cd.validate(3), ClusterDynamicsException);
+  EXPECT_THROW(cd.validate(4), ClusterDynamicsException);
 }

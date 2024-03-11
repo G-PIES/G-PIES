@@ -78,7 +78,7 @@ class ClusterDynamicsMetalKernel {
   gp_float mean_dislocation_cell_radius() __METALDECL__;
 
   void step_init() __METALDECL__;
-  bool update_clusters_1(gp_float) __METALDECL__;
+  void update_clusters_1(gp_float) __METALDECL__;
   void update_dislocation_density(gp_float) __METALDECL__;
 };
 
