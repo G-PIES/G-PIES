@@ -219,6 +219,9 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
           "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n");
 #endif
 
+  // TODO - support sample interval
+  sample_interval = delta_time;
+
   ClusterDynamicsState state;
   // --------------------------------------------------------------------------------------------
   // main simulation loop
@@ -255,29 +258,28 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
 int main(int argc, char* argv[]) {
   // Declare the supported options
   po::options_description all_options("General options");
-  all_options.add_options()
-    ("help", "display help message")
-    ("db", "database options")
-    ("sensitivity,s", "sensitivity analysis mode")
-    ("sensitivity-var,v", po::value<std::string>(),
-      "variable to do sensitivity analysis mode on (required sensitivity analysis)")
-    ("number-of-loops,n", po::value<int>()->implicit_value(2),
-      "number of loops you want to run in sensititivy analysis mode (required sensitivty analysis)")
-    ("delta-sensitivty-analysis,d", po::value<int>()->implicit_value(0),
-      "amount to change the sensitivity-var by for each loop (required sensitivity analysis)");
+  all_options.add_options()("help", "display help message")(
+      "db", "database options")("sensitivity,s", "sensitivity analysis mode")(
+      "sensitivity-var,v", po::value<std::string>(),
+      "variable to do sensitivity analysis mode on (required sensitivity "
+      "analysis)")("number-of-loops,n", po::value<int>()->implicit_value(2),
+                   "number of loops you want to run in sensititivy analysis "
+                   "mode (required sensitivty analysis)")(
+      "delta-sensitivty-analysis,d", po::value<int>()->implicit_value(0),
+      "amount to change the sensitivity-var by for each loop (required "
+      "sensitivity analysis)");
 
   po::options_description db_options("Database options [--db]");
-  db_options.add_options()
-    ("history,h", "display simulation history")
-    ("run,r", po::value<int>()->value_name("id"),
-      "run a simulation from the history by [id]")
-    ("clear,c", "clear simulation history");
+  db_options.add_options()("history,h", "display simulation history")(
+      "run,r", po::value<int>()->value_name("id"),
+      "run a simulation from the history by [id]")("clear,c",
+                                                   "clear simulation history");
 
   all_options.add(db_options);
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, all_options), vm);
-  po::notify(vm);   
+  po::notify(vm);
 
   // Help message
   if (vm.count("help")) {
@@ -290,84 +292,64 @@ int main(int argc, char* argv[]) {
   db.init();
 
   // Default values
+  NuclearReactor reactor;
+  Material material;
+  nuclear_reactors::OSIRIS(reactor);
+  materials::SA304(material);
   concentration_boundary = 10;
   simulation_time = 1.;
   delta_time = 1e-5;
 
   // --------------------------------------------------------------------------------------------
   // arg parsing
-  if (vm.count("history")) {
-    std::string db_cmd = vm["history"].as<std::string>();
-    // print simulation history
-    print_simulation_history(db, static_cast<bool>(vm.count("detail")));
-  } else if (vm.count("clear")) {
-    // clear history
-    if (db.delete_simulations()) {
-      fprintf(stdout, "Simulation History Cleared.\n");
+  if (vm.count("db")) {  // DATABASE
+    if (vm.count("history")) {
+      // print simulation history
+      print_simulation_history(db, static_cast<bool>(vm.count("detail")));
+    } else if (vm.count("clear")) {
+      // clear history
+      if (db.delete_simulations()) {
+        fprintf(stdout, "Simulation History Cleared.\n");
+      }
+    } else if (vm.count("run")) {
+      // rerun a previous simulation by database id
+      int sim_sqlite_id = vm["run"].as<int>();
+      HistorySimulation sim;
+      if (db.read_simulation(sim_sqlite_id, sim)) {
+        // TODO - support storing sensitivity analysis
+        fprintf(stdout, "Running simulation %d\n", sim_sqlite_id);
+        concentration_boundary = sim.concentration_boundary;
+        simulation_time = sim.simulation_time;
+
+        // TODO - Support sample interval and set a max resolution to avoid
+        // bloating the database. For this to work we will need a list of
+        // ClusterDynamicState objects and a SQLite intersection table.
+        delta_time = sample_interval = sim.delta_time;
+
+        run_simulation(sim.reactor, sim.material);
+      } else {
+        fprintf(stderr, "Could not find simulation %d\n", sim_sqlite_id);
+      }
     }
-  } else if (vm.count("run")) {
-    // rerun a previous simulation
-    int sim_sqlite_id = vm["run"].as<int>();
-    HistorySimulation sim;
-    if (db.read_simulation(sim_sqlite_id, sim)) {
-      // TODO - support storing sensitivity analysis
-      fprintf(stdout, "Running simulation %d\n", sim_sqlite_id);
-      concentration_boundary = sim.concentration_boundary;
-      simulation_time = sim.simulation_time;
-
-      // TODO - Support sample interval and set a max resolution to avoid
-      // bloating the database. For this to work we will need a list of
-      // ClusterDynamicState objects and a SQLite intersection table.
-      delta_time = sample_interval = sim.delta_time;
-
-      run_simulation(sim.reactor, sim.material);
-    } else {
-      fprintf(stderr, "Could not find simulation %d\n", sim_sqlite_id);
+  } else if (vm.count("sensitivity")) {  // SENSITIVITY ANALYSIS
+    if (vm.count("sensitivity")) {
+      // Set sensitivity analysis mode to true
+      sensitivity_analysis_mode = true;
+      if (vm.count("sensitivity-var") && vm.count("number-of-loops") &&
+          vm.count("delta-sensitivty-analysis")) {
+        sensitivity_analysis_variable = vm["sensitivity-var"].as<std::string>();
+        num_of_simulation_loops = vm["number-of-loops"].as<int>();
+        delta_sensitivity_analysis = vm["delta-sensitivty-analysis"].as<int>();
+      } else {
+        printf(
+            "Missing required arguments for sensitivity analysis, running "
+            "normal simulation");
+      }
     }
-  } else if (vm.count("sensitivity")) {
-    // Set sensitivity analysis mode to true
-    sensitivity_analysis_mode = true;
-    if (vm.count("sensitivity-var") && vm.count("number-of-loops") && vm.count("delta-sensitivty-analysis")){
-      sensitivity_analysis_variable = vm["sensitivity-var"].as<std::string>();
-      num_of_simulation_loops = vm["number-of-loops"].as<int>();
-      delta_sensitivity_analysis = vm["delta-sensitivty-analysis"].as<int>();
-    }
-    else{
-      printf("Missing required arguments for sensitivity analysis, running normal simulation");
-    }
-  } else {
-    // CLUSTER DYNAMICS
-  }
 
-  NuclearReactor reactor;
-  nuclear_reactors::OSIRIS(reactor);
+    // TODO - support sample interval
+    sample_interval = delta_time;
 
-  Material material;
-  materials::SA304(material);
-
-  // Override default values with CLI arguments
-  switch (argc) {
-    case 8:
-      delta_sensitivity_analysis = strtod(argv[7], NULL);
-      num_of_simulation_loops = strtod(argv[6], NULL);
-      sensitivity_analysis_variable = argv[5];
-      sensitivity_analysis_mode = true;  // argv[4] should be -s
-                                         // fall through
-    case 4:
-      concentration_boundary = strtoul(argv[3], NULL, 10);
-      // fall through
-    case 3:
-      simulation_time = strtod(argv[2], NULL);
-      // fall through
-    case 2:
-      delta_time = strtod(argv[1], NULL);
-    default:
-      break;
-  }
-
-  sample_interval = delta_time;
-
-  if (sensitivity_analysis_mode) {
     // --------------------------------------------------------------------------------------------
     // sensitivity analysis simulation loop
     for (size_t n = 0; n < num_of_simulation_loops; n++) {
@@ -376,8 +358,9 @@ int main(int argc, char* argv[]) {
       print_start_message();
 
 #if CSV
-      fprintf(stdout, "Time (s),Cluster Size,"
-                      "Interstitials / cm^3,Vacancies / cm^3\n");
+      fprintf(stdout,
+              "Time (s),Cluster Size,"
+              "Interstitials / cm^3,Vacancies / cm^3\n");
 #endif
 
       ClusterDynamicsState state;
@@ -388,30 +371,30 @@ int main(int argc, char* argv[]) {
         // run simulation for this time slice
         state = cd.run(delta_time, sample_interval);
 
-        #if VPRINT
-                print_state(state);
-        #elif CSV
-                print_csv(state);
-        #endif
+#if VPRINT
+        print_state(state);
+#elif CSV
+        print_csv(state);
+#endif
 
-                if (!state.valid) {
-                  break;
-                }
+        if (!state.valid) {
+          break;
+        }
 
-        #if VBREAK
-                fgetc(stdin);
-        #endif
+#if VBREAK
+        fgetc(stdin);
+#endif
       }
 
       // ----------------------------------------------------------------
       // print results
-      #if !VPRINT && !CSV
-            print_state(state);
-      #endif
+#if !VPRINT && !CSV
+      print_state(state);
+#endif
       // ----------------------------------------------------------------
     }
     // --------------------------------------------------------------------
-  } else {
+  } else {  // CLUSTER DYNAMICS OPTIONS
     ClusterDynamicsState state = run_simulation(reactor, material);
 
     // --------------------------------------------------------------------------------------------
