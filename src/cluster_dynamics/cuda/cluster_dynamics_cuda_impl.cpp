@@ -759,7 +759,7 @@ void ClusterDynamicsImpl::validate_all() const {
 void ClusterDynamicsImpl::validate(size_t n) const {
   if (std::isnan(interstitials_temp[n]) || std::isnan(vacancies_temp[n]) ||
       std::isinf(interstitials_temp[n]) || std::isinf(vacancies_temp[n]) ||
-      vacancies_temp[n] < 0. || vacancies_temp[n] < 0.) {
+      interstitials_temp[n] < 0. || vacancies_temp[n] < 0.) {
     throw ClusterDynamicsException(
         "Simulation Validation Failed For Cluster Size " + std::to_string(n) +
             ".",
