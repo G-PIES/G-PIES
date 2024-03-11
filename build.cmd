@@ -58,10 +58,6 @@ if "%option_help%" neq "" (
   echo   --clean, -c         Clean everything before building the project.
   echo                       Removes build, out, and db directories.
   echo   --force, -f         Do not ask for confirmation when --clean is specified.
-  echo   --verbose, -v       Turn on verbose output ^(VPRINT=true and VBREAK=true^).
-  echo                       Cannot be usage together with --csv.
-  echo   --csv               Turn on CSV output ^(CSV=true^).
-  echo                       Cannot be usage together with --verbose.
   echo   --cpu               Build CPU targets.
   echo                       This option is assumed if no --cuda or --metal specified.
   echo   --cuda              Build CUDA targets for the current GPU architecture.

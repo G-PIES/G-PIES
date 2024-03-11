@@ -62,17 +62,6 @@ add_compile_options("$<$<COMPILE_LANGUAGE:CUDA>:-Werror;all-warnings>")
 add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CUDA>>:SHELL:-Xcompiler /W2>")
 add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CUDA>>:SHELL:-Xcompiler /WX>")
 
-set(GP_VERBOSE false CACHE BOOL "Enable verbose output.")
-if(GP_VERBOSE)
-  add_compile_definitions(VPRINT=true)
-  add_compile_definitions(VBREAK=true)
-endif()
-
-set(GP_CSV false CACHE BOOL "Enable CSV output.")
-if(GP_CSV)
-  add_compile_definitions(CSV=true)
-endif()
-
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 
 add_subdirectory(./cli)
