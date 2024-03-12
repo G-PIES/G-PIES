@@ -263,8 +263,18 @@ int main(int argc, char* argv[]) {
         "write output to a file")("db", "database options")(
         "data-validation",
         po::value<std::string>()->value_name("toggle")->implicit_value("on"),
-        "turn on/off data validation (on by default)")(
-        "sensitivity,s", "sensitivity analysis mode")(
+        "turn on/off data validation (on by default)");
+
+    po::options_description db_options("Database options [--db]");
+    db_options.add_options()("history,h", "display simulation history")(
+        "history-detail", "display detailed simulation history")(
+        "run,r", po::value<int>()->value_name("id"),
+        "run a simulation from the history by [id]")(
+        "clear,c", "clear simulation history");
+
+    po::options_description sa_options("Sensitivity analysis options [--sensitivity-analysis]");
+    sa_options.add_options()
+        ("sensitivity-analysis,s", "sensitivity analysis mode")(
         "sensitivity-var,v", po::value<std::string>(),
         "variable to do sensitivity analysis mode on (required sensitivity "
         "analysis)")("number-of-loops,n", po::value<int>()->implicit_value(2),
@@ -274,14 +284,7 @@ int main(int argc, char* argv[]) {
         "amount to change the sensitivity-var by for each loop (required "
         "sensitivity analysis)");
 
-    po::options_description db_options("Database options [--db]");
-    db_options.add_options()("history,h", "display simulation history")(
-        "history-detail", "display detailed simulation history")(
-        "run,r", po::value<int>()->value_name("id"),
-        "run a simulation from the history by [id]")(
-        "clear,c", "clear simulation history");
-
-    all_options.add(db_options);
+    all_options.add(db_options).add(sa_options);
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, all_options), vm);
@@ -360,7 +363,7 @@ int main(int argc, char* argv[]) {
                     << std::endl;
         }
       }
-    } else if (vm.count("sensitivity")) {  // SENSITIVITY ANALYSIS
+    } else if (vm.count("sensitivity-analysis")) {  // SENSITIVITY ANALYSIS
       // Set sensitivity analysis mode to true
       sensitivity_analysis_mode = true;
       if (vm.count("sensitivity-var") && vm.count("number-of-loops") &&
