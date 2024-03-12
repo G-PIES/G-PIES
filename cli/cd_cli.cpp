@@ -20,21 +20,21 @@ bool csv = false;
 bool step_print = false;
 bool data_validation_on = true;
 
-size_t concentration_boundary;
-bool sensitivity_analysis_mode = false;
-std::string sensitivity_analysis_variable = "";
-size_t num_of_simulation_loops = 0;
-gp_float delta_sensitivity_analysis = 0;
-gp_float simulation_time;
-gp_float delta_time;
-gp_float sample_interval;  // How often (in seconds) to record the state
+size_t sa_num_simulations = 0;
+std::string sa_var = "";
+gp_float sa_var_delta = 0;
+
+size_t concentration_boundary = 10;
+gp_float simulation_time = 1.;
+gp_float delta_time = 1e-5;
+gp_float sample_interval =
+    delta_time;  // How often (in seconds) to record the state
 
 void print_start_message() {
   std::cout << "\nSimulation Started\n"
-            << "delta time: " << delta_time
+            << "time delta: " << delta_time
             << " simulation time: " << simulation_time
-            << " concentration boundary: "
-            << static_cast<int>(concentration_boundary)
+            << " max cluster size: " << static_cast<int>(concentration_boundary)
             << " data validation: " << (data_validation_on ? "on" : "off")
             << std::endl;
 }
@@ -165,7 +165,7 @@ var_code hashit(std::string const& varString) {
 void update_for_sensitivity_analysis(ClusterDynamics& cd,
                                      NuclearReactor& reactor,
                                      Material& material, const gp_float delta) {
-  switch (hashit(sensitivity_analysis_variable)) {
+  switch (hashit(sa_var)) {
     case e_iMigration:
       material.set_i_migration(material.get_i_migration() + delta);
       cd.set_material(material);
@@ -263,7 +263,18 @@ int main(int argc, char* argv[]) {
         "write output to a file")("db", "database options")(
         "data-validation",
         po::value<std::string>()->value_name("toggle")->implicit_value("on"),
-        "turn on/off data validation (on by default)");
+        "turn on/off data validation (on by default)")(
+        "max-cluster-size",
+        po::value<int>()->implicit_value(
+            static_cast<int>(concentration_boundary)),
+        "the max size of defect clustering to consider")(
+        "time", po::value<gp_float>()->implicit_value(simulation_time),
+        "the simulation environment time span to model (in seconds)")(
+        "time-delta", po::value<gp_float>()->implicit_value(delta_time),
+        "the time delta for every step of the simulation")(
+        "sample-interval",
+        po::value<gp_float>()->implicit_value(sample_interval),
+        "how often to record simulation environment state (in seconds)");
 
     po::options_description db_options("Database options [--db]");
     db_options.add_options()("history,h", "display simulation history")(
@@ -272,16 +283,18 @@ int main(int argc, char* argv[]) {
         "run a simulation from the history by [id]")(
         "clear,c", "clear simulation history");
 
-    po::options_description sa_options("Sensitivity analysis options [--sensitivity-analysis]");
-    sa_options.add_options()
-        ("sensitivity-analysis,s", "sensitivity analysis mode")(
+    po::options_description sa_options(
+        "Sensitivity analysis options [--sensitivity-analysis]");
+    sa_options.add_options()("sensitivity-analysis,s",
+                             "sensitivity analysis mode")(
         "sensitivity-var,v", po::value<std::string>(),
         "variable to do sensitivity analysis mode on (required sensitivity "
-        "analysis)")("number-of-loops,n", po::value<int>()->implicit_value(2),
-                     "number of loops you want to run in sensititivy analysis "
-                     "mode (required sensitivty analysis)")(
-        "delta-sensitivty-analysis,d", po::value<int>()->implicit_value(0),
-        "amount to change the sensitivity-var by for each loop (required "
+        "analysis)")(
+        "num-sims,n", po::value<int>()->implicit_value(2),
+        "number of simulations you want to run in sensititivy analysis "
+        "mode (required sensitivity analysis)")(
+        "sensitivity-var-delta,d", po::value<gp_float>(),
+        "amount to change the [sensitivity-var] by for each loop (required "
         "sensitivity analysis)");
 
     all_options.add(db_options).add(sa_options);
@@ -303,6 +316,44 @@ int main(int argc, char* argv[]) {
       if (output_file.is_open()) os.rdbuf(output_file.rdbuf());
     }
 
+    if (vm.count("max-cluster-size")) {
+      int mcs = vm["max-cluster-size"].as<int>();
+      if (mcs <= 0)
+        throw GpiesException(
+            "Value for max-cluster-size must be a positive, non-zero integer.");
+
+      concentration_boundary = static_cast<size_t>(mcs);
+    }
+
+    if (vm.count("time")) {
+      gp_float et = vm["time"].as<gp_float>();
+      if (et <= 0.)
+        throw GpiesException(
+            "Value for time must be a positive, non-zero decimal.");
+
+      simulation_time = et;
+    }
+
+    if (vm.count("time-delta")) {
+      gp_float td = vm["time-delta"].as<gp_float>();
+      if (td <= 0.)
+        throw GpiesException(
+            "Value for time-delta must be a positive, non-zero "
+            "decimal.");
+
+      delta_time = td;
+    }
+
+    if (vm.count("sample-interval")) {
+      gp_float si = vm["sample-interval"].as<gp_float>();
+      if (si <= 0.)
+        throw GpiesException(
+            "Value for sample-interval must be a positive, non-zero "
+            "decimal.");
+
+      sample_interval = si;
+    }
+
     // Output formatting
     csv = static_cast<bool>(vm.count("csv"));
     step_print = static_cast<bool>(vm.count("step-print"));
@@ -322,9 +373,6 @@ int main(int argc, char* argv[]) {
     Material material;
     nuclear_reactors::OSIRIS(reactor);
     materials::SA304(material);
-    concentration_boundary = 10;
-    simulation_time = 1.;
-    delta_time = 1e-5;
 
     // --------------------------------------------------------------------------------------------
     // arg parsing
@@ -365,16 +413,18 @@ int main(int argc, char* argv[]) {
       }
     } else if (vm.count("sensitivity-analysis")) {  // SENSITIVITY ANALYSIS
       // Set sensitivity analysis mode to true
-      sensitivity_analysis_mode = true;
-      if (vm.count("sensitivity-var") && vm.count("number-of-loops") &&
-          vm.count("delta-sensitivty-analysis")) {
-        sensitivity_analysis_variable = vm["sensitivity-var"].as<std::string>();
-        num_of_simulation_loops = vm["number-of-loops"].as<int>();
-        delta_sensitivity_analysis = vm["delta-sensitivty-analysis"].as<int>();
+      if (vm.count("num-sims") && vm.count("sensitivity-var") &&
+          vm.count("sensitivity-var-delta")) {
+        sa_num_simulations = vm["num-sims"].as<int>();
+        if (sa_num_simulations <= 0)
+          throw GpiesException(
+              "Value for num-sims must be a positive, non-zero integer.");
+        sa_var = vm["sensitivity-var"].as<std::string>();
+        sa_var_delta = vm["sensitivity-var-delta"].as<gp_float>();
       } else {
-        std::cerr << "Missing required arguments for sensitivity "
-                     "analysis, running "
-                     "normal simulation";
+        throw GpiesException(
+            "Missing required arguments for sensitivity "
+            "analysis.\n--help to see required variables.");
       }
 
       // TODO - support sample interval
@@ -382,7 +432,7 @@ int main(int argc, char* argv[]) {
 
       // --------------------------------------------------------------------------------------------
       // sensitivity analysis simulation loop
-      for (size_t n = 0; n < num_of_simulation_loops; n++) {
+      for (size_t n = 0; n < sa_num_simulations; n++) {
         ClusterDynamics cd(concentration_boundary, reactor, material);
         cd.set_data_validation(data_validation_on);
 
@@ -395,7 +445,7 @@ int main(int argc, char* argv[]) {
 
         ClusterDynamicsState state;
         update_for_sensitivity_analysis(cd, reactor, material,
-                                        n * delta_sensitivity_analysis);
+                                        n * sa_var_delta);
 
         for (gp_float t = 0; t < simulation_time; t = state.time) {
           // run simulation for this time slice
