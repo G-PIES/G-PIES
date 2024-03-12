@@ -62,6 +62,7 @@ else()
   )
   FetchContent_MakeAvailable(Boost)
   set(Boost_LIBRARY_TARGET Boost)
+  include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
 find_package(SQLite3)
