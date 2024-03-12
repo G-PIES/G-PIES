@@ -416,9 +416,11 @@ int main(int argc, char* argv[]) {
       if (vm.count("num-sims") && vm.count("sensitivity-var") &&
           vm.count("sensitivity-var-delta")) {
         sa_num_simulations = vm["num-sims"].as<int>();
+
         if (sa_num_simulations <= 0)
           throw GpiesException(
               "Value for num-sims must be a positive, non-zero integer.");
+
         sa_var = vm["sensitivity-var"].as<std::string>();
         sa_var_delta = vm["sensitivity-var-delta"].as<gp_float>();
       } else {
@@ -436,16 +438,23 @@ int main(int argc, char* argv[]) {
         ClusterDynamics cd(concentration_boundary, reactor, material);
         cd.set_data_validation(data_validation_on);
 
-        print_start_message();
+        ClusterDynamicsState state;
+        update_for_sensitivity_analysis(
+            cd, reactor, material, static_cast<gp_float>(n) * sa_var_delta);
+
+        if (n > 0) os << "\n"; // visual divider for consecutive sims
 
         if (csv) {
+          os << "Simulation " << n + 1 << ",Sensitivity Variable: " << sa_var << ",Delta="
+             << static_cast<gp_float>(n) * sa_var_delta << "\n\n";
           os << "Time (s),Cluster Size,"
                 "Interstitials / cm^3,Vacancies / cm^3\n";
+        } else {
+          os << "Simulation " << n + 1 << "\tSensitivity Variable: " << sa_var
+             << "\tDelta=" << static_cast<gp_float>(n) * sa_var_delta << std::endl;
         }
 
-        ClusterDynamicsState state;
-        update_for_sensitivity_analysis(cd, reactor, material,
-                                        n * sa_var_delta);
+        print_start_message();
 
         for (gp_float t = 0; t < simulation_time; t = state.time) {
           // run simulation for this time slice
