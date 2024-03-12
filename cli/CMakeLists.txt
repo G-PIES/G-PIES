@@ -18,6 +18,7 @@ if(GP_BUILD_CUDA)
   target_include_directories(cd_cuda_cli PRIVATE ../src/cluster_dynamics)
   target_link_libraries(cd_cuda_cli clusterdynamicscuda)
   target_link_libraries(cd_cuda_cli clientdb)
+  target_link_libraries(cd_cuda_cli ${Boost_LIBRARIES})
 endif()
 
 if(GP_BUILD_METAL)
@@ -32,4 +33,5 @@ if(GP_BUILD_METAL)
     "-framework Foundation"
     "-framework QuartzCore"
   )
+  target_link_libraries(cd_metal_cli ${Boost_LIBRARIES})
 endif()

@@ -59,12 +59,16 @@ void ClusterDynamicsImpl::step(gp_float delta_time) {
 }
 
 void ClusterDynamicsImpl::validate_all() const {
+  if (!data_validation_on) return;
+
   for (size_t n = 1; n < concentration_boundary; ++n) {
     validate(n);
   }
 }
 
 void ClusterDynamicsImpl::validate(size_t n) const {
+  if (!data_validation_on) return;
+
   if (std::isnan(mtl_kernel.interstitials[n]) ||
       std::isnan(mtl_kernel.vacancies[n]) ||
       std::isinf(mtl_kernel.interstitials[n]) ||
@@ -97,7 +101,9 @@ void ClusterDynamicsImpl::validate(size_t n) const {
 ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
                                          const NuclearReactorImpl& reactor,
                                          const MaterialImpl& material)
-    : time(0.0), concentration_boundary(concentration_boundary) {
+    : time(0.0),
+      concentration_boundary(concentration_boundary),
+      data_validation_on(true) {
   mtl_init_kernel(reactor, material);
   mtl_init_lib();
   mtl_init_buffers();

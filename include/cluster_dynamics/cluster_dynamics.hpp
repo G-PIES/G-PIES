@@ -73,6 +73,8 @@ class ClusterDynamics {
    *  has already been run() for some time.
    */
   void set_reactor(const NuclearReactor &reactor);
+
+  void set_data_validation(const bool data_validation_on);
 };
 
 class ClusterDynamicsException : public GpiesException {

@@ -1162,6 +1162,8 @@ gp_float ClusterDynamicsImpl::vi_sum_absorption(size_t nmax) const {
 }
 
 void ClusterDynamicsImpl::validate(size_t n) const {
+  if (!data_validation_on) return;
+
   if (std::isnan(interstitials_temp[n]) || std::isnan(vacancies_temp[n]) ||
       std::isinf(interstitials_temp[n]) || std::isinf(vacancies_temp[n]) ||
       interstitials_temp[n] < 0. || vacancies_temp[n] < 0.) {
@@ -1198,7 +1200,8 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
       concentration_boundary(concentration_boundary),
       dislocation_density(material.dislocation_density_0),
       material(material),
-      reactor(reactor) {}
+      reactor(reactor),
+      data_validation_on(true) {}
 
 ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time,
                                               gp_float total_time) {

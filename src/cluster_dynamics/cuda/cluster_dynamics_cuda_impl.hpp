@@ -46,8 +46,9 @@ class ClusterDynamicsImpl {
   thrust::host_vector<double> host_interstitials;
   thrust::host_vector<double> host_vacancies;
 
-  // Physics Model Functions
+  bool data_validation_on;
 
+  // Physics Model Functions
   __CUDADECL__ gp_float i_concentration_derivative(size_t) const;
   __CUDADECL__ gp_float v_concentration_derivative(size_t) const;
   gp_float i1_concentration_derivative() const;

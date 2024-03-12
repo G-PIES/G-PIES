@@ -43,6 +43,8 @@ class ClusterDynamicsImpl {
 
   size_t concentration_boundary;
 
+  bool data_validation_on;
+
   void step(gp_float);
   void validate_all() const;
   void validate(size_t) const;

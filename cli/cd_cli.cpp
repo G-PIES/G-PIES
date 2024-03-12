@@ -18,6 +18,7 @@ std::ostream os(std::cout.rdbuf());
 
 bool csv = false;
 bool step_print = false;
+bool data_validation_on = true;
 
 size_t concentration_boundary;
 bool sensitivity_analysis_mode = false;
@@ -30,10 +31,12 @@ gp_float sample_interval;  // How often (in seconds) to record the state
 
 void print_start_message() {
   std::cout << "\nSimulation Started\n"
-            << "delta_time: " << delta_time
-            << " simulation_time: " << simulation_time
-            << " concentration_boundary: "
-            << static_cast<int>(concentration_boundary) << std::endl;
+            << "delta time: " << delta_time
+            << " simulation time: " << simulation_time
+            << " concentration boundary: "
+            << static_cast<int>(concentration_boundary)
+            << " data validation: " << (data_validation_on ? "on" : "off")
+            << std::endl;
 }
 
 void print_state(const ClusterDynamicsState& state) {
@@ -213,6 +216,7 @@ void update_for_sensitivity_analysis(ClusterDynamics& cd,
 ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
                                     const Material& material) {
   ClusterDynamics cd(concentration_boundary, reactor, material);
+  cd.set_data_validation(data_validation_on);
 
   print_start_message();
 
@@ -257,6 +261,9 @@ int main(int argc, char* argv[]) {
                                         "print state at every time step")(
         "output-file", po::value<std::string>()->value_name("filename"),
         "write output to a file")("db", "database options")(
+        "data-validation",
+        po::value<std::string>()->value_name("toggle")->implicit_value("on"),
+        "turn on/off data validation (on by default)")(
         "sensitivity,s", "sensitivity analysis mode")(
         "sensitivity-var,v", po::value<std::string>(),
         "variable to do sensitivity analysis mode on (required sensitivity "
@@ -297,6 +304,12 @@ int main(int argc, char* argv[]) {
     csv = static_cast<bool>(vm.count("csv"));
     step_print = static_cast<bool>(vm.count("step-print"));
 
+    // Toggle data validation
+    if (vm.count("data-validation")) {
+      data_validation_on =
+          0 == vm["data-validation"].as<std::string>().compare("on");
+    }
+
     ClientDb db(DEV_DEFAULT_CLIENT_DB_PATH, false);
     // Open SQLite connection and create database
     db.init();
@@ -334,6 +347,7 @@ int main(int argc, char* argv[]) {
           std::cout << "Running simulation " << sim_sqlite_id << std::endl;
           concentration_boundary = sim.concentration_boundary;
           simulation_time = sim.simulation_time;
+
           // TODO - Support sample interval and set a max resolution to
           // avoid bloating the database. For this to work we will need a
           // list of ClusterDynamicState objects and a SQLite intersection
@@ -367,6 +381,7 @@ int main(int argc, char* argv[]) {
       // sensitivity analysis simulation loop
       for (size_t n = 0; n < num_of_simulation_loops; n++) {
         ClusterDynamics cd(concentration_boundary, reactor, material);
+        cd.set_data_validation(data_validation_on);
 
         print_start_message();
 

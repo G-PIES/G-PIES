@@ -42,3 +42,7 @@ void ClusterDynamics::set_reactor(const NuclearReactor &reactor) {
   this->reactor = reactor;
   _impl->set_reactor(*reactor._impl);
 }
+
+void ClusterDynamics::set_data_validation(const bool data_validation_on) {
+  _impl->data_validation_on = data_validation_on;
+}

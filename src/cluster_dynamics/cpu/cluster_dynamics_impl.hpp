@@ -38,6 +38,8 @@ class ClusterDynamicsImpl {
   MaterialImpl material;
   NuclearReactorImpl reactor;
 
+  bool data_validation_on;
+
   // Physics Model Functions
   gp_float i_concentration_derivative(size_t) const;
   gp_float v_concentration_derivative(size_t) const;

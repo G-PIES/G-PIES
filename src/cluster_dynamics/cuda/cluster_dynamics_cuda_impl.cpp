@@ -1,10 +1,11 @@
 #include "cluster_dynamics_cuda_impl.hpp"
-#include "cluster_dynamics/cluster_dynamics.hpp"
 
 #include <stdio.h>
 
 #include <algorithm>
 #include <cstring>
+
+#include "cluster_dynamics/cluster_dynamics.hpp"
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 1a-1e
@@ -751,12 +752,16 @@ gp_float ClusterDynamicsImpl::vi_sum_absorption(size_t) const {
 }
 
 void ClusterDynamicsImpl::validate_all() const {
+  if (!data_validation_on) return;
+
   for (size_t n = 1; n < concentration_boundary; ++n) {
     validate(n);
   }
 }
 
 void ClusterDynamicsImpl::validate(size_t n) const {
+  if (!data_validation_on) return;
+
   if (std::isnan(interstitials_temp[n]) || std::isnan(vacancies_temp[n]) ||
       std::isinf(interstitials_temp[n]) || std::isinf(vacancies_temp[n]) ||
       interstitials_temp[n] < 0. || vacancies_temp[n] < 0.) {
@@ -768,7 +773,7 @@ void ClusterDynamicsImpl::validate(size_t n) const {
             .interstitials = std::vector<gp_float>(
                 interstitials_temp.begin(), interstitials_temp.end() - 1),
             .vacancies = std::vector<gp_float>(vacancies_temp.begin(),
-                                                vacancies_temp.end() - 1),
+                                               vacancies_temp.end() - 1),
             .dislocation_density = dislocation_density});
   }
 }
@@ -796,7 +801,8 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
       reactor(reactor),
       indices(concentration_boundary - 1, 0),
       host_interstitials(concentration_boundary + 1, 0.0),
-      host_vacancies(concentration_boundary + 1, 0.0) {
+      host_vacancies(concentration_boundary + 1, 0.0),
+      data_validation_on(true) {
   ClusterDynamicsImpl *raw_self;
   cudaMalloc(&raw_self, sizeof(ClusterDynamicsImpl));
   cudaMemcpy(raw_self, this, sizeof(ClusterDynamicsImpl),
