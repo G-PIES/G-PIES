@@ -40,9 +40,6 @@ if "%option_help%" neq "" (
   echo   # Build and run Cluster Dynamics CLI with CUDA
   echo   %this_script% --cuda --run cdcli
   echo.
-  echo   # Build and run Cluster Dynamics CLI in CSV mode and clean everything before
-  echo   %this_script% -cfr --csv cdcli
-  echo.
   echo Targets:
   echo   cd                  The Cluster Dynamics library
   echo   cdcli               The CLI for the Cluster Dynamics library
@@ -154,15 +151,6 @@ if "%option_metal%" neq "" (
   set cmake_configure_options=%cmake_configure_options% -DGP_BUILD_METAL=true
 ) else (
   set cmake_configure_options=%cmake_configure_options% -DGP_BUILD_METAL=false
-)
-
-if "%option_verbose%" neq "" (
-  set cmake_configure_options=%cmake_configure_options% -DGP_VERBOSE:BOOL=true
-)
-
-if "%option_csv%" neq "" (
-  set cmake_configure_options=%cmake_configure_options% -DGP_CSV:BOOL=true
-  set "run_options=1e-5 1 > %out_path%\cd-output.csv"
 )
 
 for %%t in (%targets_to_build%) do (
