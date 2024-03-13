@@ -40,10 +40,9 @@ if(GP_BUILD_METAL)
   set(METAL_INCLUDE_DIRS ${metal-cpp_SOURCE_DIR})
 endif()
 
-find_package(Boost COMPONENTS program_options REQUIRED)
+find_package(Boost COMPONENTS program_options)
 if(Boost_FOUND)
   set(Boost_LIBRARY_TARGET Boost)
-  include_directories(${Boost_INCLUDE_DIRS})
 else()
   FetchContent_Declare(
     Boost
@@ -52,7 +51,7 @@ else()
   )
   FetchContent_MakeAvailable(Boost)
   set(Boost_LIBRARY_TARGET Boost)
-  include_directories(${Boost_INCLUDE_DIRS})
+  include_directories(${Boost_INCLUDE_DIR})
 endif()
 
 find_package(SQLite3)
