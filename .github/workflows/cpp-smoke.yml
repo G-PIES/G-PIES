@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build
-        run: ./build.sh
+        run: ./build.sh --cmake-verbose
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

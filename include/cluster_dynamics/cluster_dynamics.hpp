@@ -2,11 +2,13 @@
 #define CLUSTER_DYNAMICS_HPP
 
 #include <memory>
+#include <string>
 
 #include "cluster_dynamics_state.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
 #include "utils/types.hpp"
+#include "utils/gpies_exception.hpp"
 
 class ClusterDynamicsImpl;
 
@@ -22,27 +24,27 @@ class ClusterDynamics {
 
  public:
   /** @brief Constructs and initializes a new cluster dynamics simulation.
-   *  @param concentration_boundary The number of cluster sizes that the
+   *  @param max_cluster_size The number of cluster sizes that the
    * simulation will track.
    *  @param reactor A NuclearReactor object containing the reactor parameters
    * the simulation will use.
    *  @param material A Material object containing the material parameters the
    * simulation will use.
    */
-  ClusterDynamics(size_t concentration_boundary, const NuclearReactor &reactor,
+  ClusterDynamics(size_t max_cluster_size, const NuclearReactor &reactor,
                   const Material &material);
   ~ClusterDynamics();
 
   /** @brief Runs the simulation and returns the end simulation state as a
    * ClusterDynamicsState object.
-   *  @param delta_time The time step for the simulation in seconds.
+   *  @param time_delta The time step for the simulation in seconds.
    *  @param total_time The length of time that should be simulated in
    * seconds.
    *
    *  run() can be called multiple times, and the simulation will resume from
    * where it stopped after the last time run() was called.
    */
-  ClusterDynamicsState run(gp_float delta_time, gp_float total_time);
+  ClusterDynamicsState run(gp_float time_delta, gp_float total_time);
 
   /** @brief Returns the Material parameters that the simulation currently has
    * set.
@@ -71,6 +73,17 @@ class ClusterDynamics {
    *  has already been run() for some time.
    */
   void set_reactor(const NuclearReactor &reactor);
+
+  void set_data_validation(const bool data_validation_on);
+};
+
+class ClusterDynamicsException : public GpiesException {
+ public:
+  ClusterDynamicsException(const std::string &message,
+                    const ClusterDynamicsState &err_state)
+      : GpiesException(message), err_state(err_state) {}
+
+  ClusterDynamicsState err_state;
 };
 
 #endif  // CLUSTER_DYNAMICS_HPP

@@ -3,9 +3,15 @@
 #include "client_db/client_db.hpp"
 
 #include <sqlite3.h>
-
 #include <string>
 #include <vector>
+
+#if defined(WIN32) || defined(_WIN32) || \
+    defined(__WIN32) && !defined(__CYGWIN__)
+  #include <direct.h>
+#else
+  #include <sys/stat.h>
+#endif
 
 #include "client_db/db_queries.hpp"
 #include "model/history_simulation.hpp"
@@ -182,9 +188,9 @@ void ClientDb::bind_simulation(sqlite3_stmt *stmt,
       BlobConverter::to_blob(simulation.cd_state.vacancies);
 
   sqlite3_bind_int(stmt, 1,
-                   static_cast<int>(simulation.concentration_boundary));
+                   static_cast<int>(simulation.max_cluster_size));
   sqlite3_bind_double(stmt, 2, static_cast<double>(simulation.simulation_time));
-  sqlite3_bind_double(stmt, 3, static_cast<double>(simulation.delta_time));
+  sqlite3_bind_double(stmt, 3, static_cast<double>(simulation.time_delta));
   sqlite3_bind_int(stmt, 4, simulation.reactor.sqlite_id);
   sqlite3_bind_int(stmt, 5, simulation.material.sqlite_id);
   sqlite3_bind_blob(stmt, 6, interstitials_blob.data(),
@@ -286,11 +292,11 @@ void ClientDb::row_read_simulation(sqlite3_stmt *stmt,
   simulation.sqlite_id = sqlite3_column_int(stmt, col_offset + 0);
 
   simulation.creation_datetime = (char *)sqlite3_column_text(stmt, 1);
-  simulation.concentration_boundary =
+  simulation.max_cluster_size =
       static_cast<size_t>(sqlite3_column_int(stmt, 2));
   simulation.simulation_time =
       static_cast<gp_float>(sqlite3_column_double(stmt, 3));
-  simulation.delta_time = static_cast<gp_float>(sqlite3_column_double(stmt, 4));
+  simulation.time_delta = static_cast<gp_float>(sqlite3_column_double(stmt, 4));
 
   // columns 5 & 6 are for reactor & material foreign keys
 
@@ -846,7 +852,11 @@ bool ClientDb::delete_simulations(int *sqlite_result_code) {
 bool ClientDb::open(int *sqlite_result_code) {
   int sqlite_code;
 
-  sqlite_code = sqlite3_open(path.c_str(), &db);
+  make_db_dir();
+
+  std::string full_db_path = path + "/" + DB_NAME;
+
+  sqlite_code = sqlite3_open(full_db_path.c_str(), &db);
   if (is_sqlite_error(sqlite_code))
     throw ClientDbException("Failed to open local database.",
                             sqlite3_errmsg(db), sqlite_code);
@@ -889,7 +899,29 @@ bool ClientDb::is_valid_sqlite_id(const int sqlite_id) { return 0 < sqlite_id; }
 
 int ClientDb::changes() { return sqlite3_changes(db); }
 
-ClientDb::ClientDb(const char *db_path, const bool lazy) : path(db_path) {
+void ClientDb::make_db_dir() {
+  int err = 0;
+
+#if defined(WIN32) || defined(_WIN32) || \
+    defined(__WIN32) && !defined(__CYGWIN__)
+  err = _mkdir(path.c_str());  // can be used on Windows
+#else
+  const mode_t n_mode = 0733;
+  err = mkdir(path.c_str(), n_mode);  // can be used on non-Windows
+#endif
+
+  if (err) {
+    if (EEXIST != errno) {
+      std::string err_msg =
+          "Failed to provision database with directory: " + path +
+          "\nError code: " + std::to_string(err);
+      throw ClientDbException(err_msg.c_str());
+    }
+  }
+}
+
+ClientDb::ClientDb(const std::string &db_path, const bool lazy)
+    : path(db_path) {
   if (lazy)
     db = nullptr;
   else

@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['temperature_440',['temperature',['../structNuclearReactorImpl.html#a08022543790ae80c481e939428675b1b',1,'NuclearReactorImpl']]],
-  ['time_441',['time',['../structClusterDynamicsState.html#a6d844a934a939e73388e6ef5fb8ee930',1,'ClusterDynamicsState::time()'],['../classClusterDynamicsImpl.html#afe950f18bcfaf4d66d6b4a031413c5d3',1,'ClusterDynamicsImpl::time()']]]
+  ['self_470',['self',['../classClusterDynamicsImpl.html#a4d4cd82d79cf970735eefdb469f56100',1,'ClusterDynamicsImpl']]],
+  ['simulation_5ftime_471',['simulation_time',['../structHistorySimulation.html#a74b05173a94b721c70e66962ed8dfba6',1,'HistorySimulation']]],
+  ['species_472',['species',['../structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd',1,'Material::species()'],['../structNuclearReactor.html#a17190bdfe6e2004452617b7537fd18f0',1,'NuclearReactor::species()']]],
+  ['sqlite_5fid_473',['sqlite_id',['../structHistorySimulation.html#a5f80a8a5c49e349075424cc4c3392b37',1,'HistorySimulation::sqlite_id()'],['../structMaterial.html#aa7a7678eb5bafe799dd8eddfd50565fc',1,'Material::sqlite_id()'],['../structNuclearReactor.html#aa3b8e5ad6a41e23ca12be483c794ca19',1,'NuclearReactor::sqlite_id()']]]
 ];

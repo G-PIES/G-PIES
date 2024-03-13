@@ -89,32 +89,30 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;chrono&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Adapted into a class from the code example here: https://en.cppreference.com/w/cpp/chrono/steady_clock/now</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="classTimer.html">    8</a></span>&#160;<span class="keyword">class </span><a class="code" href="classTimer.html">Timer</a></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;{</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  std::chrono::time_point&lt;std::chrono::steady_clock, std::chrono::steady_clock::duration&gt; start_time;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="classTimer.html#a4e607b129b392c11adddd9641a320436">   13</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classTimer.html#a4e607b129b392c11adddd9641a320436">Start</a>()</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    start_time = std::chrono::steady_clock::now();</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  }</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="classTimer.html#ac121452161ae9ecc177fa4570e0f834b">   18</a></span>&#160;  <a class="code" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> <a class="code" href="classTimer.html#ac121452161ae9ecc177fa4570e0f834b">Stop</a>()</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">auto</span> end_time = std::chrono::steady_clock::now();</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    std::chrono::duration&lt;gp_float&gt; diff = end_time - start_time;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keywordflow">return</span> diff.count();</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  }</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;};</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#endif // TIMER_HPP</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// Adapted into a class from the code example here:</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">// https://en.cppreference.com/w/cpp/chrono/steady_clock/now</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
+<div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="classTimer.html">    9</a></span>&#160;<span class="keyword">class </span><a class="code" href="classTimer.html">Timer</a> {</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  std::chrono::time_point&lt;std::chrono::steady_clock,</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;                          std::chrono::steady_clock::duration&gt;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;      start_time;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="classTimer.html#a4e607b129b392c11adddd9641a320436">   15</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classTimer.html#a4e607b129b392c11adddd9641a320436">Start</a>() { start_time = std::chrono::steady_clock::now(); }</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classTimer.html#ac121452161ae9ecc177fa4570e0f834b">   17</a></span>&#160;  <a class="code" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> <a class="code" href="classTimer.html#ac121452161ae9ecc177fa4570e0f834b">Stop</a>() {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">auto</span> end_time = std::chrono::steady_clock::now();</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    std::chrono::duration&lt;gp_float&gt; diff = end_time - start_time;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keywordflow">return</span> diff.count();</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  }</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;};</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#endif  // TIMER_HPP</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassTimer_html"><div class="ttname"><a href="classTimer.html">Timer</a></div><div class="ttdef"><b>Definition:</b> <a href="timer_8hpp_source.html#l00008">timer.hpp:8</a></div></div>
-<div class="ttc" id="aclassTimer_html_ac121452161ae9ecc177fa4570e0f834b"><div class="ttname"><a href="classTimer.html#ac121452161ae9ecc177fa4570e0f834b">Timer::Stop</a></div><div class="ttdeci">gp_float Stop()</div><div class="ttdef"><b>Definition:</b> <a href="timer_8hpp_source.html#l00018">timer.hpp:18</a></div></div>
+<div class="ttc" id="aclassTimer_html"><div class="ttname"><a href="classTimer.html">Timer</a></div><div class="ttdef"><b>Definition:</b> <a href="timer_8hpp_source.html#l00009">timer.hpp:9</a></div></div>
+<div class="ttc" id="aclassTimer_html_ac121452161ae9ecc177fa4570e0f834b"><div class="ttname"><a href="classTimer.html#ac121452161ae9ecc177fa4570e0f834b">Timer::Stop</a></div><div class="ttdeci">gp_float Stop()</div><div class="ttdef"><b>Definition:</b> <a href="timer_8hpp_source.html#l00017">timer.hpp:17</a></div></div>
 <div class="ttc" id="atypes_8hpp_html_a31d268d843edeb05b5069e0d7a3dabe8"><div class="ttname"><a href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a></div><div class="ttdeci">GP_FLOAT gp_float</div><div class="ttdef"><b>Definition:</b> <a href="types_8hpp_source.html#l00008">types.hpp:8</a></div></div>
-<div class="ttc" id="aclassTimer_html_a4e607b129b392c11adddd9641a320436"><div class="ttname"><a href="classTimer.html#a4e607b129b392c11adddd9641a320436">Timer::Start</a></div><div class="ttdeci">void Start()</div><div class="ttdef"><b>Definition:</b> <a href="timer_8hpp_source.html#l00013">timer.hpp:13</a></div></div>
+<div class="ttc" id="aclassTimer_html_a4e607b129b392c11adddd9641a320436"><div class="ttname"><a href="classTimer.html#a4e607b129b392c11adddd9641a320436">Timer::Start</a></div><div class="ttdeci">void Start()</div><div class="ttdef"><b>Definition:</b> <a href="timer_8hpp_source.html#l00015">timer.hpp:15</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

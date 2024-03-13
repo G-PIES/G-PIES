@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['fcc_5fnickel_408',['fcc_nickel',['../namespacelattice__params.html#abb5841494d0f7797e58c5961e0cb95ac',1,'lattice_params']]],
-  ['flux_409',['flux',['../structNuclearReactorImpl.html#a98b44e176025d3faf843eb74227c690d',1,'NuclearReactorImpl']]]
+  ['err_5fstate_439',['err_state',['../classClusterDynamicsException.html#a5d626ba1911cf7967552c8a2d2ff233e',1,'ClusterDynamicsException']]]
 ];

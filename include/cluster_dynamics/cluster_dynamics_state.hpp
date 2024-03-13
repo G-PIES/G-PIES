@@ -9,14 +9,6 @@
  * simulation.
  */
 struct ClusterDynamicsState {
-  /** @brief False if this is in an invalid state. True otherwise.
-   *
-   * The state is considered invalid if any of the interstitial or
-   * vacancy concentrations or the dislocation density are nan,
-   * infinity, or negative.
-   */
-  bool valid = true;
-
   /** Marks how much time in seconds has been simulated to create this state.
    */
   gp_float time = 0.0;
@@ -30,7 +22,7 @@ struct ClusterDynamicsState {
    *
    * The concentration of clusters of size `n` will be found at
    * interstitials[n]. The 0th element is always 0. The size of this data is
-   * determined by the `concentration_boundary` that the ClusterDynamics
+   * determined by the `max_cluster_size` that the ClusterDynamics
    * simulation was constructed with.
    */
   std::vector<gp_float> interstitials;
@@ -40,7 +32,7 @@ struct ClusterDynamicsState {
    *
    * The concentration of clusters of size `n` will be found at
    * interstitials[n]. The 0th element is always 0. The size of this data is
-   * determined by the `concentration_boundary` that the ClusterDynamics
+   * determined by the `max_cluster_size` that the ClusterDynamics
    * simulation was constructed with.
    */
   std::vector<gp_float> vacancies;
