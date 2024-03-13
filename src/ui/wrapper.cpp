@@ -68,20 +68,11 @@ struct Simulation {
     void run() 
     {
         state = (*cd).run(delta_time, sample_interval);
-        if (!state.valid) 
-        {
-            printf("State invalid!");
-        }
     }
 
     void print_state()
     {
-        if (!state.valid) 
-        {
-            fprintf(stdout, "\nINVALID SIM @ Time=%g", state.time);
-            exit(0);
-        }
-        else fprintf(stdout, "\nTime=%g", state.time);
+        fprintf(stdout, "\nTime=%g", state.time);
         if (state.interstitials.size() != concentration_boundary || state.vacancies.size() != concentration_boundary)
         {
             fprintf(stderr, "\nError: Output data is incorrect size.\n");
@@ -100,12 +91,7 @@ struct Simulation {
         std::stringstream str_state;
         std::string str_to_cat;
         
-        if (!state.valid) 
-        {
-            str_state << "\nINVALID SIM @ Time=" << state.time;
-            return str_state.str();
-        }
-        else str_state << "\nTime=" << state.time;
+        str_state << "\nTime=" << state.time;
         if (state.interstitials.size() != concentration_boundary || state.vacancies.size() != concentration_boundary)
         {
             str_state << "\nError: Output data is incorrect size.\n";
