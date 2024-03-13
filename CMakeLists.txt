@@ -24,15 +24,12 @@ set(Boost_USE_STATIC_LIBS       ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
 set(Boost_USE_MULTITHREADED     OFF)
 find_package(Boost COMPONENTS program_options)
-if(Boost_FOUND)
-  set(Boost_LIBRARY_TARGET Boost::program_options)
-else()
+if(NOT Boost_FOUND)
   FetchContent_Declare(
     Boost
     URL https://github.com/boostorg/boost/releases/download/boost-1.84.0/boost-1.84.0.7z # downloading a zip release speeds up the download
   )
   FetchContent_MakeAvailable(Boost)
-  set(Boost_LIBRARY_TARGET Boost::program_options)
 endif()
 
 find_package(SQLite3)
