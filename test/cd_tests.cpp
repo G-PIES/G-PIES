@@ -618,6 +618,7 @@ TEST_F(ClusterDynamicsTest, cluster_radius_test) {
 
 TEST_F(ClusterDynamicsTest, update_clusters_1_test) {
   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
+  cd.step_init();
   cd.update_clusters_1(1e-5);
 
   // Starts from cluster size = 2
