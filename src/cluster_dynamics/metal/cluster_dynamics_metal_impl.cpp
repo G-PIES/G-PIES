@@ -21,25 +21,25 @@
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-void ClusterDynamicsImpl::step(gp_float delta_time) {
+void ClusterDynamicsImpl::step(gp_float time_delta) {
   mtl_kernel.step_init();
-  mtl_kernel.update_clusters_1(delta_time);
+  mtl_kernel.update_clusters_1(time_delta);
   validate(1);
 
   // CPU memory to GPU memory
   gp_float* interstitials_in = (gp_float*)mtl_interstitials_in->contents();
   gp_float* vacancies_in = (gp_float*)mtl_vacancies_in->contents();
 
-  // copy from index 1 to concentration_boundary - 1
+  // copy from index 1 to max_cluster_size - 1
   memcpy(interstitials_in + 1, mtl_kernel.interstitials + 1,
-         sizeof(gp_float) * concentration_boundary);
+         sizeof(gp_float) * max_cluster_size);
   memcpy(vacancies_in + 1, mtl_kernel.vacancies + 1,
-         sizeof(gp_float) * concentration_boundary);
+         sizeof(gp_float) * max_cluster_size);
 
-  mtl_update_clusters(delta_time);
+  mtl_update_clusters(time_delta);
 
   // GPU memory to CPU memory
-  // copy from index 2 to concentration_boundary - 1
+  // copy from index 2 to max_cluster_size - 1
   gp_float* interstitials_out = (gp_float*)mtl_interstitials_out->contents();
   gp_float* vacancies_out = (gp_float*)mtl_vacancies_out->contents();
 
@@ -50,21 +50,25 @@ void ClusterDynamicsImpl::step(gp_float delta_time) {
    *   size 2 cluster which can be problematic for the simulation.
    */
   memcpy(mtl_kernel.interstitials + 3, interstitials_out + 3,
-         sizeof(gp_float) * (concentration_boundary - 2));
+         sizeof(gp_float) * (max_cluster_size - 2));
 
   memcpy(mtl_kernel.vacancies + 2, vacancies_out + 2,
-         sizeof(gp_float) * (concentration_boundary - 1));
+         sizeof(gp_float) * (max_cluster_size - 1));
 
-  mtl_kernel.update_dislocation_density(delta_time);
+  mtl_kernel.update_dislocation_density(time_delta);
 }
 
 void ClusterDynamicsImpl::validate_all() const {
-  for (size_t n = 1; n < concentration_boundary; ++n) {
+  if (!data_validation_on) return;
+
+  for (size_t n = 1; n < max_cluster_size; ++n) {
     validate(n);
   }
 }
 
 void ClusterDynamicsImpl::validate(size_t n) const {
+  if (!data_validation_on) return;
+
   if (std::isnan(mtl_kernel.interstitials[n]) ||
       std::isnan(mtl_kernel.vacancies[n]) ||
       std::isinf(mtl_kernel.interstitials[n]) ||
@@ -77,10 +81,10 @@ void ClusterDynamicsImpl::validate(size_t n) const {
             .time = time,
             .interstitials = std::vector<gp_float>(
                 mtl_kernel.interstitials,
-                mtl_kernel.interstitials + concentration_boundary),
+                mtl_kernel.interstitials + max_cluster_size),
             .vacancies = std::vector<gp_float>(
                 mtl_kernel.vacancies,
-                mtl_kernel.vacancies + concentration_boundary),
+                mtl_kernel.vacancies + max_cluster_size),
             .dislocation_density = mtl_kernel.dislocation_density});
   }
 }
@@ -94,10 +98,12 @@ void ClusterDynamicsImpl::validate(size_t n) const {
 // --------------------------------------------------------------------------------------------
 
 // TODO - clean up the uses of random +1/+2/-1/etc throughout the code
-ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
+ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
                                          const NuclearReactorImpl& reactor,
                                          const MaterialImpl& material)
-    : time(0.0), concentration_boundary(concentration_boundary) {
+    : time(0.0),
+      max_cluster_size(max_cluster_size),
+      data_validation_on(true) {
   mtl_init_kernel(reactor, material);
   mtl_init_lib();
   mtl_init_buffers();
@@ -109,11 +115,11 @@ ClusterDynamicsImpl::~ClusterDynamicsImpl() {
   delete[] mtl_kernel.vacancies;
 }
 
-ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time,
+ClusterDynamicsState ClusterDynamicsImpl::run(gp_float time_delta,
                                               gp_float total_time) {
   for (gp_float endtime = time + total_time; time < endtime;
-       time += delta_time) {
-    step(delta_time);
+       time += time_delta) {
+    step(time_delta);
     validate_all();
   }
 
@@ -121,9 +127,9 @@ ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time,
       .time = time,
       .interstitials = std::vector<gp_float>(
           mtl_kernel.interstitials,
-          mtl_kernel.interstitials + concentration_boundary),
+          mtl_kernel.interstitials + max_cluster_size),
       .vacancies = std::vector<gp_float>(
-          mtl_kernel.vacancies, mtl_kernel.vacancies + concentration_boundary),
+          mtl_kernel.vacancies, mtl_kernel.vacancies + max_cluster_size),
       .dislocation_density = mtl_kernel.dislocation_density};
 }
 
@@ -151,14 +157,14 @@ void ClusterDynamicsImpl::set_reactor(const NuclearReactorImpl& reactor) {
 
 void ClusterDynamicsImpl::mtl_init_kernel(const NuclearReactorImpl& reactor,
                                           const MaterialImpl& material) {
-  mtl_kernel.interstitials = new gp_float[concentration_boundary + 1];
-  mtl_kernel.vacancies = new gp_float[concentration_boundary + 1];
+  mtl_kernel.interstitials = new gp_float[max_cluster_size + 1];
+  mtl_kernel.vacancies = new gp_float[max_cluster_size + 1];
   mtl_kernel.reactor = reactor;
   mtl_kernel.material = material;
-  mtl_kernel.concentration_boundary = concentration_boundary;
+  mtl_kernel.max_cluster_size = max_cluster_size;
   mtl_kernel.dislocation_density = material.dislocation_density_0;
 
-  for (size_t i = 0; i < concentration_boundary + 1; ++i) {
+  for (size_t i = 0; i < max_cluster_size + 1; ++i) {
     mtl_kernel.interstitials[i] = 0.;
     mtl_kernel.vacancies[i] = 0.;
   }
@@ -190,7 +196,7 @@ void ClusterDynamicsImpl::mtl_init_lib() {
 }
 
 void ClusterDynamicsImpl::mtl_init_buffers() {
-  size_t mtl_buf_size = concentration_boundary * sizeof(gp_float);
+  size_t mtl_buf_size = max_cluster_size * sizeof(gp_float);
 
   mtl_interstitials_in =
       mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
@@ -202,7 +208,7 @@ void ClusterDynamicsImpl::mtl_init_buffers() {
       mtl_device->newBuffer(mtl_buf_size, MTL::ResourceStorageModeShared);
 }
 
-void ClusterDynamicsImpl::mtl_update_clusters(gp_float delta_time) {
+void ClusterDynamicsImpl::mtl_update_clusters(gp_float time_delta) {
   // create a command buffer to hold commands
   MTL::CommandBuffer* mtl_command_buffer = mtl_command_queue->commandBuffer();
   assert(mtl_command_buffer != nullptr);
@@ -212,7 +218,7 @@ void ClusterDynamicsImpl::mtl_update_clusters(gp_float delta_time) {
       mtl_command_buffer->computeCommandEncoder();
   assert(mtl_compute_encoder != nullptr);
 
-  mtl_encode_command(mtl_compute_encoder, delta_time);
+  mtl_encode_command(mtl_compute_encoder, time_delta);
 
   // end the compute pass
   mtl_compute_encoder->endEncoding();
@@ -224,7 +230,7 @@ void ClusterDynamicsImpl::mtl_update_clusters(gp_float delta_time) {
 }
 
 void ClusterDynamicsImpl::mtl_encode_command(
-    MTL::ComputeCommandEncoder* mtl_compute_encoder, gp_float delta_time) {
+    MTL::ComputeCommandEncoder* mtl_compute_encoder, gp_float time_delta) {
   // encode the pipeline state object and its parameters
   mtl_compute_encoder->setComputePipelineState(mtl_compute_pipeline_state);
 
@@ -234,15 +240,15 @@ void ClusterDynamicsImpl::mtl_encode_command(
   mtl_compute_encoder->setBuffer(mtl_vacancies_in, 0, 2);
   mtl_compute_encoder->setBuffer(mtl_interstitials_out, 0, 3);
   mtl_compute_encoder->setBuffer(mtl_vacancies_out, 0, 4);
-  mtl_compute_encoder->setBytes(&delta_time, sizeof(gp_float), 5);
+  mtl_compute_encoder->setBytes(&time_delta, sizeof(gp_float), 5);
 
-  MTL::Size mtl_grid_size = MTL::Size(concentration_boundary, 1, 1);
+  MTL::Size mtl_grid_size = MTL::Size(max_cluster_size, 1, 1);
 
   // calculate a threadgroup size
   NS::UInteger mtl_max_threads_per_group =
       mtl_compute_pipeline_state->maxTotalThreadsPerThreadgroup();
-  if (mtl_max_threads_per_group > concentration_boundary) {
-    mtl_max_threads_per_group = concentration_boundary;
+  if (mtl_max_threads_per_group > max_cluster_size) {
+    mtl_max_threads_per_group = max_cluster_size;
   }
 
   MTL::Size mtl_thread_group_size = MTL::Size(mtl_max_threads_per_group, 1, 1);

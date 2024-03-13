@@ -91,11 +91,10 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a4abc24a344e929d88391e4214be3c557"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structClusterDynamicsState.html#a4abc24a344e929d88391e4214be3c557">valid</a> = true</td></tr>
-<tr class="memdesc:a4abc24a344e929d88391e4214be3c557"><td class="mdescLeft">&#160;</td><td class="mdescRight">False if this is in an invalid state. True otherwise.  <a href="structClusterDynamicsState.html#a4abc24a344e929d88391e4214be3c557">More...</a><br /></td></tr>
-<tr class="separator:a4abc24a344e929d88391e4214be3c557"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d844a934a939e73388e6ef5fb8ee930"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structClusterDynamicsState.html#a6d844a934a939e73388e6ef5fb8ee930">time</a> = 0.0</td></tr>
 <tr class="separator:a6d844a934a939e73388e6ef5fb8ee930"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08716faba594d1e96f438295908a27d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structClusterDynamicsState.html#a08716faba594d1e96f438295908a27d8">dpa</a> = 0.0</td></tr>
+<tr class="separator:a08716faba594d1e96f438295908a27d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c0545df3eaa8a6581ca5a424a711f72"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structClusterDynamicsState.html#a9c0545df3eaa8a6581ca5a424a711f72">interstitials</a></td></tr>
 <tr class="memdesc:a9c0545df3eaa8a6581ca5a424a711f72"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current concentration of each size of interstitial cluster in.  <a href="structClusterDynamicsState.html#a9c0545df3eaa8a6581ca5a424a711f72">More...</a><br /></td></tr>
 <tr class="separator:a9c0545df3eaa8a6581ca5a424a711f72"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -109,27 +108,8 @@ Public Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class which contains information about the state of a <a class="el" href="classClusterDynamics.html" title="Class which defines a cluster dynamics simulation.">ClusterDynamics</a> simulation. </p>
 
-<p class="definition">Definition at line <a class="el" href="cluster__dynamics__state_8hpp_source.html#l00009">9</a> of file <a class="el" href="cluster__dynamics__state_8hpp_source.html">cluster_dynamics_state.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="cluster__dynamics__state_8hpp_source.html#l00011">11</a> of file <a class="el" href="cluster__dynamics__state_8hpp_source.html">cluster_dynamics_state.hpp</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="a4abc24a344e929d88391e4214be3c557"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4abc24a344e929d88391e4214be3c557">&#9670;&nbsp;</a></span>valid</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool ClusterDynamicsState::valid = true</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>False if this is in an invalid state. True otherwise. </p>
-<p>The state is considered invalid if any of the interstitial or vacancy concentrations or the dislocation density are nan, infinity, or negative. </p>
-
-<p class="definition">Definition at line <a class="el" href="cluster__dynamics__state_8hpp_source.html#l00017">17</a> of file <a class="el" href="cluster__dynamics__state_8hpp_source.html">cluster_dynamics_state.hpp</a>.</p>
-
-</div>
-</div>
 <a id="a6d844a934a939e73388e6ef5fb8ee930"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6d844a934a939e73388e6ef5fb8ee930">&#9670;&nbsp;</a></span>time</h2>
 
@@ -143,7 +123,24 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Marks how much time in seconds has been simulated to create this state. </p>
 
-<p class="definition">Definition at line <a class="el" href="cluster__dynamics__state_8hpp_source.html#l00021">21</a> of file <a class="el" href="cluster__dynamics__state_8hpp_source.html">cluster_dynamics_state.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="cluster__dynamics__state_8hpp_source.html#l00014">14</a> of file <a class="el" href="cluster__dynamics__state_8hpp_source.html">cluster_dynamics_state.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a08716faba594d1e96f438295908a27d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08716faba594d1e96f438295908a27d8">&#9670;&nbsp;</a></span>dpa</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> ClusterDynamicsState::dpa = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The cumulative radiation dose in displacements per atom (dpa) </p>
+
+<p class="definition">Definition at line <a class="el" href="cluster__dynamics__state_8hpp_source.html#l00018">18</a> of file <a class="el" href="cluster__dynamics__state_8hpp_source.html">cluster_dynamics_state.hpp</a>.</p>
 
 </div>
 </div>
@@ -161,9 +158,9 @@ Public Attributes</h2></td></tr>
 
 <p>The current concentration of each size of interstitial cluster in. </p>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>UNITS</dd></dl>
-<p>The concentration of clusters of size <code>n</code> will be found at interstitials[n]. The 0th element is always 0. The size of this data is determined by the <code>concentration_boundary</code> that the <a class="el" href="classClusterDynamics.html" title="Class which defines a cluster dynamics simulation.">ClusterDynamics</a> simulation was constructed with. </p>
+<p>The concentration of clusters of size <code>n</code> will be found at interstitials[n]. The 0th element is always 0. The size of this data is determined by the <code>max_cluster_size</code> that the <a class="el" href="classClusterDynamics.html" title="Class which defines a cluster dynamics simulation.">ClusterDynamics</a> simulation was constructed with. </p>
 
-<p class="definition">Definition at line <a class="el" href="cluster__dynamics__state_8hpp_source.html#l00031">31</a> of file <a class="el" href="cluster__dynamics__state_8hpp_source.html">cluster_dynamics_state.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="cluster__dynamics__state_8hpp_source.html#l00028">28</a> of file <a class="el" href="cluster__dynamics__state_8hpp_source.html">cluster_dynamics_state.hpp</a>.</p>
 
 </div>
 </div>
@@ -181,9 +178,9 @@ Public Attributes</h2></td></tr>
 
 <p>The current concentration of each size of vacancy cluster in. </p>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>UNITS</dd></dl>
-<p>The concentration of clusters of size <code>n</code> will be found at interstitials[n]. The 0th element is always 0. The size of this data is determined by the <code>concentration_boundary</code> that the <a class="el" href="classClusterDynamics.html" title="Class which defines a cluster dynamics simulation.">ClusterDynamics</a> simulation was constructed with. </p>
+<p>The concentration of clusters of size <code>n</code> will be found at interstitials[n]. The 0th element is always 0. The size of this data is determined by the <code>max_cluster_size</code> that the <a class="el" href="classClusterDynamics.html" title="Class which defines a cluster dynamics simulation.">ClusterDynamics</a> simulation was constructed with. </p>
 
-<p class="definition">Definition at line <a class="el" href="cluster__dynamics__state_8hpp_source.html#l00041">41</a> of file <a class="el" href="cluster__dynamics__state_8hpp_source.html">cluster_dynamics_state.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="cluster__dynamics__state_8hpp_source.html#l00038">38</a> of file <a class="el" href="cluster__dynamics__state_8hpp_source.html">cluster_dynamics_state.hpp</a>.</p>
 
 </div>
 </div>
@@ -202,7 +199,7 @@ Public Attributes</h2></td></tr>
 <p>The current density of the dislocation network in. </p>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>UNITS </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="cluster__dynamics__state_8hpp_source.html#l00045">45</a> of file <a class="el" href="cluster__dynamics__state_8hpp_source.html">cluster_dynamics_state.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="cluster__dynamics__state_8hpp_source.html#l00042">42</a> of file <a class="el" href="cluster__dynamics__state_8hpp_source.html">cluster_dynamics_state.hpp</a>.</p>
 
 </div>
 </div>

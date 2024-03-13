@@ -18,8 +18,6 @@ process_option() {
     --run|-r) RUN=1 ;;
     --clean|-c) CLEAN=1 ;;
     --force|-f) FORCE=1 ;;
-    --verbose|-v) VERBOSE=1 ;;
-    --csv) CSV=1 ;;
     --cpu) CPU=1 ;;
     --cuda) CUDA=1 ;;
     --cuda-all-major) CUDA=1; CUDA_ALL=1 ;;
@@ -72,9 +70,6 @@ if [ "$HELP" ]; then
   echo "  # Build and run Cluster Dynamics CLI with CUDA"
   echo "  $0 --cuda --run cdcli"
   echo ""
-  echo "  # Build and run Cluster Dynamics CLI in CSV mode and clean everything before"
-  echo "  $0 -cfr --csv cdcli"
-  echo ""
   echo "Targets:"
   echo "  cd                  The Cluster Dynamics library"
   echo "  cdcli               The CLI for the Cluster Dynamics library"
@@ -90,10 +85,6 @@ if [ "$HELP" ]; then
   echo "  --clean, -c         Clean everything before building the project."
   echo "                      Removes build, out, and db directories."
   echo "  --force, -f         Do not ask for confirmation when --clean is specified."
-  echo "  --verbose, -v       Turn on verbose output (VPRINT=true and VBREAK=true)."
-  echo "                      Cannot be usage together with --csv."
-  echo "  --csv               Turn on CSV output (CSV=true)."
-  echo "                      Cannot be usage together with --verbose."
   echo "  --cpu               Build CPU targets."
   echo "                      This option is assumed if no --cuda or --metal specified."
   echo "  --cuda              Build CUDA targets for the current GPU architecture."
@@ -117,10 +108,6 @@ fi
 
 if [ ! "$CUDA" -a ! "$METAL" ]; then
   CPU=1
-fi
-
-if [ "$VERBOSE" -a "$CSV" ]; then
-  echo_error "Both --verbose and --csv cannot be used at the same time."
 fi
 
 for target in "${TARGETS[@]}"; do
@@ -219,19 +206,6 @@ if [ "$METAL" ]; then
   CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_METAL:BOOL=true"
 else
   CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_METAL:BOOL=false"
-fi
-
-if [ "$VERBOSE" ]; then
-  CMAKE_CONFIGURE_OPTIONS+=" -DGP_VERBOSE:BOOL=true"
-else
-  CMAKE_CONFIGURE_OPTIONS+=" -DGP_VERBOSE:BOOL=false"
-fi
-
-if [ "$CSV" ]; then
-  RUN_OPTIONS="1e-5 1 > $OUT_PATH/cd-output.csv"
-  CMAKE_CONFIGURE_OPTIONS+=" -DGP_CSV:BOOL=true"
-else
-  CMAKE_CONFIGURE_OPTIONS+=" -DGP_CSV:BOOL=false"
 fi
 
 if [ "$NO_SANITIZER" ]; then

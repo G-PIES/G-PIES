@@ -21,7 +21,7 @@ class ClusterDynamicsMetalKernel {
   __METALDECL__ gp_float* interstitials;
   __METALDECL__ gp_float* vacancies;
 
-  uint64_t concentration_boundary;
+  uint64_t max_cluster_size;
   gp_float dislocation_density;
 
   gp_float mean_dislocation_radius_val;
