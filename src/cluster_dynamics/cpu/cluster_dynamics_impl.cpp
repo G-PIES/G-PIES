@@ -1096,29 +1096,29 @@ void ClusterDynamicsImpl::step_init() {
   mean_dislocation_radius_val = mean_dislocation_cell_radius();
 }
 
-void ClusterDynamicsImpl::step(gp_float delta_time) {
+void ClusterDynamicsImpl::step(gp_float time_delta) {
   step_init();
 
-  update_clusters_1(delta_time);
-  update_clusters(delta_time);
-  dislocation_density += dislocation_density_derivative() * delta_time;
+  update_clusters_1(time_delta);
+  update_clusters(time_delta);
+  dislocation_density += dislocation_density_derivative() * time_delta;
 
   interstitials = interstitials_temp;
   vacancies = vacancies_temp;
 }
 
-void ClusterDynamicsImpl::update_clusters_1(gp_float delta_time) {
-  interstitials_temp[1] += i1_concentration_derivative() * delta_time;
-  vacancies_temp[1] += v1_concentration_derivative() * delta_time;
+void ClusterDynamicsImpl::update_clusters_1(gp_float time_delta) {
+  interstitials_temp[1] += i1_concentration_derivative() * time_delta;
+  vacancies_temp[1] += v1_concentration_derivative() * time_delta;
   validate(1);
 }
 
-void ClusterDynamicsImpl::update_clusters(gp_float delta_time) {
-  vacancies_temp[2] += v_concentration_derivative(2) * delta_time;
+void ClusterDynamicsImpl::update_clusters(gp_float time_delta) {
+  vacancies_temp[2] += v_concentration_derivative(2) * time_delta;
 
   for (size_t n = 3; n < max_cluster_size; ++n) {
-    interstitials_temp[n] += i_concentration_derivative(n) * delta_time;
-    vacancies_temp[n] += v_concentration_derivative(n) * delta_time;
+    interstitials_temp[n] += i_concentration_derivative(n) * time_delta;
+    vacancies_temp[n] += v_concentration_derivative(n) * time_delta;
     validate(n);
   }
 }
@@ -1203,12 +1203,12 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
       reactor(reactor),
       data_validation_on(true) {}
 
-ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time,
+ClusterDynamicsState ClusterDynamicsImpl::run(gp_float time_delta,
                                               gp_float total_time) {
   for (gp_float endtime = time + total_time; time < endtime;
-       time += delta_time) {
-    dpa += delta_time * reactor.flux;
-    step(delta_time);
+       time += time_delta) {
+    dpa += time_delta * reactor.flux;
+    step(time_delta);
   }
 
   return ClusterDynamicsState{

@@ -27,13 +27,13 @@ gp_float sa_var_delta = 0;
 
 size_t max_cluster_size = 10;
 gp_float simulation_time = 1.;
-gp_float delta_time = 1e-5;
+gp_float time_delta = 1e-5;
 gp_float sample_interval =
-    delta_time;  // How often (in seconds) to record the state
+    time_delta;  // How often (in seconds) to record the state
 
 void print_start_message() {
   std::cout << "\nSimulation Started\n"
-            << "time delta: " << delta_time
+            << "time delta: " << time_delta
             << "  simulation time: " << simulation_time
             << "  max cluster size: " << static_cast<int>(max_cluster_size)
             << "  data validation: " << (data_validation_on ? "on" : "off")
@@ -92,7 +92,7 @@ void print_simulation_history(ClientDb& db, bool print_details) {
     for (HistorySimulation s : simulations) {
       os << s.sqlite_id << " ~ "
          << static_cast<unsigned long long>(s.max_cluster_size) << " ~ "
-         << s.simulation_time << " ~ " << s.delta_time << " ~ "
+         << s.simulation_time << " ~ " << s.time_delta << " ~ "
          << s.reactor.species << " ~ " << s.material.species << " ~ "
          << s.creation_datetime << std::endl;
 
@@ -226,14 +226,14 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
   }
 
   // TODO - support sample interval
-  sample_interval = delta_time;
+  sample_interval = time_delta;
 
   ClusterDynamicsState state;
   // --------------------------------------------------------------------------------------------
   // main simulation loop
   for (gp_float t = 0; t < simulation_time; t = state.time) {
     // run simulation for this time slice
-    state = cd.run(delta_time, sample_interval);
+    state = cd.run(time_delta, sample_interval);
 
     if (step_print) {
       step_print_prompt(state);
@@ -270,7 +270,7 @@ int main(int argc, char* argv[]) {
         "the max size of defect clustering to consider")(
         "time", po::value<gp_float>()->implicit_value(simulation_time),
         "the simulation environment time span to model (in seconds)")(
-        "time-delta", po::value<gp_float>()->implicit_value(delta_time),
+        "time-delta", po::value<gp_float>()->implicit_value(time_delta),
         "the time delta for every step of the simulation")(
         "sample-interval",
         po::value<gp_float>()->implicit_value(sample_interval),
@@ -341,7 +341,7 @@ int main(int argc, char* argv[]) {
             "Value for time-delta must be a positive, non-zero "
             "decimal.");
 
-      delta_time = td;
+      time_delta = td;
     }
 
     if (vm.count("sample-interval")) {
@@ -403,7 +403,7 @@ int main(int argc, char* argv[]) {
           // avoid bloating the database. For this to work we will need a
           // list of ClusterDynamicState objects and a SQLite intersection
           // table.
-          delta_time = sample_interval = sim.delta_time;
+          time_delta = sample_interval = sim.time_delta;
 
           run_simulation(sim.reactor, sim.material);
         } else {
@@ -430,7 +430,7 @@ int main(int argc, char* argv[]) {
       }
 
       // TODO - support sample interval
-      sample_interval = delta_time;
+      sample_interval = time_delta;
 
       // --------------------------------------------------------------------------------------------
       // sensitivity analysis simulation loop
@@ -459,7 +459,7 @@ int main(int argc, char* argv[]) {
 
         for (gp_float t = 0; t < simulation_time; t = state.time) {
           // run simulation for this time slice
-          state = cd.run(delta_time, sample_interval);
+          state = cd.run(time_delta, sample_interval);
 
           if (step_print) {
             step_print_prompt(state);
@@ -482,7 +482,7 @@ int main(int argc, char* argv[]) {
       // --------------------------------------------------------------------------------------------
       // Write simulation result to the database
       HistorySimulation history_simulation(max_cluster_size, simulation_time,
-                                           delta_time, reactor, material,
+                                           time_delta, reactor, material,
                                            state);
 
       db.create_simulation(history_simulation);

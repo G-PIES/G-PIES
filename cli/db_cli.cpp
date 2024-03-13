@@ -284,7 +284,7 @@ void simulation_cmp_print(const HistorySimulation& r1,
           static_cast<unsigned long long>(r2.max_cluster_size));
   fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.simulation_time,
           r2.simulation_time);
-  fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.delta_time, r2.delta_time);
+  fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.time_delta, r2.time_delta);
   fprintf(stdout, "%zu [%g, %g, %g, %g,...]\t-\t%zu [%g, %g, %g, %g,...]\n",
           r1.cd_state.interstitials.size(), r1.cd_state.interstitials[0],
           r1.cd_state.interstitials[1], r1.cd_state.interstitials[2],

@@ -669,12 +669,12 @@ void ClusterDynamicsImpl::step_init() {
   vv_sum_absorption_val = vv_sum_absorption(max_cluster_size - 1);
 }
 
-void ClusterDynamicsImpl::step(gp_float delta_time) {
+void ClusterDynamicsImpl::step(gp_float time_delta) {
   step_init();
 
-  update_clusters_1(delta_time);
-  update_clusters(delta_time);
-  dislocation_density += dislocation_density_derivative() * delta_time;
+  update_clusters_1(time_delta);
+  update_clusters(time_delta);
+  dislocation_density += dislocation_density_derivative() * time_delta;
 
   interstitials = interstitials_temp;
   vacancies = vacancies_temp;
@@ -685,27 +685,27 @@ void ClusterDynamicsImpl::step(gp_float delta_time) {
              cudaMemcpyHostToDevice);
 }
 
-void ClusterDynamicsImpl::update_clusters_1(gp_float delta_time) {
-  interstitials_temp[1] += i1_concentration_derivative() * delta_time;
-  vacancies_temp[1] += v1_concentration_derivative() * delta_time;
+void ClusterDynamicsImpl::update_clusters_1(gp_float time_delta) {
+  interstitials_temp[1] += i1_concentration_derivative() * time_delta;
+  vacancies_temp[1] += v1_concentration_derivative() * time_delta;
   return validate(1);
 }
 
-void ClusterDynamicsImpl::update_clusters(gp_float delta_time) {
+void ClusterDynamicsImpl::update_clusters(gp_float time_delta) {
   auto self = this->self;
 
   thrust::transform(indices.begin() + 1, indices.end(),
                     interstitials_temp.begin() + 2,
-                    [self, delta_time] __CUDADECL__(const int &idx) {
+                    [self, time_delta] __CUDADECL__(const int &idx) {
                       return self->interstitials[idx] +
-                             self->i_concentration_derivative(idx) * delta_time;
+                             self->i_concentration_derivative(idx) * time_delta;
                     });
 
   thrust::transform(indices.begin() + 1, indices.end(),
                     vacancies_temp.begin() + 2,
-                    [self, delta_time] __CUDADECL__(const int &idx) {
+                    [self, time_delta] __CUDADECL__(const int &idx) {
                       return self->vacancies[idx] +
-                             self->v_concentration_derivative(idx) * delta_time;
+                             self->v_concentration_derivative(idx) * time_delta;
                     });
 }
 
@@ -811,11 +811,11 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
   thrust::sequence(indices.begin(), indices.end(), 1);
 }
 
-ClusterDynamicsState ClusterDynamicsImpl::run(gp_float delta_time,
+ClusterDynamicsState ClusterDynamicsImpl::run(gp_float time_delta,
                                               gp_float total_time) {
   for (gp_float endtime = time + total_time; time < endtime;
-       time += delta_time) {
-    step(delta_time);
+       time += time_delta) {
+    step(time_delta);
     validate_all();
   }
 

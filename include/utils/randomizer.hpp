@@ -57,7 +57,7 @@ class Randomizer {
     material_randomize(simulation.material);
     simulation.max_cluster_size = rand() % 10000;
     simulation.simulation_time = randd();
-    simulation.delta_time = randd();
+    simulation.time_delta = randd();
 
     int vec_size = rand() % 100000 + 4;
     for (int i = 0; i < vec_size; ++i) {

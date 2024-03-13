@@ -24,9 +24,9 @@ ClusterDynamics::ClusterDynamics(size_t max_cluster_size,
  */
 ClusterDynamics::~ClusterDynamics() {}
 
-ClusterDynamicsState ClusterDynamics::run(gp_float delta_time,
+ClusterDynamicsState ClusterDynamics::run(gp_float time_delta,
                                           gp_float total_time) {
-  return _impl->run(delta_time, total_time);
+  return _impl->run(time_delta, total_time);
 }
 
 Material ClusterDynamics::get_material() const { return material; }

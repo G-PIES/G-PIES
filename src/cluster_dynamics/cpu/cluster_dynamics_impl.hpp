@@ -97,7 +97,7 @@ class ClusterDynamicsImpl {
                       const MaterialImpl &material);
   ~ClusterDynamicsImpl();
 
-  ClusterDynamicsState run(gp_float delta_time, gp_float total_time);
+  ClusterDynamicsState run(gp_float time_delta, gp_float total_time);
   MaterialImpl get_material() const;
   void set_material(const MaterialImpl &material);
   NuclearReactorImpl get_reactor() const;

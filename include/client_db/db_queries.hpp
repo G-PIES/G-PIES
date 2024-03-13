@@ -63,7 +63,7 @@ std::string init =
     "creation_datetime TEXT,"
     "max_cluster_size INTEGER DEFAULT 0,"
     "simulation_time FLOAT DEFAULT 0.0,"
-    "delta_time FLOAT DEFAULT 0.0,"
+    "time_delta FLOAT DEFAULT 0.0,"
     "id_reactor INTEGER,"
     "id_material INTEGER,"
     "interstitials BLOB,"
@@ -157,7 +157,7 @@ std::string delete_material = "DELETE FROM materials WHERE id_material = ?;";
 
 std::string create_simulation =
     "INSERT INTO history_simulations ("
-    "max_cluster_size, simulation_time, delta_time, id_reactor, "
+    "max_cluster_size, simulation_time, time_delta, id_reactor, "
     "id_material, interstitials, vacancies, "
     "dislocation_density, density_per_atom, creation_datetime"
     ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";

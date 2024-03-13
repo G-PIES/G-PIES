@@ -37,14 +37,14 @@ class ClusterDynamics {
 
   /** @brief Runs the simulation and returns the end simulation state as a
    * ClusterDynamicsState object.
-   *  @param delta_time The time step for the simulation in seconds.
+   *  @param time_delta The time step for the simulation in seconds.
    *  @param total_time The length of time that should be simulated in
    * seconds.
    *
    *  run() can be called multiple times, and the simulation will resume from
    * where it stopped after the last time run() was called.
    */
-  ClusterDynamicsState run(gp_float delta_time, gp_float total_time);
+  ClusterDynamicsState run(gp_float time_delta, gp_float total_time);
 
   /** @brief Returns the Material parameters that the simulation currently has
    * set.
