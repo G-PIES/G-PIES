@@ -3,29 +3,6 @@ include(FetchContent)
 
 project(G-PIES)
 
-set(PROJECT_ROOT ${CMAKE_CURRENT_LIST_DIR})
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/out)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/out)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/out)
-
-set(CMAKE_CXX_STANDARD 20)
-add_compile_definitions($<$<PLATFORM_ID:Windows>:_USE_MATH_DEFINES>)
-
-# TODO: Consider replacing /W2 with /W4 or /Wall for MSVC.
-add_compile_options("$<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-Wall;-Wextra;-Werror>")
-add_compile_options("$<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<CXX_COMPILER_ID:MSVC>>:/W2;/WX>")
-add_compile_options("$<$<COMPILE_LANGUAGE:CUDA>:-Werror;all-warnings>")
-add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CUDA>>:SHELL:-Xcompiler /W2>")
-add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CUDA>>:SHELL:-Xcompiler /WX>")
-
-set(GP_NO_SANITIZER false CACHE BOOL "Disable sanitizers for debug builds.")
-if(NOT GP_NO_SANITIZER)
-  # TODO: Configure sanitizer for MSVC. MSVC requires manually copying ASAN DLLs to the output folder.
-  add_compile_options("$<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=undefined;-fsanitize=address>")
-  add_link_options("$<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=address;-fsanitize=undefined>")
-endif()
-
 set(GP_BUILD_CUDA false CACHE BOOL "Build CUDA-dependent targets.")
 set(CUDA_ARCHITECTURES native CACHE STRING "CUDA architectures.")
 add_compile_options("$<$<COMPILE_LANGUAGE:CUDA>:--expt-extended-lambda>")
@@ -70,6 +47,29 @@ else()
   add_library(sqlite3_lib ${sqlite3_SOURCE_DIR}/sqlite3.c)
   set(SQLite3_INCLUDE_DIRS ${sqlite3_SOURCE_DIR})
   set(SQLite3_LIBRARY_TARGET sqlite3_lib)
+endif()
+
+set(PROJECT_ROOT ${CMAKE_CURRENT_LIST_DIR})
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/out)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/out)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/out)
+
+set(CMAKE_CXX_STANDARD 20)
+add_compile_definitions($<$<PLATFORM_ID:Windows>:_USE_MATH_DEFINES>)
+
+# TODO: Consider replacing /W2 with /W4 or /Wall for MSVC.
+add_compile_options("$<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-Wall;-Wextra;-Werror>")
+add_compile_options("$<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<CXX_COMPILER_ID:MSVC>>:/W2;/WX>")
+add_compile_options("$<$<COMPILE_LANGUAGE:CUDA>:-Werror;all-warnings>")
+add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CUDA>>:SHELL:-Xcompiler /W2>")
+add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CUDA>>:SHELL:-Xcompiler /WX>")
+
+set(GP_NO_SANITIZER false CACHE BOOL "Disable sanitizers for debug builds.")
+if(NOT GP_NO_SANITIZER)
+  # TODO: Configure sanitizer for MSVC. MSVC requires manually copying ASAN DLLs to the output folder.
+  add_compile_options("$<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=undefined;-fsanitize=address>")
+  add_link_options("$<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=address;-fsanitize=undefined>")
 endif()
 
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
