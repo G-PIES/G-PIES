@@ -27,6 +27,8 @@ process_option() {
     --debug) DEBUG=1 ;;
     --release) RELEASE=1 ;;
     --help|-h) HELP=1 ;;
+    --no-sanitizer) NO_SANITIZER=1 ;;
+    --cmake-verbose) CMAKE_VERBOSE=1 ;;
     *)
       echo_error "Unknown option $1"
       HELP=1
@@ -103,6 +105,9 @@ if [ "$HELP" ]; then
   echo "                      Cannot be usage together with --release."
   echo "  --release           Build release build (max optimizations)."
   echo "                      Cannot be usage together with --debug."
+  echo "  --no-sanitizier     Do not use sanitizer for debug builds."
+  echo "  --cmake-verbose     Enable verbose output in the build process."
+  echo "                      (CMAKE_VERBOSE_MAKEFILE=ON)"
   exit $ERROR
 fi
 
@@ -199,9 +204,9 @@ else
 fi
 
 if [ "$CUDA" ]; then
-  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_CUDA=true"
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_CUDA:BOOL=true"
 else
-  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_CUDA=false"
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_CUDA:BOOL=false"
 fi
 
 if [ "$CUDA_ALL" ]; then
@@ -211,18 +216,34 @@ else
 fi
 
 if [ "$METAL" ]; then
-  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_METAL=true"
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_METAL:BOOL=true"
 else
-  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_METAL=false"
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_METAL:BOOL=false"
 fi
 
 if [ "$VERBOSE" ]; then
   CMAKE_CONFIGURE_OPTIONS+=" -DGP_VERBOSE:BOOL=true"
+else
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_VERBOSE:BOOL=false"
 fi
 
 if [ "$CSV" ]; then
   RUN_OPTIONS="1e-5 1 > $OUT_PATH/cd-output.csv"
   CMAKE_CONFIGURE_OPTIONS+=" -DGP_CSV:BOOL=true"
+else
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_CSV:BOOL=false"
+fi
+
+if [ "$NO_SANITIZER" ]; then
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_NO_SANITIZER:BOOL=true"
+else
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_NO_SANITIZER:BOOL=false"
+fi
+
+if [ "$CMAKE_VERBOSE" ]; then
+  CMAKE_CONFIGURE_OPTIONS+=" -DCMAKE_VERBOSE_MAKEFILE:BOOL=true"
+else
+  CMAKE_CONFIGURE_OPTIONS+=" -DCMAKE_VERBOSE_MAKEFILE:BOOL=false"
 fi
 
 for target in "${TARGETS_TO_BUILD[@]}"; do
