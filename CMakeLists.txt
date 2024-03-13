@@ -41,7 +41,7 @@ if(GP_BUILD_METAL)
 endif()
 
 set(Boost_USE_STATIC_LIBS        ON)
-set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_MULTITHREADED     OFF)
 set(Boost_USE_STATIC_RUNTIME    OFF)
 find_package(Boost COMPONENTS program_options)
 if(Boost_FOUND)
@@ -49,8 +49,7 @@ if(Boost_FOUND)
 else()
   FetchContent_Declare(
     Boost
-    GIT_REPOSITORY https://github.com/boostorg/boost.git
-    GIT_TAG boost-1.80.0
+    URL https://github.com/boostorg/boost/releases/download/boost-1.84.0/boost-1.84.0.7z # downloading a zip release speeds up the download
   )
   FetchContent_MakeAvailable(Boost)
   set(Boost_LIBRARY_TARGET Boost)
