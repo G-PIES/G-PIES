@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['nuclearreactor_237',['NuclearReactor',['../structNuclearReactor.html',1,'']]],
-  ['nuclearreactorimpl_238',['NuclearReactorImpl',['../structNuclearReactorImpl.html',1,'']]]
+  ['historysimulation_253',['HistorySimulation',['../structHistorySimulation.html',1,'']]]
 ];

@@ -95,7 +95,7 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="timer_8hpp_source.html#l00008">8</a> of file <a class="el" href="timer_8hpp_source.html">timer.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="timer_8hpp_source.html#l00009">9</a> of file <a class="el" href="timer_8hpp_source.html">timer.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a4e607b129b392c11adddd9641a320436"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4e607b129b392c11adddd9641a320436">&#9670;&nbsp;</a></span>Start()</h2>
@@ -120,10 +120,8 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="timer_8hpp_source.html#l00013">13</a> of file <a class="el" href="timer_8hpp_source.html">timer.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    start_time = std::chrono::steady_clock::now();</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  }</div>
+<p class="definition">Definition at line <a class="el" href="timer_8hpp_source.html#l00015">15</a> of file <a class="el" href="timer_8hpp_source.html">timer.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;{ start_time = std::chrono::steady_clock::now(); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -150,12 +148,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="timer_8hpp_source.html#l00018">18</a> of file <a class="el" href="timer_8hpp_source.html">timer.hpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">auto</span> end_time = std::chrono::steady_clock::now();</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    std::chrono::duration&lt;gp_float&gt; diff = end_time - start_time;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keywordflow">return</span> diff.count();</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  }</div>
+<p class="definition">Definition at line <a class="el" href="timer_8hpp_source.html#l00017">17</a> of file <a class="el" href="timer_8hpp_source.html">timer.hpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                  {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">auto</span> end_time = std::chrono::steady_clock::now();</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    std::chrono::duration&lt;gp_float&gt; diff = end_time - start_time;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keywordflow">return</span> diff.count();</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  }</div>
 </div><!-- fragment -->
 </div>
 </div>

@@ -1,19 +1,5 @@
 var searchData=
 [
-  ['i_5fbi_413',['i_bi',['../structNuclearReactorImpl.html#a757f0778aee52eb1fe79fb423932c1f3',1,'NuclearReactorImpl']]],
-  ['i_5fbinding_414',['i_binding',['../structMaterialImpl.html#afc2584478f9a1a0eb62d9fb4e2c0e9bb',1,'MaterialImpl']]],
-  ['i_5fdiffusion_5f0_415',['i_diffusion_0',['../structMaterialImpl.html#aea298b0ca54fe988e42bbede3ecfba7c',1,'MaterialImpl']]],
-  ['i_5fdiffusion_5fval_416',['i_diffusion_val',['../classClusterDynamicsImpl.html#a69a95929bea4071f6d1ab42bb8fab449',1,'ClusterDynamicsImpl']]],
-  ['i_5fdislocation_5fbias_417',['i_dislocation_bias',['../structMaterialImpl.html#a013944800502358aa258de734637e5bf',1,'MaterialImpl']]],
-  ['i_5fdislocation_5fbias_5fparam_418',['i_dislocation_bias_param',['../structMaterialImpl.html#a5b93e59385d2600f2b81c0cd7c6a5799',1,'MaterialImpl']]],
-  ['i_5fformation_419',['i_formation',['../structMaterialImpl.html#aaa062a461acfdacf4451806b73bdaf95',1,'MaterialImpl']]],
-  ['i_5floop_5fbias_420',['i_loop_bias',['../structMaterialImpl.html#aa6b7364875c00f8d7535f67825fd18fa',1,'MaterialImpl']]],
-  ['i_5fmigration_421',['i_migration',['../structMaterialImpl.html#ae5a957bc54458f3fea0086744356c42a',1,'MaterialImpl']]],
-  ['i_5fquad_422',['i_quad',['../structNuclearReactorImpl.html#a9560b98f7ed645452fa2787cf99b24ef',1,'NuclearReactorImpl']]],
-  ['i_5ftri_423',['i_tri',['../structNuclearReactorImpl.html#a634783b61851c060b5ddc5aa4d9b2d5a',1,'NuclearReactorImpl']]],
-  ['ii_5fsum_5fabsorption_5fval_424',['ii_sum_absorption_val',['../classClusterDynamicsImpl.html#a905ea18bd5140c288f726c78f8d19c15',1,'ClusterDynamicsImpl']]],
-  ['indices_425',['indices',['../classClusterDynamicsImpl.html#a791a0ab4d64eaa3aea253ab5c6f99b38',1,'ClusterDynamicsImpl']]],
-  ['interstitials_426',['interstitials',['../structClusterDynamicsState.html#a9c0545df3eaa8a6581ca5a424a711f72',1,'ClusterDynamicsState::interstitials()'],['../classClusterDynamicsImpl.html#a089f3770f8c943fd0231af60eb99cf34',1,'ClusterDynamicsImpl::interstitials()'],['../classClusterDynamicsImpl.html#ae26d6769a90be1f218e9e655e766f1d5',1,'ClusterDynamicsImpl::interstitials()']]],
-  ['interstitials_5ftemp_427',['interstitials_temp',['../classClusterDynamicsImpl.html#a536fa76f3b2ec7d355b5b14630ef2c1a',1,'ClusterDynamicsImpl::interstitials_temp()'],['../classClusterDynamicsImpl.html#a406c37cb3cef0880d5069e54709bf1b3',1,'ClusterDynamicsImpl::interstitials_temp()']]],
-  ['iv_5fsum_5fabsorption_5fval_428',['iv_sum_absorption_val',['../classClusterDynamicsImpl.html#a32e68ded7e28f3a847d41af34ae075cb',1,'ClusterDynamicsImpl']]]
+  ['host_5finterstitials_443',['host_interstitials',['../classClusterDynamicsImpl.html#a5885af38f22ff058038a36bdb6459be8',1,'ClusterDynamicsImpl']]],
+  ['host_5fvacancies_444',['host_vacancies',['../classClusterDynamicsImpl.html#a4eee307fd1400116610580b9a7cc3d2c',1,'ClusterDynamicsImpl']]]
 ];

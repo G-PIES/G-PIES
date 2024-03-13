@@ -87,31 +87,30 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;memory&gt;</code><br />
-<code>#include &quot;<a class="el" href="types_8hpp_source.html">types.hpp</a>&quot;</code><br />
+<code>#include &lt;string&gt;</code><br />
 <code>#include &quot;<a class="el" href="cluster__dynamics__state_8hpp_source.html">cluster_dynamics_state.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="material_8hpp_source.html">material.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="nuclear__reactor_8hpp_source.html">nuclear_reactor.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="material_8hpp_source.html">model/material.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="nuclear__reactor_8hpp_source.html">model/nuclear_reactor.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="types_8hpp_source.html">utils/types.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="gpies__exception_8hpp_source.html">utils/gpies_exception.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for cluster_dynamics.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="cluster__dynamics_8hpp__incl.png" border="0" usemap="#_2home_2omnicryptical_2School_2CS46X_2cd-prototype_2include_2cluster__dynamics_2cluster__dynamics_8hpp" alt=""/></div>
 <map name="_2home_2omnicryptical_2School_2CS46X_2cd-prototype_2include_2cluster__dynamics_2cluster__dynamics_8hpp" id="_2home_2omnicryptical_2School_2CS46X_2cd-prototype_2include_2cluster__dynamics_2cluster__dynamics_8hpp">
-<area shape="rect" title=" " alt="" coords="248,5,451,76"/>
-<area shape="rect" title=" " alt="" coords="5,124,83,151"/>
-<area shape="rect" href="types_8hpp.html" title=" " alt="" coords="285,199,371,225"/>
-<area shape="rect" href="cluster__dynamics__state_8hpp.html" title=" " alt="" coords="107,124,311,151"/>
-<area shape="rect" href="material_8hpp.html" title=" " alt="" coords="562,124,667,151"/>
-<area shape="rect" href="nuclear__reactor_8hpp.html" title=" " alt="" coords="387,124,538,151"/>
-<area shape="rect" title=" " alt="" coords="178,199,241,225"/>
-<area shape="rect" title=" " alt="" coords="902,199,965,225"/>
-<area shape="rect" title=" " alt="" coords="396,199,455,225"/>
-<area shape="rect" href="constants_8hpp.html" title=" " alt="" coords="765,199,878,225"/>
-<area shape="rect" href="conversions_8hpp.html" title=" " alt="" coords="479,199,607,225"/>
-<area shape="rect" href="datetime_8hpp.html" title=" " alt="" coords="631,199,740,225"/>
-<area shape="rect" title=" " alt="" coords="512,273,571,300"/>
-<area shape="rect" title=" " alt="" coords="595,273,675,300"/>
-<area shape="rect" title=" " alt="" coords="699,273,770,300"/>
-<area shape="rect" title=" " alt="" coords="795,273,856,300"/>
+<area shape="rect" title=" " alt="" coords="315,5,518,76"/>
+<area shape="rect" title=" " alt="" coords="243,199,321,225"/>
+<area shape="rect" title=" " alt="" coords="161,199,219,225"/>
+<area shape="rect" href="cluster__dynamics__state_8hpp.html" title=" " alt="" coords="852,124,1056,151"/>
+<area shape="rect" href="types_8hpp.html" title=" " alt="" coords="895,199,1013,225"/>
+<area shape="rect" href="material_8hpp.html" title=" " alt="" coords="539,124,689,151"/>
+<area shape="rect" href="nuclear__reactor_8hpp.html" title=" " alt="" coords="319,124,514,151"/>
+<area shape="rect" href="gpies__exception_8hpp.html" title=" " alt="" coords="5,124,193,151"/>
+<area shape="rect" title=" " alt="" coords="1037,199,1100,225"/>
+<area shape="rect" title=" " alt="" coords="345,199,430,225"/>
+<area shape="rect" title=" " alt="" coords="639,199,701,225"/>
+<area shape="rect" href="constants_8hpp.html" title=" " alt="" coords="725,199,871,225"/>
+<area shape="rect" href="conversions_8hpp.html" title=" " alt="" coords="454,199,614,225"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -119,8 +118,10 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="cluster__dynamics_8hpp__dep__incl.png" border="0" usemap="#_2home_2omnicryptical_2School_2CS46X_2cd-prototype_2include_2cluster__dynamics_2cluster__dynamics_8hppdep" alt=""/></div>
 <map name="_2home_2omnicryptical_2School_2CS46X_2cd-prototype_2include_2cluster__dynamics_2cluster__dynamics_8hppdep" id="_2home_2omnicryptical_2School_2CS46X_2cd-prototype_2include_2cluster__dynamics_2cluster__dynamics_8hppdep">
-<area shape="rect" title=" " alt="" coords="9,5,212,76"/>
+<area shape="rect" title=" " alt="" coords="240,5,443,76"/>
 <area shape="rect" href="cluster__dynamics_8cpp.html" title=" " alt="" coords="5,124,216,195"/>
+<area shape="rect" href="cluster__dynamics__impl_8cpp.html" title=" " alt="" coords="240,124,443,195"/>
+<area shape="rect" href="cluster__dynamics__cuda__impl_8cpp.html" title=" " alt="" coords="467,124,709,195"/>
 </map>
 </div>
 </div>
@@ -130,6 +131,8 @@ This graph shows which files directly or indirectly include this file:</div>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classClusterDynamics.html">ClusterDynamics</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class which defines a cluster dynamics simulation.  <a href="classClusterDynamics.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classClusterDynamicsException.html">ClusterDynamicsException</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
