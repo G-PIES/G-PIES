@@ -188,7 +188,7 @@ void ClientDb::bind_simulation(sqlite3_stmt *stmt,
       BlobConverter::to_blob(simulation.cd_state.vacancies);
 
   sqlite3_bind_int(stmt, 1,
-                   static_cast<int>(simulation.concentration_boundary));
+                   static_cast<int>(simulation.max_cluster_size));
   sqlite3_bind_double(stmt, 2, static_cast<double>(simulation.simulation_time));
   sqlite3_bind_double(stmt, 3, static_cast<double>(simulation.delta_time));
   sqlite3_bind_int(stmt, 4, simulation.reactor.sqlite_id);
@@ -292,7 +292,7 @@ void ClientDb::row_read_simulation(sqlite3_stmt *stmt,
   simulation.sqlite_id = sqlite3_column_int(stmt, col_offset + 0);
 
   simulation.creation_datetime = (char *)sqlite3_column_text(stmt, 1);
-  simulation.concentration_boundary =
+  simulation.max_cluster_size =
       static_cast<size_t>(sqlite3_column_int(stmt, 2));
   simulation.simulation_time =
       static_cast<gp_float>(sqlite3_column_double(stmt, 3));

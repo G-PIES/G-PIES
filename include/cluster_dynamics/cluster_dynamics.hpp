@@ -24,14 +24,14 @@ class ClusterDynamics {
 
  public:
   /** @brief Constructs and initializes a new cluster dynamics simulation.
-   *  @param concentration_boundary The number of cluster sizes that the
+   *  @param max_cluster_size The number of cluster sizes that the
    * simulation will track.
    *  @param reactor A NuclearReactor object containing the reactor parameters
    * the simulation will use.
    *  @param material A Material object containing the material parameters the
    * simulation will use.
    */
-  ClusterDynamics(size_t concentration_boundary, const NuclearReactor &reactor,
+  ClusterDynamics(size_t max_cluster_size, const NuclearReactor &reactor,
                   const Material &material);
   ~ClusterDynamics();
 

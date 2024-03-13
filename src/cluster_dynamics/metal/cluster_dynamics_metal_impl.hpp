@@ -41,7 +41,7 @@ class ClusterDynamicsImpl {
 
   ClusterDynamicsMetalKernel mtl_kernel;
 
-  size_t concentration_boundary;
+  size_t max_cluster_size;
 
   bool data_validation_on;
 

@@ -280,8 +280,8 @@ void simulation_cmp_print(const HistorySimulation& r1,
   fprintf(stdout, "%d\t\t\t\t\t\t-\t%d\n", r1.material.sqlite_id,
           r2.material.sqlite_id);
   fprintf(stdout, "%llu\t\t\t\t\t\t-\t%llu\n",
-          static_cast<unsigned long long>(r1.concentration_boundary),
-          static_cast<unsigned long long>(r2.concentration_boundary));
+          static_cast<unsigned long long>(r1.max_cluster_size),
+          static_cast<unsigned long long>(r2.max_cluster_size));
   fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.simulation_time,
           r2.simulation_time);
   fprintf(stdout, "%g\t\t\t\t\t\t-\t%g\n", r1.delta_time, r2.delta_time);

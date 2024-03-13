@@ -91,7 +91,7 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a999201737784547b78f9567e36770b68"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classClusterDynamics.html#a999201737784547b78f9567e36770b68">ClusterDynamics</a> (size_t concentration_boundary, const <a class="el" href="structNuclearReactor.html">NuclearReactor</a> &amp;reactor, const <a class="el" href="structMaterial.html">Material</a> &amp;material)</td></tr>
+<tr class="memitem:a999201737784547b78f9567e36770b68"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classClusterDynamics.html#a999201737784547b78f9567e36770b68">ClusterDynamics</a> (size_t max_cluster_size, const <a class="el" href="structNuclearReactor.html">NuclearReactor</a> &amp;reactor, const <a class="el" href="structMaterial.html">Material</a> &amp;material)</td></tr>
 <tr class="memdesc:a999201737784547b78f9567e36770b68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs and initializes a new cluster dynamics simulation.  <a href="classClusterDynamics.html#a999201737784547b78f9567e36770b68">More...</a><br /></td></tr>
 <tr class="separator:a999201737784547b78f9567e36770b68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7df828702125315f14199b87d70acebb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classClusterDynamics.html#a7df828702125315f14199b87d70acebb">~ClusterDynamics</a> ()</td></tr>
@@ -127,7 +127,7 @@ Public Member Functions</h2></td></tr>
           <td class="memname">ClusterDynamics::ClusterDynamics </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>concentration_boundary</em>, </td>
+          <td class="paramname"><em>max_cluster_size</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -152,7 +152,7 @@ Public Member Functions</h2></td></tr>
 <p>Constructs and initializes a new cluster dynamics simulation. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">concentration_boundary</td><td>The number of cluster sizes that the simulation will track. </td></tr>
+    <tr><td class="paramname">max_cluster_size</td><td>The number of cluster sizes that the simulation will track. </td></tr>
     <tr><td class="paramname">reactor</td><td>A <a class="el" href="structNuclearReactor.html" title="A class which represents the radiation environment parameters for a ClusterDynamics simulation.">NuclearReactor</a> object containing the reactor parameters the simulation will use. </td></tr>
     <tr><td class="paramname">material</td><td>A <a class="el" href="structMaterial.html" title="A class which represents the material property parameters for a ClusterDynamics simulation.">Material</a> object containing the material parameters the simulation will use. </td></tr>
   </table>
@@ -163,7 +163,7 @@ Public Member Functions</h2></td></tr>
 <div class="fragment"><div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;{</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  this-&gt;reactor = reactor;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  this-&gt;material = material;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  _impl = std::make_unique&lt;ClusterDynamicsImpl&gt;(concentration_boundary, *reactor.<a class="code" href="structNuclearReactor.html#ac59238a112687260136baa18ae4c1b95">_impl</a>, *material.<a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>);</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  _impl = std::make_unique&lt;ClusterDynamicsImpl&gt;(max_cluster_size, *reactor.<a class="code" href="structNuclearReactor.html#ac59238a112687260136baa18ae4c1b95">_impl</a>, *material.<a class="code" href="structMaterial.html#aa258782eff9eb88048edb4c8aecac3f3">_impl</a>);</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;}</div>
 </div><!-- fragment -->
 </div>

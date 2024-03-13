@@ -663,10 +663,10 @@ void ClusterDynamicsImpl::step_init() {
   i_diffusion_val = i_diffusion();
   v_diffusion_val = v_diffusion();
   mean_dislocation_radius_val = mean_dislocation_cell_radius();
-  ii_sum_absorption_val = ii_sum_absorption(concentration_boundary - 1);
-  iv_sum_absorption_val = iv_sum_absorption(concentration_boundary - 1);
-  vi_sum_absorption_val = vi_sum_absorption(concentration_boundary - 1);
-  vv_sum_absorption_val = vv_sum_absorption(concentration_boundary - 1);
+  ii_sum_absorption_val = ii_sum_absorption(max_cluster_size - 1);
+  iv_sum_absorption_val = iv_sum_absorption(max_cluster_size - 1);
+  vi_sum_absorption_val = vi_sum_absorption(max_cluster_size - 1);
+  vv_sum_absorption_val = vv_sum_absorption(max_cluster_size - 1);
 }
 
 void ClusterDynamicsImpl::step(gp_float delta_time) {
@@ -754,7 +754,7 @@ gp_float ClusterDynamicsImpl::vi_sum_absorption(size_t) const {
 void ClusterDynamicsImpl::validate_all() const {
   if (!data_validation_on) return;
 
-  for (size_t n = 1; n < concentration_boundary; ++n) {
+  for (size_t n = 1; n < max_cluster_size; ++n) {
     validate(n);
   }
 }
@@ -787,21 +787,21 @@ void ClusterDynamicsImpl::validate(size_t n) const {
 // --------------------------------------------------------------------------------------------
 
 // TODO - clean up the uses of random +1/+2/-1/etc throughout the code
-ClusterDynamicsImpl::ClusterDynamicsImpl(size_t concentration_boundary,
+ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
                                          const NuclearReactorImpl &reactor,
                                          const MaterialImpl &material)
     : time(0.0),
-      interstitials(concentration_boundary + 1, 0.0),
-      interstitials_temp(concentration_boundary + 1, 0.0),
-      vacancies(concentration_boundary + 1, 0.0),
-      vacancies_temp(concentration_boundary + 1, 0.0),
-      concentration_boundary(concentration_boundary),
+      interstitials(max_cluster_size + 1, 0.0),
+      interstitials_temp(max_cluster_size + 1, 0.0),
+      vacancies(max_cluster_size + 1, 0.0),
+      vacancies_temp(max_cluster_size + 1, 0.0),
+      max_cluster_size(max_cluster_size),
       dislocation_density(material.dislocation_density_0),
       material(material),
       reactor(reactor),
-      indices(concentration_boundary - 1, 0),
-      host_interstitials(concentration_boundary + 1, 0.0),
-      host_vacancies(concentration_boundary + 1, 0.0),
+      indices(max_cluster_size - 1, 0),
+      host_interstitials(max_cluster_size + 1, 0.0),
+      host_vacancies(max_cluster_size + 1, 0.0),
       data_validation_on(true) {
   ClusterDynamicsImpl *raw_self;
   cudaMalloc(&raw_self, sizeof(ClusterDynamicsImpl));

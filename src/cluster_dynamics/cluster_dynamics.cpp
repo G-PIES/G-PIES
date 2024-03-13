@@ -8,13 +8,13 @@
 #include "cluster_dynamics_impl.hpp"
 #endif
 
-ClusterDynamics::ClusterDynamics(size_t concentration_boundary,
+ClusterDynamics::ClusterDynamics(size_t max_cluster_size,
                                  const NuclearReactor &reactor,
                                  const Material &material) {
   this->reactor = reactor;
   this->material = material;
   _impl = std::make_unique<ClusterDynamicsImpl>(
-      concentration_boundary, *reactor._impl, *material._impl);
+      max_cluster_size, *reactor._impl, *material._impl);
 }
 
 /** We cannot use the default destructor that the header would've defined

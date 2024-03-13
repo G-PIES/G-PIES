@@ -11,12 +11,12 @@
 
 struct HistorySimulation {
   HistorySimulation() : sqlite_id(-1) { datetime::utc_now(creation_datetime); }
-  HistorySimulation(size_t concentration_boundary, gp_float simulation_time,
+  HistorySimulation(size_t max_cluster_size, gp_float simulation_time,
                     gp_float delta_time, const NuclearReactor& reactor,
                     const Material& material,
                     const ClusterDynamicsState& cd_state)
       : sqlite_id(-1),
-        concentration_boundary(concentration_boundary),
+        max_cluster_size(max_cluster_size),
         simulation_time(simulation_time),
         delta_time(delta_time),
         reactor(reactor),
@@ -27,7 +27,7 @@ struct HistorySimulation {
 
   int sqlite_id;
   std::string creation_datetime;
-  size_t concentration_boundary;
+  size_t max_cluster_size;
   gp_float simulation_time;
   gp_float delta_time;
   NuclearReactor reactor;

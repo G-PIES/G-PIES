@@ -56,7 +56,7 @@ TEST_F(ClusterDynamicsTest, CorrectEndtime) {
 TEST_F(ClusterDynamicsTest, ResultUnchanged) {
   // Compare current results to old results to catch unexpected changes to
   // results Data generated with delta_time = 1e-5, total_time=1e-3,
-  // concentration_boundary=10
+  // max_cluster_size=10
 
   const gp_float interstitials_data[10] = {
       0,           1.99812e-10, 3.58921e-13, 1.61354e-11,  5.21253e-12,
@@ -675,7 +675,7 @@ TEST_F(ClusterDynamicsTest, ii_sum_absorption_test) {
   cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
   gp_float expected = 1.3440457113561326e-25;
-  gp_float actual = cd.ii_sum_absorption(cd.concentration_boundary - 1);
+  gp_float actual = cd.ii_sum_absorption(cd.max_cluster_size - 1);
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
@@ -685,7 +685,7 @@ TEST_F(ClusterDynamicsTest, vi_sum_absorption_test) {
   cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
   gp_float expected = 1.3419225537357197e-25;
-  gp_float actual = cd.vi_sum_absorption(cd.concentration_boundary - 1);
+  gp_float actual = cd.vi_sum_absorption(cd.max_cluster_size - 1);
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
@@ -695,7 +695,7 @@ TEST_F(ClusterDynamicsTest, iv_sum_absorption_test) {
   cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
   gp_float expected = 1.3032955788203968e-30;
-  gp_float actual = cd.iv_sum_absorption(cd.concentration_boundary - 1);
+  gp_float actual = cd.iv_sum_absorption(cd.max_cluster_size - 1);
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
@@ -705,7 +705,7 @@ TEST_F(ClusterDynamicsTest, vv_sum_absorption_test) {
   cd.run(SIM_DELTA_TIME, SIM_RUN_TIME);
 
   gp_float expected = 1.2824366959852804e-30;
-  gp_float actual = cd.vv_sum_absorption(cd.concentration_boundary - 1);
+  gp_float actual = cd.vv_sum_absorption(cd.max_cluster_size - 1);
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }

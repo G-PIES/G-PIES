@@ -3,8 +3,8 @@
 #include <cmath>
 #include <cstring>
 #include <fstream>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
 #include "client_db/client_db.hpp"
 #include "cluster_dynamics/cluster_dynamics.hpp"
@@ -25,7 +25,7 @@ size_t sa_num_simulations = 0;
 std::string sa_var = "";
 gp_float sa_var_delta = 0;
 
-size_t concentration_boundary = 10;
+size_t max_cluster_size = 10;
 gp_float simulation_time = 1.;
 gp_float delta_time = 1e-5;
 gp_float sample_interval =
@@ -34,22 +34,22 @@ gp_float sample_interval =
 void print_start_message() {
   std::cout << "\nSimulation Started\n"
             << "time delta: " << delta_time
-            << " simulation time: " << simulation_time
-            << " max cluster size: " << static_cast<int>(concentration_boundary)
-            << " data validation: " << (data_validation_on ? "on" : "off")
+            << "  simulation time: " << simulation_time
+            << "  max cluster size: " << static_cast<int>(max_cluster_size)
+            << "  data validation: " << (data_validation_on ? "on" : "off")
             << std::endl;
 }
 
 void print_state(const ClusterDynamicsState& state) {
   os << "\nTime=" << state.time;
 
-  if (state.interstitials.size() != concentration_boundary ||
-      state.vacancies.size() != concentration_boundary) {
+  if (state.interstitials.size() != max_cluster_size ||
+      state.vacancies.size() != max_cluster_size) {
     throw ClusterDynamicsException("Output data is incorrectly sized.", state);
   }
 
   os << "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n";
-  for (uint64_t n = 1; n < concentration_boundary; ++n) {
+  for (uint64_t n = 1; n < max_cluster_size; ++n) {
     os << (long long unsigned int)n << "\t\t\t\t\t" << std::setprecision(13)
        << state.interstitials[n] << "\t\t\t" << std::setprecision(15)
        << state.vacancies[n] << std::endl;
@@ -61,7 +61,7 @@ void print_state(const ClusterDynamicsState& state) {
 
 void print_csv(const ClusterDynamicsState& state) {
   os << state.dpa;
-  for (uint64_t n = 1; n < concentration_boundary; ++n) {
+  for (uint64_t n = 1; n < max_cluster_size; ++n) {
     os << "," << state.interstitials[n] << "," << state.vacancies[n];
   }
   os << std::endl;
@@ -91,7 +91,7 @@ void print_simulation_history(ClientDb& db, bool print_details) {
 
     for (HistorySimulation s : simulations) {
       os << s.sqlite_id << " ~ "
-         << static_cast<unsigned long long>(s.concentration_boundary) << " ~ "
+         << static_cast<unsigned long long>(s.max_cluster_size) << " ~ "
          << s.simulation_time << " ~ " << s.delta_time << " ~ "
          << s.reactor.species << " ~ " << s.material.species << " ~ "
          << s.creation_datetime << std::endl;
@@ -216,7 +216,7 @@ void update_for_sensitivity_analysis(ClusterDynamics& cd,
 
 ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
                                     const Material& material) {
-  ClusterDynamics cd(concentration_boundary, reactor, material);
+  ClusterDynamics cd(max_cluster_size, reactor, material);
   cd.set_data_validation(data_validation_on);
 
   print_start_message();
@@ -266,8 +266,7 @@ int main(int argc, char* argv[]) {
         po::value<std::string>()->value_name("toggle")->implicit_value("on"),
         "turn on/off data validation (on by default)")(
         "max-cluster-size",
-        po::value<int>()->implicit_value(
-            static_cast<int>(concentration_boundary)),
+        po::value<int>()->implicit_value(static_cast<int>(max_cluster_size)),
         "the max size of defect clustering to consider")(
         "time", po::value<gp_float>()->implicit_value(simulation_time),
         "the simulation environment time span to model (in seconds)")(
@@ -323,7 +322,7 @@ int main(int argc, char* argv[]) {
         throw GpiesException(
             "Value for max-cluster-size must be a positive, non-zero integer.");
 
-      concentration_boundary = static_cast<size_t>(mcs);
+      max_cluster_size = static_cast<size_t>(mcs);
     }
 
     if (vm.count("time")) {
@@ -397,7 +396,7 @@ int main(int argc, char* argv[]) {
         if (db.read_simulation(sim_sqlite_id, sim)) {
           // TODO - support storing sensitivity analysis
           std::cout << "Running simulation " << sim_sqlite_id << std::endl;
-          concentration_boundary = sim.concentration_boundary;
+          max_cluster_size = sim.max_cluster_size;
           simulation_time = sim.simulation_time;
 
           // TODO - Support sample interval and set a max resolution to
@@ -436,7 +435,7 @@ int main(int argc, char* argv[]) {
       // --------------------------------------------------------------------------------------------
       // sensitivity analysis simulation loop
       for (size_t n = 0; n < sa_num_simulations; n++) {
-        ClusterDynamics cd(concentration_boundary, reactor, material);
+        ClusterDynamics cd(max_cluster_size, reactor, material);
         cd.set_data_validation(data_validation_on);
 
         ClusterDynamicsState state;
@@ -482,9 +481,9 @@ int main(int argc, char* argv[]) {
 
       // --------------------------------------------------------------------------------------------
       // Write simulation result to the database
-      HistorySimulation history_simulation(concentration_boundary,
-                                           simulation_time, delta_time, reactor,
-                                           material, state);
+      HistorySimulation history_simulation(max_cluster_size, simulation_time,
+                                           delta_time, reactor, material,
+                                           state);
 
       db.create_simulation(history_simulation);
       // --------------------------------------------------------------------------------------------
