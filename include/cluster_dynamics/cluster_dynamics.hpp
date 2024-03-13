@@ -2,11 +2,13 @@
 #define CLUSTER_DYNAMICS_HPP
 
 #include <memory>
+#include <string>
 
 #include "cluster_dynamics_state.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
 #include "utils/types.hpp"
+#include "utils/gpies_exception.hpp"
 
 class ClusterDynamicsImpl;
 
@@ -71,6 +73,15 @@ class ClusterDynamics {
    *  has already been run() for some time.
    */
   void set_reactor(const NuclearReactor &reactor);
+};
+
+class ClusterDynamicsException : public GpiesException {
+ public:
+  ClusterDynamicsException(const std::string &message,
+                    const ClusterDynamicsState &err_state)
+      : GpiesException(message), err_state(err_state) {}
+
+  ClusterDynamicsState err_state;
 };
 
 #endif  // CLUSTER_DYNAMICS_HPP

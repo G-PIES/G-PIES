@@ -321,11 +321,10 @@ void ClusterDynamicsMetalKernel::step_init() __METALDECL__ {
   mean_dislocation_radius_val = mean_dislocation_cell_radius();
 }
 
-bool ClusterDynamicsMetalKernel::update_clusters_1(gp_float delta_time)
+void ClusterDynamicsMetalKernel::update_clusters_1(gp_float delta_time)
     __METALDECL__ {
   interstitials[1] += i1_concentration_derivative() * delta_time;
   vacancies[1] += v1_concentration_derivative() * delta_time;
-  return true;
 }
 
 void ClusterDynamicsMetalKernel::update_dislocation_density(gp_float delta_time)
