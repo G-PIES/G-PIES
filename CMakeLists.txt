@@ -40,7 +40,7 @@ if(GP_BUILD_METAL)
   set(METAL_INCLUDE_DIRS ${metal-cpp_SOURCE_DIR})
 endif()
 
-set(Boost_USE_STATIC_LIBS        ON)
+set(Boost_USE_STATIC_LIBS       OFF)
 set(Boost_USE_MULTITHREADED     OFF)
 set(Boost_USE_STATIC_RUNTIME    OFF)
 find_package(Boost COMPONENTS program_options)
