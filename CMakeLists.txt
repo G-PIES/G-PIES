@@ -29,6 +29,8 @@ if(NOT Boost_FOUND)
     Boost
     URL https://github.com/boostorg/boost/releases/download/boost-1.84.0/boost-1.84.0.7z # downloading a zip release speeds up the download
   )
+  set(BOOST_ENABLE_CMAKE ON)
+  set(BOOST_INCLUDE_LIBRARIES program_options)
   FetchContent_MakeAvailable(Boost)
 endif()
 
