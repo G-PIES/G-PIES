@@ -23,7 +23,6 @@ class GraphController:
         for c_value in self.data_by_c:
             self.lines[c_value], = self.scatter_plot.axes.plot([], [], label=f'C: {c_value}')
 
-        self.scatter_plot.axes.legend()
         self.scatter_plot.axes.set_xlabel('Time (s)')
         self.scatter_plot.axes.set_ylabel('Interstitials / cm^3')
         self.parent_layout.addWidget(self.scatter_plot)
@@ -49,3 +48,6 @@ class GraphController:
         self.scatter_plot.axes.relim()
         self.scatter_plot.axes.autoscale_view(True, True, True)
         self.scatter_plot.figure.canvas.draw_idle()
+
+    def get_legend_items(self):
+        return {c_value: (line.get_label(), line.get_color()) for c_value, line in self.lines.items()}
