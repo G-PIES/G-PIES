@@ -48,9 +48,13 @@ struct Sim_Reactor {
 
   void set_v_quad(const gp_float val) { reactor.set_v_quad(val); }
   gp_float get_v_quad() { return reactor.get_v_quad(); }
-  
-  void set_dislocation_density_evolution(const gp_float val) { reactor.set_dislocation_density_evolution(val); }
-  gp_float get_dislocation_density_evolution() { return reactor.get_dislocation_density_evolution(); }
+
+  void set_dislocation_density_evolution(const gp_float val) {
+    reactor.set_dislocation_density_evolution(val);
+  }
+  gp_float get_dislocation_density_evolution() {
+    return reactor.get_dislocation_density_evolution();
+  }
 
   NuclearReactor reactor;
 };
@@ -68,10 +72,14 @@ struct Sim_Material {
   void set_v_migration(const gp_float val) { material.set_v_migration(val); }
   gp_float get_v_migration() { return material.get_v_migration(); }
 
-  void set_i_diffusion_0(const gp_float val) { material.set_i_diffusion_0(val); }
+  void set_i_diffusion_0(const gp_float val) {
+    material.set_i_diffusion_0(val);
+  }
   gp_float get_i_diffusion_0() { return material.get_i_diffusion_0(); }
 
-  void set_v_diffusion_0(const gp_float val) { material.set_v_diffusion_0(val); }
+  void set_v_diffusion_0(const gp_float val) {
+    material.set_v_diffusion_0(val);
+  }
   gp_float get_v_diffusion_0() { return material.get_v_diffusion_0(); }
 
   void set_i_formation(const gp_float val) { material.set_i_formation(val); }
@@ -86,40 +94,70 @@ struct Sim_Material {
   void set_v_binding(const gp_float val) { material.set_v_binding(val); }
   gp_float get_v_binding() { return material.get_v_binding(); }
 
-  void set_recombination_radius(const gp_float val) { material.set_recombination_radius(val); }
-  gp_float get_recombination_radius() { return material.get_recombination_radius(); }
+  void set_recombination_radius(const gp_float val) {
+    material.set_recombination_radius(val);
+  }
+  gp_float get_recombination_radius() {
+    return material.get_recombination_radius();
+  }
 
   void set_i_loop_bias(const gp_float val) { material.set_i_loop_bias(val); }
   gp_float get_i_loop_bias() { return material.get_i_loop_bias(); }
 
-  void set_i_dislocation_bias(const gp_float val) { material.set_i_dislocation_bias(val); }
-  gp_float get_i_dislocation_bias() { return material.get_i_dislocation_bias(); }
+  void set_i_dislocation_bias(const gp_float val) {
+    material.set_i_dislocation_bias(val);
+  }
+  gp_float get_i_dislocation_bias() {
+    return material.get_i_dislocation_bias();
+  }
 
-  void set_i_dislocation_bias_param(const gp_float val) { material.set_i_dislocation_bias_param(val); }
-  gp_float get_i_dislocation_bias_param() { return material.get_i_dislocation_bias_param(); }
+  void set_i_dislocation_bias_param(const gp_float val) {
+    material.set_i_dislocation_bias_param(val);
+  }
+  gp_float get_i_dislocation_bias_param() {
+    return material.get_i_dislocation_bias_param();
+  }
 
   void set_v_loop_bias(const gp_float val) { material.set_v_loop_bias(val); }
   gp_float get_v_loop_bias() { return material.get_v_loop_bias(); }
 
-  void set_v_dislocation_bias(const gp_float val) { material.set_v_dislocation_bias(val); }
-  gp_float get_v_dislocation_bias() { return material.get_v_dislocation_bias(); }
+  void set_v_dislocation_bias(const gp_float val) {
+    material.set_v_dislocation_bias(val);
+  }
+  gp_float get_v_dislocation_bias() {
+    return material.get_v_dislocation_bias();
+  }
 
-  void set_v_dislocation_bias_param(const gp_float val) { material.set_v_dislocation_bias_param(val); }
-  gp_float get_v_dislocation_bias_param() { return material.get_v_dislocation_bias_param(); }
+  void set_v_dislocation_bias_param(const gp_float val) {
+    material.set_v_dislocation_bias_param(val);
+  }
+  gp_float get_v_dislocation_bias_param() {
+    return material.get_v_dislocation_bias_param();
+  }
 
-  void set_dislocation_density_0(const gp_float val) { material.set_dislocation_density_0(val); }
-  gp_float get_dislocation_density_0() { return material.get_dislocation_density_0(); }
+  void set_dislocation_density_0(const gp_float val) {
+    material.set_dislocation_density_0(val);
+  }
+  gp_float get_dislocation_density_0() {
+    return material.get_dislocation_density_0();
+  }
 
   void set_grain_size(const gp_float val) { material.set_grain_size(val); }
   gp_float get_grain_size() { return material.get_grain_size(); }
 
-  void set_lattice_param(const gp_float val) { material.set_lattice_param(val); }
+  void set_lattice_param(const gp_float val) {
+    material.set_lattice_param(val);
+  }
   gp_float get_lattice_param() { return material.get_lattice_param(); }
 
-  void set_burgers_vector(const gp_float val) { material.set_burgers_vector(val); }
+  void set_burgers_vector(const gp_float val) {
+    material.set_burgers_vector(val);
+  }
   gp_float get_burgers_vector() { return material.get_burgers_vector(); }
 
-  void set_atomic_volume(const gp_float val) { material.set_atomic_volume(val); }
+  void set_atomic_volume(const gp_float val) {
+    material.set_atomic_volume(val);
+  }
   gp_float get_atomic_volume() { return material.get_atomic_volume(); }
 
   Material material;
@@ -256,8 +294,10 @@ PYBIND11_MODULE(pyclusterdynamics, m) {
       .def("set_v_quad", &Sim_Reactor::set_v_quad)
       .def("get_i_quad", &Sim_Reactor::get_i_quad)
 
-      .def("set_dislocation_density_evolution", &Sim_Reactor::set_dislocation_density_evolution)
-      .def("get_dislocation_density_evolution", &Sim_Reactor::get_dislocation_density_evolution);
+      .def("set_dislocation_density_evolution",
+           &Sim_Reactor::set_dislocation_density_evolution)
+      .def("get_dislocation_density_evolution",
+           &Sim_Reactor::get_dislocation_density_evolution);
 
   py::class_<Sim_Material>(m, "Sim_Material")
       .def(py::init<>())
@@ -268,7 +308,7 @@ PYBIND11_MODULE(pyclusterdynamics, m) {
       .def("get_v_migration", &Sim_Material::get_v_migration)
 
       .def("set_i_diffusion_0", &Sim_Material::set_i_diffusion_0)
-      .def("get_i_diffusion_0", &Sim_Material::get_i_diffusion_0)      
+      .def("get_i_diffusion_0", &Sim_Material::get_i_diffusion_0)
 
       .def("set_v_diffusion_0", &Sim_Material::set_v_diffusion_0)
       .def("get_v_diffusion_0", &Sim_Material::get_v_diffusion_0)
@@ -291,8 +331,10 @@ PYBIND11_MODULE(pyclusterdynamics, m) {
       .def("set_i_dislocation_bias", &Sim_Material::set_i_dislocation_bias)
       .def("get_i_dislocation_bias", &Sim_Material::get_i_dislocation_bias)
 
-      .def("set_i_dislocation_bias_param", &Sim_Material::set_i_dislocation_bias_param)
-      .def("get_i_dislocation_bias_param", &Sim_Material::get_i_dislocation_bias_param)
+      .def("set_i_dislocation_bias_param",
+           &Sim_Material::set_i_dislocation_bias_param)
+      .def("get_i_dislocation_bias_param",
+           &Sim_Material::get_i_dislocation_bias_param)
 
       .def("set_v_loop_bias", &Sim_Material::set_v_loop_bias)
       .def("get_v_loop_bias", &Sim_Material::get_v_loop_bias)
@@ -300,11 +342,15 @@ PYBIND11_MODULE(pyclusterdynamics, m) {
       .def("set_v_dislocation_bias", &Sim_Material::set_v_dislocation_bias)
       .def("get_v_dislocation_bias", &Sim_Material::get_v_dislocation_bias)
 
-      .def("set_v_dislocation_bias_param", &Sim_Material::set_v_dislocation_bias_param)
-      .def("get_v_dislocation_bias_param", &Sim_Material::get_v_dislocation_bias_param)
+      .def("set_v_dislocation_bias_param",
+           &Sim_Material::set_v_dislocation_bias_param)
+      .def("get_v_dislocation_bias_param",
+           &Sim_Material::get_v_dislocation_bias_param)
 
-      .def("set_dislocation_density_0", &Sim_Material::set_dislocation_density_0)
-      .def("get_dislocation_density_0", &Sim_Material::get_dislocation_density_0)
+      .def("set_dislocation_density_0",
+           &Sim_Material::set_dislocation_density_0)
+      .def("get_dislocation_density_0",
+           &Sim_Material::get_dislocation_density_0)
 
       .def("set_grain_size", &Sim_Material::set_grain_size)
       .def("get_grain_size", &Sim_Material::get_grain_size)
@@ -317,5 +363,4 @@ PYBIND11_MODULE(pyclusterdynamics, m) {
 
       .def("set_atomic_volume", &Sim_Material::set_atomic_volume)
       .def("get_atomic_volume", &Sim_Material::get_atomic_volume);
-
 }
