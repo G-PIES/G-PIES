@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <cstdint>
+#include <exception>
 
 #include "cluster_dynamics_state.hpp"
 #include "nuclear_reactor.hpp"

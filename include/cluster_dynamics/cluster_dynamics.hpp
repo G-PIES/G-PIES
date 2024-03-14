@@ -2,6 +2,8 @@
 #define CLUSTER_DYNAMICS_HPP
 
 #include <memory>
+#include <exception>
+
 #include "cluster_dynamics_state.hpp"
 #include "material.hpp"
 #include "nuclear_reactor.hpp"

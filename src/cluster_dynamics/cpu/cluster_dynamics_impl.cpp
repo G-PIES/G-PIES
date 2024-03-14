@@ -854,6 +854,19 @@ double ClusterDynamicsImpl::vi_sum_absorption(size_t nmax, size_t x)
 
 bool ClusterDynamicsImpl::validate(size_t n, size_t x)
 {
+  if (!(!std::isnan(interstitials_temp[n][x]) &&
+        !std::isinf(interstitials_temp[n][x]) &&
+        !std::isnan(vacancies_temp[n][x]) &&
+        !std::isinf(vacancies_temp[n][x]) &&
+        !(interstitials_temp[n][x] < 0) &&
+        !(vacancies_temp[n][x] < 0))) {
+    try {
+      throw ClusterDynamicsException();
+    }
+    catch (ClusterDynamicsException c) {
+      printf("Caught cluster dynamics exception at spatial dim: %d and cluster size: %d \n", x, n);
+    }
+  }
     return
         !std::isnan(interstitials_temp[n][x]) &&
         !std::isinf(interstitials_temp[n][x]) &&

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <exception>
 
 struct ClusterDynamicsState
 {
@@ -9,4 +10,7 @@ struct ClusterDynamicsState
     std::vector<std::vector<double>> interstitials;
     std::vector<std::vector<double>> vacancies;
     std::vector<double> dislocation_density;
+};
+
+class ClusterDynamicsException{
 };
