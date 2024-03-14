@@ -10,6 +10,9 @@ from gui.simulation.simulationparams import SimulationParams
 from gui.visualization.dataaccumulator import DataAccumulator
 from gui.visualization.graphcontroller import GraphController
 from gui.mainwindow import InputDialog
+import pyclusterdynamics as pycd
+import sys
+sys.path.append('../G-PIES/lib')
 
 
 class MainWindowController(QMainWindow, Ui_MainWindow):
@@ -17,6 +20,10 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
         self.init_connections()
+        self.reactor=0
+        self.material= pycd.Sim_Material()
+        self.reactor = pycd.Sim_Reactor()
+        
 
         stylesheet = "./gui/resources/stylesheet.qss"
         with open(stylesheet, "r") as f:
@@ -36,8 +43,12 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         result = input_dialog.exec_()
 
         inputs = input_dialog.getInputs()
+        temperature=float(inputs[0])
+        self.reactor.set_temperature(temperature)
+        self.material.set_atomic_volume(int(inputs[1]))
         print("First text:", inputs[0])
         print("Second text:", inputs[1])
+       
     
     def start_simulation(self):
         if self.sim_running:
@@ -78,8 +89,12 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         # Init SimulationProcess and start
         self.sim_running = True
         self.start_time = QDateTime.currentDateTime()
+        
+        
+        
         self.sim_process = SimulationProcess(simulation_params=self.params,
-                                             read_interval=10, shm_name=self.shm_name, shm_ready=self.shm_ready)
+                                             read_interval=10, shm_name=self.shm_name, shm_ready=self.shm_ready,sim_material=self.material,sim_reactor=self.reactor)
+        
         self.thread = threading.Thread(target=self.start_waiting_for_task)
         self.thread.start()
         print("simulation started")

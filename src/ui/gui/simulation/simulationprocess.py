@@ -6,7 +6,7 @@ import pyclusterdynamics as pycd
 
 
 class SimulationProcess(Process):
-    def __init__(self, simulation_params, read_interval, shm_name, shm_ready):
+    def __init__(self, simulation_params, read_interval, shm_name, shm_ready, sim_material, sim_reactor):
         super().__init__()
         self.params = simulation_params
         # Number of time steps between state reads, limits usage of pycd getters and shared memory writes
@@ -14,6 +14,9 @@ class SimulationProcess(Process):
         # Shared memory
         self.shm_name = shm_name
         self.shm_ready = shm_ready
+        
+        self.material = sim_material
+        self.reactor= sim_reactor
 
     def run(self):
         shm = shared_memory.SharedMemory(name=self.shm_name)
@@ -21,7 +24,7 @@ class SimulationProcess(Process):
 
         t = 0
         block_idx = 0
-        cd = pycd.Simulation(self.params.C, self.params.simulation_time, self.params.step)
+        cd = pycd.Simulation(self.params.C, self.params.simulation_time, self.params.step, self.material, self.reactor)
 
         # Run simulation, read / store data every read_interval number of iterations,
         # set data_ready_event every runner_block_size number of completed read_intervals

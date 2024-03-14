@@ -135,8 +135,8 @@ class InputDialog(QDialog):
         buttonBox = QtWidgets.QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
 
         layout = QFormLayout(self)
-        layout.addRow("First text", self.first)
-        layout.addRow("Second text", self.second)
+        layout.addRow("Set Temperature", self.first)
+        layout.addRow("Set Atomic Volume", self.second)
         layout.addWidget(buttonBox)
 
         buttonBox.accepted.connect(self.accept)
