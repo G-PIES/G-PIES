@@ -26,8 +26,14 @@ step = 0.00001
 reactor = pycd.Sim_Reactor();
 material = pycd.Sim_Material();
 
-print("Material Obj: " + str(material))
-print("Reactor Obj: " + str(reactor))
+#print("Material Obj: " + str(material))
+#print("Reactor Obj: " + str(reactor))
+
+print(reactor.get_temperature())
+reactor.set_temperature(623.15) #KELVIN
+print(reactor.get_temperature())
+print(material.get_i_migration())
+print(reactor.get_dislocation_density_evolution())
 
 #Default material SA304 (for now..)
 #Deafult reactor OSIRIS (for now..)
