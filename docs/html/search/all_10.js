@@ -7,5 +7,5 @@ var searchData=
   ['reactor_5frandomize_151',['reactor_randomize',['../classRandomizer.html#af32c8c338ea22ff3e0597429e27db272',1,'Randomizer']]],
   ['recombination_152',['recombination',['../structNuclearReactorImpl.html#aa7b8a80dc9290eef8f815731b79504b1',1,'NuclearReactorImpl']]],
   ['recombination_5fradius_153',['recombination_radius',['../structMaterialImpl.html#af11b478bb967feb70103188765a95a1d',1,'MaterialImpl']]],
-  ['run_154',['run',['../classClusterDynamics.html#a3bd09c954cad9a137e733bc0bb2e2676',1,'ClusterDynamics::run()'],['../classClusterDynamicsImpl.html#a8428089ae49f274dd8175f385b7d5f67',1,'ClusterDynamicsImpl::run()']]]
+  ['run_154',['run',['../classClusterDynamics.html#a3bd09c954cad9a137e733bc0bb2e2676',1,'ClusterDynamics::run()'],['../classClusterDynamicsImpl.html#a81b0f7fcee903e27c1a2bb86e649fe6c',1,'ClusterDynamicsImpl::run(gp_float total_time)'],['../classClusterDynamicsImpl.html#a8428089ae49f274dd8175f385b7d5f67',1,'ClusterDynamicsImpl::run(gp_float time_delta, gp_float total_time)']]]
 ];

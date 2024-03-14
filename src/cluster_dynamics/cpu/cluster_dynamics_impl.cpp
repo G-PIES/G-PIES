@@ -27,7 +27,7 @@ gp_float ClusterDynamicsImpl::i_concentration_derivative(size_t n) const {
       i_defect_production(n)
       // (2)
       + i_demotion_rate(n + 1) * interstitials[n + 1]
-      //    (3)
+      // //    (3)
       - i_combined_promotion_demotion_rate(n) * interstitials[n]
       //    (4)
       + i_promotion_rate(n - 1) * interstitials[n - 1];
@@ -84,19 +84,18 @@ gp_float ClusterDynamicsImpl::v_concentration_derivative(size_t n) const {
  *  \f$
  */
 gp_float ClusterDynamicsImpl::i1_concentration_derivative() const {
-  //fprintf(stderr, "\n%g", *dislocation_density);
   return
       // (1)
       i_defect_production(1)
-      // (2)
+      // // (2)
       - annihilation_rate() * interstitials[1] * vacancies[1]
       // (3)
       - interstitials[1] * i_dislocation_annihilation_rate()
-      // (4)
+      // // (4)
       - interstitials[1] * i_grain_boundary_annihilation_rate()
-      // (5)
+      // // (5)
       - interstitials[1] * i_absorption_rate()
-      // (6)
+      // // (6)
       + i_emission_rate();
 }
 
@@ -1070,8 +1069,8 @@ gp_float ClusterDynamicsImpl::cluster_radius(size_t n) const {
 
 gp_float ClusterDynamicsImpl::ii_sum_absorption(size_t nmax) const {
   gp_float emission = 0.;
-  for (size_t vn = 1; vn < nmax; ++vn) {
-    emission += ii_absorption(vn) * interstitials[vn];
+  for (size_t n = 1; n < nmax; ++n) {
+    emission += ii_absorption(n) * interstitials[n];
   }
 
   return emission;
@@ -1125,33 +1124,30 @@ void ClusterDynamicsImpl::step_init() {
 int ClusterDynamicsImpl::system([[maybe_unused]] double t, N_Vector v_state, N_Vector v_state_derivatives, void* user_data)
 {
     ClusterDynamicsImpl* cd = static_cast<ClusterDynamicsImpl*>(user_data);
-
-    double* state = N_VGetArrayPointer(v_state);
-    double* state_derivatives = N_VGetArrayPointer(v_state_derivatives);
-
-    cd->interstitials = state;
-    cd->vacancies = cd->interstitials + (cd->max_cluster_size + 1) + 1;
-    cd->dislocation_density = cd->vacancies + (cd->max_cluster_size + 1) + 1;
+    cd->interstitials = N_VGetArrayPointer(v_state);
+    cd->vacancies = cd->interstitials + cd->max_cluster_size + 2;
+    cd->dislocation_density = cd->vacancies + cd->max_cluster_size + 2;
 
     cd->step_init();
 
-    double* i_derivatives = state_derivatives;
-    double* v_derivatives = state_derivatives + cd->max_cluster_size + 2;
-    double* dislocation_derivative = state_derivatives + 2 * (cd->max_cluster_size + 1);
+    double* i_derivatives = N_VGetArrayPointer(v_state_derivatives);
+    double* v_derivatives = i_derivatives + cd->max_cluster_size + 2;
+    double* dislocation_derivative = v_derivatives + cd->max_cluster_size + 2;
+
+    N_VConst(0.0, v_state_derivatives);
 
     i_derivatives[1] = cd->i1_concentration_derivative();
-    for (size_t i = 2; i < cd->max_cluster_size + 1; ++i)
+    for (size_t i = 2; i <= cd->max_cluster_size; ++i)
     {
         i_derivatives[i] = cd->i_concentration_derivative(i);
     }
 
     v_derivatives[1] = cd->v1_concentration_derivative();
-    for (size_t i = 2; i < cd->max_cluster_size + 1; ++i)
+    for (size_t i = 2; i <= cd->max_cluster_size; ++i)
     {
         v_derivatives[i] = cd->v_concentration_derivative(i);
     }
-
-    *dislocation_derivative = 0.0; //cd->dislocation_density_derivative();
+    *dislocation_derivative = cd->dislocation_density_derivative();
 
     return 0;
 }
@@ -1190,7 +1186,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
     : time(0.0), max_cluster_size(max_cluster_size),
       material(material), reactor(reactor) {
 
-    state_size = 2 * (max_cluster_size + 1) + 3;
+    state_size = 2 * (max_cluster_size + 2) + 1;
 
     /* Create the SUNDIALS context */
     int sunerr = SUNContext_Create(SUN_COMM_NULL, &sun_context);
@@ -1206,11 +1202,11 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
 
     /* Set State Aliases */
     interstitials = N_VGetArrayPointer(state);
-    vacancies = interstitials + (max_cluster_size + 1) + 1;
-    dislocation_density = vacancies + (max_cluster_size + 1) + 1;
+    vacancies = interstitials + max_cluster_size + 2;
+    dislocation_density = vacancies + max_cluster_size + 2;
 
     /* Initialize State Values */
-    std::memset(N_VGetArrayPointer(state), 0, state_size);
+    N_VConst(0.0, state);
     *dislocation_density = material.dislocation_density_0;
 
     /* Call CVodeCreate to create the solver memory and specify the
@@ -1228,7 +1224,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
 
     /* Call CVodeSVtolerances to specify the scalar relative tolerance
      * and scalar absolute tolerances */
-    sunerr = CVodeSStolerances(cvodes_memory_block, 1.0, 1.0);
+    sunerr = CVodeSStolerances(cvodes_memory_block, 1e-30, 1e-10);
     if (sunerr)
     {
         fprintf(stderr, "Failed to set CVODES tolerances.");
@@ -1250,13 +1246,19 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
     }
 }
 
-ClusterDynamicsImpl::~ClusterDynamicsImpl() {}
+ClusterDynamicsImpl::~ClusterDynamicsImpl() {
+  N_VDestroy_Serial(state);
+  SUNMatDestroy(jacobian_matrix);
+  SUNLinSolFree(linear_solver);
+  CVodeFree(&cvodes_memory_block);
+  SUNContext_Free(&sun_context);
+}
 
 ClusterDynamicsState ClusterDynamicsImpl::run(gp_float total_time) {
   double out_time;
   const int retval = CVode(cvodes_memory_block, time + total_time, state, &out_time, CV_NORMAL);
   if (retval != CV_SUCCESS) {
-      fprintf(stderr, "Problem with call to CVode");
+      fprintf(stderr, "Problem with call to CVode ");
   }
 
   time = out_time;

@@ -1,6 +1,7 @@
 #ifndef CLUSTER_DYNAMICS_IMPL_HPP
 #define CLUSTER_DYNAMICS_IMPL_HPP
 
+#include <iostream>
 #include <cmath>
 #include <vector>
 

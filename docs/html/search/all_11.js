@@ -42,8 +42,10 @@ var searchData=
   ['sqlite_5fid_194',['sqlite_id',['../structHistorySimulation.html#a5f80a8a5c49e349075424cc4c3392b37',1,'HistorySimulation::sqlite_id()'],['../structMaterial.html#aa7a7678eb5bafe799dd8eddfd50565fc',1,'Material::sqlite_id()'],['../structNuclearReactor.html#aa3b8e5ad6a41e23ca12be483c794ca19',1,'NuclearReactor::sqlite_id()']]],
   ['start_195',['Start',['../classTimer.html#a4e607b129b392c11adddd9641a320436',1,'Timer']]],
   ['state_196',['state',['../classClusterDynamicsImpl.html#a7c109e85c0d20f503c71f6d5ce21839e',1,'ClusterDynamicsImpl']]],
-  ['step_197',['step',['../classClusterDynamicsImpl.html#afdcc68685ce8f32dc0e1418d5037a5e8',1,'ClusterDynamicsImpl']]],
-  ['step_5finit_198',['step_init',['../classClusterDynamicsImpl.html#a708ed73c675604b4298edcb08e42307c',1,'ClusterDynamicsImpl']]],
-  ['stop_199',['Stop',['../classTimer.html#ac121452161ae9ecc177fa4570e0f834b',1,'Timer']]],
-  ['sun_5fcontext_200',['sun_context',['../classClusterDynamicsImpl.html#aa2b9946389adc52a118fbda322a02eb1',1,'ClusterDynamicsImpl']]]
+  ['state_5fsize_197',['state_size',['../classClusterDynamicsImpl.html#a804741364a816f8ba55f1324fa4945fd',1,'ClusterDynamicsImpl']]],
+  ['step_198',['step',['../classClusterDynamicsImpl.html#afdcc68685ce8f32dc0e1418d5037a5e8',1,'ClusterDynamicsImpl']]],
+  ['step_5finit_199',['step_init',['../classClusterDynamicsImpl.html#a708ed73c675604b4298edcb08e42307c',1,'ClusterDynamicsImpl::step_init()'],['../classClusterDynamicsImpl.html#a708ed73c675604b4298edcb08e42307c',1,'ClusterDynamicsImpl::step_init()']]],
+  ['stop_200',['Stop',['../classTimer.html#ac121452161ae9ecc177fa4570e0f834b',1,'Timer']]],
+  ['sun_5fcontext_201',['sun_context',['../classClusterDynamicsImpl.html#aa2b9946389adc52a118fbda322a02eb1',1,'ClusterDynamicsImpl']]],
+  ['system_202',['system',['../classClusterDynamicsImpl.html#a68967d86a43a0c5948ff26a9f88726e0',1,'ClusterDynamicsImpl']]]
 ];
