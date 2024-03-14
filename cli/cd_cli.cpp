@@ -258,20 +258,20 @@ int main(int argc, char* argv[]) {
     // Declare the supported options
     po::options_description all_options("General options");
     all_options.add_options()("help", "display help message")(
-        "csv", "csv output formatting")("step-print",
-                                        "print state at every time step")(
+        "csv", "csv output formatting")(
+        "step-print", "print simulation state at every time step")(
         "output-file", po::value<std::string>()->value_name("filename"),
-        "write output to a file")("db", "database options")(
+        "write simulation output to a file")("db", "database options")(
         "data-validation",
         po::value<std::string>()->value_name("toggle")->implicit_value("on"),
         "turn on/off data validation (on by default)")(
         "max-cluster-size",
         po::value<int>()->implicit_value(static_cast<int>(max_cluster_size)),
-        "the max size of defect clustering to consider")(
+        "set the max size of defect clustering to model")(
         "time", po::value<gp_float>()->implicit_value(simulation_time),
         "the simulation environment time span to model (in seconds)")(
         "time-delta", po::value<gp_float>()->implicit_value(time_delta),
-        "the time delta for every step of the simulation")(
+        "the time delta for every step of the simulation (in seconds)")(
         "sample-interval",
         po::value<gp_float>()->implicit_value(sample_interval),
         "how often to record simulation environment state (in seconds)");
@@ -285,17 +285,17 @@ int main(int argc, char* argv[]) {
 
     po::options_description sa_options(
         "Sensitivity analysis options [--sensitivity-analysis]");
-    sa_options.add_options()("sensitivity-analysis,s",
-                             "sensitivity analysis mode")(
-        "sensitivity-var,v", po::value<std::string>(),
-        "variable to do sensitivity analysis mode on (required sensitivity "
-        "analysis)")(
+    sa_options.add_options()(
+        "sensitivity-analysis-help",
+        "display sensitivity analysis supported variables and example command")(
+        "sensitivity-analysis,s", "use sensitivity analysis mode")(
         "num-sims,n", po::value<int>()->implicit_value(2),
         "number of simulations you want to run in sensititivy analysis "
-        "mode (required sensitivity analysis)")(
+        "mode (REQUIRED)")(
+        "sensitivity-var,v", po::value<std::string>()->value_name("var name"),
+        "specify the variable to do sensitivity analysis on (REQUIRED)")(
         "sensitivity-var-delta,d", po::value<gp_float>(),
-        "amount to change the [sensitivity-var] by for each loop (required "
-        "sensitivity analysis)");
+        "amount to change [sensitivity-var] by for each simulation (REQUIRED)");
 
     all_options.add(db_options).add(sa_options);
 
@@ -306,6 +306,26 @@ int main(int argc, char* argv[]) {
     // Help message
     if (vm.count("help")) {
       std::cout << all_options << "\n";
+      return 1;
+    } else if (vm.count("sensitivity-analysis-help")) {
+      // TODO - refactor supported variables, description, and corresponding
+      // enums
+      std::cout << "\nSupported Variables [--sensitivity-var]:\n"
+                << "i_migration\n"
+                << "v_migration\n"
+                << "i_formation\n"
+                << "v_formation\n"
+                << "i_binding\n"
+                << "v_binding\n"
+                << "dislocation_density_0\n"
+                << "flux\n"
+                << "temperature\n"
+                << "dislocation_density_evolution\n";
+
+      std::cout << "\nexample command: run 10 simulations, increasing the "
+                   "reactor flux by 1e-7 for each simulation\n"
+                << "./cd_cli --sensitivity-analysis --num-sims 10 "
+                   "--sensitivity-var flux --sensitivity-var-delta 1e-7\n\n";
       return 1;
     }
 
