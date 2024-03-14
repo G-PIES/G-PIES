@@ -12,7 +12,8 @@
 struct NuclearReactor;
 struct Material;
 
-static const char *DEFAULT_CLIENT_DB_PATH = "./db/gpies.db";
+static const std::string DB_NAME = "gpies.db";
+static const std::string DEV_DEFAULT_CLIENT_DB_PATH = "./db";
 
 class ClientDb {
  public:
@@ -157,8 +158,8 @@ class ClientDb {
 
   // Specify the |db_path| where the SQLite database resides
   // |lazy| will wait to open the database until |init| is called.
-  ClientDb(const char *db_path = DEFAULT_CLIENT_DB_PATH,
-           const bool lazy = true) noexcept;
+  ClientDb(const std::string &db_path = DEV_DEFAULT_CLIENT_DB_PATH,
+           const bool lazy = true);
   ~ClientDb();
 
  private:
@@ -256,6 +257,8 @@ class ClientDb {
   // Returns the last inserted row id, regardless of the table.
   int last_insert_rowid(int &);
 
+  // Makes a directory for managing the database file
+  void make_db_dir();
   // --------------------------------------------------------------------------------------------
 };
 

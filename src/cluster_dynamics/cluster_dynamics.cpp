@@ -8,13 +8,13 @@
 #include "cluster_dynamics_impl.hpp"
 #endif
 
-ClusterDynamics::ClusterDynamics(size_t concentration_boundary,
+ClusterDynamics::ClusterDynamics(size_t max_cluster_size,
                                  const NuclearReactor &reactor,
                                  const Material &material) {
   this->reactor = reactor;
   this->material = material;
   _impl = std::make_unique<ClusterDynamicsImpl>(
-      concentration_boundary, *reactor._impl, *material._impl);
+      max_cluster_size, *reactor._impl, *material._impl);
 }
 
 /** We cannot use the default destructor that the header would've defined
@@ -24,7 +24,7 @@ ClusterDynamics::ClusterDynamics(size_t concentration_boundary,
  */
 ClusterDynamics::~ClusterDynamics() {}
 
-ClusterDynamicsState ClusterDynamics::run([[maybe_unused]] gp_float delta_time,
+ClusterDynamicsState ClusterDynamics::run([[maybe_unused]] gp_float time_delta,
                                           gp_float total_time) {
   return _impl->run(total_time);
 }
@@ -41,4 +41,8 @@ NuclearReactor ClusterDynamics::get_reactor() const { return reactor; }
 void ClusterDynamics::set_reactor(const NuclearReactor &reactor) {
   this->reactor = reactor;
   _impl->set_reactor(*reactor._impl);
+}
+
+void ClusterDynamics::set_data_validation(const bool data_validation_on) {
+  _impl->data_validation_on = data_validation_on;
 }

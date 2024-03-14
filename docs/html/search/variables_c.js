@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['reactor_458',['reactor',['../structHistorySimulation.html#a8164c7717cdf92195e0320ccce08c72f',1,'HistorySimulation::reactor()'],['../classClusterDynamicsImpl.html#a4407a0d9bbe31563cd9d4e533b73c610',1,'ClusterDynamicsImpl::reactor()']]],
-  ['recombination_459',['recombination',['../structNuclearReactorImpl.html#aa7b8a80dc9290eef8f815731b79504b1',1,'NuclearReactorImpl']]],
-  ['recombination_5fradius_460',['recombination_radius',['../structMaterialImpl.html#af11b478bb967feb70103188765a95a1d',1,'MaterialImpl']]]
+  ['material_467',['material',['../structHistorySimulation.html#a35187ca1d6340a7195c060e7ec8754c1',1,'HistorySimulation::material()'],['../classClusterDynamicsImpl.html#af9e1b20beff717434c1083a00560fac9',1,'ClusterDynamicsImpl::material()']]],
+  ['max_5fcluster_5fsize_468',['max_cluster_size',['../structHistorySimulation.html#a84b0b308adbc1b1f02cb3af00a31f1ea',1,'HistorySimulation::max_cluster_size()'],['../classClusterDynamicsImpl.html#a91265cdbca769f20524d46ed90585345',1,'ClusterDynamicsImpl::max_cluster_size()']]],
+  ['mean_5fdislocation_5fradius_5fval_469',['mean_dislocation_radius_val',['../classClusterDynamicsImpl.html#a43bb34e0cf5aaa2e0e2e4c4c636a385d',1,'ClusterDynamicsImpl']]],
+  ['message_470',['message',['../classGpiesException.html#a4d2941bf6b88eb883e55c4b8d70ff190',1,'GpiesException']]]
 ];

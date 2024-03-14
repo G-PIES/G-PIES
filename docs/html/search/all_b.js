@@ -1,10 +1,6 @@
 var searchData=
 [
-  ['nickel_133',['nickel',['../namespacelattice__params.html#add12145d2557867b87619c1c6470023f',1,'lattice_params']]],
-  ['nuclear_5freactor_2ecpp_134',['nuclear_reactor.cpp',['../nuclear__reactor_8cpp.html',1,'']]],
-  ['nuclear_5freactor_2ehpp_135',['nuclear_reactor.hpp',['../nuclear__reactor_8hpp.html',1,'']]],
-  ['nuclear_5freactor_5fimpl_2ehpp_136',['nuclear_reactor_impl.hpp',['../nuclear__reactor__impl_8hpp.html',1,'']]],
-  ['nuclear_5freactors_137',['nuclear_reactors',['../namespacenuclear__reactors.html',1,'']]],
-  ['nuclearreactor_138',['NuclearReactor',['../structNuclearReactor.html',1,'NuclearReactor'],['../structNuclearReactor.html#a5a690354554fd671e0415e1d87498f9c',1,'NuclearReactor::NuclearReactor()'],['../structNuclearReactor.html#adfe3cede94edddd628e849e492aa6929',1,'NuclearReactor::NuclearReactor(const NuclearReactor &amp;other)']]],
-  ['nuclearreactorimpl_139',['NuclearReactorImpl',['../structNuclearReactorImpl.html',1,'']]]
+  ['lattice_5fparam_120',['lattice_param',['../structMaterialImpl.html#a843062a30c8f0dd9460d8752ab74135f',1,'MaterialImpl']]],
+  ['lattice_5fparams_121',['lattice_params',['../namespacelattice__params.html',1,'']]],
+  ['linear_5fsolver_122',['linear_solver',['../classClusterDynamicsImpl.html#a156cda3a5d21e054091eed6002de5ae2',1,'ClusterDynamicsImpl']]]
 ];

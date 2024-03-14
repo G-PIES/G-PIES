@@ -29,8 +29,8 @@ class ClusterDynamicsImpl {
   gp_float* vacancies;
   gp_float* dislocation_density;
 
+  size_t max_cluster_size;
   size_t state_size;
-  size_t concentration_boundary;
 
   /// @brief Precomputed in step_init() using mean_dislocation_cell_radius()
   gp_float mean_dislocation_radius_val;
@@ -47,6 +47,8 @@ class ClusterDynamicsImpl {
 
   MaterialImpl material;
   NuclearReactorImpl reactor;
+
+  bool data_validation_on;
 
   // Physics Model Functions
   gp_float i_concentration_derivative(size_t) const;
@@ -95,9 +97,10 @@ class ClusterDynamicsImpl {
   // Simulation Operation Functions
   void step_init();
   static int system(double t, N_Vector state, N_Vector state_derivatives, void* user_data);
+  void validate(size_t) const;
 
   // Interface functions
-  ClusterDynamicsImpl(size_t concentration_boundary,
+  ClusterDynamicsImpl(size_t max_cluster_size,
                       const NuclearReactorImpl &reactor,
                       const MaterialImpl &material);
   ~ClusterDynamicsImpl();

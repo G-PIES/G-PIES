@@ -18,7 +18,7 @@ class ClusterDynamicsTest : public ::testing::Test {
   Material material;
 
   static constexpr size_t SIM_SIZE = 10;
-  static constexpr double SIM_DELTA_TIME = 1e-5;
+  static constexpr double SIM_time_delta = 1e-5;
   static constexpr double SIM_RUN_TIME = 1e-5;
 
   ClusterDynamicsTest() {}
@@ -36,21 +36,21 @@ class ClusterDynamicsTest : public ::testing::Test {
 TEST_F(ClusterDynamicsTest, CorrectEndtime) {
   ClusterDynamics cd(100, reactor, material);
 
-  gp_float delta_time = 1e-5;
+  gp_float time_delta = 1e-5;
   gp_float total_time = 1.5e-3;
 
-  ClusterDynamicsState state = cd.run(delta_time, total_time);
+  ClusterDynamicsState state = cd.run(time_delta, total_time);
 
   // The real runtime may be greater than the provided one, but not by more
-  // than one delta_time
+  // than one time_delta
   ASSERT_GE(state.time, total_time);
-  EXPECT_NEAR(state.time, total_time, delta_time);
+  EXPECT_NEAR(state.time, total_time, time_delta);
 }
 
 TEST_F(ClusterDynamicsTest, ResultUnchanged) {
   // Compare current results to old results to catch unexpected changes to
-  // results Data generated with delta_time = 1e-5, total_time=1e-3,
-  // concentration_boundary=10
+  // results Data generated with time_delta = 1e-5, total_time=1e-3,
+  // max_cluster_size=10
 
   const gp_float interstitials_data[10] = {
       0,           1.99812e-10, 3.58921e-13, 1.61354e-11,  5.21253e-12,
@@ -625,7 +625,7 @@ TEST_F(ClusterDynamicsTest, ii_sum_absorption_test) {
   cd.run(SIM_RUN_TIME);
 
   gp_float expected = 1.3440457113561326e-25;
-  gp_float actual = cd.ii_sum_absorption(cd.concentration_boundary - 1);
+  gp_float actual = cd.ii_sum_absorption(cd.max_cluster_size - 1);
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
@@ -635,7 +635,7 @@ TEST_F(ClusterDynamicsTest, vi_sum_absorption_test) {
   cd.run(SIM_RUN_TIME);
 
   gp_float expected = 1.3419225537357197e-25;
-  gp_float actual = cd.vi_sum_absorption(cd.concentration_boundary - 1);
+  gp_float actual = cd.vi_sum_absorption(cd.max_cluster_size - 1);
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
@@ -645,7 +645,7 @@ TEST_F(ClusterDynamicsTest, iv_sum_absorption_test) {
   cd.run(SIM_RUN_TIME);
 
   gp_float expected = 1.3032955788203968e-30;
-  gp_float actual = cd.iv_sum_absorption(cd.concentration_boundary - 1);
+  gp_float actual = cd.iv_sum_absorption(cd.max_cluster_size - 1);
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }
@@ -655,7 +655,7 @@ TEST_F(ClusterDynamicsTest, vv_sum_absorption_test) {
   cd.run(SIM_RUN_TIME);
 
   gp_float expected = 1.2824366959852804e-30;
-  gp_float actual = cd.vv_sum_absorption(cd.concentration_boundary - 1);
+  gp_float actual = cd.vv_sum_absorption(cd.max_cluster_size - 1);
 
   EXPECT_DOUBLE_EQ(expected, actual);
 }

@@ -22,7 +22,7 @@ struct ClusterDynamicsState {
    *
    * The concentration of clusters of size `n` will be found at
    * interstitials[n]. The 0th element is always 0. The size of this data is
-   * determined by the `concentration_boundary` that the ClusterDynamics
+   * determined by the `max_cluster_size` that the ClusterDynamics
    * simulation was constructed with.
    */
   std::vector<gp_float> interstitials;
@@ -32,7 +32,7 @@ struct ClusterDynamicsState {
    *
    * The concentration of clusters of size `n` will be found at
    * interstitials[n]. The 0th element is always 0. The size of this data is
-   * determined by the `concentration_boundary` that the ClusterDynamics
+   * determined by the `max_cluster_size` that the ClusterDynamics
    * simulation was constructed with.
    */
   std::vector<gp_float> vacancies;

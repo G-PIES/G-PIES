@@ -41,15 +41,19 @@ class ClusterDynamicsImpl {
 
   ClusterDynamicsMetalKernel mtl_kernel;
 
-  size_t concentration_boundary;
+  size_t max_cluster_size;
 
-  bool step(gp_float);
+  bool data_validation_on;
+
+  void step(gp_float);
+  void validate_all() const;
+  void validate(size_t) const;
 
   // Interface functions
   ClusterDynamicsImpl(size_t, const NuclearReactorImpl &, const MaterialImpl &);
   ~ClusterDynamicsImpl();
 
-  ClusterDynamicsState run(gp_float delta_time, gp_float total_time);
+  ClusterDynamicsState run(gp_float time_delta, gp_float total_time);
   MaterialImpl get_material();
   void set_material(const MaterialImpl &material);
   NuclearReactorImpl get_reactor();

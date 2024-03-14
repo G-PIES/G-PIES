@@ -1,10 +1,11 @@
 var searchData=
 [
-  ['temperature_194',['temperature',['../structNuclearReactorImpl.html#a08022543790ae80c481e939428675b1b',1,'NuclearReactorImpl']]],
-  ['time_195',['time',['../structClusterDynamicsState.html#a6d844a934a939e73388e6ef5fb8ee930',1,'ClusterDynamicsState::time()'],['../classClusterDynamicsImpl.html#afe950f18bcfaf4d66d6b4a031413c5d3',1,'ClusterDynamicsImpl::time()']]],
-  ['timer_196',['Timer',['../classTimer.html',1,'']]],
-  ['timer_2ehpp_197',['timer.hpp',['../timer_8hpp.html',1,'']]],
-  ['to_5fblob_198',['to_blob',['../classBlobConverter.html#affc551e03b53c17273e82c0a113ebbb2',1,'BlobConverter']]],
-  ['todo_20list_199',['Todo List',['../todo.html',1,'']]],
-  ['types_2ehpp_200',['types.hpp',['../types_8hpp.html',1,'']]]
+  ['randd_147',['randd',['../classRandomizer.html#a7eb4d8cd95cf5a3e719c38ccc3f40341',1,'Randomizer']]],
+  ['randomizer_148',['Randomizer',['../classRandomizer.html',1,'Randomizer'],['../classRandomizer.html#a6f1e3b306ed5d631a73990c757e777c6',1,'Randomizer::Randomizer()']]],
+  ['randomizer_2ehpp_149',['randomizer.hpp',['../randomizer_8hpp.html',1,'']]],
+  ['reactor_150',['reactor',['../structHistorySimulation.html#a8164c7717cdf92195e0320ccce08c72f',1,'HistorySimulation::reactor()'],['../classClusterDynamicsImpl.html#a4407a0d9bbe31563cd9d4e533b73c610',1,'ClusterDynamicsImpl::reactor()']]],
+  ['reactor_5frandomize_151',['reactor_randomize',['../classRandomizer.html#af32c8c338ea22ff3e0597429e27db272',1,'Randomizer']]],
+  ['recombination_152',['recombination',['../structNuclearReactorImpl.html#aa7b8a80dc9290eef8f815731b79504b1',1,'NuclearReactorImpl']]],
+  ['recombination_5fradius_153',['recombination_radius',['../structMaterialImpl.html#af11b478bb967feb70103188765a95a1d',1,'MaterialImpl']]],
+  ['run_154',['run',['../classClusterDynamics.html#a3bd09c954cad9a137e733bc0bb2e2676',1,'ClusterDynamics::run()'],['../classClusterDynamicsImpl.html#a8428089ae49f274dd8175f385b7d5f67',1,'ClusterDynamicsImpl::run()']]]
 ];

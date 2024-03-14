@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['clusterdynamics_244',['ClusterDynamics',['../classClusterDynamics.html',1,'']]],
-  ['clusterdynamicsimpl_245',['ClusterDynamicsImpl',['../classClusterDynamicsImpl.html',1,'']]],
-  ['clusterdynamicsstate_246',['ClusterDynamicsState',['../structClusterDynamicsState.html',1,'']]]
+  ['clusterdynamics_251',['ClusterDynamics',['../classClusterDynamics.html',1,'']]],
+  ['clusterdynamicsexception_252',['ClusterDynamicsException',['../classClusterDynamicsException.html',1,'']]],
+  ['clusterdynamicsimpl_253',['ClusterDynamicsImpl',['../classClusterDynamicsImpl.html',1,'']]],
+  ['clusterdynamicsstate_254',['ClusterDynamicsState',['../structClusterDynamicsState.html',1,'']]]
 ];
