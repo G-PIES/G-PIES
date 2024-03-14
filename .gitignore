@@ -42,6 +42,9 @@ resources
 .vscode/*
 !.vscode/settings.json
 
+#pycache
+__pycache__
+
 # csv
 *.csv
 
