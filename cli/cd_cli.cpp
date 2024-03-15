@@ -290,7 +290,6 @@ void print_info_SA304() {
             << material.get_burgers_vector() << " cm"
             << "\natomic volume (lattice_parameter^3 / 4): "
             << material.get_atomic_volume() << "cm^3" << std::endl;
-  ;
 }
 
 void print_info_OSIRIS() {
