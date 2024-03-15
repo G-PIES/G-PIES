@@ -83,7 +83,7 @@ void print_simulation_history(ClientDb& db, bool print_details) {
      << static_cast<long long unsigned int>(simulations.size()) << std::endl;
 
   if (!simulations.empty()) {
-    os << "ID ~ Concentration Boundary ~ Simulation Time ~ Delta "
+    os << "ID ~ Max Cluster Size ~ Simulation Time ~ Delta "
           "Time ~ Reactor ~ Material ~ Creation Datetime\n\n";
 
     for (HistorySimulation s : simulations) {
@@ -255,8 +255,9 @@ int main(int argc, char* argv[]) {
     // Declare the supported options
     po::options_description all_options("General options");
     all_options.add_options()("help", "display help message")(
-        "csv", "csv output formatting")(
-        "step-print", "print simulation state at every time step")(
+        "version", "display version information")("csv",
+                                                  "csv output formatting")(
+        "step-print", "display simulation state at every time step")(
         "output-file", po::value<std::string>()->value_name("filename"),
         "write simulation output to a file")("db", "database options")(
         "data-validation",
@@ -323,6 +324,9 @@ int main(int argc, char* argv[]) {
                    "reactor flux by 1e-7 for each simulation\n"
                 << "./cd_cli --sensitivity-analysis --num-sims 10 "
                    "--sensitivity-var flux --sensitivity-var-delta 1e-7\n\n";
+      return 1;
+    } else if (vm.count("version")) {
+      std::cout << "G-PIES version " << GPIES_SEMANTIC_VERSION << "\n";
       return 1;
     }
 
