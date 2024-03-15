@@ -3,6 +3,11 @@ include(FetchContent)
 
 project(G-PIES)
 
+# Use the new behavior of DOWNLOAD_EXTRACT_TIMESTAMP if CMake supports it
+if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
+  cmake_policy(SET CMP0135 NEW)
+endif()
+
 set(GP_BUILD_CUDA false CACHE BOOL "Build CUDA-dependent targets.")
 set(CUDA_ARCHITECTURES native CACHE STRING "CUDA architectures.")
 add_compile_options("$<$<COMPILE_LANGUAGE:CUDA>:--expt-extended-lambda>")
