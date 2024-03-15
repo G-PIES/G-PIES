@@ -32,8 +32,11 @@ gp_float sample_interval =
     time_delta;  // How often (in seconds) to record the state
 
 void print_start_message() {
-  std::cout << "\nSimulation Started\n"
-            << "time delta: " << time_delta
+  // TODO - read species name off of material and reactor objects
+  std::cout << "\nG-PIES simulation started\n"
+            << "material: SA304"
+            << "  nuclear reactor: OSIRIS"
+            << "  time delta: " << time_delta
             << "  simulation time: " << simulation_time
             << "  max cluster size: " << static_cast<int>(max_cluster_size)
             << "  data validation: " << (data_validation_on ? "on" : "off")
@@ -83,7 +86,7 @@ void print_simulation_history(ClientDb& db, bool print_details) {
      << static_cast<long long unsigned int>(simulations.size()) << std::endl;
 
   if (!simulations.empty()) {
-    os << "ID ~ Concentration Boundary ~ Simulation Time ~ Delta "
+    os << "ID ~ Max Cluster Size ~ Simulation Time ~ Delta "
           "Time ~ Reactor ~ Material ~ Creation Datetime\n\n";
 
     for (HistorySimulation s : simulations) {
@@ -250,13 +253,75 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
   return state;
 }
 
+void print_info_SA304() {
+  Material material;
+  materials::SA304(material);
+  std::cout << material.species
+            << "\ninterstitial migration: " << material.get_i_migration()
+            << " eV"
+            << "\nvacancy migration: " << material.get_v_migration() << " eV"
+            << "\ninitial interstitial diffusion: "
+            << material.get_i_diffusion_0() << " cm^2/s"
+            << "\ninitial vacancy diffusion: " << material.get_v_diffusion_0()
+            << " cm^2/s"
+            << "\ninterstitial formation: " << material.get_i_formation()
+            << " eV"
+            << "\nvacancy formation: " << material.get_v_formation() << " eV"
+            << "\ninterstitial binding: " << material.get_i_binding() << " eV"
+            << "\nvacancy binding: " << material.get_v_binding() << " eV"
+            << "\nrecombination radius: " << material.get_recombination_radius()
+            << " cm"
+            << "\ninterstitial loop bias: " << material.get_i_loop_bias()
+            << "\ninterstitial dislocation bias: "
+            << material.get_i_dislocation_bias()
+            << "\ninterstitial dislocation bias param: "
+            << material.get_i_dislocation_bias_param()
+            << "\nvacancy loop bias: " << material.get_v_loop_bias()
+            << "\nvacancy dislocation bias: "
+            << material.get_v_dislocation_bias()
+            << "\nvacancy dislocation bias param: "
+            << material.get_v_dislocation_bias_param()
+            << "\ninitial dislocation density: "
+            << material.get_dislocation_density_0() << " cm^-2"
+            << "\ngrain size: " << material.get_grain_size() << " cm"
+            << "\nlattice parameter (FCC Nickel Approximation): "
+            << material.get_lattice_param() << " cm"
+            << "\nburgers vector (lattice_parameter / sqrt(2)): "
+            << material.get_burgers_vector() << " cm"
+            << "\natomic volume (lattice_parameter^3 / 4): "
+            << material.get_atomic_volume() << "cm^3" << std::endl;
+}
+
+void print_info_OSIRIS() {
+  NuclearReactor reactor;
+  nuclear_reactors::OSIRIS(reactor);
+  std::cout << reactor.species << "\nflux: " << reactor.get_flux() << " dpa/s"
+            << "\ntemperature: " << reactor.get_temperature() << " C"
+            << "\nrecombination rate: " << reactor.get_recombination()
+            << "\nbi-interstitial generation rate (CURRENTLY UNUSED): "
+            << reactor.get_i_bi()
+            << "\ntri-interstitial generation rate: " << reactor.get_i_tri()
+            << "\nquad-interstitial generation rate: " << reactor.get_i_quad()
+            << "\nbi-vacancy generation rate (CURRENTLY UNUSED): "
+            << reactor.get_v_bi()
+            << "\ntri-vacancy generation rate: " << reactor.get_v_tri()
+            << "\nquad-vacancy generation rate: " << reactor.get_v_quad()
+            << "\ndislocation density evolution: "
+            << reactor.get_dislocation_density_evolution() << std::endl;
+}
+
 int main(int argc, char* argv[]) {
   try {
     // Declare the supported options
-    po::options_description all_options("General options");
+    po::options_description all_options("General options", 120);
+    // TODO - remove material-info and reactor-info when we introduce CLI CRUD
+    // for them
     all_options.add_options()("help", "display help message")(
-        "csv", "csv output formatting")(
-        "step-print", "print simulation state at every time step")(
+        "material-info", "display information on SA304 stainless steel")(
+        "reactor-info", "display information on the OSIRIS reactor")(
+        "version", "display version information")("csv",
+                                                  "csv output formatting")(
+        "step-print", "display simulation state at every time step")(
         "output-file", po::value<std::string>()->value_name("filename"),
         "write simulation output to a file")("db", "database options")(
         "data-validation",
@@ -273,7 +338,7 @@ int main(int argc, char* argv[]) {
         po::value<gp_float>()->implicit_value(sample_interval),
         "how often to record simulation environment state (in seconds)");
 
-    po::options_description db_options("Database options [--db]");
+    po::options_description db_options("Database options [--db]", 120);
     db_options.add_options()("history,h", "display simulation history")(
         "history-detail", "display detailed simulation history")(
         "run,r", po::value<int>()->value_name("id"),
@@ -281,7 +346,7 @@ int main(int argc, char* argv[]) {
         "clear,c", "clear simulation history");
 
     po::options_description sa_options(
-        "Sensitivity analysis options [--sensitivity-analysis]");
+        "Sensitivity analysis options [--sensitivity-analysis]", 120);
     sa_options.add_options()(
         "sensitivity-analysis-help",
         "display sensitivity analysis supported variables and example command")(
@@ -323,6 +388,15 @@ int main(int argc, char* argv[]) {
                    "reactor flux by 1e-7 for each simulation\n"
                 << "./cd_cli --sensitivity-analysis --num-sims 10 "
                    "--sensitivity-var flux --sensitivity-var-delta 1e-7\n\n";
+      return 1;
+    } else if (vm.count("version")) {
+      std::cout << "G-PIES version " << GPIES_SEMANTIC_VERSION << "\n";
+      return 1;
+    } else if (vm.count("reactor-info")) {
+      print_info_OSIRIS();
+      return 1;
+    } else if (vm.count("material-info")) {
+      print_info_SA304();
       return 1;
     }
 
