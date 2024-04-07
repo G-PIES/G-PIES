@@ -24,7 +24,7 @@
 gp_float ClusterDynamicsImpl::i_concentration_derivative(size_t n) const {
   return
       // (1)
-      i_defect_production(n)
+      i_defect_production(n) / material.atomic_volume
       // (2)
       + i_demotion_rate(n + 1) * interstitials[n + 1]
       // //    (3)
@@ -57,7 +57,7 @@ gp_float ClusterDynamicsImpl::i_concentration_derivative(size_t n) const {
 gp_float ClusterDynamicsImpl::v_concentration_derivative(size_t n) const {
   return
       // (1)
-      v_defect_production(n)
+      v_defect_production(n) / material.atomic_volume
       // (2)
       + v_demotion_rate(n + 1) * vacancies[n + 1]
       // (3)
@@ -86,7 +86,7 @@ gp_float ClusterDynamicsImpl::v_concentration_derivative(size_t n) const {
 gp_float ClusterDynamicsImpl::i1_concentration_derivative() const {
   return
       // (1)
-      i_defect_production(1)
+      i_defect_production(1) / material.atomic_volume
       // // (2)
       - annihilation_rate() * interstitials[1] * vacancies[1]
       // (3)
@@ -119,7 +119,7 @@ gp_float ClusterDynamicsImpl::i1_concentration_derivative() const {
 gp_float ClusterDynamicsImpl::v1_concentration_derivative() const {
   return
       // (1)
-      v_defect_production(1)
+      v_defect_production(1) / material.atomic_volume
       // (2)
       - annihilation_rate() * interstitials[1] * vacancies[1]
       // (3)
@@ -1147,7 +1147,7 @@ int ClusterDynamicsImpl::system([[maybe_unused]] double t, N_Vector v_state, N_V
     {
         v_derivatives[i] = cd->v_concentration_derivative(i);
     }
-    *dislocation_derivative = cd->dislocation_density_derivative();
+    *dislocation_derivative = 0.0; // cd->dislocation_density_derivative();
 
     return 0;
 }
@@ -1224,7 +1224,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
 
     /* Call CVodeSVtolerances to specify the scalar relative tolerance
      * and scalar absolute tolerances */
-    sunerr = CVodeSStolerances(cvodes_memory_block, 1e-30, 1e-10);
+    sunerr = CVodeSStolerances(cvodes_memory_block, 1e20, 1e-2);
     if (sunerr)
     {
         fprintf(stderr, "Failed to set CVODES tolerances.");
@@ -1237,6 +1237,27 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
     linear_solver = SUNLinSol_Dense(state, jacobian_matrix, sun_context);
 
     CVodeSetUserData(cvodes_memory_block, static_cast<void*>(this));
+
+    sunerr = CVodeSetMaxNumSteps(cvodes_memory_block, 5000);
+    if (sunerr != CV_SUCCESS)
+    {
+        fprintf(stderr, "Failed to set CVODES max num steps.");
+    }
+    sunerr = CVodeSetMinStep(cvodes_memory_block, 1e-10);
+    if (sunerr != CV_SUCCESS)
+    {
+        fprintf(stderr, "Failed to set CVODES min step size.");
+    }
+    sunerr = CVodeSetMaxStep(cvodes_memory_block, 1e5);
+    if (sunerr != CV_SUCCESS)
+    {
+        fprintf(stderr, "Failed to set CVODES max step size.");
+    }
+    sunerr = CVodeSetInitStep(cvodes_memory_block, 1e-5);
+    if (sunerr != CV_SUCCESS)
+    {
+        fprintf(stderr, "Failed to set CVODES initial step size.");
+    }
 
     /* Attach the matrix and linear solver */
     sunerr = CVodeSetLinearSolver(cvodes_memory_block, linear_solver, jacobian_matrix);
@@ -1258,8 +1279,17 @@ ClusterDynamicsState ClusterDynamicsImpl::run(gp_float total_time) {
   double out_time;
   const int retval = CVode(cvodes_memory_block, time + total_time, state, &out_time, CV_NORMAL);
   if (retval != CV_SUCCESS) {
-      fprintf(stderr, "Problem with call to CVode ");
+      fprintf(stderr, "Problem with call to CVode: %d\n", retval);
   }
+
+  N_Vector errors = N_VNew_Serial(state_size, sun_context);
+  CVodeGetEstLocalErrors(cvodes_memory_block, errors);
+
+  fprintf(stderr, "\n");
+  for (size_t i = 0; i < state_size; ++i) {
+    fprintf(stderr, "%g ", N_VGetArrayPointer(errors)[i]);
+  }
+  fprintf(stderr, "\n");
 
   time = out_time;
 
