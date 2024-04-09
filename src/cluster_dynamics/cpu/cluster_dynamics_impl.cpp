@@ -1190,11 +1190,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
 
     /* Create the SUNDIALS context */
     int sunerr = SUNContext_Create(SUN_COMM_NULL, &sun_context);
-    if (sunerr)
-    {
-        /// \todo The docs suggest SUNGetErrMsg(sunerr)
-        fprintf(stderr, "Failed to create CVODES context.");
-    }
+    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
 
     /* Create the initial state */
     /// \todo Check errors
@@ -1217,18 +1213,12 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
      * user's right hand side function in y'=f(t,y), the initial time T0, and
      * the initial dependent variable vector y. */
     sunerr = CVodeInit(cvodes_memory_block, system, 0, state);
-    if (sunerr)
-    {
-        fprintf(stderr, "Failed to allocate CVODES memory.");
-    }
+    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
 
     /* Call CVodeSVtolerances to specify the scalar relative tolerance
      * and scalar absolute tolerances */
     sunerr = CVodeSStolerances(cvodes_memory_block, 1e20, 1e-2);
-    if (sunerr)
-    {
-        fprintf(stderr, "Failed to set CVODES tolerances.");
-    }
+    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
 
     /* Create dense jacobian matrix */
     jacobian_matrix = SUNDenseMatrix(state_size, state_size, sun_context);
@@ -1236,35 +1226,24 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
     /* Create dense SUNLinearSolver object for use by CVode */
     linear_solver = SUNLinSol_Dense(state, jacobian_matrix, sun_context);
 
-    CVodeSetUserData(cvodes_memory_block, static_cast<void*>(this));
+    sunerr = CVodeSetUserData(cvodes_memory_block, static_cast<void*>(this));
+    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
 
     sunerr = CVodeSetMaxNumSteps(cvodes_memory_block, 5000);
-    if (sunerr != CV_SUCCESS)
-    {
-        fprintf(stderr, "Failed to set CVODES max num steps.");
-    }
+    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+
     sunerr = CVodeSetMinStep(cvodes_memory_block, 1e-10);
-    if (sunerr != CV_SUCCESS)
-    {
-        fprintf(stderr, "Failed to set CVODES min step size.");
-    }
+    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+
     sunerr = CVodeSetMaxStep(cvodes_memory_block, 1e5);
-    if (sunerr != CV_SUCCESS)
-    {
-        fprintf(stderr, "Failed to set CVODES max step size.");
-    }
+    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+
     sunerr = CVodeSetInitStep(cvodes_memory_block, 1e-5);
-    if (sunerr != CV_SUCCESS)
-    {
-        fprintf(stderr, "Failed to set CVODES initial step size.");
-    }
+    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
 
     /* Attach the matrix and linear solver */
     sunerr = CVodeSetLinearSolver(cvodes_memory_block, linear_solver, jacobian_matrix);
-    if (sunerr)
-    {
-        fprintf(stderr, "Failed to set CVODES linear solver.");
-    }
+    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
 }
 
 ClusterDynamicsImpl::~ClusterDynamicsImpl() {
