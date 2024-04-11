@@ -43,13 +43,10 @@ void print_start_message() {
 void print_state(const ClusterDynamicsState& state) {
   os << "\nTime=" << state.time;
 
-  if (state.interstitials.size() != max_cluster_size ||
-      state.vacancies.size() != max_cluster_size) {
-    throw ClusterDynamicsException("Output data is incorrectly sized.", state);
-  }
+  size_t size = state.interstitials.size();
 
   os << "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n";
-  for (uint64_t n = 1; n < max_cluster_size; ++n) {
+  for (size_t n = 1; n < size; ++n) {
     os << (long long unsigned int)n << "\t\t\t\t\t" << std::setprecision(13)
        << state.interstitials[n] << "\t\t\t" << std::setprecision(15)
        << state.vacancies[n] << std::endl;
