@@ -1147,7 +1147,7 @@ int ClusterDynamicsImpl::system([[maybe_unused]] double t, N_Vector v_state, N_V
     {
         v_derivatives[i] = cd->v_concentration_derivative(i);
     }
-    *dislocation_derivative = 0.0; // cd->dislocation_density_derivative();
+    *dislocation_derivative = 0;//cd->dislocation_density_derivative();
 
     return 0;
 }
@@ -1202,8 +1202,12 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
     dislocation_density = vacancies + max_cluster_size + 2;
 
     /* Initialize State Values */
-    N_VConst(0.0, state);
+    N_VConst(1e-1, state);
     *dislocation_density = material.dislocation_density_0;
+    interstitials[0] = 0.0;
+    interstitials[max_cluster_size + 1] = 0.0;
+    vacancies[0] = 0.0;
+    vacancies[max_cluster_size + 1] = 0.0;
 
     /* Call CVodeCreate to create the solver memory and specify the
      * Backward Differentiation Formula */
@@ -1217,7 +1221,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
 
     /* Call CVodeSVtolerances to specify the scalar relative tolerance
      * and scalar absolute tolerances */
-    sunerr = CVodeSStolerances(cvodes_memory_block, 1e20, 1e-2);
+    sunerr = CVodeSStolerances(cvodes_memory_block, 1e1, 1e-6);
     if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
 
     /* Create dense jacobian matrix */
@@ -1244,6 +1248,8 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
     /* Attach the matrix and linear solver */
     sunerr = CVodeSetLinearSolver(cvodes_memory_block, linear_solver, jacobian_matrix);
     if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+
+    //CVodeSetInterpolateStopTime(cvodes_memory_block, 1);
 }
 
 ClusterDynamicsImpl::~ClusterDynamicsImpl() {
@@ -1264,13 +1270,17 @@ ClusterDynamicsState ClusterDynamicsImpl::run(gp_float total_time) {
   N_Vector errors = N_VNew_Serial(state_size, sun_context);
   CVodeGetEstLocalErrors(cvodes_memory_block, errors);
 
-  fprintf(stderr, "\n");
+  fprintf(stderr, "\n %g", out_time);
   for (size_t i = 0; i < state_size; ++i) {
-    fprintf(stderr, "%g ", N_VGetArrayPointer(errors)[i]);
+    //fprintf(stderr, "(%g, %g) ", N_VGetArrayPointer(state)[i], N_VGetArrayPointer(errors)[i]);
   }
   fprintf(stderr, "\n");
 
   time = out_time;
+
+  interstitials = N_VGetArrayPointer(state);
+  vacancies = interstitials + max_cluster_size + 2;
+  dislocation_density = vacancies + max_cluster_size + 2;
 
   return ClusterDynamicsState{
       .time = time,

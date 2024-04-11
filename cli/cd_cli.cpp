@@ -60,7 +60,7 @@ void print_state(const ClusterDynamicsState& state) {
 }
 
 void print_csv(const ClusterDynamicsState& state) {
-  os << state.dpa;
+  os << state.time;
   for (uint64_t n = 1; n < max_cluster_size; ++n) {
     os << "," << state.interstitials[n] << "," << state.vacancies[n];
   }
@@ -222,7 +222,12 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
   print_start_message();
 
   if (csv) {
-    os << "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n";
+    os << "Time (s),";
+    for (size_t i = 1; i < max_cluster_size; ++i)
+    {
+      os << "i" << i << ",v" << i << ",";
+    }
+    os << "\n";
   }
 
   // TODO - support sample interval
