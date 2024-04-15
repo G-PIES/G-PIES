@@ -274,7 +274,73 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
   return state;
 }
 
+void valid_integration_search() {
+  Timer timer;
+
+  ClusterDynamicsState state;
+
+  NuclearReactor reactor;
+  nuclear_reactors::OSIRIS(reactor);
+
+  Material material;
+  materials::SA304(material);
+
+  data_validation_on = false;
+
+  for (size_t n = 100; n < 1000; n += 100) {
+    max_cluster_size = 100;
+    gp_float td = 10.;
+    gp_float t = 100.;
+    gp_float rt = relative_tolerance;
+    gp_float at = absolute_tolerance;
+    gp_float minis = max_integration_step / 10.;
+    gp_float maxis = max_integration_step;
+
+    for (size_t i = 0; i < 10; ++i) {
+      time_delta = td;
+      simulation_time = t;
+      relative_tolerance = rt;
+      absolute_tolerance = at;
+      min_integration_step = minis;
+      max_integration_step = maxis;
+
+      try {
+        timer.Start();
+        state = run_simulation(reactor, material);
+        gp_float time = timer.Stop();
+        os << "\nValid Simulation\n"
+          << "time delta: " << time_delta
+          << "  simulation time: " << simulation_time
+          << "  max cluster size: " << static_cast<int>(max_cluster_size)
+          << std::endl
+          << "Integration Settings\n"
+          << "  relative tolerance: " << relative_tolerance
+          << "  absolute tolerance: " << absolute_tolerance
+          << "  max num integration steps: " << max_num_integration_steps
+          << "  min integration step: " << min_integration_step
+          << "  max integration step: " << max_integration_step 
+          << "\nTime Elapsed: " << time
+          << std::endl;
+          print_state(state);
+      } catch (...) {
+        timer.Stop();
+      }
+
+      td *= 10.;
+      t *= 10.;
+      rt *= 10.;
+      at *= 10.;
+      minis /= 10.;
+      maxis *= 10.;
+    }
+  }
+}
+
 int main(int argc, char* argv[]) {
+  // TODO - Remove (this is just for testing the CVODES implementation)
+  valid_integration_search();
+  return 0;
+
   try {
     // Declare the supported options
     po::options_description all_options("General Options");
