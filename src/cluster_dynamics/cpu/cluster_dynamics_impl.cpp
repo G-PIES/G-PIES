@@ -1189,73 +1189,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
                                          const NuclearReactorImpl &reactor,
                                          const MaterialImpl &material)
     : time(0.0), max_cluster_size(max_cluster_size),
-      material(material), reactor(reactor) {
-
-    state_size = 2 * (max_cluster_size + 2) + 1;
-
-    /* Create the SUNDIALS context */
-    int sunerr = SUNContext_Create(SUN_COMM_NULL, &sun_context);
-    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
-
-    /* Create the initial state */
-    /// \todo Check errors
-    state = N_VNew_Serial(state_size, sun_context);
-
-    /* Set State Aliases */
-    interstitials = N_VGetArrayPointer(state);
-    vacancies = interstitials + max_cluster_size + 2;
-    dislocation_density = vacancies + max_cluster_size + 2;
-
-    /* Initialize State Values */
-    N_VConst(1e-1, state);
-    *dislocation_density = material.dislocation_density_0;
-    interstitials[0] = 0.0;
-    interstitials[max_cluster_size + 1] = 0.0;
-    vacancies[0] = 0.0;
-    vacancies[max_cluster_size + 1] = 0.0;
-
-    /* Call CVodeCreate to create the solver memory and specify the
-     * Backward Differentiation Formula */
-    cvodes_memory_block = CVodeCreate(CV_BDF, sun_context);
-
-    /* Call CVodeInit to initialize the integrator memory and specify the
-     * user's right hand side function in y'=f(t,y), the initial time T0, and
-     * the initial dependent variable vector y. */
-    sunerr = CVodeInit(cvodes_memory_block, system, 0, state);
-    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
-
-    /* Call CVodeSVtolerances to specify the scalar relative tolerance
-     * and scalar absolute tolerances */
-    sunerr = CVodeSStolerances(cvodes_memory_block, 1e1, 1e-6);
-    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
-
-    /* Create dense jacobian matrix */
-    jacobian_matrix = SUNDenseMatrix(state_size, state_size, sun_context);
-
-    /* Create dense SUNLinearSolver object for use by CVode */
-    linear_solver = SUNLinSol_Dense(state, jacobian_matrix, sun_context);
-
-    sunerr = CVodeSetUserData(cvodes_memory_block, static_cast<void*>(this));
-    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
-
-    sunerr = CVodeSetMaxNumSteps(cvodes_memory_block, 5000);
-    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
-
-    sunerr = CVodeSetMinStep(cvodes_memory_block, 1e-10);
-    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
-
-    sunerr = CVodeSetMaxStep(cvodes_memory_block, 1e5);
-    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
-
-    sunerr = CVodeSetInitStep(cvodes_memory_block, 1e-5);
-    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
-
-    /* Attach the matrix and linear solver */
-    sunerr = CVodeSetLinearSolver(cvodes_memory_block, linear_solver, jacobian_matrix);
-    if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
-
-    //CVodeSetInterpolateStopTime(cvodes_memory_block, 1);
-}
+      material(material), reactor(reactor) {}
 
 ClusterDynamicsImpl::~ClusterDynamicsImpl() {
   N_VDestroy_Serial(state);
@@ -1263,6 +1197,74 @@ ClusterDynamicsImpl::~ClusterDynamicsImpl() {
   SUNLinSolFree(linear_solver);
   CVodeFree(&cvodes_memory_block);
   SUNContext_Free(&sun_context);
+}
+
+void ClusterDynamicsImpl::init() {
+  state_size = 2 * (max_cluster_size + 2) + 1;
+
+  /* Create the SUNDIALS context */
+  int sunerr = SUNContext_Create(SUN_COMM_NULL, &sun_context);
+  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+
+  /* Create the initial state */
+  /// \todo Check errors
+  state = N_VNew_Serial(state_size, sun_context);
+
+  /* Set State Aliases */
+  interstitials = N_VGetArrayPointer(state);
+  vacancies = interstitials + max_cluster_size + 2;
+  dislocation_density = vacancies + max_cluster_size + 2;
+
+  /* Initialize State Values */
+  N_VConst(1e-1, state);
+  *dislocation_density = material.dislocation_density_0;
+  interstitials[0] = 0.0;
+  interstitials[max_cluster_size + 1] = 0.0;
+  vacancies[0] = 0.0;
+  vacancies[max_cluster_size + 1] = 0.0;
+
+  /* Call CVodeCreate to create the solver memory and specify the
+    * Backward Differentiation Formula */
+  cvodes_memory_block = CVodeCreate(CV_BDF, sun_context);
+
+  /* Call CVodeInit to initialize the integrator memory and specify the
+    * user's right hand side function in y'=f(t,y), the initial time T0, and
+    * the initial dependent variable vector y. */
+  sunerr = CVodeInit(cvodes_memory_block, system, 0, state);
+  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+
+  /* Call CVodeSVtolerances to specify the scalar relative tolerance
+    * and scalar absolute tolerances */
+  sunerr = CVodeSStolerances(cvodes_memory_block, relative_tolerance, absolute_tolerance);
+  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+
+  /* Create dense jacobian matrix */
+  jacobian_matrix = SUNDenseMatrix(state_size, state_size, sun_context);
+
+  /* Create dense SUNLinearSolver object for use by CVode */
+  linear_solver = SUNLinSol_Dense(state, jacobian_matrix, sun_context);
+
+  sunerr = CVodeSetUserData(cvodes_memory_block, static_cast<void*>(this));
+  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+
+  sunerr = CVodeSetMaxNumSteps(cvodes_memory_block, max_num_integration_steps);
+  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+
+  sunerr = CVodeSetMinStep(cvodes_memory_block, min_integration_step);
+  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+
+  sunerr = CVodeSetMaxStep(cvodes_memory_block, max_integration_step);
+  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+
+  // TODO - set to time delta?
+  sunerr = CVodeSetInitStep(cvodes_memory_block, 1e-5);
+  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+
+  /* Attach the matrix and linear solver */
+  sunerr = CVodeSetLinearSolver(cvodes_memory_block, linear_solver, jacobian_matrix);
+  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+
+  //CVodeSetInterpolateStopTime(cvodes_memory_block, 1);
 }
 
 ClusterDynamicsState ClusterDynamicsImpl::run(gp_float total_time) {

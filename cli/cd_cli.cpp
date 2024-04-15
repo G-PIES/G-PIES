@@ -23,13 +23,18 @@ bool data_validation_on = true;
 
 size_t sa_num_simulations = 0;
 std::string sa_var = "";
-gp_float sa_var_delta = 0;
+gp_float sa_var_delta = 0.;
 
 size_t max_cluster_size = 10;
 gp_float simulation_time = 1.;
 gp_float time_delta = 1e-5;
 gp_float sample_interval =
     time_delta;  // How often (in seconds) to record the state
+gp_float relative_tolerance = 1e1;
+gp_float absolute_tolerance = 1e-6;
+size_t max_num_integration_steps = 500;
+gp_float min_integration_step = 1e-10;
+gp_float max_integration_step = time_delta;
 
 void print_start_message() {
   std::cout << "\nSimulation Started\n"
@@ -37,6 +42,13 @@ void print_start_message() {
             << "  simulation time: " << simulation_time
             << "  max cluster size: " << static_cast<int>(max_cluster_size)
             << "  data validation: " << (data_validation_on ? "on" : "off")
+            << std::endl
+            << "Integration Settings\n"
+            << "  relative tolerance: " << relative_tolerance
+            << "  absolute tolerance: " << absolute_tolerance
+            << "  max num integration steps: " << max_num_integration_steps
+            << "  min integration step: " << min_integration_step
+            << "  max integration step: " << max_integration_step
             << std::endl;
 }
 
@@ -117,6 +129,7 @@ void profile() {
   materials::SA304(material);
 
   ClusterDynamics cd(10, reactor, material);
+  cd.init();
   cd.run(1e-5, 1e-5);
 
   for (int n = 100; n < 400000; n += 10000) {
@@ -215,6 +228,12 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
                                     const Material& material) {
   ClusterDynamics cd(max_cluster_size, reactor, material);
   cd.set_data_validation(data_validation_on);
+  cd.set_relative_tolerance(relative_tolerance);
+  cd.set_absolute_tolerance(absolute_tolerance);
+  cd.set_max_num_integration_steps(max_num_integration_steps);
+  cd.set_min_integration_step(min_integration_step);
+  cd.set_max_integration_step(max_integration_step);
+  cd.init();
 
   print_start_message();
 
@@ -258,7 +277,7 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
 int main(int argc, char* argv[]) {
   try {
     // Declare the supported options
-    po::options_description all_options("General options");
+    po::options_description all_options("General Options");
     all_options.add_options()("help", "display help message")(
         "csv", "csv output formatting")(
         "step-print", "print simulation state at every time step")(
@@ -268,7 +287,7 @@ int main(int argc, char* argv[]) {
         po::value<std::string>()->value_name("toggle")->implicit_value("on"),
         "turn on/off data validation (on by default)")(
         "max-cluster-size",
-        po::value<int>()->implicit_value(static_cast<int>(max_cluster_size)),
+        po::value<size_t>()->implicit_value(max_cluster_size),
         "set the max size of defect clustering to model")(
         "time", po::value<gp_float>()->implicit_value(simulation_time),
         "the simulation environment time span to model (in seconds)")(
@@ -276,9 +295,24 @@ int main(int argc, char* argv[]) {
         "the time delta for every step of the simulation (in seconds)")(
         "sample-interval",
         po::value<gp_float>()->implicit_value(sample_interval),
-        "how often to record simulation environment state (in seconds)");
+        "how often to record simulation environment state (in seconds)")
+        ("relative-tolerance",
+        po::value<gp_float>()->implicit_value(relative_tolerance),
+        "scalar relative tolerance for integration error")
+        ("absolute-tolerance",
+        po::value<gp_float>()->implicit_value(absolute_tolerance),
+        "absolute relative tolerance for integration error")
+        ("max-num-integration-steps",
+        po::value<size_t>()->implicit_value(max_num_integration_steps),
+        "maximum allowed number of integration steps to achieve a single estimation")
+        ("min-integration-step",
+        po::value<gp_float>()->implicit_value(min_integration_step),
+        "minimum step size for integration")
+        ("max-integration-step",
+        po::value<gp_float>()->implicit_value(max_integration_step),
+        "maximum step size for integration");
 
-    po::options_description db_options("Database options [--db]");
+    po::options_description db_options("Database Options [--db]");
     db_options.add_options()("history,h", "display simulation history")(
         "history-detail", "display detailed simulation history")(
         "run,r", po::value<int>()->value_name("id"),
@@ -286,7 +320,7 @@ int main(int argc, char* argv[]) {
         "clear,c", "clear simulation history");
 
     po::options_description sa_options(
-        "Sensitivity analysis options [--sensitivity-analysis]");
+        "Sensitivity Analysis Options [--sensitivity-analysis]");
     sa_options.add_options()(
         "sensitivity-analysis-help",
         "display sensitivity analysis supported variables and example command")(
@@ -339,12 +373,12 @@ int main(int argc, char* argv[]) {
     }
 
     if (vm.count("max-cluster-size")) {
-      int mcs = vm["max-cluster-size"].as<int>();
+      size_t mcs = vm["max-cluster-size"].as<size_t>();
       if (mcs <= 0)
         throw GpiesException(
             "Value for max-cluster-size must be a positive, non-zero integer.");
 
-      max_cluster_size = static_cast<size_t>(mcs);
+      max_cluster_size = mcs;
     }
 
     if (vm.count("time")) {
@@ -374,6 +408,56 @@ int main(int argc, char* argv[]) {
             "decimal.");
 
       sample_interval = si;
+    }
+
+    if (vm.count("relative-tolerance")) {
+      gp_float rt = vm["relative-tolerance"].as<gp_float>();
+      if (rt <= 0.)
+        throw GpiesException(
+            "Value for relative-tolerance must be a positive, non-zero "
+            "decimal.");
+
+      relative_tolerance = rt;
+    }
+
+    if (vm.count("absolute-tolerance")) {
+      gp_float at = vm["absolute-tolerance"].as<gp_float>();
+      if (at <= 0.)
+        throw GpiesException(
+            "Value for absolute-tolerance must be a positive, non-zero "
+            "decimal.");
+
+      absolute_tolerance = at;
+    }
+
+    if (vm.count("max-num-integration-steps")) {
+      size_t mnis = vm["max-num-integration-steps"].as<size_t>();
+      if (mnis <= 0)
+        throw GpiesException(
+            "Value for max-num-integration-steps must be a positive, non-zero "
+            "integer.");
+
+      max_num_integration_steps = mnis;
+    }
+
+    if (vm.count("min-integration-step")) {
+      gp_float minis = vm["min-integration-step"].as<gp_float>();
+      if (minis <= 0.)
+        throw GpiesException(
+            "Value for min-integration-step must be a positive, non-zero "
+            "decimal.");
+
+      min_integration_step = minis;
+    }
+
+    if (vm.count("max-integration-step")) {
+      gp_float maxis = vm["max-integration-step"].as<gp_float>();
+      if (maxis <= 0.)
+        throw GpiesException(
+            "Value for max-integration-step must be a positive, non-zero "
+            "decimal.");
+
+      max_integration_step = maxis;
     }
 
     // Output formatting
@@ -459,6 +543,12 @@ int main(int argc, char* argv[]) {
       for (size_t n = 0; n < sa_num_simulations; n++) {
         ClusterDynamics cd(max_cluster_size, reactor, material);
         cd.set_data_validation(data_validation_on);
+        cd.set_relative_tolerance(relative_tolerance);
+        cd.set_absolute_tolerance(absolute_tolerance);
+        cd.set_max_num_integration_steps(max_num_integration_steps);
+        cd.set_min_integration_step(min_integration_step);
+        cd.set_max_integration_step(max_integration_step);
+        cd.init();
 
         ClusterDynamicsState state;
         update_for_sensitivity_analysis(
@@ -509,7 +599,6 @@ int main(int argc, char* argv[]) {
 
       db.create_simulation(history_simulation);
       // --------------------------------------------------------------------------------------------
-      // --------------------------------------------------------------------
     }
   } catch (const ClusterDynamicsException& e) {
     std::cerr << "A simulation error occured.\n"

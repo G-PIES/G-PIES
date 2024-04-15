@@ -50,6 +50,11 @@ class ClusterDynamicsImpl {
   NuclearReactorImpl reactor;
 
   bool data_validation_on;
+  gp_float relative_tolerance;
+  gp_float absolute_tolerance;
+  size_t max_num_integration_steps;
+  gp_float min_integration_step;
+  gp_float max_integration_step;
 
   // Physics Model Functions
   gp_float i_concentration_derivative(size_t) const;
@@ -106,6 +111,7 @@ class ClusterDynamicsImpl {
                       const MaterialImpl &material);
   ~ClusterDynamicsImpl();
 
+  void init();
   ClusterDynamicsState run(gp_float total_time);
   MaterialImpl get_material() const;
   void set_material(const MaterialImpl &material);
