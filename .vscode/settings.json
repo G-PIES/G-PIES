@@ -1,5 +1,5 @@
 {
-    "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 2, AccessModifierOffset: -1 }",
+    "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 2, AccessModifierOffset: -1, ColumnLimit: 120 }",
     "editor.tabSize": 2,
     "files.associations": {
       "array": "cpp",

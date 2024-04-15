@@ -1042,10 +1042,15 @@ gp_float ClusterDynamicsImpl::dislocation_promotion_probability(
   gp_float dr = cluster_radius(n + 1) - cluster_radius(n);
 
   //      (1)                           (2)
-  return (2. * cluster_radius(n) * dr + std::pow(dr, 2.))
+  gp_float p = (2. * cluster_radius(n) * dr + std::pow(dr, 2.))
          //    (3)                                                    (4)
          / (std::pow(M_PI * mean_dislocation_radius_val / 2., 2) -
             std::pow(cluster_radius(n), 2.));
+
+  if (p > 1.) return 1.;
+  else if (p < 0.) return 0.;
+  
+  return p;
 }
 
 // --------------------------------------------------------------------------------------------
@@ -1147,7 +1152,7 @@ int ClusterDynamicsImpl::system([[maybe_unused]] double t, N_Vector v_state, N_V
     {
         v_derivatives[i] = cd->v_concentration_derivative(i);
     }
-    *dislocation_derivative = 0;//cd->dislocation_density_derivative();
+    *dislocation_derivative = cd->dislocation_density_derivative();
 
     return 0;
 }
@@ -1262,19 +1267,21 @@ ClusterDynamicsImpl::~ClusterDynamicsImpl() {
 
 ClusterDynamicsState ClusterDynamicsImpl::run(gp_float total_time) {
   double out_time;
-  const int retval = CVode(cvodes_memory_block, time + total_time, state, &out_time, CV_NORMAL);
-  if (retval != CV_SUCCESS) {
-      fprintf(stderr, "Problem with call to CVode: %d\n", retval);
-  }
+  const int sunerr = CVode(cvodes_memory_block, time + total_time, state, &out_time, CV_NORMAL);
+  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+
 
   N_Vector errors = N_VNew_Serial(state_size, sun_context);
   CVodeGetEstLocalErrors(cvodes_memory_block, errors);
 
+  /*
   fprintf(stderr, "\n %g", out_time);
   for (size_t i = 0; i < state_size; ++i) {
-    //fprintf(stderr, "(%g, %g) ", N_VGetArrayPointer(state)[i], N_VGetArrayPointer(errors)[i]);
+    fprintf(stderr, "(%g, %g) ", N_VGetArrayPointer(state)[i], N_VGetArrayPointer(errors)[i]);
   }
   fprintf(stderr, "\n");
+  */
+  //fgetc(stdin);
 
   time = out_time;
 
