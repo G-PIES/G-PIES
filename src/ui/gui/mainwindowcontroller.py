@@ -6,7 +6,7 @@ from multiprocessing import shared_memory, Event
 import threading
 
 from gui.mainwindow import Ui_MainWindow
-from gui.mainwindow import InputDialog
+from gui.inputDialog import InputDialog
 
 from gui.simulation.simulationprocess import SimulationProcess
 from gui.simulation.simulationparams import SimulationParams

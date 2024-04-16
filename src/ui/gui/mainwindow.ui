@@ -30,7 +30,7 @@
     <item>
      <widget class="QWidget" name="widget" native="true">
       <layout class="QGridLayout" name="gridLayout">
-       <item row="5" column="0">
+       <item row="6" column="0">
         <layout class="QFormLayout" name="formLayout">
          <item row="0" column="1">
           <widget class="QLineEdit" name="lineEdit"/>
@@ -62,76 +62,17 @@
          <item row="2" column="1">
           <widget class="QLineEdit" name="lineEdit_3"/>
          </item>
-         <item row="3" column="0">
+         <item row="4" column="0">
           <widget class="QLabel" name="label_6">
            <property name="text">
             <string>Entry Size</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+         <item row="4" column="1">
           <widget class="QLineEdit" name="lineEdit_4"/>
          </item>
         </layout>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QPushButton" name="pushButton_4">
-         <property name="text">
-          <string>Simulation Settings Placeholder Button</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0">
-         <item>
-          <widget class="QPushButton" name="pushButton_2">
-           <property name="text">
-            <string>Start Simulation</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_3">
-           <property name="text">
-            <string>Stop</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton">
-           <property name="text">
-            <string>Pause</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLabel" name="label_2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>1</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Data about the Sim: </string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Time Elasped:                          Simulation Time:</string>
-         </property>
-        </widget>
        </item>
        <item row="1" column="0" colspan="2">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -152,7 +93,7 @@
               <x>0</x>
               <y>0</y>
               <width>401</width>
-              <height>233</height>
+              <height>68</height>
              </rect>
             </property>
             <widget class="QGroupBox" name="groupBox">
@@ -182,6 +123,82 @@
          </item>
         </layout>
        </item>
+       <item row="7" column="0">
+        <widget class="QPushButton" name="pushButton_4">
+         <property name="text">
+          <string>Simulation Settings Placeholder Button</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Time Elasped:                          Simulation Time:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_7">
+         <property name="styleSheet">
+          <string notr="true">background-image: url(:/newPrefix/G-PIES_thumbnail.png);
+</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap resource="../resources/icon_reasource.qrc">:/newPrefix/G-PIES_thumbnail.png</pixmap>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0">
+         <item>
+          <widget class="QPushButton" name="pushButton_2">
+           <property name="text">
+            <string>Start Simulation</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_3">
+           <property name="text">
+            <string>Stop</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>Pause</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLabel" name="label_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Data about the Sim: </string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -193,12 +210,46 @@
      <x>0</x>
      <y>0</y>
      <width>849</width>
-     <height>23</height>
+     <height>20</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>File</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuSettings_2">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionReactor_Settings"/>
+   </widget>
+   <addaction name="menuSettings"/>
+   <addaction name="menuSettings_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionFile">
+   <property name="text">
+    <string>File</string>
+   </property>
+  </action>
+  <action name="actionReactor_Settings">
+   <property name="text">
+    <string>Reactor Settings</string>
+   </property>
+  </action>
+  <action name="actionicon_png">
+   <property name="icon">
+    <iconset>
+     <normaloff>../resources/G-PIES_thumbnail.png</normaloff>../resources/G-PIES_thumbnail.png</iconset>
+   </property>
+   <property name="text">
+    <string>icon.png</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources/icon_reasource.qrc"/>
+ </resources>
  <connections/>
 </ui>
