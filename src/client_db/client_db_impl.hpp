@@ -33,6 +33,12 @@ class ClientDbImpl {
      update and delete. All functions return the resulting SQLite status code.
   */
 
+  template <typename TEntityDescriptor, typename T, class... Args>
+  bool create_one(T &, int *, Args&&...);
+
+  template <typename T>
+  int execute_non_query(sqlite3_stmt *, T &, const std::function<void()> &);
+
   // CREATE
   template <typename T>
   int create_one(sqlite3_stmt *, void (*)(sqlite3_stmt *, const T &), T &);

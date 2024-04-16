@@ -7,8 +7,11 @@
   #include <sys/stat.h>
 #endif
 
+#include <utility>
+
 #include "client_db/client_db.hpp"
 #include "db_queries.hpp"
+#include "entities/nuclear_reactor.hpp"
 #include "model/history_simulation.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
@@ -37,6 +40,11 @@ template int ClientDbImpl::delete_one(sqlite3_stmt *, \
 INSTANTIATE_TEMPALTES(HistorySimulation)
 INSTANTIATE_TEMPALTES(Material)
 INSTANTIATE_TEMPALTES(NuclearReactor)
+
+template bool ClientDbImpl::create_one<NuclearReactorEntity>(
+  NuclearReactor &,
+  int *,
+  bool &&);
 
 bool ClientDbImpl::init(int *sqlite_result_code) {
   int sqlite_code;
@@ -77,6 +85,56 @@ bool ClientDbImpl::clear(int *sqlite_result_code) {
 // --------------------------------------------------------------------------------------------
 // TEMPLATE FUNCTIONS
 // --------------------------------------------------------------------------------------------
+template <typename TEntityDescriptor, typename T, class... Args>
+bool ClientDbImpl::create_one(
+    T &object,
+    int *sqlite_result_code,
+    Args&&... args) {
+  if (is_valid_sqlite_id(object.sqlite_id))
+    // TODO: Failed to create {{entity}}, it already exists.
+    throw ClientDbException("Failed to create reactor, it already exists.");
+
+  TEntityDescriptor descriptor = TEntityDescriptor();
+  std::basic_string<char> query = descriptor.get_create_query();
+
+  if (!db) open();
+
+  int result;
+  sqlite3_stmt *stmt;
+
+  result = sqlite3_prepare_v2(db, query.c_str(), query.size(), &stmt, nullptr);
+  if (is_sqlite_error(result))
+    descriptor.handle_create_error(stmt, object);
+
+  descriptor.bind(stmt, object, std::forward<Args>(args)...);
+
+  result = execute_non_query(stmt, object, [stmt, &descriptor, &object]() {
+    descriptor.handle_create_error(stmt, object);
+  });
+
+  if (sqlite_result_code) *sqlite_result_code = result;
+  return is_sqlite_success(result);
+}
+
+template <typename T>
+int ClientDbImpl::execute_non_query(
+    sqlite3_stmt *stmt,
+    T &object,
+    const std::function<void()> &error_callback) {
+  int sqlite_code;
+
+  do {
+    sqlite_code = sqlite3_step(stmt);
+    if (is_sqlite_error(sqlite_code)) error_callback();
+  } while (SQLITE_DONE != sqlite_code);
+
+  sqlite_code = last_insert_rowid(object.sqlite_id);
+  if (is_sqlite_error(sqlite_code)) error_callback();
+
+  sqlite3_finalize(stmt);
+  return sqlite_code;
+}
+
 template <typename T>
 int ClientDbImpl::create_one(sqlite3_stmt *stmt,
                              void (*err_callback)(sqlite3_stmt *, const T &),

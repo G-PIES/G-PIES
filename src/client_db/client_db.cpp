@@ -8,6 +8,7 @@
 
 #include "client_db_impl.hpp"
 #include "db_queries.hpp"
+#include "entities/nuclear_reactor.hpp"
 #include "model/history_simulation.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
@@ -29,28 +30,14 @@ bool ClientDb::clear(int *sqlite_result_code) {
   return _impl->clear(sqlite_result_code);
 }
 
-bool ClientDb::create_reactor(NuclearReactor &reactor, int *sqlite_result_code,
-                              bool is_preset) {
-  if (is_valid_sqlite_id(reactor.sqlite_id))
-    throw ClientDbException("Failed to create reactor, it already exists.");
-  if (!_impl->db) open();
-
-  int sqlite_code;
-  sqlite3_stmt *stmt;
-
-  sqlite_code =
-      sqlite3_prepare_v2(_impl->db, db_queries::create_reactor.c_str(),
-                         db_queries::create_reactor.size(), &stmt, nullptr);
-  if (is_sqlite_error(sqlite_code)) _impl->err_create_reactor(stmt, reactor);
-
-  ClientDbImpl::bind_reactor(stmt, reactor, is_preset);
-
-  sqlite_code = _impl->create_one<NuclearReactor>(stmt,
-                                                  _impl->err_create_reactor,
-                                                  reactor);
-
-  if (sqlite_result_code) *sqlite_result_code = sqlite_code;
-  return is_sqlite_success(sqlite_code);
+bool ClientDb::create_reactor(
+    NuclearReactor &reactor,
+    int *sqlite_result_code,
+    bool is_preset) {
+  return _impl->create_one<NuclearReactorEntity>(
+      reactor,
+      sqlite_result_code,
+      std::forward<bool>(is_preset));
 }
 
 bool ClientDb::read_reactors(std::vector<NuclearReactor> &reactors,
