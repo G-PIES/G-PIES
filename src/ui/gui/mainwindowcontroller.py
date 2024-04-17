@@ -36,7 +36,7 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         with open(stylesheet, "r") as f:
             self.setStyleSheet(f.read())
 
-        self.gc = GraphController(self.verticalLayout_2, width=5, height=4, dpi=100)
+        self.gc = GraphController(self.maingraph, width=5, height=4, dpi=100)
         self.gc.init_graph(1)
         self.sim_running = False
 
@@ -44,15 +44,15 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         if self.groupBox.layout() is None:
             layout = QVBoxLayout()
             self.groupBox.setLayout(layout)
-        self.lineEdit.setText('1.0')
-        self.lineEdit_2.setText('10')
-        self.lineEdit_3.setText('0.00001')
-        self.lineEdit_4.setText('4')
+        self.simLenEntry.setText('1.0')
+        self.clusterSizeEntry.setText('10')
+        self.timeStepEntry.setText('0.00001')
+        self.entrySizeEntry.setText('4')
 
-        self.lineEdit.setValidator(QDoubleValidator())
-        self.lineEdit_2.setValidator(QIntValidator())
-        self.lineEdit_3.setValidator(QDoubleValidator())
-        self.lineEdit_4.setValidator(QIntValidator())
+        self.simLenEntry.setValidator(QDoubleValidator())
+        self.clusterSizeEntry.setValidator(QIntValidator())
+        self.timeStepEntry.setValidator(QDoubleValidator())
+        self.entrySizeEntry.setValidator(QIntValidator())
 
         self.input_dialog.first.setValidator(QDoubleValidator())
         self.input_dialog.second.setValidator(QIntValidator())
@@ -60,9 +60,9 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
     def init_connections(self):
         self.simulationFinished.connect(self.on_simulation_finished)
 
-        self.pushButton_2.clicked.connect(self.start_simulation)
-        self.pushButton_3.clicked.connect(self.stop_simulation)
-        self.pushButton_4.clicked.connect(self.get_settings)
+        self.startButton.clicked.connect(self.start_simulation)
+        self.stopButton.clicked.connect(self.stop_simulation)
+        self.settingsButton.clicked.connect(self.get_settings)
         
     def get_settings(self):
         self.input_dialog.exec_()
@@ -76,10 +76,10 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         if self.sim_running:
             self.stop_simulation()
 
-        userInputTime = float(self.lineEdit.text())
-        userInputC = int(self.lineEdit_2.text())
-        userInputStep = float(self.lineEdit_3.text())
-        userInputEntrySize = int(self.lineEdit_4.text())
+        userInputTime = float(self.simLenEntry.text())
+        userInputC = int(self.clusterSizeEntry.text())
+        userInputStep = float(self.timeStepEntry.text())
+        userInputEntrySize = int(self.entrySizeEntry.text())
 
         self.params = SimulationParams(userInputC, userInputTime, userInputStep, userInputEntrySize, runner_block_size=1000)
         self.gc.init_graph(self.params.C)
@@ -136,7 +136,7 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
     def update_graph(self):
         elapsed = self.start_time.msecsTo(QDateTime.currentDateTime()) / 1000.0
         # TODO: this changes the width of the parent layout ...
-        self.label.setText(f"Time Elapsed: {elapsed:.2f}s                Simulation Time:")
+        self.timeLabel.setText(f"Time Elapsed: {elapsed:.2f}s                Simulation Time:")
         self.gc.update_graph(self.data_accumulator)
 
     def populate_legend(self):
