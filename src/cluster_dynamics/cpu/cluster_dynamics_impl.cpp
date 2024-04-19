@@ -1047,9 +1047,6 @@ gp_float ClusterDynamicsImpl::dislocation_promotion_probability(
          / (std::pow(M_PI * mean_dislocation_radius_val / 2., 2) -
             std::pow(cluster_radius(n), 2.));
 
-  if (p > 1.) return 1.;
-  else if (p < 0.) return 0.;
-  
   return p;
 }
 
