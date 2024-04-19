@@ -1,7 +1,6 @@
 #ifndef BLOB_CONVERTER_HPP
 #define BLOB_CONVERTER_HPP
 
-#include <cstring>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -13,13 +12,14 @@
 
 
 class BlobConverter {
-public:
+ public:
   static std::vector<char> to_blob(const std::vector <gp_float> &vec) {
     if (vec.empty())
       return {};
 
     std::stringstream data;
-    data.write(reinterpret_cast<const char *>(vec.data()), vec.size() * sizeof(gp_float));
+    data.write(reinterpret_cast<const char *>(vec.data()),
+               vec.size() * sizeof(gp_float));
 
     std::stringstream data_comp;
     boost::iostreams::filtering_streambuf <boost::iostreams::output> out;
