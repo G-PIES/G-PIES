@@ -25,7 +25,7 @@ if(GP_BUILD_CUDA)
   target_link_libraries(cd_cuda_tests GTest::gtest_main)
 endif()
 
-add_executable(db_tests ./cd_tests.cpp)
+add_executable(db_tests ./db_tests.cpp)
 target_include_directories(db_tests PRIVATE ./)
 target_include_directories(db_tests PRIVATE ../src/cluster_dynamics)
 target_include_directories(db_tests PRIVATE ../src/cluster_dynamics/cpu)
