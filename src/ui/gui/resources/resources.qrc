@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="GPIES_logo">
+    <file>GPIES_logo.png</file>
+    <file>GPIES_logo_small.png</file>
+  </qresource>
+  <qresource prefix="sim_control_logos">
+    <file>stop.png</file>
+    <file>pause.png</file>
+    <file>play.png</file>
+  </qresource>
+</RCC>
