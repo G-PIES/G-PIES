@@ -337,10 +337,6 @@ void valid_integration_search() {
 }
 
 int main(int argc, char* argv[]) {
-  // TODO - Remove (this is just for testing the CVODES implementation)
-  valid_integration_search();
-  return 0;
-
   try {
     // Declare the supported options
     po::options_description all_options("General Options");
