@@ -28,7 +28,7 @@ class BlobConverter {
     boost::iostreams::filtering_streambuf <boost::iostreams::output> out;
     out.push(boost::iostreams::bzip2_compressor());
     out.push(data_comp);
-    boost::iostreams::copy(data, out);
+    boost::iostreams::copy(data, out); // NOLINT(build/include_what_you_use)
 
     std::string str_comp = data_comp.str();
     std::vector<char> blob(str_comp.begin(), str_comp.end());
@@ -46,7 +46,7 @@ class BlobConverter {
     boost::iostreams::filtering_streambuf <boost::iostreams::input> in;
     in.push(boost::iostreams::bzip2_decompressor());
     in.push(data_comp);
-    boost::iostreams::copy(in, data);
+    boost::iostreams::copy(in, data); // NOLINT(build/include_what_you_use)
 
     std::vector <gp_float> vec(data.str().size() / sizeof(gp_float));
     data.read(reinterpret_cast<char *>(vec.data()), data.str().size());
