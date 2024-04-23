@@ -26,15 +26,15 @@ std::string sa_var = "";
 gp_float sa_var_delta = 0.;
 
 size_t max_cluster_size = 10;
-gp_float simulation_time = 1.;
-gp_float time_delta = 1e-5;
+gp_float simulation_time = 1e8;
+gp_float time_delta = 1e6;
 gp_float sample_interval =
     time_delta;  // How often (in seconds) to record the state
-gp_float relative_tolerance = 1e1;
-gp_float absolute_tolerance = 1e-6;
+gp_float relative_tolerance = 1e-6;
+gp_float absolute_tolerance = 1e1;
 size_t max_num_integration_steps = 500;
 gp_float min_integration_step = 1e-10;
-gp_float max_integration_step = time_delta;
+gp_float max_integration_step = 1e20;
 
 void print_start_message() {
   std::cout << "\nSimulation Started\n"
@@ -288,17 +288,17 @@ void valid_integration_search() {
   data_validation_on = false;
 
   for (size_t n = 100; n < 1000; n += 100) {
-    max_cluster_size = 100;
+    max_cluster_size = n;
     gp_float td = 10.;
     gp_float t = 100.;
     gp_float rt = relative_tolerance;
     gp_float at = absolute_tolerance;
-    gp_float minis = max_integration_step / 10.;
+    gp_float minis = 1e-5;
     gp_float maxis = max_integration_step;
 
-    for (size_t i = 0; i < 10; ++i) {
-      time_delta = td;
-      simulation_time = t;
+    for (size_t i = 0; i < 21; ++i) {
+      //time_delta = td;
+      //simulation_time = t;
       relative_tolerance = rt;
       absolute_tolerance = at;
       min_integration_step = minis;
@@ -326,12 +326,12 @@ void valid_integration_search() {
         timer.Stop();
       }
 
-      td *= 10.;
-      t *= 10.;
-      rt *= 10.;
-      at *= 10.;
+      //td *= 10.;
+      //t *= 10.;
+      //rt *= 10.;
+      //at *= 10.;
       minis /= 10.;
-      maxis *= 10.;
+      //maxis *= 10.;
     }
   }
 }
