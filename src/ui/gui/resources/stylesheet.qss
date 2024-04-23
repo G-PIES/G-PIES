@@ -1,0 +1,24 @@
+QLabel{
+  background-color: rgb(29,29,29);
+  color:rgb(161, 213, 10);
+}
+QWidget{
+    background-color: rgb(29,29,29);
+}
+QPushButton{
+  color:rgb(161, 213, 10);
+}
+
+QMenuBar {
+  color:rgb(161, 213, 10);
+}
+
+QLineEdit {
+  color:rgb(161, 213, 10);
+}
+QGroupBox {
+  color:rgb(161, 213, 10);
+}
+QAction {
+  color:rgb(161, 213, 10)
+}
