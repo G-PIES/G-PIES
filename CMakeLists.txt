@@ -20,7 +20,24 @@ if(GP_BUILD_METAL)
   set(METAL_INCLUDE_DIRS ${metal-cpp_SOURCE_DIR})
 endif()
 
-find_package(SUNDIALS REQUIRED)
+find_package(SUNDIALS CONFIG)
+if(NOT SUNDIALS_FOUND)
+  set(EXAMPLES_ENABLE_C OFF)
+  set(BUILD_ARKODE OFF)
+  set(BUILD_IDA OFF)
+  set(BUILD_IDAS OFF)
+  set(BUILD_KINSOL OFF)
+  set(BUILD_SHARED_LIBS OFF)
+  FetchContent_Declare(
+    SUNDIALS
+    URL https://github.com/LLNL/sundials/releases/download/v7.0.0/sundials-7.0.0.tar.gz
+  )
+  
+  set(HOLDER ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/.build/lib)
+  FetchContent_MakeAvailable(SUNDIALS)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${HOLDER})
+endif()
 
 set(Boost_USE_STATIC_LIBS       ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
@@ -58,6 +75,21 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/out)
 
 set(CMAKE_CXX_STANDARD 20)
 add_compile_definitions($<$<PLATFORM_ID:Windows>:_USE_MATH_DEFINES>)
+
+# TODO: Consider replacing /W2 with /W4 or /Wall for MSVC.
+add_compile_options("$<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-Wall;-Wextra>")
+add_compile_options("$<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<CXX_COMPILER_ID:MSVC>>:/W2;/WX>")
+add_compile_options("$<$<COMPILE_LANGUAGE:CUDA>:-Werror;all-warnings>")
+add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CUDA>>:SHELL:-Xcompiler /W2>")
+add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CUDA>>:SHELL:-Xcompiler /WX>")
+
+set(GP_NO_SANITIZER false CACHE BOOL "Disable sanitizers for debug builds.")
+if(NOT GP_NO_SANITIZER)
+  # TODO: Configure sanitizer for MSVC. MSVC requires manually copying ASAN DLLs to the output folder.
+  add_compile_options("$<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=undefined;-fsanitize=address>")
+  add_link_options("$<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=address;-fsanitize=undefined>")
+endif()
+
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 
 add_subdirectory(./cli)

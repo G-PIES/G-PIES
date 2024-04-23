@@ -1,10 +1,6 @@
 #ifndef CLUSTER_DYNAMICS_CUDA_IMPL_HPP
 #define CLUSTER_DYNAMICS_CUDA_IMPL_HPP
 
-#include <iostream>
-#include <cmath>
-#include <vector>
-
 #include <thrust/device_free.h>
 #include <thrust/device_malloc.h>
 #include <thrust/device_vector.h>
@@ -12,133 +8,110 @@
 #include <thrust/sequence.h>
 #include <thrust/transform_reduce.h>
 
-#include <cusparse.h>
-#include <cusolverDn.h>
+#include <cmath>
+#include <vector>
 
 #include "cluster_dynamics/cluster_dynamics_state.hpp"
 #include "material_impl.hpp"
 #include "nuclear_reactor_impl.hpp"
 #include "utils/constants.hpp"
 
-#include <cvodes/cvodes.h>
-#include <nvector/nvector_cuda.h>
-#include <sunlinsol/sunlinsol_cusolversp_batchqr.h> 
-#include <sunmatrix/sunmatrix_cusparse.h> 
-
-#ifdef USE_CUDA
-  #define __CUDADECL__ __host__ __device__
-#endif
+#define __CUDADECL__ __device__ __host__
 
 class ClusterDynamicsImpl {
  public:
   gp_float time;
-  gp_float dpa;
 
-  N_Vector state;
-  SUNContext sun_context;
-  SUNMatrix jacobian_matrix;
-  SUNLinearSolver linear_solver;
-  void* cvodes_memory_block;
-
-  thrust::device_vector<int> indices;
-  thrust::device_ptr<ClusterDynamicsImpl> self;
-
-  gp_float* interstitials;
-  gp_float* vacancies;
-  gp_float* dislocation_density;
-
-  gp_float* host_interstitials;
-  gp_float* host_vacancies;
+  thrust::device_vector<gp_float> interstitials;
+  thrust::device_vector<gp_float> interstitials_temp;
+  thrust::device_vector<gp_float> vacancies;
+  thrust::device_vector<gp_float> vacancies_temp;
 
   size_t max_cluster_size;
-  size_t state_size;
+  gp_float dislocation_density;
 
-  /// @brief Precomputed in step_init() using mean_dislocation_cell_radius()
   gp_float mean_dislocation_radius_val;
-  /// @brief Precomputed in step_init() using ii_sum_absorption()
   gp_float ii_sum_absorption_val;
-  /// @brief Precomputed in step_init() using iv_sum_absorption()
   gp_float iv_sum_absorption_val;
-  /// @brief Precomputed in step_init() using vv_sum_absorption()
   gp_float vv_sum_absorption_val;
-  /// @brief Precomputed in step_init() using vi_sum_absorption()
   gp_float vi_sum_absorption_val;
-  gp_float i_diffusion_val;  //!< Precomputed in step_init() using i_diffusion()
-  gp_float v_diffusion_val;  //!< Precomputed in step_init() using v_diffusion()
+  gp_float i_diffusion_val;
+  gp_float v_diffusion_val;
 
   MaterialImpl material;
   NuclearReactorImpl reactor;
 
-  bool data_validation_on;
-  gp_float relative_tolerance;
-  gp_float absolute_tolerance;
-  size_t max_num_integration_steps;
-  gp_float min_integration_step;
-  gp_float max_integration_step;
+  thrust::device_vector<int> indices;
+  thrust::device_ptr<ClusterDynamicsImpl> self;
+  thrust::host_vector<double> host_interstitials;
+  thrust::host_vector<double> host_vacancies;
 
-  cusparseHandle_t cu_sparse_handle = NULL;
-  cusolverSpHandle_t cu_solver_handle = NULL;
+  bool data_validation_on;
 
   // Physics Model Functions
-  gp_float i_concentration_derivative(size_t) const;
-  gp_float v_concentration_derivative(size_t) const;
+  __CUDADECL__ gp_float i_concentration_derivative(size_t) const;
+  __CUDADECL__ gp_float v_concentration_derivative(size_t) const;
   gp_float i1_concentration_derivative() const;
   gp_float v1_concentration_derivative() const;
   gp_float dislocation_density_derivative() const;
-  gp_float i_defect_production(size_t) const;
-  gp_float v_defect_production(size_t) const;
-  gp_float i_demotion_rate(size_t) const;
-  gp_float v_demotion_rate(size_t) const;
-  gp_float i_combined_promotion_demotion_rate(size_t) const;
-  gp_float v_combined_promotion_demotion_rate(size_t) const;
-  gp_float i_promotion_rate(size_t) const;
-  gp_float v_promotion_rate(size_t) const;
+  __CUDADECL__ gp_float i_defect_production(size_t) const;
+  __CUDADECL__ gp_float v_defect_production(size_t) const;
+  __CUDADECL__ gp_float i_demotion_rate(size_t) const;
+  __CUDADECL__ gp_float v_demotion_rate(size_t) const;
+  __CUDADECL__ gp_float i_combined_promotion_demotion_rate(size_t) const;
+  __CUDADECL__ gp_float v_combined_promotion_demotion_rate(size_t) const;
+  __CUDADECL__ gp_float i_promotion_rate(size_t) const;
+  __CUDADECL__ gp_float v_promotion_rate(size_t) const;
   gp_float i_emission_rate() const;
   gp_float v_emission_rate() const;
   gp_float i_absorption_rate() const;
   gp_float v_absorption_rate() const;
-  gp_float annihilation_rate() const;
-  gp_float i_dislocation_annihilation_rate() const;
-  gp_float v_dislocation_annihilation_rate() const;
-  gp_float i_grain_boundary_annihilation_rate() const;
-  gp_float v_grain_boundary_annihilation_rate() const;
-  gp_float ii_emission(size_t) const;
-  gp_float vv_emission(size_t) const;
-  gp_float ii_absorption(size_t) const;
-  gp_float iv_absorption(size_t) const;
-  gp_float vi_absorption(size_t) const;
-  gp_float vv_absorption(size_t) const;
-  gp_float i_bias_factor(size_t) const;
-  gp_float v_bias_factor(size_t) const;
-  gp_float i_binding_energy(size_t) const;
-  gp_float v_binding_energy(size_t) const;
-  gp_float dislocation_promotion_probability(size_t) const;
-  gp_float cluster_radius(size_t) const;
+  __CUDADECL__ gp_float annihilation_rate() const;
+  __CUDADECL__ gp_float i_dislocation_annihilation_rate() const;
+  __CUDADECL__ gp_float v_dislocation_annihilation_rate() const;
+  __CUDADECL__ gp_float i_grain_boundary_annihilation_rate() const;
+  __CUDADECL__ gp_float v_grain_boundary_annihilation_rate() const;
+  __CUDADECL__ gp_float ii_emission(size_t) const;
+  __CUDADECL__ gp_float vv_emission(size_t) const;
+  __CUDADECL__ gp_float ii_absorption(size_t) const;
+  __CUDADECL__ gp_float iv_absorption(size_t) const;
+  __CUDADECL__ gp_float vi_absorption(size_t) const;
+  __CUDADECL__ gp_float vv_absorption(size_t) const;
+  __CUDADECL__ gp_float i_bias_factor(size_t) const;
+  __CUDADECL__ gp_float v_bias_factor(size_t) const;
+  __CUDADECL__ gp_float i_binding_energy(size_t) const;
+  __CUDADECL__ gp_float v_binding_energy(size_t) const;
+  __CUDADECL__ gp_float dislocation_promotion_probability(size_t) const;
+  __CUDADECL__ gp_float cluster_radius(size_t) const;
 
+  // Value Precalculation Functions
   gp_float i_diffusion() const;
   gp_float v_diffusion() const;
-  gp_float mean_dislocation_cell_radius() const;
   gp_float ii_sum_absorption(size_t) const;
   gp_float iv_sum_absorption(size_t) const;
-  gp_float vi_sum_absorption(size_t) const;
   gp_float vv_sum_absorption(size_t) const;
+  gp_float vi_sum_absorption(size_t) const;
+  gp_float mean_dislocation_cell_radius() const;
 
   // Simulation Operation Functions
+  void update_clusters_1(gp_float);
+  void update_clusters(gp_float);
   void step_init();
-  static int system(double t, N_Vector state, N_Vector state_derivatives, void* user_data);
+  void step(gp_float);
+  void validate_all() const;
+  void validate(size_t) const;
 
   // Interface functions
   ClusterDynamicsImpl(size_t max_cluster_size,
-                      const NuclearReactorImpl &reactor,
-                      const MaterialImpl &material);
+                      const NuclearReactorImpl& reactor,
+                      const MaterialImpl& material);
   ~ClusterDynamicsImpl();
 
-  void init();
-  ClusterDynamicsState run(gp_float total_time);
+  ClusterDynamicsState run(gp_float time_delta, gp_float total_time);
   MaterialImpl get_material() const;
-  void set_material(const MaterialImpl &material);
+  void set_material(const MaterialImpl& material);
   NuclearReactorImpl get_reactor() const;
-  void set_reactor(const NuclearReactorImpl &reactor);
+  void set_reactor(const NuclearReactorImpl& reactor);
 };
 
 #endif  // CLUSTER_DYNAMICS_CUDA_IMPL_HPP
