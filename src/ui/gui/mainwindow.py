@@ -180,6 +180,7 @@ class Ui_MainWindow(object):
         self.legendBox.addWidget(self.legendScrollArea)
         self.gridLayout.addLayout(self.legendBox, 4, 8, 1, 1)
         self.settingsButton = QtWidgets.QPushButton(self.widget)
+        self.settingsButton.setMaximumSize(QtCore.QSize(245, 16777215))
         self.settingsButton.setObjectName("settingsButton")
         self.gridLayout.addWidget(self.settingsButton, 7, 7, 1, 1)
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)

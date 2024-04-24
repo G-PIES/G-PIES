@@ -416,6 +416,12 @@
        </item>
        <item row="7" column="7">
         <widget class="QPushButton" name="settingsButton">
+         <property name="maximumSize">
+          <size>
+           <width>245</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Simulation Settings Placeholder Button</string>
          </property>
