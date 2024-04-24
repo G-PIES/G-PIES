@@ -20,5 +20,5 @@ QGroupBox {
   color:rgb(255,255,255);
 }
 QAction {
-  color:rgb(161, 213, 10)
+  color:rgb(161, 213, 10);
 }
