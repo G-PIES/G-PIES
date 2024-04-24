@@ -4,10 +4,14 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#ifdef __GNUC__
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#endif
 #include <boost/iostreams/filtering_streambuf.hpp>
-#pragma GCC diagnostic pop
+#ifdef __GNUC__
+  #pragma GCC diagnostic pop
+#endif
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/bzip2.hpp>
 
