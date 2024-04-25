@@ -9,6 +9,7 @@
 #include "model/nuclear_reactor.hpp"
 #include "utils/types.hpp"
 #include "utils/gpies_exception.hpp"
+#include "cluster_dynamics/cluster_dynamics_config.hpp"
 
 class ClusterDynamicsImpl;
 
@@ -31,14 +32,8 @@ class ClusterDynamics {
    *  @param material A Material object containing the material parameters the
    * simulation will use.
    */
-  ClusterDynamics(size_t max_cluster_size, const NuclearReactor &reactor,
-                  const Material &material);
+  ClusterDynamics(ClusterDynamicsConfig &config);
   ~ClusterDynamics();
-
-  /** @brief Initializes the simulation.
-   * init() must be called prior to run() for all configurations to take effect.
-   */
-  void init();
 
   /** @brief Runs the simulation and returns the end simulation state as a
    * ClusterDynamicsState object.
