@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "cluster_dynamics/cluster_dynamics_state.hpp"
+#include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "material_impl.hpp"
 #include "nuclear_reactor_impl.hpp"
 #include "utils/constants.hpp"
@@ -106,12 +107,9 @@ class ClusterDynamicsImpl {
   void validate(size_t) const;
 
   // Interface functions
-  ClusterDynamicsImpl(size_t max_cluster_size,
-                      const NuclearReactorImpl &reactor,
-                      const MaterialImpl &material);
+  ClusterDynamicsImpl(ClusterDynamicsConfig &config);
   ~ClusterDynamicsImpl();
 
-  void init();
   ClusterDynamicsState run(gp_float total_time);
   MaterialImpl get_material() const;
   void set_material(const MaterialImpl &material);

@@ -1,4 +1,5 @@
 #include "cluster_dynamics_impl.hpp"
+#include "cluster_dynamics/cluster_dynamics_config.hpp"
 
 #include <stdio.h>
 
@@ -1182,21 +1183,18 @@ void ClusterDynamicsImpl::validate(size_t n) const {
 // --------------------------------------------------------------------------------------------
 
 //!< \todo Clean up the uses of random +1/+2/-1/etc throughout the code
-ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
-                                         const NuclearReactorImpl &reactor,
-                                         const MaterialImpl &material)
-    : time(0.0), max_cluster_size(max_cluster_size),
-      material(material), reactor(reactor) {}
+ClusterDynamicsImpl::ClusterDynamicsImpl(ClusterDynamicsConfig &config)
+    : time(0.0), max_cluster_size(config.max_cluster_size),
+      material(*config.material.impl()), reactor(*config.reactor.impl()) {
 
-ClusterDynamicsImpl::~ClusterDynamicsImpl() {
-  N_VDestroy_Serial(state);
-  SUNMatDestroy(jacobian_matrix);
-  SUNLinSolFree(linear_solver);
-  CVodeFree(&cvodes_memory_block);
-  SUNContext_Free(&sun_context);
-}
-
-void ClusterDynamicsImpl::init() {
+  max_cluster_size = config.max_cluster_size;
+  data_validation_on = config.data_validation_on;
+  relative_tolerance = config.relative_tolerance;
+  absolute_tolerance = config.absolute_tolerance;
+  max_num_integration_steps = config.max_num_integration_steps;
+  min_integration_step = config.min_integration_step;
+  max_integration_step = config.max_integration_step;
+  
   state_size = 2 * (max_cluster_size + 2) + 1;
 
   /* Create the SUNDIALS context */
@@ -1262,6 +1260,14 @@ void ClusterDynamicsImpl::init() {
   if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
 
   //CVodeSetInterpolateStopTime(cvodes_memory_block, 1);
+}
+
+ClusterDynamicsImpl::~ClusterDynamicsImpl() {
+  N_VDestroy_Serial(state);
+  SUNMatDestroy(jacobian_matrix);
+  SUNLinSolFree(linear_solver);
+  CVodeFree(&cvodes_memory_block);
+  SUNContext_Free(&sun_context);
 }
 
 ClusterDynamicsState ClusterDynamicsImpl::run(gp_float total_time) {

@@ -1,4 +1,5 @@
 #include "cluster_dynamics/cluster_dynamics.hpp"
+#include "cluster_dynamics/cluster_dynamics_config.hpp"
 
 #if defined(USE_CUDA)
 #include "cluster_dynamics_cuda_impl.hpp"
@@ -8,10 +9,10 @@
 #include "cluster_dynamics_impl.hpp"
 #endif
 
-ClusterDynamics::ClusterDynamics(size_t max_cluster_size, const NuclearReactor &reactor, const Material &material) {
-  this->reactor = reactor;
-  this->material = material;
-  _impl = std::make_unique<ClusterDynamicsImpl>(max_cluster_size, *reactor._impl, *material._impl);
+ClusterDynamics::ClusterDynamics(ClusterDynamicsConfig &config) {
+  this->reactor = config.reactor;
+  this->material = config.material;
+  _impl = std::make_unique<ClusterDynamicsImpl>(config);
 }
 
 /** We cannot use the default destructor that the header would've defined
@@ -23,9 +24,6 @@ ClusterDynamics::~ClusterDynamics() {}
 
 ClusterDynamicsState ClusterDynamics::run([[maybe_unused]] gp_float time_delta, gp_float total_time) {
   return _impl->run(total_time);
-}
-void ClusterDynamics::init() {
-  _impl->init();
 }
 
 Material ClusterDynamics::get_material() const { return material; }
