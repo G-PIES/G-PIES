@@ -35,9 +35,7 @@ if(NOT Boost_FOUND)
 endif()
 
 find_package(SQLite3)
-if(SQLite3_FOUND)
-  set(SQLite3_LIBRARY_TARGET SQLite::SQLite3)
-else()
+if(NOT SQLite3_FOUND)
   FetchContent_Declare(
     sqlite3
     URL https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip
@@ -45,7 +43,8 @@ else()
   FetchContent_MakeAvailable(sqlite3)
   add_library(sqlite3_lib ${sqlite3_SOURCE_DIR}/sqlite3.c)
   set(SQLite3_INCLUDE_DIRS ${sqlite3_SOURCE_DIR})
-  set(SQLite3_LIBRARY_TARGET sqlite3_lib)
+  set(SQLite3_LIBRARIES sqlite3_lib)
+  add_library(SQLite::SQLite3 ALIAS ${SQLite3_LIBRARIES})
 endif()
 
 set(PROJECT_ROOT ${CMAKE_CURRENT_LIST_DIR})
