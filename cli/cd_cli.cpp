@@ -15,6 +15,7 @@
 
 namespace po = boost::program_options;
 
+std::string filename;
 std::ofstream output_file;
 std::ostream os(std::cout.rdbuf());
 
@@ -327,6 +328,9 @@ int main(int argc, char* argv[]) {
   //valid_integration_search();
   //return 0;
 
+  materials::SA304(config.material);
+  nuclear_reactors::OSIRIS(config.reactor);
+
   try {
     // Declare the supported options
     po::options_description all_options("General Options");
@@ -419,7 +423,7 @@ int main(int argc, char* argv[]) {
 
     // Redirect output to file
     if (vm.count("output-file")) {
-      std::string filename = vm["output-file"].as<std::string>();
+      filename = vm["output-file"].as<std::string>();
       output_file.open(filename);
       if (output_file.is_open()) os.rdbuf(output_file.rdbuf());
     }
@@ -667,7 +671,10 @@ int main(int argc, char* argv[]) {
     std::exit(EXIT_FAILURE);
   }
 
-  if (output_file.is_open()) output_file.close();
+  if (output_file.is_open()) {
+    std::cout << "\nResults written to: " << filename << std::endl;
+    output_file.close();
+  } 
 
   return 0;
 }

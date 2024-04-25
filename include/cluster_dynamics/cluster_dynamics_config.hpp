@@ -9,11 +9,11 @@
 struct ClusterDynamicsConfig {
   bool data_validation_on = true;
 
-  size_t max_cluster_size = 10;
+  size_t max_cluster_size = 1001;
 
   gp_float relative_tolerance = 1e-6;
   gp_float absolute_tolerance = 1e1;
-  size_t max_num_integration_steps = 500;
+  size_t max_num_integration_steps = 5000;
   gp_float min_integration_step = 1e-10;
   gp_float max_integration_step = 1e20;
 
