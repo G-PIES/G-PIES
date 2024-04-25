@@ -328,6 +328,9 @@ int main(int argc, char* argv[]) {
   //valid_integration_search();
   //return 0;
 
+  materials::SA304(config.material);
+  nuclear_reactors::OSIRIS(config.reactor);
+
   try {
     // Declare the supported options
     po::options_description all_options("General Options");
