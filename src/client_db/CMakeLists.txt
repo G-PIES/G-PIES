@@ -10,6 +10,6 @@ if(GP_BUILD_METAL)
   target_compile_definitions(clientdbmetal PUBLIC USE_METAL)
   target_compile_definitions(clientdbmetal PUBLIC GP_FLOAT=float)
   target_include_directories(clientdbmetal PRIVATE ${SQLite3_INCLUDE_DIRS})
-  target_link_libraries(clientdbmetal ${SQLite3_LIBRARY_TARGET})
+  target_link_libraries(clientdbmetal ${SQLite3_LIBRARY_TARGET} Boost::iostreams)
 
 endif()
