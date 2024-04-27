@@ -120,7 +120,6 @@ void profile() {
   ClusterDynamicsState state;
 
   nuclear_reactors::OSIRIS(config.reactor);
-
   materials::SA304(config.material);
 
   ClusterDynamics cd(config);

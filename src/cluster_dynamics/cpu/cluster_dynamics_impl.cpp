@@ -1275,19 +1275,6 @@ ClusterDynamicsState ClusterDynamicsImpl::run(gp_float total_time) {
   const int sunerr = CVode(cvodes_memory_block, time + total_time, state, &out_time, CV_NORMAL);
   if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
 
-
-  N_Vector errors = N_VNew_Serial(state_size, sun_context);
-  CVodeGetEstLocalErrors(cvodes_memory_block, errors);
-
-  /*
-  fprintf(stderr, "\n %g", out_time);
-  for (size_t i = 0; i < state_size; ++i) {
-    fprintf(stderr, "(%g, %g) ", N_VGetArrayPointer(state)[i], N_VGetArrayPointer(errors)[i]);
-  }
-  fprintf(stderr, "\n");
-  */
-  //fgetc(stdin);
-
   time = out_time;
 
   interstitials = N_VGetArrayPointer(state);
