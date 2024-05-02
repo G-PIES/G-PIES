@@ -220,6 +220,9 @@ class Ui_MainWindow(object):
         icon4.addPixmap(QtGui.QPixmap("../resources/G-PIES_thumbnail.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionicon_png.setIcon(icon4)
         self.actionicon_png.setObjectName("actionicon_png")
+        self.actionExportAs = QtWidgets.QAction(MainWindow)
+        self.actionExportAs.setObjectName("actionExportAs")
+        self.fileMenuSettings.addAction(self.actionExportAs)
         self.settingsMenuSettings.addAction(self.actionReactor_Settings)
         self.menubar.addAction(self.fileMenuSettings.menuAction())
         self.menubar.addAction(self.settingsMenuSettings.menuAction())
@@ -243,4 +246,5 @@ class Ui_MainWindow(object):
         self.actionFile.setText(_translate("MainWindow", "File"))
         self.actionReactor_Settings.setText(_translate("MainWindow", "Reactor Settings"))
         self.actionicon_png.setText(_translate("MainWindow", "icon.png"))
+        self.actionExportAs.setText(_translate("MainWindow", "Export As.."))
 from .resources_rc import qInitResources

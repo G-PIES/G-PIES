@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout
 from PyQt5.QtCore import QThread, QDateTime, Qt, pyqtSignal
 from PyQt5.QtGui import QIntValidator, QDoubleValidator
+from PyQt5 import QtWidgets
 
 from multiprocessing import shared_memory, Event
 import threading
@@ -16,11 +17,13 @@ from gui.visualization.legendcheckbox import LegendCheckBox
 
 import pyclusterdynamics as pycd
 import sys
+import os
 sys.path.append('../G-PIES/lib')
 
 
 class MainWindowController(QMainWindow, Ui_MainWindow):
     simulationFinished = pyqtSignal()
+    npcsvarry = [] 
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -63,7 +66,19 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         self.startButton.clicked.connect(self.start_simulation)
         self.stopButton.clicked.connect(self.stop_simulation)
         self.settingsButton.clicked.connect(self.get_settings)
-        
+        self.actionExportAs.triggered.connect(self.export_as)
+
+    def export_as(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog.getSaveFileName(self, 
+            "Save File", "", "CSV File(*.csv);;All Files(*)", options = options)
+        if fileName:
+            with open(fileName, 'w') as f:
+                f.write(''.join(self.npcsvarry))
+            self.fileName = fileName
+            self.setWindowTitle(str(os.path.basename(fileName)) )
+
     def get_settings(self):
         self.input_dialog.exec_()
         inputs = self.input_dialog.getInputs()
@@ -116,6 +131,7 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
     def start_waiting_for_task(self):
         self.data_accumulator = DataAccumulator(self.params, self.shm_name, self.shm_ready)
         self.data_accumulator.data_processed_signal.connect(self.update_graph)
+        self.data_accumulator.data_processed_signal.connect(self.update_csv)
 
         self.accumulator_thread = QThread()
         self.data_accumulator.moveToThread(self.accumulator_thread)
@@ -132,6 +148,10 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
     def on_simulation_finished(self):
         self.stop_simulation()
         self.populate_legend()
+
+    def update_csv(self):
+        self.npcsvarry.append(self.data_accumulator.data)
+        #print(self.npcsvarry)
 
     def update_graph(self):
         elapsed = self.start_time.msecsTo(QDateTime.currentDateTime()) / 1000.0
