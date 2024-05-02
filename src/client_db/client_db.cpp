@@ -42,21 +42,7 @@ bool ClientDb::create_reactor(
 
 bool ClientDb::read_reactors(std::vector<NuclearReactor> &reactors,
                              int *sqlite_result_code) {
-  if (!_impl->db) open();
-
-  int sqlite_code;
-  sqlite3_stmt *stmt;
-
-  sqlite_code =
-      sqlite3_prepare_v2(_impl->db, db_queries::read_reactors.c_str(),
-                         db_queries::read_reactors.size(), &stmt, nullptr);
-  if (is_sqlite_error(sqlite_code)) _impl->err_read_reactors(stmt);
-
-  sqlite_code = _impl->read_all<NuclearReactor>(stmt, _impl->row_read_reactor,
-                                         _impl->err_read_reactors, reactors);
-
-  if (sqlite_result_code) *sqlite_result_code = sqlite_code;
-  return is_sqlite_success(sqlite_code);
+  return _impl->read_all<NuclearReactorEntity>(reactors, sqlite_result_code);
 }
 
 bool ClientDb::read_reactor(const int sqlite_id, NuclearReactor &reactor,

@@ -10,6 +10,7 @@ class NuclearReactorEntity : public EntityDescriptor<NuclearReactor, bool> {
  public:
   std::string get_create_one_query() override;
   std::string get_read_one_query() override;
+  std::string get_read_all_query() override;
 
   void bind_create_one(sqlite3_stmt *, NuclearReactor &, bool &&) override;
 
@@ -18,4 +19,5 @@ class NuclearReactorEntity : public EntityDescriptor<NuclearReactor, bool> {
  protected:
   std::string get_create_one_error_message(const NuclearReactor &) override;
   std::string get_read_one_error_message(const int) override;
+  std::string get_read_all_error_message() override;
 };

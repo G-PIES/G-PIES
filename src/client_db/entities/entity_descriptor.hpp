@@ -10,6 +10,7 @@ class EntityDescriptor {
  public:
   virtual std::string get_create_one_query() = 0;
   virtual std::string get_read_one_query() = 0;
+  virtual std::string get_read_all_query() = 0;
 
   virtual void bind_create_one(sqlite3_stmt *, T &, Args &&...) = 0;
 
@@ -31,7 +32,16 @@ class EntityDescriptor {
                             sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
   }
 
+  void handle_read_all_error(sqlite3_stmt *stmt) {
+    std::string errmsg = get_read_all_error_message();
+    sqlite3 *db = sqlite3_db_handle(stmt);
+
+    throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db),
+                            sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
+  }
+
  protected:
   virtual std::string get_create_one_error_message(const T &) = 0;
   virtual std::string get_read_one_error_message(const int) = 0;
+  virtual std::string get_read_all_error_message() = 0;
 };

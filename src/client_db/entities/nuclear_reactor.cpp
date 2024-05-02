@@ -17,6 +17,10 @@ std::string NuclearReactorEntity::get_read_one_query() {
   return "SELECT * FROM reactors WHERE id_reactor = ?;";
 }
 
+std::string NuclearReactorEntity::get_read_all_query() {
+  return "SELECT * FROM reactors;";
+}
+
 void NuclearReactorEntity::bind_create_one(
     sqlite3_stmt *stmt,
     NuclearReactor &reactor,
@@ -78,4 +82,8 @@ std::string NuclearReactorEntity::get_create_one_error_message(
 std::string NuclearReactorEntity::get_read_one_error_message(
     const int sqlite_id) {
   return "Failed to read reactor w/ id " + std::to_string(sqlite_id) + ".";
+}
+
+std::string NuclearReactorEntity::get_read_all_error_message() {
+  return "Failed to read reactors.";
 }

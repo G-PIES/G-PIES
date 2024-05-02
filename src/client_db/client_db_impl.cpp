@@ -148,6 +148,34 @@ bool ClientDbImpl::read_one(
   return is_sqlite_success(result) && is_valid_sqlite_id(object.sqlite_id);
 }
 
+template <typename TEntityDescriptor, typename T>
+bool ClientDbImpl::read_all(std::vector<T> &objects, int *sqlite_result_code) {
+  TEntityDescriptor descriptor = TEntityDescriptor();
+  std::basic_string<char> query = descriptor.get_read_all_query();
+
+  if (!db) open();
+
+  int result;
+  sqlite3_stmt *stmt;
+
+  result = sqlite3_prepare_v2(db, query.c_str(), query.size(), &stmt, nullptr);
+  if (is_sqlite_error(result))
+    descriptor.handle_read_all_error(stmt);
+
+  result = execute_query(stmt,
+    [stmt, &descriptor, &objects]() {
+      T object;
+      descriptor.read_row(stmt, object);
+      objects.push_back(object);
+    },
+    [stmt, &descriptor]() {
+      descriptor.handle_read_all_error(stmt);
+    });
+
+  if (sqlite_result_code) *sqlite_result_code = result;
+  return is_sqlite_success(result);
+}
+
 template <typename T>
 int ClientDbImpl::execute_non_query(
     sqlite3_stmt *stmt,
