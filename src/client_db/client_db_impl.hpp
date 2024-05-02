@@ -46,6 +46,9 @@ class ClientDbImpl {
   template <typename TEntityDescriptor, typename T>
   bool update_one(const T &, int *);
 
+  template <typename TEntityDescriptor, typename T>
+  bool delete_one(const T &, int *);
+
   void throw_error(sqlite3_stmt *,
                    const std::string &, const std::string &,
                    const std::string &,

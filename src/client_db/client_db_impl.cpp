@@ -236,6 +236,51 @@ bool ClientDbImpl::update_one(
   return is_sqlite_success(result);
 }
 
+template <typename TEntityDescriptor, typename T>
+bool ClientDbImpl::delete_one(
+    const T &object,
+    int *sqlite_result_code) {
+
+  TEntityDescriptor descriptor = TEntityDescriptor();
+
+  if (!is_valid_sqlite_id(object.sqlite_id))
+    throw_error(nullptr, "Failed to delete", "Invalid id.",
+                descriptor.get_entity_name(),
+                descriptor.get_entity_description(object),
+                "with id " + std::to_string(object.sqlite_id));
+
+  if (!db) open();
+
+  int result;
+  sqlite3_stmt *stmt;
+
+  std::basic_string<char> query = descriptor.get_delete_one_query();
+  result = sqlite3_prepare_v2(db, query.c_str(), query.size(), &stmt, nullptr);
+  if (is_sqlite_error(result))
+    throw_error(stmt, "Failed to delete", "",
+                descriptor.get_entity_name(),
+                descriptor.get_entity_description(object),
+                "with id " + std::to_string(object.sqlite_id));
+
+  result = sqlite3_bind_int(stmt, 1, object.sqlite_id);
+  if (is_sqlite_error(result))
+    throw_error(stmt, "Failed to delete", "",
+                descriptor.get_entity_name(),
+                descriptor.get_entity_description(object),
+                "with id " + std::to_string(object.sqlite_id));
+
+  result = execute_non_query(stmt,
+    [stmt, &descriptor, &object, this]() {
+      throw_error(stmt, "Failed to delete", "",
+                  descriptor.get_entity_name(),
+                  descriptor.get_entity_description(object),
+                  "with id " + std::to_string(object.sqlite_id));
+    });
+
+  if (sqlite_result_code) *sqlite_result_code = result;
+  return is_sqlite_success(result);
+}
+
 void ClientDbImpl::throw_error(
     sqlite3_stmt *stmt, const std::string &error, const std::string &reason,
     const std::string &entity_name,

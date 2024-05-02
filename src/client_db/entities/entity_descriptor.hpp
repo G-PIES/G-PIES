@@ -12,6 +12,7 @@ class EntityDescriptor {
   virtual std::string get_read_one_query() = 0;
   virtual std::string get_read_all_query() = 0;
   virtual std::string get_update_one_query() = 0;
+  virtual std::string get_delete_one_query() = 0;
 
   virtual void bind_create_one(sqlite3_stmt *, const T &, Args &&...) = 0;
   virtual void bind_update_one(sqlite3_stmt *, const T &) = 0;

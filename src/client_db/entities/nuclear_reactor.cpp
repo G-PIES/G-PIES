@@ -34,7 +34,11 @@ std::string NuclearReactorEntity::get_update_one_query() {
          "v_tri = ?, "
          "v_quad = ?, "
          "dislocation_density_evolution = ? "
-         "WHERE id_reactor = ?;";;
+         "WHERE id_reactor = ?;";
+}
+
+std::string NuclearReactorEntity::get_delete_one_query() {
+  return "DELETE FROM reactors WHERE id_reactor = ?;";
 }
 
 void NuclearReactorEntity::bind_base(
