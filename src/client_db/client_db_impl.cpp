@@ -85,26 +85,33 @@ bool ClientDbImpl::create_one(
     T &object,
     int *sqlite_result_code,
     Args&&... args) {
-  if (is_valid_sqlite_id(object.sqlite_id))
-    // TODO: Failed to create {{entity}}, it already exists.
-    throw ClientDbException("Failed to create reactor, it already exists.");
 
   TEntityDescriptor descriptor = TEntityDescriptor();
-  std::basic_string<char> query = descriptor.get_create_one_query();
+
+  if (is_valid_sqlite_id(object.sqlite_id))
+    throw_error(nullptr, "Failed to create", "It already exists",
+                descriptor.get_entity_name(),
+                descriptor.get_entity_description(object));
 
   if (!db) open();
 
   int result;
   sqlite3_stmt *stmt;
 
+  std::basic_string<char> query = descriptor.get_create_one_query();
   result = sqlite3_prepare_v2(db, query.c_str(), query.size(), &stmt, nullptr);
   if (is_sqlite_error(result))
-    descriptor.handle_create_one_error(stmt, object);
+    throw_error(stmt, "Failed to create", "",
+                descriptor.get_entity_name(),
+                descriptor.get_entity_description(object));
 
   descriptor.bind_create_one(stmt, object, std::forward<Args>(args)...);
 
-  result = execute_non_query(stmt, object, [stmt, &descriptor, &object]() {
-    descriptor.handle_create_one_error(stmt, object);
+  result = execute_non_query(stmt, object,
+    [stmt, &descriptor, &object, this]() {
+      throw_error(stmt, "Failed to create", "",
+                  descriptor.get_entity_name(),
+                  descriptor.get_entity_description(object));
   });
 
   if (sqlite_result_code) *sqlite_result_code = result;
@@ -116,32 +123,40 @@ bool ClientDbImpl::read_one(
     const int sqlite_id,
     T &object,
     int *sqlite_result_code) {
-  if (!is_valid_sqlite_id(sqlite_id))
-    // TODO: Failed to create {{entity}}, it already exists.
-    throw ClientDbException("Failed to read reactor. Invalid id.");
 
   TEntityDescriptor descriptor = TEntityDescriptor();
-  std::basic_string<char> query = descriptor.get_read_one_query();
+
+  if (!is_valid_sqlite_id(sqlite_id))
+    throw_error(nullptr, "Failed to read", "Invalid id.",
+                descriptor.get_entity_name(),
+                "with id " + std::to_string(sqlite_id));
 
   if (!db) open();
 
   int result;
   sqlite3_stmt *stmt;
 
+  std::basic_string<char> query = descriptor.get_read_one_query();
   result = sqlite3_prepare_v2(db, query.c_str(), query.size(), &stmt, nullptr);
   if (is_sqlite_error(result))
-    descriptor.handle_read_one_error(stmt, sqlite_id);
+    throw_error(stmt, "Failed to read", "",
+                descriptor.get_entity_name(),
+                "with id " + std::to_string(sqlite_id));
 
   result = sqlite3_bind_int(stmt, 1, sqlite_id);
   if (is_sqlite_error(result))
-    descriptor.handle_read_one_error(stmt, sqlite_id);
+    throw_error(stmt, "Failed to read", "",
+                descriptor.get_entity_name(),
+                "with id " + std::to_string(sqlite_id));
 
   result = execute_query(stmt,
     [stmt, &descriptor, &object]() {
       descriptor.read_row(stmt, object);
     },
-    [stmt, &descriptor, sqlite_id]() {
-      descriptor.handle_read_one_error(stmt, sqlite_id);
+    [stmt, &descriptor, sqlite_id, this]() {
+      throw_error(stmt, "Failed to read", "",
+                  descriptor.get_entity_name(),
+                  "with id " + std::to_string(sqlite_id));
     });
 
   if (sqlite_result_code) *sqlite_result_code = result;
@@ -160,7 +175,8 @@ bool ClientDbImpl::read_all(std::vector<T> &objects, int *sqlite_result_code) {
 
   result = sqlite3_prepare_v2(db, query.c_str(), query.size(), &stmt, nullptr);
   if (is_sqlite_error(result))
-    descriptor.handle_read_all_error(stmt);
+    throw_error(stmt, "Failed to read", "",
+                descriptor.get_entities_name());
 
   result = execute_query(stmt,
     [stmt, &descriptor, &objects]() {
@@ -168,12 +184,39 @@ bool ClientDbImpl::read_all(std::vector<T> &objects, int *sqlite_result_code) {
       descriptor.read_row(stmt, object);
       objects.push_back(object);
     },
-    [stmt, &descriptor]() {
-      descriptor.handle_read_all_error(stmt);
+    [stmt, &descriptor, this]() {
+      throw_error(stmt, "Failed to read", "",
+                  descriptor.get_entities_name());
     });
 
   if (sqlite_result_code) *sqlite_result_code = result;
   return is_sqlite_success(result);
+}
+
+void ClientDbImpl::throw_error(
+    sqlite3_stmt *stmt, const std::string &error, const std::string &reason,
+    const std::string &entity_name,
+    const std::string &entity_description1,
+    const std::string &entity_description2) {
+
+  std::string message = error + " " + entity_name;
+  if (entity_description1.length() > 0) {
+    message += " " + entity_description1;
+  }
+  if (entity_description2.length() > 0) {
+    message += " " + entity_description2;
+  }
+  if (reason.length() > 0) {
+    message += ". " + reason;
+  }
+  message += ".";
+
+  if (stmt) {
+    throw ClientDbException(message.c_str(), sqlite3_errmsg(db),
+                            sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
+  } else {
+    throw ClientDbException(message.c_str());
+  }
 }
 
 template <typename T>

@@ -16,8 +16,7 @@ class NuclearReactorEntity : public EntityDescriptor<NuclearReactor, bool> {
 
   void read_row(sqlite3_stmt *, NuclearReactor &) override;
 
- protected:
-  std::string get_create_one_error_message(const NuclearReactor &) override;
-  std::string get_read_one_error_message(const int) override;
-  std::string get_read_all_error_message() override;
+  std::string get_entity_name() override;
+  std::string get_entities_name() override;
+  std::string get_entity_description(const NuclearReactor &object) override;
 };

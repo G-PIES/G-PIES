@@ -74,16 +74,9 @@ void NuclearReactorEntity::read_row(
       (gp_float)sqlite3_column_double(stmt, col_offset + 12));
 }
 
-std::string NuclearReactorEntity::get_create_one_error_message(
-    const NuclearReactor &reactor) {
-  return "Failed to create reactor \"" + reactor.species + "\".";
-}
-
-std::string NuclearReactorEntity::get_read_one_error_message(
-    const int sqlite_id) {
-  return "Failed to read reactor w/ id " + std::to_string(sqlite_id) + ".";
-}
-
-std::string NuclearReactorEntity::get_read_all_error_message() {
-  return "Failed to read reactors.";
+std::string NuclearReactorEntity::get_entity_name() { return "reactor"; }
+std::string NuclearReactorEntity::get_entities_name() { return "reactors"; }
+std::string NuclearReactorEntity::get_entity_description(
+    const NuclearReactor &object) {
+  return "\"" + object.species + "\"";
 }
