@@ -72,7 +72,13 @@ void MaterialEntity::bind_create_one(
 void MaterialEntity::read_row(
     sqlite3_stmt *stmt,
     Material &material) {
-  int col_offset = 0;
+  read_row(stmt, material, 0);
+}
+
+void MaterialEntity::read_row(
+    sqlite3_stmt *stmt,
+    Material &material,
+    const int col_offset) {
   material.sqlite_id =
       static_cast<int>(sqlite3_column_int(stmt, col_offset + 0));
   material.creation_datetime =

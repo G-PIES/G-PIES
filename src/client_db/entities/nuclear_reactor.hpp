@@ -19,6 +19,7 @@ class NuclearReactorEntity : public EntityDescriptor<NuclearReactor, bool> {
   void bind_update_one(sqlite3_stmt *, const NuclearReactor &) override;
 
   void read_row(sqlite3_stmt *, NuclearReactor &) override;
+  void read_row(sqlite3_stmt *, NuclearReactor &, const int);
 
   std::string get_entity_name() override;
   std::string get_entities_name() override;

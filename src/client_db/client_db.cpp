@@ -8,6 +8,7 @@
 
 #include "client_db_impl.hpp"
 #include "db_queries.hpp"
+#include "entities/history_simulation.hpp"
 #include "entities/material.hpp"
 #include "entities/nuclear_reactor.hpp"
 #include "model/history_simulation.hpp"
@@ -97,101 +98,36 @@ bool ClientDb::delete_material(const Material &material,
 
 bool ClientDb::create_simulation(HistorySimulation &simulation,
                                  int *sqlite_result_code) {
-  if (is_valid_sqlite_id(simulation.sqlite_id))
-    throw ClientDbException("Failed to create simulation, it already exists.");
-  if (!_impl->db) open();
-
   // create non-preset copies of the reactor and material
   create_reactor(simulation.reactor, nullptr, false);
   create_material(simulation.material, nullptr, false);
 
-  int sqlite_code;
-  sqlite3_stmt *stmt;
-
-  sqlite_code =
-      sqlite3_prepare_v2(_impl->db, db_queries::create_simulation.c_str(),
-                         db_queries::create_simulation.size(), &stmt, nullptr);
-  if (is_sqlite_error(sqlite_code)) _impl->err_create_simulation(stmt,
-                                                                 simulation);
-
-  ClientDbImpl::bind_simulation(stmt, simulation);
-
-  sqlite_code =
-      _impl->create_one<HistorySimulation>(stmt, _impl->err_create_simulation,
-                                           simulation);
-
-  if (sqlite_result_code) *sqlite_result_code = sqlite_code;
-  return is_sqlite_success(sqlite_code);
+  return _impl->create_one<HistorySimulationEntity>(
+    simulation,
+    sqlite_result_code);
 }
 
 bool ClientDb::read_simulations(std::vector<HistorySimulation> &simulations,
                                 int *sqlite_result_code) {
-  if (!_impl->db) open();
-
-  int sqlite_code;
-  sqlite3_stmt *stmt;
-
-  sqlite_code =
-      sqlite3_prepare_v2(_impl->db, db_queries::read_simulations.c_str(),
-                         db_queries::read_simulations.size(), &stmt, nullptr);
-  if (is_sqlite_error(sqlite_code)) _impl->err_read_simulations(stmt);
-
-  sqlite_code = _impl->read_all<HistorySimulation>(stmt,
-                                                  _impl->row_read_simulation,
-                                                  _impl->err_read_simulations,
-                                                  simulations);
-
-  if (sqlite_result_code) *sqlite_result_code = sqlite_code;
-  return is_sqlite_success(sqlite_code);
+  return _impl->read_all<HistorySimulationEntity>(
+    simulations,
+    sqlite_result_code);
 }
 
 bool ClientDb::read_simulation(const int sqlite_id,
                                HistorySimulation &simulation,
                                int *sqlite_result_code) {
-  if (!is_valid_sqlite_id(sqlite_id))
-    throw ClientDbException("Failed to read simulation. Invalid id.");
-
-  if (!_impl->db) open();
-
-  int sqlite_code;
-  sqlite3_stmt *stmt;
-
-  sqlite_code =
-      sqlite3_prepare_v2(_impl->db, db_queries::read_simulation.c_str(),
-                         db_queries::read_simulation.size(), &stmt, nullptr);
-  if (is_sqlite_error(sqlite_code)) _impl->err_read_simulation(stmt, sqlite_id);
-
-  sqlite_code = _impl->read_one<HistorySimulation>(
-      stmt, _impl->row_read_simulation, _impl->err_read_simulation, sqlite_id,
-      simulation);
-
-  if (sqlite_result_code) *sqlite_result_code = sqlite_code;
-  return is_sqlite_success(sqlite_code) &&
-         is_valid_sqlite_id(simulation.sqlite_id);
+  return _impl->read_one<HistorySimulationEntity>(
+    sqlite_id,
+    simulation,
+    sqlite_result_code);
 }
 
 bool ClientDb::delete_simulation(const HistorySimulation &simulation,
                                  int *sqlite_result_code) {
-  if (!is_valid_sqlite_id(simulation.sqlite_id))
-    throw ClientDbException("Failed to delete simulation. Invalid id.");
-
-  if (!_impl->db) open();
-
-  int sqlite_code;
-  sqlite3_stmt *stmt;
-
-  sqlite_code =
-      sqlite3_prepare_v2(_impl->db, db_queries::delete_simulation.c_str(),
-                         db_queries::delete_simulation.size(), &stmt, nullptr);
-  if (is_sqlite_error(sqlite_code)) _impl->err_delete_simulation(stmt,
-                                                                 simulation);
-
-  sqlite_code =
-      _impl->delete_one<HistorySimulation>(stmt, _impl->err_delete_simulation,
-                                           simulation);
-
-  if (sqlite_result_code) *sqlite_result_code = sqlite_code;
-  return is_sqlite_success(sqlite_code);
+  return _impl->delete_one<HistorySimulationEntity>(
+    simulation,
+    sqlite_result_code);
 }
 
 bool ClientDb::delete_simulations(int *sqlite_result_code) {

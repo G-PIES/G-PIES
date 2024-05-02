@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "client_db/client_db.hpp"
-#include "model/history_simulation.hpp"
 
 class ClientDbImpl {
  public:
@@ -58,66 +57,6 @@ class ClientDbImpl {
 
   int execute_query(sqlite3_stmt *, const std::function<void()> &,
                     const std::function<void()> &);
-
-  // CREATE
-  template <typename T>
-  int create_one(sqlite3_stmt *, void (*)(sqlite3_stmt *, const T &), T &);
-
-  // READ
-  template <typename T>
-  int read_one(sqlite3_stmt *, void (*)(sqlite3_stmt *, T &, int),
-               void (*)(sqlite3_stmt *, const int), const int, T &);
-  template <typename T>
-  int read_all(sqlite3_stmt *, void (*)(sqlite3_stmt *, T &, int),
-               void (*)(sqlite3_stmt *), std::vector<T> &);
-
-  // UPDATE / DELETE
-  template <typename T>
-  int update_one(sqlite3_stmt *, void (*)(sqlite3_stmt *, const T &),
-                 const T &);
-
-  // DELETE
-  template <typename T>
-  int delete_one(sqlite3_stmt *, void (*)(sqlite3_stmt *, const T &),
-                 const T &);
-
-  // --------------------------------------------------------------------------------------------
-
-  // --------------------------------------------------------------------------------------------
-  /*  COLUMN BINDING
-      These are called by the public facing function to bind objects to SQLite
-     statements.
-  */
-
-  static void bind_simulation(sqlite3_stmt *, const HistorySimulation &);
-
-  // --------------------------------------------------------------------------------------------
-
-  // --------------------------------------------------------------------------------------------
-  /*  ROW CALLBACKS
-      These callbacks are used as parameters in the read template functions.
-     They handle the underlying logic of copying data from a retrieved SQLite
-     row into an object.
-  */
-
-  static void row_read_reactor(sqlite3_stmt *, NuclearReactor &, int = 0);
-  static void row_read_material(sqlite3_stmt *, Material &, int = 0);
-  static void row_read_simulation(sqlite3_stmt *, HistorySimulation &, int = 0);
-
-  // --------------------------------------------------------------------------------------------
-
-  // --------------------------------------------------------------------------------------------
-  /*  ERROR CALLBACKS
-      These callbacks are used as parameters in all template functions to
-     handle any errors that occur in the database queries.
-  */
-
-  static void err_create_simulation(sqlite3_stmt *, const HistorySimulation &);
-  static void err_read_simulations(sqlite3_stmt *);
-  static void err_read_simulation(sqlite3_stmt *, const int);
-  static void err_delete_simulation(sqlite3_stmt *, const HistorySimulation &);
-
-  // --------------------------------------------------------------------------------------------
 
   // --------------------------------------------------------------------------------------------
   // UTILITIES

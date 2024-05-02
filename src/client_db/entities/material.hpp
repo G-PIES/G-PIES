@@ -19,6 +19,7 @@ class MaterialEntity : public EntityDescriptor<Material, bool> {
   void bind_update_one(sqlite3_stmt *, const Material &) override;
 
   void read_row(sqlite3_stmt *, Material &) override;
+  void read_row(sqlite3_stmt *, Material &, const int);
 
   std::string get_entity_name() override;
   std::string get_entities_name() override;

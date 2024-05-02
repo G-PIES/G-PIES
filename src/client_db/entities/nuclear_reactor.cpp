@@ -62,7 +62,13 @@ void NuclearReactorEntity::bind_create_one(
 void NuclearReactorEntity::read_row(
     sqlite3_stmt *stmt,
     NuclearReactor &reactor) {
-  int col_offset = 0;
+  read_row(stmt, reactor, 0);
+}
+
+void NuclearReactorEntity::read_row(
+    sqlite3_stmt *stmt,
+    NuclearReactor &reactor,
+    const int col_offset) {
   reactor.sqlite_id =
       static_cast<int>(sqlite3_column_int(stmt, col_offset + 0));
   reactor.creation_datetime =
