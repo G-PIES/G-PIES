@@ -6,39 +6,23 @@
 #include "../db_queries.hpp"
 
 std::string NuclearReactorEntity::get_create_one_query() {
-  return "INSERT INTO reactors ("
-         "species, flux, temperature, recombination, i_bi, i_tri, i_quad, "
-         "v_bi, v_tri, v_quad, dislocation_density_evolution, "
-         "creation_datetime, is_preset) "
-         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+  return db_queries::create_reactor;
 }
 
 std::string NuclearReactorEntity::get_read_one_query() {
-  return "SELECT * FROM reactors WHERE id_reactor = ?;";
+  return db_queries::read_reactor;
 }
 
 std::string NuclearReactorEntity::get_read_all_query() {
-  return "SELECT * FROM reactors;";
+  return db_queries::read_reactors;
 }
 
 std::string NuclearReactorEntity::get_update_one_query() {
-  return "UPDATE reactors SET "
-         "species = ?, "
-         "flux = ?, "
-         "temperature = ?, "
-         "recombination = ?, "
-         "i_bi = ?, "
-         "i_tri = ?, "
-         "i_quad = ?, "
-         "v_bi = ?, "
-         "v_tri = ?, "
-         "v_quad = ?, "
-         "dislocation_density_evolution = ? "
-         "WHERE id_reactor = ?;";
+  return db_queries::update_reactor;
 }
 
 std::string NuclearReactorEntity::get_delete_one_query() {
-  return "DELETE FROM reactors WHERE id_reactor = ?;";
+  return db_queries::delete_reactor;
 }
 
 void NuclearReactorEntity::bind_base(

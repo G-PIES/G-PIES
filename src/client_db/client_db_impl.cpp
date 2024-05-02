@@ -433,33 +433,6 @@ int ClientDbImpl::delete_one(sqlite3_stmt *stmt,
 // COLUMN BINDING
 // --------------------------------------------------------------------------------------------
 
-void ClientDbImpl::bind_reactor(sqlite3_stmt *stmt,
-                                const NuclearReactor &reactor,
-                                bool is_preset) {
-  sqlite3_bind_text(stmt, 1, reactor.species.c_str(), reactor.species.length(),
-                    nullptr);
-  sqlite3_bind_double(stmt, 2, reactor.get_flux());
-  sqlite3_bind_double(stmt, 3, reactor.get_temperature());
-  sqlite3_bind_double(stmt, 4, reactor.get_recombination());
-  sqlite3_bind_double(stmt, 5, reactor.get_i_bi());
-  sqlite3_bind_double(stmt, 6, reactor.get_i_tri());
-  sqlite3_bind_double(stmt, 7, reactor.get_i_quad());
-  sqlite3_bind_double(stmt, 8, reactor.get_v_bi());
-  sqlite3_bind_double(stmt, 9, reactor.get_v_tri());
-  sqlite3_bind_double(stmt, 10, reactor.get_v_quad());
-  sqlite3_bind_double(stmt, 11, reactor.get_dislocation_density_evolution());
-
-  if (is_valid_sqlite_id(reactor.sqlite_id)) {
-    // update
-    sqlite3_bind_int(stmt, 12, reactor.sqlite_id);
-  } else {
-    // create
-    sqlite3_bind_text(stmt, 12, reactor.creation_datetime.c_str(),
-                      reactor.creation_datetime.length(), nullptr);
-    sqlite3_bind_int(stmt, 13, static_cast<int>(is_preset));
-  }
-}
-
 void ClientDbImpl::bind_material(sqlite3_stmt *stmt, const Material &material,
                              bool is_preset) {
   sqlite3_bind_text(stmt, 1, material.species.c_str(),
@@ -642,50 +615,6 @@ void ClientDbImpl::row_read_simulation(sqlite3_stmt *stmt,
 // --------------------------------------------------------------------------------------------
 // ERROR CALLBACKS
 // --------------------------------------------------------------------------------------------
-
-void ClientDbImpl::err_create_reactor(sqlite3_stmt *stmt,
-                                  const NuclearReactor &reactor) {
-  std::string errmsg = "Failed to create reactor \"" + reactor.species + "\".";
-  sqlite3 *db = sqlite3_db_handle(stmt);
-
-  throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db),
-                          sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
-}
-
-void ClientDbImpl::err_read_reactors(sqlite3_stmt *stmt) {
-  sqlite3 *db = sqlite3_db_handle(stmt);
-  throw ClientDbException("Failed to read reactors.", sqlite3_errmsg(db),
-                          sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
-}
-
-void ClientDbImpl::err_read_reactor(sqlite3_stmt *stmt, const int sqlite_id) {
-  std::string errmsg =
-      "Failed to read reactor w/ id " + std::to_string(sqlite_id) + ".";
-  sqlite3 *db = sqlite3_db_handle(stmt);
-
-  throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db),
-                          sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
-}
-
-void ClientDbImpl::err_update_reactor(sqlite3_stmt *stmt,
-                                  const NuclearReactor &reactor) {
-  std::string errmsg = "Failed to update reactor \"" + reactor.species +
-                       "\" w/ id " + std::to_string(reactor.sqlite_id) + ".";
-  sqlite3 *db = sqlite3_db_handle(stmt);
-
-  throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db),
-                          sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
-}
-
-void ClientDbImpl::err_delete_reactor(sqlite3_stmt *stmt,
-                                  const NuclearReactor &reactor) {
-  std::string errmsg = "Failed to delete reactor \"" + reactor.species +
-                       "\" w/ id " + std::to_string(reactor.sqlite_id) + ".";
-  sqlite3 *db = sqlite3_db_handle(stmt);
-
-  throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db),
-                          sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
-}
 
 void ClientDbImpl::err_create_material(sqlite3_stmt *stmt,
                                    const Material &material) {
