@@ -433,42 +433,6 @@ int ClientDbImpl::delete_one(sqlite3_stmt *stmt,
 // COLUMN BINDING
 // --------------------------------------------------------------------------------------------
 
-void ClientDbImpl::bind_material(sqlite3_stmt *stmt, const Material &material,
-                             bool is_preset) {
-  sqlite3_bind_text(stmt, 1, material.species.c_str(),
-                    material.species.length(), nullptr);
-  sqlite3_bind_double(stmt, 2, material.get_i_migration());
-  sqlite3_bind_double(stmt, 3, material.get_v_migration());
-  sqlite3_bind_double(stmt, 4, material.get_i_diffusion_0());
-  sqlite3_bind_double(stmt, 5, material.get_v_diffusion_0());
-  sqlite3_bind_double(stmt, 6, material.get_i_formation());
-  sqlite3_bind_double(stmt, 7, material.get_v_formation());
-  sqlite3_bind_double(stmt, 8, material.get_i_binding());
-  sqlite3_bind_double(stmt, 9, material.get_v_binding());
-  sqlite3_bind_double(stmt, 10, material.get_recombination_radius());
-  sqlite3_bind_double(stmt, 11, material.get_i_loop_bias());
-  sqlite3_bind_double(stmt, 12, material.get_i_dislocation_bias());
-  sqlite3_bind_double(stmt, 13, material.get_i_dislocation_bias_param());
-  sqlite3_bind_double(stmt, 14, material.get_v_loop_bias());
-  sqlite3_bind_double(stmt, 15, material.get_v_dislocation_bias());
-  sqlite3_bind_double(stmt, 16, material.get_v_dislocation_bias_param());
-  sqlite3_bind_double(stmt, 17, material.get_dislocation_density_0());
-  sqlite3_bind_double(stmt, 18, material.get_grain_size());
-  sqlite3_bind_double(stmt, 19, material.get_lattice_param());
-  sqlite3_bind_double(stmt, 20, material.get_burgers_vector());
-  sqlite3_bind_double(stmt, 21, material.get_atomic_volume());
-
-  if (is_valid_sqlite_id(material.sqlite_id)) {
-    // update
-    sqlite3_bind_int(stmt, 22, material.sqlite_id);
-  } else {
-    // create
-    sqlite3_bind_text(stmt, 22, material.creation_datetime.c_str(),
-                      material.creation_datetime.length(), nullptr);
-    sqlite3_bind_int(stmt, 23, static_cast<int>(is_preset));
-  }
-}
-
 void ClientDbImpl::bind_simulation(sqlite3_stmt *stmt,
                                const HistorySimulation &simulation) {
   std::vector<char> interstitials_blob =
@@ -615,51 +579,6 @@ void ClientDbImpl::row_read_simulation(sqlite3_stmt *stmt,
 // --------------------------------------------------------------------------------------------
 // ERROR CALLBACKS
 // --------------------------------------------------------------------------------------------
-
-void ClientDbImpl::err_create_material(sqlite3_stmt *stmt,
-                                   const Material &material) {
-  std::string errmsg =
-      "Failed to create material \"" + material.species + "\".";
-  sqlite3 *db = sqlite3_db_handle(stmt);
-
-  throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db),
-                          sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
-}
-
-void ClientDbImpl::err_read_materials(sqlite3_stmt *stmt) {
-  sqlite3 *db = sqlite3_db_handle(stmt);
-  throw ClientDbException("Failed to read materials.", sqlite3_errmsg(db),
-                          sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
-}
-
-void ClientDbImpl::err_read_material(sqlite3_stmt *stmt, const int sqlite_id) {
-  std::string errmsg =
-      "Failed to read material w/ id " + std::to_string(sqlite_id) + ".";
-  sqlite3 *db = sqlite3_db_handle(stmt);
-
-  throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db),
-                          sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
-}
-
-void ClientDbImpl::err_update_material(sqlite3_stmt *stmt,
-                                   const Material &material) {
-  std::string errmsg = "Failed to update material \"" + material.species +
-                       "\" w/ id " + std::to_string(material.sqlite_id) + ".";
-  sqlite3 *db = sqlite3_db_handle(stmt);
-
-  throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db),
-                          sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
-}
-
-void ClientDbImpl::err_delete_material(sqlite3_stmt *stmt,
-                                   const Material &material) {
-  std::string errmsg = "Failed to delete material \"" + material.species +
-                       "\" w/ id " + std::to_string(material.sqlite_id) + ".";
-  sqlite3 *db = sqlite3_db_handle(stmt);
-
-  throw ClientDbException(errmsg.c_str(), sqlite3_errmsg(db),
-                          sqlite3_errcode(db), sqlite3_expanded_sql(stmt));
-}
 
 void ClientDbImpl::err_create_simulation(sqlite3_stmt *stmt,
                                      const HistorySimulation &simulation) {

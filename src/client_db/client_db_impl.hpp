@@ -89,7 +89,6 @@ class ClientDbImpl {
      statements.
   */
 
-  static void bind_material(sqlite3_stmt *, const Material &, bool = false);
   static void bind_simulation(sqlite3_stmt *, const HistorySimulation &);
 
   // --------------------------------------------------------------------------------------------
@@ -112,12 +111,6 @@ class ClientDbImpl {
       These callbacks are used as parameters in all template functions to
      handle any errors that occur in the database queries.
   */
-
-  static void err_create_material(sqlite3_stmt *, const Material &);
-  static void err_read_materials(sqlite3_stmt *);
-  static void err_read_material(sqlite3_stmt *, const int);
-  static void err_update_material(sqlite3_stmt *, const Material &);
-  static void err_delete_material(sqlite3_stmt *, const Material &);
 
   static void err_create_simulation(sqlite3_stmt *, const HistorySimulation &);
   static void err_read_simulations(sqlite3_stmt *);

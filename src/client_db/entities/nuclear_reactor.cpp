@@ -87,6 +87,6 @@ void NuclearReactorEntity::read_row(
 std::string NuclearReactorEntity::get_entity_name() { return "reactor"; }
 std::string NuclearReactorEntity::get_entities_name() { return "reactors"; }
 std::string NuclearReactorEntity::get_entity_description(
-    const NuclearReactor &object) {
-  return "\"" + object.species + "\"";
+    const NuclearReactor &reactor) {
+  return "\"" + reactor.species + "\"";
 }

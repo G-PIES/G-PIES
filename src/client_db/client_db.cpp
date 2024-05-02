@@ -8,6 +8,7 @@
 
 #include "client_db_impl.hpp"
 #include "db_queries.hpp"
+#include "entities/material.hpp"
 #include "entities/nuclear_reactor.hpp"
 #include "model/history_simulation.hpp"
 #include "model/material.hpp"
@@ -65,115 +66,33 @@ bool ClientDb::delete_reactor(const NuclearReactor &reactor,
 
 bool ClientDb::create_material(Material &material, int *sqlite_result_code,
                                bool is_preset) {
-  if (is_valid_sqlite_id(material.sqlite_id))
-    throw ClientDbException("Failed to create material, it already exists.");
-  if (!_impl->db) open();
-
-  int sqlite_code;
-  sqlite3_stmt *stmt;
-
-  sqlite_code =
-      sqlite3_prepare_v2(_impl->db, db_queries::create_material.c_str(),
-                         db_queries::create_material.size(), &stmt, nullptr);
-  if (is_sqlite_error(sqlite_code)) _impl->err_create_material(stmt, material);
-
-  ClientDbImpl::bind_material(stmt, material, is_preset);
-
-  sqlite_code = _impl->create_one<Material>(stmt,
-                                            _impl->err_create_material,
-                                            material);
-
-  if (sqlite_result_code) *sqlite_result_code = sqlite_code;
-  return is_sqlite_success(sqlite_code);
+  return _impl->create_one<MaterialEntity>(
+    material,
+    sqlite_result_code,
+    std::forward<bool>(is_preset));
 }
 
 bool ClientDb::read_materials(std::vector<Material> &materials,
                               int *sqlite_result_code) {
-  if (!_impl->db) open();
-
-  int sqlite_code;
-  sqlite3_stmt *stmt;
-
-  sqlite_code =
-      sqlite3_prepare_v2(_impl->db, db_queries::read_materials.c_str(),
-                         db_queries::read_materials.size(), &stmt, nullptr);
-  if (is_sqlite_error(sqlite_code)) _impl->err_read_materials(stmt);
-
-  sqlite_code = _impl->read_all<Material>(stmt, _impl->row_read_material,
-                                          _impl->err_read_materials, materials);
-
-  if (sqlite_result_code) *sqlite_result_code = sqlite_code;
-  return is_sqlite_success(sqlite_code);
+  return _impl->read_all<MaterialEntity>(materials, sqlite_result_code);
 }
 
 bool ClientDb::read_material(const int sqlite_id, Material &material,
                              int *sqlite_result_code) {
-  if (!is_valid_sqlite_id(sqlite_id))
-    throw ClientDbException("Failed to read material. Invalid id.");
-
-  if (!_impl->db) open();
-
-  int sqlite_code;
-  sqlite3_stmt *stmt;
-
-  sqlite_code =
-      sqlite3_prepare_v2(_impl->db, db_queries::read_material.c_str(),
-                         db_queries::read_material.size(), &stmt, nullptr);
-  if (is_sqlite_error(sqlite_code)) _impl->err_read_material(stmt, sqlite_id);
-
-  sqlite_code = _impl->read_one<Material>(stmt, _impl->row_read_material,
-                                          _impl->err_read_material, sqlite_id,
-                                          material);
-
-  if (sqlite_result_code) *sqlite_result_code = sqlite_code;
-  return is_sqlite_success(sqlite_code) &&
-         is_valid_sqlite_id(material.sqlite_id);
+  return _impl->read_one<MaterialEntity>(
+    sqlite_id,
+    material,
+    sqlite_result_code);
 }
 
 bool ClientDb::update_material(const Material &material,
                                int *sqlite_result_code) {
-  if (!is_valid_sqlite_id(material.sqlite_id))
-    throw ClientDbException("Failed to update material. Invalid id.");
-
-  if (!_impl->db) open();
-
-  int sqlite_code;
-  sqlite3_stmt *stmt;
-
-  sqlite_code =
-      sqlite3_prepare_v2(_impl->db, db_queries::update_material.c_str(),
-                         db_queries::update_material.size(), &stmt, nullptr);
-  if (is_sqlite_error(sqlite_code)) _impl->err_update_material(stmt, material);
-
-  ClientDbImpl::bind_material(stmt, material);
-
-  sqlite_code = _impl->update_one<Material>(stmt, _impl->err_update_material,
-                                            material);
-
-  if (sqlite_result_code) *sqlite_result_code = sqlite_code;
-  return is_sqlite_success(sqlite_code);
+  return _impl->update_one<MaterialEntity>(material, sqlite_result_code);
 }
 
 bool ClientDb::delete_material(const Material &material,
                                int *sqlite_result_code) {
-  if (!is_valid_sqlite_id(material.sqlite_id))
-    throw ClientDbException("Failed to delete material. Invalid id.");
-
-  if (!_impl->db) open();
-
-  int sqlite_code;
-  sqlite3_stmt *stmt;
-
-  sqlite_code =
-      sqlite3_prepare_v2(_impl->db, db_queries::delete_material.c_str(),
-                         db_queries::delete_material.size(), &stmt, nullptr);
-  if (is_sqlite_error(sqlite_code)) _impl->err_delete_material(stmt, material);
-
-  sqlite_code = _impl->delete_one<Material>(stmt, _impl->err_delete_material,
-                                            material);
-
-  if (sqlite_result_code) *sqlite_result_code = sqlite_code;
-  return is_sqlite_success(sqlite_code);
+  return _impl->delete_one<MaterialEntity>(material, sqlite_result_code);
 }
 
 bool ClientDb::create_simulation(HistorySimulation &simulation,
