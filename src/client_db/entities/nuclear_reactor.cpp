@@ -5,7 +5,7 @@
 #include "../client_db_impl.hpp"
 #include "../db_queries.hpp"
 
-std::string NuclearReactorEntity::get_create_query() {
+std::string NuclearReactorEntity::get_create_one_query() {
   return "INSERT INTO reactors ("
          "species, flux, temperature, recombination, i_bi, i_tri, i_quad, "
          "v_bi, v_tri, v_quad, dislocation_density_evolution, "
@@ -13,8 +13,14 @@ std::string NuclearReactorEntity::get_create_query() {
          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 }
 
-void NuclearReactorEntity::bind(sqlite3_stmt *stmt, NuclearReactor &reactor,
-                                bool &&is_preset) {
+std::string NuclearReactorEntity::get_read_one_query() {
+  return "SELECT * FROM reactors WHERE id_reactor = ?;";
+}
+
+void NuclearReactorEntity::bind_create_one(
+    sqlite3_stmt *stmt,
+    NuclearReactor &reactor,
+    bool &&is_preset) {
   sqlite3_bind_text(stmt, 1, reactor.species.c_str(), reactor.species.length(),
                     nullptr);
   sqlite3_bind_double(stmt, 2, reactor.get_flux());
@@ -39,7 +45,35 @@ void NuclearReactorEntity::bind(sqlite3_stmt *stmt, NuclearReactor &reactor,
   }
 }
 
-std::string NuclearReactorEntity::get_create_error_message(
+void NuclearReactorEntity::read_row(sqlite3_stmt *stmt, NuclearReactor &reactor) {
+  int col_offset = 0;
+  reactor.sqlite_id =
+      static_cast<int>(sqlite3_column_int(stmt, col_offset + 0));
+  reactor.creation_datetime =
+      reinterpret_cast<const char *>(sqlite3_column_text(stmt, col_offset + 1));
+  reactor.species =
+      reinterpret_cast<const char *>(sqlite3_column_text(stmt, col_offset + 2));
+  reactor.set_flux((gp_float)sqlite3_column_double(stmt, col_offset + 3));
+  reactor.set_temperature(
+      (gp_float)sqlite3_column_double(stmt, col_offset + 4));
+  reactor.set_recombination(
+      (gp_float)sqlite3_column_double(stmt, col_offset + 5));
+  reactor.set_i_bi((gp_float)sqlite3_column_double(stmt, col_offset + 6));
+  reactor.set_i_tri((gp_float)sqlite3_column_double(stmt, col_offset + 7));
+  reactor.set_i_quad((gp_float)sqlite3_column_double(stmt, col_offset + 8));
+  reactor.set_v_bi((gp_float)sqlite3_column_double(stmt, col_offset + 9));
+  reactor.set_v_tri((gp_float)sqlite3_column_double(stmt, col_offset + 10));
+  reactor.set_v_quad((gp_float)sqlite3_column_double(stmt, col_offset + 11));
+  reactor.set_dislocation_density_evolution(
+      (gp_float)sqlite3_column_double(stmt, col_offset + 12));
+}
+
+std::string NuclearReactorEntity::get_create_one_error_message(
     const NuclearReactor &reactor) {
   return "Failed to create reactor \"" + reactor.species + "\".";
+}
+
+std::string NuclearReactorEntity::get_read_one_error_message(
+    const int sqlite_id) {
+  return "Failed to read reactor w/ id " + std::to_string(sqlite_id) + ".";
 }

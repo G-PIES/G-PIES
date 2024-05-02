@@ -35,9 +35,9 @@ bool ClientDb::create_reactor(
     int *sqlite_result_code,
     bool is_preset) {
   return _impl->create_one<NuclearReactorEntity>(
-      reactor,
-      sqlite_result_code,
-      std::forward<bool>(is_preset));
+    reactor,
+    sqlite_result_code,
+    std::forward<bool>(is_preset));
 }
 
 bool ClientDb::read_reactors(std::vector<NuclearReactor> &reactors,
@@ -61,26 +61,10 @@ bool ClientDb::read_reactors(std::vector<NuclearReactor> &reactors,
 
 bool ClientDb::read_reactor(const int sqlite_id, NuclearReactor &reactor,
                             int *sqlite_result_code) {
-  if (!is_valid_sqlite_id(sqlite_id))
-    throw ClientDbException("Failed to read reactor. Invalid id.");
-
-  if (!_impl->db) open();
-
-  int sqlite_code;
-  sqlite3_stmt *stmt;
-
-  sqlite_code =
-      sqlite3_prepare_v2(_impl->db, db_queries::read_reactor.c_str(),
-                         db_queries::read_reactor.size(), &stmt, nullptr);
-  if (is_sqlite_error(sqlite_code)) _impl->err_read_reactor(stmt, sqlite_id);
-
-  sqlite_code = _impl->read_one<NuclearReactor>(stmt, _impl->row_read_reactor,
-                                                _impl->err_read_reactor,
-                                                sqlite_id, reactor);
-
-  if (sqlite_result_code) *sqlite_result_code = sqlite_code;
-  return is_sqlite_success(sqlite_code) &&
-         is_valid_sqlite_id(reactor.sqlite_id);
+  return _impl->read_one<NuclearReactorEntity>(
+    sqlite_id, 
+    reactor, 
+    sqlite_result_code);
 }
 
 bool ClientDb::update_reactor(const NuclearReactor &reactor,

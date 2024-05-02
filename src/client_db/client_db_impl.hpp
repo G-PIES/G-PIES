@@ -37,8 +37,14 @@ class ClientDbImpl {
   template <typename TEntityDescriptor, typename T, class... Args>
   bool create_one(T &, int *, Args&&...);
 
+  template <typename TEntityDescriptor, typename T>
+  bool read_one(const int, T &, int *);
+
   template <typename T>
   int execute_non_query(sqlite3_stmt *, T &, const std::function<void()> &);
+
+  int execute_query(sqlite3_stmt *, const std::function<void()> &,
+                    const std::function<void()> &);
 
   // CREATE
   template <typename T>

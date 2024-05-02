@@ -90,7 +90,7 @@ bool ClientDbImpl::create_one(
     throw ClientDbException("Failed to create reactor, it already exists.");
 
   TEntityDescriptor descriptor = TEntityDescriptor();
-  std::basic_string<char> query = descriptor.get_create_query();
+  std::basic_string<char> query = descriptor.get_create_one_query();
 
   if (!db) open();
 
@@ -99,16 +99,50 @@ bool ClientDbImpl::create_one(
 
   result = sqlite3_prepare_v2(db, query.c_str(), query.size(), &stmt, nullptr);
   if (is_sqlite_error(result))
-    descriptor.handle_create_error(stmt, object);
+    descriptor.handle_create_one_error(stmt, object);
 
-  descriptor.bind(stmt, object, std::forward<Args>(args)...);
+  descriptor.bind_create_one(stmt, object, std::forward<Args>(args)...);
 
   result = execute_non_query(stmt, object, [stmt, &descriptor, &object]() {
-    descriptor.handle_create_error(stmt, object);
+    descriptor.handle_create_one_error(stmt, object);
   });
 
   if (sqlite_result_code) *sqlite_result_code = result;
   return is_sqlite_success(result);
+}
+
+template <typename TEntityDescriptor, typename T>
+bool ClientDbImpl::read_one(const int sqlite_id, T &object, int *sqlite_result_code) {
+  if (!is_valid_sqlite_id(sqlite_id))
+    // TODO: Failed to create {{entity}}, it already exists.
+    throw ClientDbException("Failed to read reactor. Invalid id.");
+
+  TEntityDescriptor descriptor = TEntityDescriptor();
+  std::basic_string<char> query = descriptor.get_read_one_query();
+
+  if (!db) open();
+
+  int result;
+  sqlite3_stmt *stmt;
+
+  result = sqlite3_prepare_v2(db, query.c_str(), query.size(), &stmt, nullptr);
+  if (is_sqlite_error(result))
+    descriptor.handle_read_one_error(stmt, sqlite_id);
+
+  result = sqlite3_bind_int(stmt, 1, sqlite_id);
+  if (is_sqlite_error(result))
+    descriptor.handle_read_one_error(stmt, sqlite_id);
+
+  result = execute_query(stmt,
+    [stmt, &descriptor, &object]() {
+      descriptor.read_row(stmt, object);
+    },
+    [stmt, &descriptor, sqlite_id]() {
+      descriptor.handle_read_one_error(stmt, sqlite_id);
+    });
+
+  if (sqlite_result_code) *sqlite_result_code = result;
+  return is_sqlite_success(result) && is_valid_sqlite_id(object.sqlite_id);
 }
 
 template <typename T>
@@ -125,6 +159,23 @@ int ClientDbImpl::execute_non_query(
 
   sqlite_code = last_insert_rowid(object.sqlite_id);
   if (is_sqlite_error(sqlite_code)) error_callback();
+
+  sqlite3_finalize(stmt);
+  return sqlite_code;
+}
+
+int ClientDbImpl::execute_query(
+    sqlite3_stmt *stmt,
+    const std::function<void()> &row_callback,
+    const std::function<void()> &error_callback) {
+  int sqlite_code;
+
+  do {
+    if (SQLITE_ROW == (sqlite_code = sqlite3_step(stmt)))
+      row_callback();
+    else if (is_sqlite_error(sqlite_code))
+      error_callback();
+  } while (sqlite_code != SQLITE_DONE);
 
   sqlite3_finalize(stmt);
   return sqlite_code;
