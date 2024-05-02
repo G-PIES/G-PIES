@@ -21,10 +21,25 @@ std::string NuclearReactorEntity::get_read_all_query() {
   return "SELECT * FROM reactors;";
 }
 
-void NuclearReactorEntity::bind_create_one(
+std::string NuclearReactorEntity::get_update_one_query() {
+  return "UPDATE reactors SET "
+         "species = ?, "
+         "flux = ?, "
+         "temperature = ?, "
+         "recombination = ?, "
+         "i_bi = ?, "
+         "i_tri = ?, "
+         "i_quad = ?, "
+         "v_bi = ?, "
+         "v_tri = ?, "
+         "v_quad = ?, "
+         "dislocation_density_evolution = ? "
+         "WHERE id_reactor = ?;";;
+}
+
+void NuclearReactorEntity::bind_base(
     sqlite3_stmt *stmt,
-    NuclearReactor &reactor,
-    bool &&is_preset) {
+    const NuclearReactor &reactor) {
   sqlite3_bind_text(stmt, 1, reactor.species.c_str(), reactor.species.length(),
                     nullptr);
   sqlite3_bind_double(stmt, 2, reactor.get_flux());
@@ -37,16 +52,23 @@ void NuclearReactorEntity::bind_create_one(
   sqlite3_bind_double(stmt, 9, reactor.get_v_tri());
   sqlite3_bind_double(stmt, 10, reactor.get_v_quad());
   sqlite3_bind_double(stmt, 11, reactor.get_dislocation_density_evolution());
+}
 
-  if (ClientDbImpl::is_valid_sqlite_id(reactor.sqlite_id)) {
-    // update
-    sqlite3_bind_int(stmt, 12, reactor.sqlite_id);
-  } else {
-    // create
-    sqlite3_bind_text(stmt, 12, reactor.creation_datetime.c_str(),
-                      reactor.creation_datetime.length(), nullptr);
-    sqlite3_bind_int(stmt, 13, static_cast<int>(is_preset));
-  }
+void NuclearReactorEntity::bind_update_one(
+    sqlite3_stmt *stmt,
+    const NuclearReactor &reactor) {
+  bind_base(stmt, reactor);
+  sqlite3_bind_int(stmt, 12, reactor.sqlite_id);
+}
+
+void NuclearReactorEntity::bind_create_one(
+    sqlite3_stmt *stmt,
+    const NuclearReactor &reactor,
+    bool &&is_preset) {
+  bind_base(stmt, reactor);
+  sqlite3_bind_text(stmt, 12, reactor.creation_datetime.c_str(),
+                    reactor.creation_datetime.length(), nullptr);
+  sqlite3_bind_int(stmt, 13, static_cast<int>(is_preset));
 }
 
 void NuclearReactorEntity::read_row(

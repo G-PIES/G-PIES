@@ -107,12 +107,18 @@ bool ClientDbImpl::create_one(
 
   descriptor.bind_create_one(stmt, object, std::forward<Args>(args)...);
 
-  result = execute_non_query(stmt, object,
+  result = execute_non_query(stmt,
     [stmt, &descriptor, &object, this]() {
       throw_error(stmt, "Failed to create", "",
                   descriptor.get_entity_name(),
                   descriptor.get_entity_description(object));
   });
+
+  int last_insert_result = last_insert_rowid(object.sqlite_id);
+  if (is_sqlite_error(last_insert_result))
+    throw_error(stmt, "Failed to create", "",
+                descriptor.get_entity_name(),
+                descriptor.get_entity_description(object));
 
   if (sqlite_result_code) *sqlite_result_code = result;
   return is_sqlite_success(result);
@@ -193,6 +199,43 @@ bool ClientDbImpl::read_all(std::vector<T> &objects, int *sqlite_result_code) {
   return is_sqlite_success(result);
 }
 
+template <typename TEntityDescriptor, typename T>
+bool ClientDbImpl::update_one(
+    const T &object,
+    int *sqlite_result_code) {
+
+  TEntityDescriptor descriptor = TEntityDescriptor();
+
+  if (!is_valid_sqlite_id(object.sqlite_id))
+    throw_error(nullptr, "Failed to update", "Invalid id.",
+                descriptor.get_entity_name(),
+                "with id " + std::to_string(object.sqlite_id));
+
+  if (!db) open();
+
+  int result;
+  sqlite3_stmt *stmt;
+
+  std::basic_string<char> query = descriptor.get_update_one_query();
+  result = sqlite3_prepare_v2(db, query.c_str(), query.size(), &stmt, nullptr);
+  if (is_sqlite_error(result))
+    throw_error(stmt, "Failed to update", "",
+                descriptor.get_entity_name(),
+                "with id " + std::to_string(object.sqlite_id));
+
+  descriptor.bind_update_one(stmt, object);
+
+  result = execute_non_query(stmt,
+    [stmt, &descriptor, &object, this]() {
+      throw_error(stmt, "Failed to update", "",
+                  descriptor.get_entity_name(),
+                  "with id " + std::to_string(object.sqlite_id));
+    });
+
+  if (sqlite_result_code) *sqlite_result_code = result;
+  return is_sqlite_success(result);
+}
+
 void ClientDbImpl::throw_error(
     sqlite3_stmt *stmt, const std::string &error, const std::string &reason,
     const std::string &entity_name,
@@ -219,10 +262,8 @@ void ClientDbImpl::throw_error(
   }
 }
 
-template <typename T>
 int ClientDbImpl::execute_non_query(
     sqlite3_stmt *stmt,
-    T &object,
     const std::function<void()> &error_callback) {
   int sqlite_code;
 
@@ -230,9 +271,6 @@ int ClientDbImpl::execute_non_query(
     sqlite_code = sqlite3_step(stmt);
     if (is_sqlite_error(sqlite_code)) error_callback();
   } while (SQLITE_DONE != sqlite_code);
-
-  sqlite_code = last_insert_rowid(object.sqlite_id);
-  if (is_sqlite_error(sqlite_code)) error_callback();
 
   sqlite3_finalize(stmt);
   return sqlite_code;

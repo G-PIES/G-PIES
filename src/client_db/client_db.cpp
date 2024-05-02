@@ -55,27 +55,7 @@ bool ClientDb::read_reactor(const int sqlite_id, NuclearReactor &reactor,
 
 bool ClientDb::update_reactor(const NuclearReactor &reactor,
                               int *sqlite_result_code) {
-  if (!is_valid_sqlite_id(reactor.sqlite_id))
-    throw ClientDbException("Failed to update reactor. Invalid id.");
-
-  if (!_impl->db) open();
-
-  int sqlite_code;
-  sqlite3_stmt *stmt;
-
-  sqlite_code =
-      sqlite3_prepare_v2(_impl->db, db_queries::update_reactor.c_str(),
-                         db_queries::update_reactor.size(), &stmt, nullptr);
-  if (is_sqlite_error(sqlite_code)) _impl->err_update_reactor(stmt, reactor);
-
-  ClientDbImpl::bind_reactor(stmt, reactor);
-
-  sqlite_code = _impl->update_one<NuclearReactor>(stmt,
-                                                  _impl->err_update_reactor,
-                                                  reactor);
-
-  if (sqlite_result_code) *sqlite_result_code = sqlite_code;
-  return is_sqlite_success(sqlite_code);
+  return _impl->update_one<NuclearReactorEntity>(reactor, sqlite_result_code);
 }
 
 bool ClientDb::delete_reactor(const NuclearReactor &reactor,

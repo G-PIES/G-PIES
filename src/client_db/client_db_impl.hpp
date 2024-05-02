@@ -43,13 +43,15 @@ class ClientDbImpl {
   template <typename TEntityDescriptor, typename T>
   bool read_all(std::vector<T> &, int *);
 
+  template <typename TEntityDescriptor, typename T>
+  bool update_one(const T &, int *);
+
   void throw_error(sqlite3_stmt *,
                    const std::string &, const std::string &,
                    const std::string &,
                    const std::string & = "", const std::string & = "");
 
-  template <typename T>
-  int execute_non_query(sqlite3_stmt *, T &, const std::function<void()> &);
+  int execute_non_query(sqlite3_stmt *, const std::function<void()> &);
 
   int execute_query(sqlite3_stmt *, const std::function<void()> &,
                     const std::function<void()> &);
