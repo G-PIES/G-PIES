@@ -7,8 +7,8 @@
   template bool ClientDbImpl::create_one<T##Entity>(T &, int *);\
   template bool ClientDbImpl::read_one<T##Entity>(const int, T &, int *);
 
-#define TEMPLATES_1_PARAM(T,Param) \
+#define TEMPLATES_1_PARAM(T, Param) \
   template bool ClientDbImpl::create_one<T##Entity>(T &, int *, Param);\
   template bool ClientDbImpl::read_one<T##Entity>(const int, T &, int *);
 
-TEMPLATES_1_PARAM(NuclearReactor, bool &&)
+TEMPLATES_1_PARAM(NuclearReactor, bool &&) // NOLINT(readability/fn_size)

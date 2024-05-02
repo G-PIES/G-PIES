@@ -62,8 +62,8 @@ bool ClientDb::read_reactors(std::vector<NuclearReactor> &reactors,
 bool ClientDb::read_reactor(const int sqlite_id, NuclearReactor &reactor,
                             int *sqlite_result_code) {
   return _impl->read_one<NuclearReactorEntity>(
-    sqlite_id, 
-    reactor, 
+    sqlite_id,
+    reactor,
     sqlite_result_code);
 }
 

@@ -112,7 +112,10 @@ bool ClientDbImpl::create_one(
 }
 
 template <typename TEntityDescriptor, typename T>
-bool ClientDbImpl::read_one(const int sqlite_id, T &object, int *sqlite_result_code) {
+bool ClientDbImpl::read_one(
+    const int sqlite_id,
+    T &object,
+    int *sqlite_result_code) {
   if (!is_valid_sqlite_id(sqlite_id))
     // TODO: Failed to create {{entity}}, it already exists.
     throw ClientDbException("Failed to read reactor. Invalid id.");
