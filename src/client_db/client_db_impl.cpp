@@ -11,7 +11,7 @@
 
 #include "client_db/client_db.hpp"
 #include "db_queries.hpp"
-#include "entities/nuclear_reactor.hpp"
+#include "entities/template_instantiation.hpp"
 #include "model/history_simulation.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
@@ -40,11 +40,6 @@ template int ClientDbImpl::delete_one(sqlite3_stmt *, \
 INSTANTIATE_TEMPALTES(HistorySimulation)
 INSTANTIATE_TEMPALTES(Material)
 INSTANTIATE_TEMPALTES(NuclearReactor)
-
-template bool ClientDbImpl::create_one<NuclearReactorEntity>(
-  NuclearReactor &,
-  int *,
-  bool &&);
 
 bool ClientDbImpl::init(int *sqlite_result_code) {
   int sqlite_code;
