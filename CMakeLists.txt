@@ -82,7 +82,7 @@ set(CMAKE_CXX_STANDARD 20)
 add_compile_definitions($<$<PLATFORM_ID:Windows>:_USE_MATH_DEFINES>)
 
 # TODO: Consider replacing /W2 with /W4 or /Wall for MSVC.
-add_compile_options("$<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-Wall;-Wextra>")
+add_compile_options("$<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-Wall;-Wextra;-Werror>")
 add_compile_options("$<$<AND:$<NOT:$<COMPILE_LANGUAGE:CUDA>>,$<CXX_COMPILER_ID:MSVC>>:/W2;/WX>")
 add_compile_options("$<$<COMPILE_LANGUAGE:CUDA>:-Werror;all-warnings>")
 add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CUDA>>:SHELL:-Xcompiler /W2>")
