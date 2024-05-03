@@ -92,7 +92,9 @@ void print_material() {
 void print_start_message() {
   std::cout << "\nG-PIES simulation started\n"
             << "simulation time: " << simulation_time
-            << "  time delta: " << time_delta << "  max cluster size: "
+            << "  time delta: " << time_delta
+            << "  sample interval: " << sample_interval
+            << "  max cluster size: "
             << static_cast<int>(config.max_cluster_size)
             << "  data validation: "
             << (config.data_validation_on ? "on" : "off") << std::endl
@@ -336,6 +338,7 @@ void emit_config_yaml(const std::string& filename) {
   out << YAML::BeginMap << YAML::Key << "simulation" << YAML::Value
       << YAML::BeginMap << YAML::Key << "time" << YAML::Value << "1.0e+8"
       << YAML::Key << "time-delta" << YAML::Value << "1.0e+6" << YAML::Key
+      << "sample-interval" << YAML::Value << "1.0e+6" << YAML::Key
       << "data-validation" << YAML::Value << "on" << YAML::Key
       << "max-cluster-size" << YAML::Value << "1001" << YAML::Key
       << "relative-tolerance" << YAML::Value << "1.0e-6" << YAML::Key
