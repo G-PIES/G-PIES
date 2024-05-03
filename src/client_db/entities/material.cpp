@@ -25,9 +25,7 @@ std::string MaterialEntity::get_delete_one_query() {
   return db_queries::delete_material;
 }
 
-void MaterialEntity::bind_base(
-    sqlite3_stmt *stmt,
-    const Material &material) {
+void MaterialEntity::bind_base(sqlite3_stmt *stmt, const Material &material) {
   sqlite3_bind_text(stmt, 1, material.species.c_str(),
                     material.species.length(), nullptr);
   sqlite3_bind_double(stmt, 2, material.get_i_migration());
@@ -52,33 +50,27 @@ void MaterialEntity::bind_base(
   sqlite3_bind_double(stmt, 21, material.get_atomic_volume());
 }
 
-void MaterialEntity::bind_update_one(
-    sqlite3_stmt *stmt,
-    const Material &material) {
+void MaterialEntity::bind_update_one(sqlite3_stmt *stmt,
+                                     const Material &material) {
   bind_base(stmt, material);
   sqlite3_bind_int(stmt, 22, material.sqlite_id);
 }
 
-void MaterialEntity::bind_create_one(
-    sqlite3_stmt *stmt,
-    const Material &material,
-    bool &&is_preset) {
+void MaterialEntity::bind_create_one(sqlite3_stmt *stmt,
+                                     const Material &material,
+                                     bool &&is_preset) {
   bind_base(stmt, material);
   sqlite3_bind_text(stmt, 22, material.creation_datetime.c_str(),
                     material.creation_datetime.length(), nullptr);
   sqlite3_bind_int(stmt, 23, static_cast<int>(is_preset));
 }
 
-void MaterialEntity::read_row(
-    sqlite3_stmt *stmt,
-    Material &material) {
+void MaterialEntity::read_row(sqlite3_stmt *stmt, Material &material) {
   read_row(stmt, material, 0);
 }
 
-void MaterialEntity::read_row(
-    sqlite3_stmt *stmt,
-    Material &material,
-    const int col_offset) {
+void MaterialEntity::read_row(sqlite3_stmt *stmt, Material &material,
+                              const int col_offset) {
   material.sqlite_id =
       static_cast<int>(sqlite3_column_int(stmt, col_offset + 0));
   material.creation_datetime =
@@ -128,7 +120,6 @@ void MaterialEntity::read_row(
 
 std::string MaterialEntity::get_entity_name() { return "material"; }
 std::string MaterialEntity::get_entities_name() { return "maerials"; }
-std::string MaterialEntity::get_entity_description(
-    const Material &material) {
+std::string MaterialEntity::get_entity_description(const Material &material) {
   return "\"" + material.species + "\"";
 }

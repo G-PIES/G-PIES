@@ -3,6 +3,7 @@ if(GP_BUILD_CUDA)
   file(GLOB SRC_FILES ./*.cpp ../*.cpp)
 
   add_library(clusterdynamicscuda STATIC ${SRC_FILES})
+  target_link_libraries(clusterdynamicscuda PUBLIC SUNDIALS::cvode SUNDIALS::nvecserial)
   set_source_files_properties(${SRC_FILES} PROPERTIES LANGUAGE CUDA)
   target_compile_definitions(clusterdynamicscuda PRIVATE USE_CUDA)
   target_include_directories(clusterdynamicscuda PRIVATE ./)

@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include "utils/blob_converter.hpp"
 #include "../client_db_impl.hpp"
 #include "../db_queries.hpp"
+#include "utils/blob_converter.hpp"
 
 std::string HistorySimulationEntity::get_create_one_query() {
   return db_queries::create_simulation;
@@ -19,24 +19,20 @@ std::string HistorySimulationEntity::get_read_all_query() {
   return db_queries::read_simulations;
 }
 
-std::string HistorySimulationEntity::get_update_one_query() {
-  return "";
-}
+std::string HistorySimulationEntity::get_update_one_query() { return ""; }
 
 std::string HistorySimulationEntity::get_delete_one_query() {
   return db_queries::delete_simulation;
 }
 
-void HistorySimulationEntity::bind_base(
-    sqlite3_stmt *stmt,
-    const HistorySimulation &simulation) {
+void HistorySimulationEntity::bind_base(sqlite3_stmt *stmt,
+                                        const HistorySimulation &simulation) {
   std::vector<char> interstitials_blob =
       BlobConverter::to_blob(simulation.cd_state.interstitials);
   std::vector<char> vacancies_blob =
       BlobConverter::to_blob(simulation.cd_state.vacancies);
 
-  sqlite3_bind_int(stmt, 1,
-                   static_cast<int>(simulation.max_cluster_size));
+  sqlite3_bind_int(stmt, 1, static_cast<int>(simulation.max_cluster_size));
   sqlite3_bind_double(stmt, 2, static_cast<double>(simulation.simulation_time));
   sqlite3_bind_double(stmt, 3, static_cast<double>(simulation.time_delta));
   sqlite3_bind_int(stmt, 4, simulation.reactor.sqlite_id);
@@ -53,20 +49,17 @@ void HistorySimulationEntity::bind_base(
 }
 
 void HistorySimulationEntity::bind_update_one(
-    sqlite3_stmt *stmt,
-    const HistorySimulation &simulation) {
+    sqlite3_stmt *stmt, const HistorySimulation &simulation) {
   bind_base(stmt, simulation);
 }
 
 void HistorySimulationEntity::bind_create_one(
-    sqlite3_stmt *stmt,
-    const HistorySimulation &simulation) {
+    sqlite3_stmt *stmt, const HistorySimulation &simulation) {
   bind_base(stmt, simulation);
 }
 
-void HistorySimulationEntity::read_row(
-    sqlite3_stmt *stmt,
-    HistorySimulation &simulation) {
+void HistorySimulationEntity::read_row(sqlite3_stmt *stmt,
+                                       HistorySimulation &simulation) {
   int col_offset = 0;
   simulation.sqlite_id = sqlite3_column_int(stmt, col_offset + 0);
 

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['lattice_5fparam_118',['lattice_param',['../structMaterialImpl.html#a843062a30c8f0dd9460d8752ab74135f',1,'MaterialImpl']]],
-  ['lattice_5fparams_119',['lattice_params',['../namespacelattice__params.html',1,'']]]
+  ['jacobian_5fmatrix_119',['jacobian_matrix',['../classClusterDynamicsImpl.html#ad4cfc5be0839bfe9a3fe46b95cbe48b0',1,'ClusterDynamicsImpl']]]
 ];

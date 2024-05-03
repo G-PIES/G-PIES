@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['self_470',['self',['../classClusterDynamicsImpl.html#a4d4cd82d79cf970735eefdb469f56100',1,'ClusterDynamicsImpl']]],
-  ['simulation_5ftime_471',['simulation_time',['../structHistorySimulation.html#a74b05173a94b721c70e66962ed8dfba6',1,'HistorySimulation']]],
-  ['species_472',['species',['../structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd',1,'Material::species()'],['../structNuclearReactor.html#a17190bdfe6e2004452617b7537fd18f0',1,'NuclearReactor::species()']]],
-  ['sqlite_5fid_473',['sqlite_id',['../structHistorySimulation.html#a5f80a8a5c49e349075424cc4c3392b37',1,'HistorySimulation::sqlite_id()'],['../structMaterial.html#aa7a7678eb5bafe799dd8eddfd50565fc',1,'Material::sqlite_id()'],['../structNuclearReactor.html#aa3b8e5ad6a41e23ca12be483c794ca19',1,'NuclearReactor::sqlite_id()']]]
+  ['reactor_475',['reactor',['../structHistorySimulation.html#a8164c7717cdf92195e0320ccce08c72f',1,'HistorySimulation::reactor()'],['../classClusterDynamicsImpl.html#a4407a0d9bbe31563cd9d4e533b73c610',1,'ClusterDynamicsImpl::reactor()']]],
+  ['recombination_476',['recombination',['../structNuclearReactorImpl.html#aa7b8a80dc9290eef8f815731b79504b1',1,'NuclearReactorImpl']]],
+  ['recombination_5fradius_477',['recombination_radius',['../structMaterialImpl.html#af11b478bb967feb70103188765a95a1d',1,'MaterialImpl']]]
 ];

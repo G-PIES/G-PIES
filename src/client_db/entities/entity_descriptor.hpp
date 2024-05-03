@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sqlite3.h>
+
 #include <string>
 
 #include "client_db/client_db.hpp"

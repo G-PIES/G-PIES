@@ -8,28 +8,30 @@
 
 #include "client_db/client_db.hpp"
 #include "cluster_dynamics/cluster_dynamics.hpp"
+#include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
 #include "utils/timer.hpp"
 
 namespace po = boost::program_options;
 
+std::string filename;
 std::ofstream output_file;
 std::ostream os(std::cout.rdbuf());
 
 bool csv = false;
 bool step_print = false;
-bool data_validation_on = true;
 
 size_t sa_num_simulations = 0;
 std::string sa_var = "";
-gp_float sa_var_delta = 0;
+gp_float sa_var_delta = 0.;
 
-size_t max_cluster_size = 10;
-gp_float simulation_time = 1.;
-gp_float time_delta = 1e-5;
+gp_float simulation_time = 1e8;
+gp_float time_delta = 1e6;
 gp_float sample_interval =
     time_delta;  // How often (in seconds) to record the state
+
+ClusterDynamicsConfig config;
 
 void print_start_message() {
   // TODO - read species name off of material and reactor objects
@@ -38,8 +40,17 @@ void print_start_message() {
             << "  nuclear reactor: OSIRIS"
             << "  time delta: " << time_delta
             << "  simulation time: " << simulation_time
-            << "  max cluster size: " << static_cast<int>(max_cluster_size)
-            << "  data validation: " << (data_validation_on ? "on" : "off")
+            << "  max cluster size: "
+            << static_cast<int>(config.max_cluster_size)
+            << "  data validation: "
+            << (config.data_validation_on ? "on" : "off") << std::endl
+            << "Integration Settings\n"
+            << "  relative tolerance: " << config.relative_tolerance
+            << "  absolute tolerance: " << config.absolute_tolerance
+            << "  max num integration steps: "
+            << config.max_num_integration_steps
+            << "  min integration step: " << config.min_integration_step
+            << "  max integration step: " << config.max_integration_step
             << std::endl;
 }
 
@@ -50,18 +61,20 @@ void print_state(const ClusterDynamicsState& state) {
 
   os << "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n";
   for (size_t n = 1; n < size; ++n) {
-    os << (long long unsigned int)n << "\t\t\t\t\t" << std::setprecision(13)
-       << state.interstitials[n] << "\t\t\t" << std::setprecision(15)
-       << state.vacancies[n] << std::endl;
-  }
+    for (size_t n = 1; n < size; ++n) {
+      os << (long long unsigned int)n << "\t\t\t\t\t" << std::setprecision(13)
+         << state.interstitials[n] << "\t\t\t" << std::setprecision(15)
+         << state.vacancies[n] << std::endl;
+    }
 
-  os << "\nDislocation Network Density: " << state.dislocation_density
-     << std::endl;
+    os << "\nDislocation Network Density: " << state.dislocation_density
+       << std::endl;
+  }
 }
 
 void print_csv(const ClusterDynamicsState& state) {
-  os << state.dpa;
-  for (uint64_t n = 1; n < max_cluster_size; ++n) {
+  os << state.time;
+  for (uint64_t n = 1; n < config.max_cluster_size; ++n) {
     os << "," << state.interstitials[n] << "," << state.vacancies[n];
   }
   os << std::endl;
@@ -113,18 +126,15 @@ void profile() {
 
   ClusterDynamicsState state;
 
-  NuclearReactor reactor;
-  nuclear_reactors::OSIRIS(reactor);
+  nuclear_reactors::OSIRIS(config.reactor);
+  materials::SA304(config.material);
 
-  Material material;
-  materials::SA304(material);
-
-  ClusterDynamics cd(10, reactor, material);
+  ClusterDynamics cd(config);
   cd.run(1e-5, 1e-5);
 
   for (int n = 100; n < 400000; n += 10000) {
     os << "N=" << n << std::endl;
-    ClusterDynamics cd(n, reactor, material);
+    ClusterDynamics cd(config);
 
     timer.Start();
     state = cd.run(1e-5, 1e-5);
@@ -214,15 +224,17 @@ void update_for_sensitivity_analysis(ClusterDynamics& cd,
   }
 }
 
-ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
-                                    const Material& material) {
-  ClusterDynamics cd(max_cluster_size, reactor, material);
-  cd.set_data_validation(data_validation_on);
+ClusterDynamicsState run_simulation() {
+  ClusterDynamics cd(config);
 
   print_start_message();
 
   if (csv) {
-    os << "Time (s),Cluster Size,Interstitials / cm^3,Vacancies / cm^3\n";
+    os << "Time (s),";
+    for (size_t i = 1; i < config.max_cluster_size; ++i) {
+      os << "i" << i << ",v" << i << ",";
+    }
+    os << "\n";
   }
 
   // TODO - support sample interval
@@ -252,6 +264,69 @@ ClusterDynamicsState run_simulation(const NuclearReactor& reactor,
 
   return state;
 }
+
+/* TODO - Remove
+void valid_integration_search() {
+  Timer timer;
+
+  ClusterDynamicsState state;
+
+  NuclearReactor reactor;
+  nuclear_reactors::OSIRIS(reactor);
+
+  Material material;
+  materials::SA304(material);
+
+
+  for (size_t n = 100; n < 1000; n += 100) {
+    max_cluster_size = n;
+    gp_float td = 10.;
+    gp_float t = 100.;
+    gp_float rt = relative_tolerance;
+    gp_float at = absolute_tolerance;
+    gp_float minis = 1e-5;
+    gp_float maxis = max_integration_step;
+
+    for (size_t i = 0; i < 21; ++i) {
+      //time_delta = td;
+      //simulation_time = t;
+      relative_tolerance = rt;
+      absolute_tolerance = at;
+      min_integration_step = minis;
+      max_integration_step = maxis;
+
+      try {
+        timer.Start();
+        state = run_simulation(reactor, material);
+        gp_float time = timer.Stop();
+        os << "\nValid Simulation\n"
+          << "time delta: " << time_delta
+          << "  simulation time: " << simulation_time
+          << "  max cluster size: " << static_cast<int>(max_cluster_size)
+          << std::endl
+          << "Integration Settings\n"
+          << "  relative tolerance: " << relative_tolerance
+          << "  absolute tolerance: " << absolute_tolerance
+          << "  max num integration steps: " << max_num_integration_steps
+          << "  min integration step: " << min_integration_step
+          << "  max integration step: " << max_integration_step
+          << "\nTime Elapsed: " << time
+          << std::endl;
+          print_state(state);
+      } catch (...) {
+        timer.Stop();
+      }
+
+      //td *= 10.;
+      //t *= 10.;
+      //rt *= 10.;
+      //at *= 10.;
+      minis /= 10.;
+      //maxis *= 10.;
+    }
+  }
+}
+*/
 
 void print_info_SA304() {
   Material material;
@@ -311,11 +386,16 @@ void print_info_OSIRIS() {
 }
 
 int main(int argc, char* argv[]) {
+  // TODO - Remove (this is just for testing the CVODES implementation)
+  // valid_integration_search();
+  // return 0;
+
+  materials::SA304(config.material);
+  nuclear_reactors::OSIRIS(config.reactor);
+
   try {
     // Declare the supported options
-    po::options_description all_options("General options", 120);
-    // TODO - remove material-info and reactor-info when we introduce CLI CRUD
-    // for them
+    po::options_description all_options("General Options");
     all_options.add_options()("help", "display help message")(
         "material-info", "display information on SA304 stainless steel")(
         "reactor-info", "display information on the OSIRIS reactor")(
@@ -328,7 +408,7 @@ int main(int argc, char* argv[]) {
         po::value<std::string>()->value_name("toggle")->implicit_value("on"),
         "turn on/off data validation (on by default)")(
         "max-cluster-size",
-        po::value<int>()->implicit_value(static_cast<int>(max_cluster_size)),
+        po::value<size_t>()->implicit_value(config.max_cluster_size),
         "set the max size of defect clustering to model")(
         "time", po::value<gp_float>()->implicit_value(simulation_time),
         "the simulation environment time span to model (in seconds)")(
@@ -336,9 +416,25 @@ int main(int argc, char* argv[]) {
         "the time delta for every step of the simulation (in seconds)")(
         "sample-interval",
         po::value<gp_float>()->implicit_value(sample_interval),
-        "how often to record simulation environment state (in seconds)");
+        "how often to record simulation environment state (in seconds)")(
+        "relative-tolerance",
+        po::value<gp_float>()->implicit_value(config.relative_tolerance),
+        "scalar relative tolerance for integration error")(
+        "absolute-tolerance",
+        po::value<gp_float>()->implicit_value(config.absolute_tolerance),
+        "absolute relative tolerance for integration error")(
+        "max-num-integration-steps",
+        po::value<size_t>()->implicit_value(config.max_num_integration_steps),
+        "maximum allowed number of integration steps to achieve a single "
+        "estimation")(
+        "min-integration-step",
+        po::value<gp_float>()->implicit_value(config.min_integration_step),
+        "minimum step size for integration")(
+        "max-integration-step",
+        po::value<gp_float>()->implicit_value(config.max_integration_step),
+        "maximum step size for integration");
 
-    po::options_description db_options("Database options [--db]", 120);
+    po::options_description db_options("Database Options [--db]");
     db_options.add_options()("history,h", "display simulation history")(
         "history-detail", "display detailed simulation history")(
         "run,r", po::value<int>()->value_name("id"),
@@ -346,7 +442,7 @@ int main(int argc, char* argv[]) {
         "clear,c", "clear simulation history");
 
     po::options_description sa_options(
-        "Sensitivity analysis options [--sensitivity-analysis]", 120);
+        "Sensitivity Analysis Options [--sensitivity-analysis]");
     sa_options.add_options()(
         "sensitivity-analysis-help",
         "display sensitivity analysis supported variables and example command")(
@@ -402,27 +498,27 @@ int main(int argc, char* argv[]) {
 
     // Redirect output to file
     if (vm.count("output-file")) {
-      std::string filename = vm["output-file"].as<std::string>();
+      filename = vm["output-file"].as<std::string>();
       output_file.open(filename);
       if (output_file.is_open()) os.rdbuf(output_file.rdbuf());
     }
 
     if (vm.count("max-cluster-size")) {
-      int mcs = vm["max-cluster-size"].as<int>();
+      size_t mcs = vm["max-cluster-size"].as<size_t>();
       if (mcs <= 0)
         throw GpiesException(
             "Value for max-cluster-size must be a positive, non-zero integer.");
 
-      max_cluster_size = static_cast<size_t>(mcs);
+      config.max_cluster_size = mcs;
     }
 
     if (vm.count("time")) {
-      gp_float et = vm["time"].as<gp_float>();
-      if (et <= 0.)
+      gp_float st = vm["time"].as<gp_float>();
+      if (st <= 0.)
         throw GpiesException(
             "Value for time must be a positive, non-zero decimal.");
 
-      simulation_time = et;
+      simulation_time = st;
     }
 
     if (vm.count("time-delta")) {
@@ -445,25 +541,69 @@ int main(int argc, char* argv[]) {
       sample_interval = si;
     }
 
+    if (vm.count("relative-tolerance")) {
+      gp_float rt = vm["relative-tolerance"].as<gp_float>();
+      if (rt <= 0.)
+        throw GpiesException(
+            "Value for relative-tolerance must be a positive, non-zero "
+            "decimal.");
+
+      config.relative_tolerance = rt;
+    }
+
+    if (vm.count("absolute-tolerance")) {
+      gp_float at = vm["absolute-tolerance"].as<gp_float>();
+      if (at <= 0.)
+        throw GpiesException(
+            "Value for absolute-tolerance must be a positive, non-zero "
+            "decimal.");
+
+      config.absolute_tolerance = at;
+    }
+
+    if (vm.count("max-num-integration-steps")) {
+      size_t mnis = vm["max-num-integration-steps"].as<size_t>();
+      if (mnis <= 0)
+        throw GpiesException(
+            "Value for max-num-integration-steps must be a positive, non-zero "
+            "integer.");
+
+      config.max_num_integration_steps = mnis;
+    }
+
+    if (vm.count("min-integration-step")) {
+      gp_float minis = vm["min-integration-step"].as<gp_float>();
+      if (minis <= 0.)
+        throw GpiesException(
+            "Value for min-integration-step must be a positive, non-zero "
+            "decimal.");
+
+      config.min_integration_step = minis;
+    }
+
+    if (vm.count("max-integration-step")) {
+      gp_float maxis = vm["max-integration-step"].as<gp_float>();
+      if (maxis <= 0.)
+        throw GpiesException(
+            "Value for max-integration-step must be a positive, non-zero "
+            "decimal.");
+
+      config.max_integration_step = maxis;
+    }
+
     // Output formatting
     csv = static_cast<bool>(vm.count("csv"));
     step_print = static_cast<bool>(vm.count("step-print"));
 
     // Toggle data validation
     if (vm.count("data-validation")) {
-      data_validation_on =
+      config.data_validation_on =
           0 == vm["data-validation"].as<std::string>().compare("on");
     }
 
     ClientDb db(DEV_DEFAULT_CLIENT_DB_PATH, false);
     // Open SQLite connection and create database
     db.init();
-
-    // Default values
-    NuclearReactor reactor;
-    Material material;
-    nuclear_reactors::OSIRIS(reactor);
-    materials::SA304(material);
 
     // --------------------------------------------------------------------------------------------
     // arg parsing
@@ -487,7 +627,7 @@ int main(int argc, char* argv[]) {
         if (db.read_simulation(sim_sqlite_id, sim)) {
           // TODO - support storing sensitivity analysis
           std::cout << "Running simulation " << sim_sqlite_id << std::endl;
-          max_cluster_size = sim.max_cluster_size;
+          config.max_cluster_size = sim.max_cluster_size;
           simulation_time = sim.simulation_time;
 
           // TODO - Support sample interval and set a max resolution to
@@ -496,7 +636,10 @@ int main(int argc, char* argv[]) {
           // table.
           time_delta = sample_interval = sim.time_delta;
 
-          run_simulation(sim.reactor, sim.material);
+          config.material = sim.material;
+          config.reactor = sim.reactor;
+
+          run_simulation();
         } else {
           std::cerr << "Could not find simulation " << sim_sqlite_id
                     << std::endl;
@@ -526,12 +669,12 @@ int main(int argc, char* argv[]) {
       // --------------------------------------------------------------------------------------------
       // sensitivity analysis simulation loop
       for (size_t n = 0; n < sa_num_simulations; n++) {
-        ClusterDynamics cd(max_cluster_size, reactor, material);
-        cd.set_data_validation(data_validation_on);
+        ClusterDynamics cd(config);
 
         ClusterDynamicsState state;
         update_for_sensitivity_analysis(
-            cd, reactor, material, static_cast<gp_float>(n) * sa_var_delta);
+            cd, config.reactor, config.material,
+            static_cast<gp_float>(n) * sa_var_delta);
 
         if (n > 0) os << "\n";  // visual divider for consecutive sims
 
@@ -568,17 +711,16 @@ int main(int argc, char* argv[]) {
       }
       // --------------------------------------------------------------------
     } else {  // CLUSTER DYNAMICS OPTIONS
-      ClusterDynamicsState state = run_simulation(reactor, material);
+      ClusterDynamicsState state = run_simulation();
 
       // --------------------------------------------------------------------------------------------
       // Write simulation result to the database
-      HistorySimulation history_simulation(max_cluster_size, simulation_time,
-                                           time_delta, reactor, material,
-                                           state);
+      HistorySimulation history_simulation(
+          config.max_cluster_size, simulation_time, time_delta, config.reactor,
+          config.material, state);
 
       db.create_simulation(history_simulation);
       // --------------------------------------------------------------------------------------------
-      // --------------------------------------------------------------------
     }
   } catch (const ClusterDynamicsException& e) {
     std::cerr << "A simulation error occured.\n"
@@ -605,7 +747,10 @@ int main(int argc, char* argv[]) {
     std::exit(EXIT_FAILURE);
   }
 
-  if (output_file.is_open()) output_file.close();
+  if (output_file.is_open()) {
+    std::cout << "\nResults written to: " << filename << std::endl;
+    output_file.close();
+  }
 
   return 0;
 }

@@ -1,9 +1,21 @@
 #ifndef CLUSTER_DYNAMICS_IMPL_HPP
 #define CLUSTER_DYNAMICS_IMPL_HPP
 
+#include "utils/diagnostics.hpp"
+
+DIAGNOSTIC_PUSH
+DIAGNOSTIC_DISABLE("-Wunused-parameter")
+#include <cvodes/cvodes.h>
+#include <nvector/nvector_serial.h>
+#include <sunlinsol/sunlinsol_dense.h>
+#include <sunmatrix/sunmatrix_dense.h>
+DIAGNOSTIC_POP
+
 #include <cmath>
+#include <iostream>
 #include <vector>
 
+#include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "cluster_dynamics/cluster_dynamics_state.hpp"
 #include "material_impl.hpp"
 #include "nuclear_reactor_impl.hpp"
@@ -14,24 +26,29 @@ class ClusterDynamicsImpl {
   gp_float time;
   gp_float dpa;
 
-  std::vector<gp_float> interstitials;
-  std::vector<gp_float> interstitials_temp;
-  std::vector<gp_float> vacancies;
-  std::vector<gp_float> vacancies_temp;
+  N_Vector state;
+  SUNContext sun_context;
+  SUNMatrix jacobian_matrix;
+  SUNLinearSolver linear_solver;
+  void* cvodes_memory_block;
+
+  gp_float* interstitials;
+  gp_float* vacancies;
+  gp_float* dislocation_density;
 
   size_t max_cluster_size;
-  gp_float dislocation_density;
+  size_t state_size;
 
-  gp_float mean_dislocation_radius_val;  //!< Precomputed in step_init() using
-                                         //!< mean_dislocation_cell_radius()
-  gp_float ii_sum_absorption_val;        //!< Precomputed in step_init() using
-                                         //!< ii_sum_absorption()
-  gp_float iv_sum_absorption_val;        //!< Precomputed in step_init() using
-                                         //!< iv_sum_absorption()
-  gp_float vv_sum_absorption_val;        //!< Precomputed in step_init() using
-                                         //!< vv_sum_absorption()
-  gp_float vi_sum_absorption_val;        //!< Precomputed in step_init() using
-                                         //!< vi_sum_absorption()
+  /// @brief Precomputed in step_init() using mean_dislocation_cell_radius()
+  gp_float mean_dislocation_radius_val;
+  /// @brief Precomputed in step_init() using ii_sum_absorption()
+  gp_float ii_sum_absorption_val;
+  /// @brief Precomputed in step_init() using iv_sum_absorption()
+  gp_float iv_sum_absorption_val;
+  /// @brief Precomputed in step_init() using vv_sum_absorption()
+  gp_float vv_sum_absorption_val;
+  /// @brief Precomputed in step_init() using vi_sum_absorption()
+  gp_float vi_sum_absorption_val;
   gp_float i_diffusion_val;  //!< Precomputed in step_init() using i_diffusion()
   gp_float v_diffusion_val;  //!< Precomputed in step_init() using v_diffusion()
 
@@ -39,6 +56,11 @@ class ClusterDynamicsImpl {
   NuclearReactorImpl reactor;
 
   bool data_validation_on;
+  gp_float relative_tolerance;
+  gp_float absolute_tolerance;
+  size_t max_num_integration_steps;
+  gp_float min_integration_step;
+  gp_float max_integration_step;
 
   // Physics Model Functions
   gp_float i_concentration_derivative(size_t) const;
@@ -85,23 +107,20 @@ class ClusterDynamicsImpl {
   gp_float vv_sum_absorption(size_t) const;
 
   // Simulation Operation Functions
-  void update_clusters_1(gp_float);
-  void update_clusters(gp_float);
   void step_init();
-  void step(gp_float);
+  static int system(double t, N_Vector state, N_Vector state_derivatives,
+                    void* user_data);
   void validate(size_t) const;
 
   // Interface functions
-  ClusterDynamicsImpl(size_t max_cluster_size,
-                      const NuclearReactorImpl &reactor,
-                      const MaterialImpl &material);
+  explicit ClusterDynamicsImpl(ClusterDynamicsConfig& config);
   ~ClusterDynamicsImpl();
 
-  ClusterDynamicsState run(gp_float time_delta, gp_float total_time);
+  ClusterDynamicsState run(gp_float total_time);
   MaterialImpl get_material() const;
-  void set_material(const MaterialImpl &material);
+  void set_material(const MaterialImpl& material);
   NuclearReactorImpl get_reactor() const;
-  void set_reactor(const NuclearReactorImpl &reactor);
+  void set_reactor(const NuclearReactorImpl& reactor);
 };
 
 #endif  // CLUSTER_DYNAMICS_IMPL_HPP

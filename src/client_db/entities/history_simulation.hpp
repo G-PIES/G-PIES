@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sqlite3.h>
+
 #include <string>
 
 #include "entity_descriptor.hpp"
@@ -10,7 +11,7 @@
 
 class HistorySimulationEntity : public EntityDescriptor<HistorySimulation> {
  public:
-  HistorySimulationEntity(): _material_entity(), _nuclear_reactor_entity() {}
+  HistorySimulationEntity() : _material_entity(), _nuclear_reactor_entity() {}
 
   std::string get_create_one_query() override;
   std::string get_read_one_query() override;
