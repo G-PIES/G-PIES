@@ -1,6 +1,10 @@
 #ifndef CLUSTER_DYNAMICS_CUDA_IMPL_HPP
 #define CLUSTER_DYNAMICS_CUDA_IMPL_HPP
 
+#include <cvodes/cvodes.h>
+#include <nvector/nvector_serial.h>
+#include <sunlinsol/sunlinsol_dense.h>
+#include <sunmatrix/sunmatrix_dense.h>
 #include <thrust/device_free.h>
 #include <thrust/device_malloc.h>
 #include <thrust/device_vector.h>
@@ -11,16 +15,11 @@
 #include <cmath>
 #include <vector>
 
-#include "cluster_dynamics/cluster_dynamics_state.hpp"
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
+#include "cluster_dynamics/cluster_dynamics_state.hpp"
 #include "material_impl.hpp"
 #include "nuclear_reactor_impl.hpp"
 #include "utils/constants.hpp"
-
-#include <cvodes/cvodes.h>
-#include <nvector/nvector_serial.h>
-#include <sunlinsol/sunlinsol_dense.h>
-#include <sunmatrix/sunmatrix_dense.h> 
 
 #define __CUDADECL__ __device__ __host__
 
@@ -114,10 +113,11 @@ class ClusterDynamicsImpl {
 
   // Simulation Operation Functions
   void step_init();
-  static int system(gp_float t, N_Vector state, N_Vector state_derivatives, void* user_data);
+  static int system(gp_float t, N_Vector state, N_Vector state_derivatives,
+                    void* user_data);
 
   // Interface functions
-  ClusterDynamicsImpl(ClusterDynamicsConfig &config);
+  explicit ClusterDynamicsImpl(ClusterDynamicsConfig& config);
   ~ClusterDynamicsImpl();
 
   ClusterDynamicsState run(gp_float total_time);

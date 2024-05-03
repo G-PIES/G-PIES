@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sqlite3.h>
+
 #include <string>
 
 #include "entity_descriptor.hpp"
@@ -14,8 +15,7 @@ class MaterialEntity : public EntityDescriptor<Material, bool> {
   std::string get_update_one_query() override;
   std::string get_delete_one_query() override;
 
-  void bind_create_one(sqlite3_stmt *, const Material &, bool &&)
-    override;
+  void bind_create_one(sqlite3_stmt *, const Material &, bool &&) override;
   void bind_update_one(sqlite3_stmt *, const Material &) override;
 
   void read_row(sqlite3_stmt *, Material &) override;

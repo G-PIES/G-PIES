@@ -32,7 +32,7 @@ class ClusterDynamics {
    *  @param material A Material object containing the material parameters the
    * simulation will use.
    */
-  ClusterDynamics(ClusterDynamicsConfig &config);
+  explicit ClusterDynamics(ClusterDynamicsConfig &config);
   ~ClusterDynamics();
 
   /** @brief Runs the simulation and returns the end simulation state as a

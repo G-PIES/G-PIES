@@ -25,9 +25,8 @@ std::string NuclearReactorEntity::get_delete_one_query() {
   return db_queries::delete_reactor;
 }
 
-void NuclearReactorEntity::bind_base(
-    sqlite3_stmt *stmt,
-    const NuclearReactor &reactor) {
+void NuclearReactorEntity::bind_base(sqlite3_stmt *stmt,
+                                     const NuclearReactor &reactor) {
   sqlite3_bind_text(stmt, 1, reactor.species.c_str(), reactor.species.length(),
                     nullptr);
   sqlite3_bind_double(stmt, 2, reactor.get_flux());
@@ -42,33 +41,28 @@ void NuclearReactorEntity::bind_base(
   sqlite3_bind_double(stmt, 11, reactor.get_dislocation_density_evolution());
 }
 
-void NuclearReactorEntity::bind_update_one(
-    sqlite3_stmt *stmt,
-    const NuclearReactor &reactor) {
+void NuclearReactorEntity::bind_update_one(sqlite3_stmt *stmt,
+                                           const NuclearReactor &reactor) {
   bind_base(stmt, reactor);
   sqlite3_bind_int(stmt, 12, reactor.sqlite_id);
 }
 
-void NuclearReactorEntity::bind_create_one(
-    sqlite3_stmt *stmt,
-    const NuclearReactor &reactor,
-    bool &&is_preset) {
+void NuclearReactorEntity::bind_create_one(sqlite3_stmt *stmt,
+                                           const NuclearReactor &reactor,
+                                           bool &&is_preset) {
   bind_base(stmt, reactor);
   sqlite3_bind_text(stmt, 12, reactor.creation_datetime.c_str(),
                     reactor.creation_datetime.length(), nullptr);
   sqlite3_bind_int(stmt, 13, static_cast<int>(is_preset));
 }
 
-void NuclearReactorEntity::read_row(
-    sqlite3_stmt *stmt,
-    NuclearReactor &reactor) {
+void NuclearReactorEntity::read_row(sqlite3_stmt *stmt,
+                                    NuclearReactor &reactor) {
   read_row(stmt, reactor, 0);
 }
 
-void NuclearReactorEntity::read_row(
-    sqlite3_stmt *stmt,
-    NuclearReactor &reactor,
-    const int col_offset) {
+void NuclearReactorEntity::read_row(sqlite3_stmt *stmt, NuclearReactor &reactor,
+                                    const int col_offset) {
   reactor.sqlite_id =
       static_cast<int>(sqlite3_column_int(stmt, col_offset + 0));
   reactor.creation_datetime =

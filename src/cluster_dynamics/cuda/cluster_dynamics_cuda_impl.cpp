@@ -67,7 +67,6 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::v_defect_production(size_t n) const {
 */
 __CUDADECL__ gp_float
 ClusterDynamicsImpl::i_concentration_derivative(size_t in) const {
-
   return
       // (1)
       i_defect_production(in) / material.atomic_volume
@@ -677,13 +676,13 @@ void ClusterDynamicsImpl::step_init() {
              cudaMemcpyHostToDevice);
 }
 
-ClusterDynamicsImpl::~ClusterDynamicsImpl() { 
+ClusterDynamicsImpl::~ClusterDynamicsImpl() {
   N_VDestroy_Serial(state);
   SUNMatDestroy(jacobian_matrix);
   SUNLinSolFree(linear_solver);
   CVodeFree(&cvodes_memory_block);
   SUNContext_Free(&sun_context);
-  thrust::device_free(self); 
+  thrust::device_free(self);
 }
 
 gp_float ClusterDynamicsImpl::ii_sum_absorption(size_t) const {
@@ -726,25 +725,27 @@ gp_float ClusterDynamicsImpl::vi_sum_absorption(size_t) const {
       0.0, thrust::plus<gp_float>());
 }
 
-int ClusterDynamicsImpl::system([[maybe_unused]] double t, N_Vector state_vector, N_Vector derivatives_vector, void* user_data)
-{
-  ClusterDynamicsImpl* cd = static_cast<ClusterDynamicsImpl*>(user_data);
+int ClusterDynamicsImpl::system([[maybe_unused]] double t,
+                                N_Vector state_vector,
+                                N_Vector derivatives_vector, void *user_data) {
+  ClusterDynamicsImpl *cd = static_cast<ClusterDynamicsImpl *>(user_data);
 
-  gp_float* i_state = N_VGetArrayPointer(state_vector);
-  gp_float* v_state = i_state + cd->max_cluster_size + 2;
+  gp_float *i_state = N_VGetArrayPointer(state_vector);
+  gp_float *v_state = i_state + cd->max_cluster_size + 2;
   cd->dislocation_density = *(v_state + cd->max_cluster_size + 2);
 
   cd->step_init();
-  
-  thrust::copy(i_state, i_state + cd->max_cluster_size, cd->interstitials.begin());
+
+  thrust::copy(i_state, i_state + cd->max_cluster_size,
+               cd->interstitials.begin());
   thrust::copy(v_state, v_state + cd->max_cluster_size, cd->vacancies.begin());
 
   cd->host_interstitials = cd->interstitials;
   cd->host_vacancies = cd->vacancies;
 
-  gp_float* i_derivatives = N_VGetArrayPointer(derivatives_vector);
-  gp_float* v_derivatives = i_derivatives + cd->max_cluster_size + 2;
-  gp_float* dislocation_derivative = v_derivatives + cd->max_cluster_size + 2;
+  gp_float *i_derivatives = N_VGetArrayPointer(derivatives_vector);
+  gp_float *v_derivatives = i_derivatives + cd->max_cluster_size + 2;
+  gp_float *dislocation_derivative = v_derivatives + cd->max_cluster_size + 2;
 
   N_VConst(0.0, derivatives_vector);
 
@@ -760,9 +761,11 @@ int ClusterDynamicsImpl::system([[maybe_unused]] double t, N_Vector state_vector
                     [self] __CUDADECL__(const int &idx) {
                       return self->v_concentration_derivative(idx);
                     });
-  
-  thrust::copy(cd->device_i_derivatives.begin(), cd->device_i_derivatives.end(), i_derivatives);
-  thrust::copy(cd->device_v_derivatives.begin(), cd->device_v_derivatives.end(), v_derivatives);
+
+  thrust::copy(cd->device_i_derivatives.begin(), cd->device_i_derivatives.end(),
+               i_derivatives);
+  thrust::copy(cd->device_v_derivatives.begin(), cd->device_v_derivatives.end(),
+               v_derivatives);
 
   i_derivatives[1] = cd->i1_concentration_derivative();
   v_derivatives[1] = cd->v1_concentration_derivative();
@@ -791,7 +794,6 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(ClusterDynamicsConfig &config)
       indices(config.max_cluster_size, 0),
       host_interstitials(config.max_cluster_size + 1, 0.0),
       host_vacancies(config.max_cluster_size + 1, 0.0) {
-
   max_cluster_size = config.max_cluster_size;
   data_validation_on = config.data_validation_on;
   relative_tolerance = config.relative_tolerance;
@@ -799,14 +801,16 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(ClusterDynamicsConfig &config)
   max_num_integration_steps = config.max_num_integration_steps;
   min_integration_step = config.min_integration_step;
   max_integration_step = config.max_integration_step;
-  
+
   dislocation_density = material.dislocation_density_0;
-  
+
   state_size = 2 * (max_cluster_size + 2) + 1;
 
   /* Create the SUNDIALS context */
   int sunerr = SUNContext_Create(SUN_COMM_NULL, &sun_context);
-  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
 
   /* Create the initial state */
   /// \todo Check errors
@@ -817,19 +821,24 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(ClusterDynamicsConfig &config)
   N_VGetArrayPointer(state)[state_size - 2] = material.dislocation_density_0;
 
   /* Call CVodeCreate to create the solver memory and specify the
-    * Backward Differentiation Formula */
+   * Backward Differentiation Formula */
   cvodes_memory_block = CVodeCreate(CV_BDF, sun_context);
 
   /* Call CVodeInit to initialize the integrator memory and specify the
-    * user's right hand side function in y'=f(t,y), the initial time T0, and
-    * the initial dependent variable vector y. */
+   * user's right hand side function in y'=f(t,y), the initial time T0, and
+   * the initial dependent variable vector y. */
   sunerr = CVodeInit(cvodes_memory_block, system, 0, state);
-  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
 
   /* Call CVodeSVtolerances to specify the scalar relative tolerance
-    * and scalar absolute tolerances */
-  sunerr = CVodeSStolerances(cvodes_memory_block, relative_tolerance, absolute_tolerance);
-  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+   * and scalar absolute tolerances */
+  sunerr = CVodeSStolerances(cvodes_memory_block, relative_tolerance,
+                             absolute_tolerance);
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
 
   /* Create dense jacobian matrix */
   jacobian_matrix = SUNDenseMatrix(state_size, state_size, sun_context);
@@ -837,28 +846,43 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(ClusterDynamicsConfig &config)
   /* Create linear solver object for use by CVode */
   linear_solver = SUNLinSol_Dense(state, jacobian_matrix, sun_context);
 
-  sunerr = CVodeSetUserData(cvodes_memory_block, static_cast<void*>(this));
-  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+  sunerr = CVodeSetUserData(cvodes_memory_block, static_cast<void *>(this));
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
 
   sunerr = CVodeSetMaxNumSteps(cvodes_memory_block, max_num_integration_steps);
-  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
 
   sunerr = CVodeSetMinStep(cvodes_memory_block, min_integration_step);
-  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
 
   sunerr = CVodeSetMaxStep(cvodes_memory_block, max_integration_step);
-  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
 
   // TODO - set to time delta?
   sunerr = CVodeSetInitStep(cvodes_memory_block, 1e-10);
-  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
 
   /* Attach the matrix and linear solver */
-  sunerr = CVodeSetLinearSolver(cvodes_memory_block, linear_solver, jacobian_matrix);
-  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+  sunerr =
+      CVodeSetLinearSolver(cvodes_memory_block, linear_solver, jacobian_matrix);
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
 
   sunerr = CVodeSetInterpolateStopTime(cvodes_memory_block, SUNTRUE);
-  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
 
   ClusterDynamicsImpl *raw_self;
   cudaMalloc(&raw_self, sizeof(ClusterDynamicsImpl));
@@ -870,13 +894,16 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(ClusterDynamicsConfig &config)
 
 ClusterDynamicsState ClusterDynamicsImpl::run(gp_float total_time) {
   gp_float out_time;
-  const int sunerr = CVode(cvodes_memory_block, time + total_time, state, &out_time, CV_NORMAL);
-  if (sunerr) throw ClusterDynamicsException(SUNGetErrMsg(sunerr), ClusterDynamicsState());
+  const int sunerr = CVode(cvodes_memory_block, time + total_time, state,
+                           &out_time, CV_NORMAL);
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
 
   time = out_time;
 
-  gp_float* i_state = N_VGetArrayPointer(state);
-  gp_float* v_state = i_state + max_cluster_size + 2;
+  gp_float *i_state = N_VGetArrayPointer(state);
+  gp_float *v_state = i_state + max_cluster_size + 2;
   dislocation_density = *(v_state + max_cluster_size + 2);
   thrust::copy(i_state, i_state + max_cluster_size, host_interstitials.begin());
   thrust::copy(v_state, v_state + max_cluster_size, host_vacancies.begin());

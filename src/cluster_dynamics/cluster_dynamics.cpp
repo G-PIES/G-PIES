@@ -1,4 +1,5 @@
 #include "cluster_dynamics/cluster_dynamics.hpp"
+
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
 
 #if defined(USE_CUDA)
@@ -22,7 +23,8 @@ ClusterDynamics::ClusterDynamics(ClusterDynamicsConfig &config) {
  */
 ClusterDynamics::~ClusterDynamics() {}
 
-ClusterDynamicsState ClusterDynamics::run([[maybe_unused]] gp_float time_delta, gp_float total_time) {
+ClusterDynamicsState ClusterDynamics::run([[maybe_unused]] gp_float time_delta,
+                                          gp_float total_time) {
   return _impl->run(total_time);
 }
 
@@ -44,22 +46,27 @@ void ClusterDynamics::set_data_validation(const bool data_validation_on) {
   _impl->data_validation_on = data_validation_on;
 }
 
-void ClusterDynamics::set_relative_tolerance(const gp_float relative_tolerance) {
+void ClusterDynamics::set_relative_tolerance(
+    const gp_float relative_tolerance) {
   _impl->relative_tolerance = relative_tolerance;
 }
 
-void ClusterDynamics::set_absolute_tolerance(const gp_float absolute_tolerance) {
+void ClusterDynamics::set_absolute_tolerance(
+    const gp_float absolute_tolerance) {
   _impl->absolute_tolerance = absolute_tolerance;
 }
 
-void ClusterDynamics::set_max_num_integration_steps(const size_t max_num_integration_steps) {
+void ClusterDynamics::set_max_num_integration_steps(
+    const size_t max_num_integration_steps) {
   _impl->max_num_integration_steps = max_num_integration_steps;
 }
 
-void ClusterDynamics::set_min_integration_step(const gp_float min_integration_step) {
+void ClusterDynamics::set_min_integration_step(
+    const gp_float min_integration_step) {
   _impl->min_integration_step = min_integration_step;
 }
 
-void ClusterDynamics::set_max_integration_step(const gp_float max_integration_step) {
+void ClusterDynamics::set_max_integration_step(
+    const gp_float max_integration_step) {
   _impl->max_integration_step = max_integration_step;
 }
