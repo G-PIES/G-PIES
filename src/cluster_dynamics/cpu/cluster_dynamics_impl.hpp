@@ -1,10 +1,15 @@
 #ifndef CLUSTER_DYNAMICS_IMPL_HPP
 #define CLUSTER_DYNAMICS_IMPL_HPP
 
+#include "utils/diagnostics.hpp"
+
+DIAGNOSTIC_PUSH
+DIAGNOSTIC_DISABLE("-Wunused-parameter")
 #include <cvodes/cvodes.h>
 #include <nvector/nvector_serial.h>
 #include <sunlinsol/sunlinsol_dense.h>
 #include <sunmatrix/sunmatrix_dense.h>
+DIAGNOSTIC_POP
 
 #include <cmath>
 #include <iostream>
