@@ -158,6 +158,8 @@ gp_float ClusterDynamicsImpl::v1_concentration_derivative() const {
  * instead.
  */
 gp_float ClusterDynamicsImpl::dislocation_density_derivative() const {
+  return 0.;
+
   gp_float gain = 0.0;
   for (size_t n = 1; n < max_cluster_size; ++n) {
     gain += cluster_radius(n) * ii_absorption(n) * interstitials[n] *
@@ -1040,6 +1042,8 @@ gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const {
  */
 gp_float ClusterDynamicsImpl::dislocation_promotion_probability(
     size_t n) const {
+  return 0.;
+
   gp_float dr = cluster_radius(n + 1) - cluster_radius(n);
 
   //      (1)                           (2)
@@ -1048,8 +1052,6 @@ gp_float ClusterDynamicsImpl::dislocation_promotion_probability(
                / (std::pow(M_PI * mean_dislocation_radius_val / 2., 2) -
                   std::pow(cluster_radius(n), 2.));
 
-  if (p < 0.) return 0.;
-  if (p > 1.) return 1.;
   return p;
 }
 
