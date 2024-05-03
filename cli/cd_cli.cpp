@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <yaml-cpp>
 
 #include "client_db/client_db.hpp"
 #include "cluster_dynamics/cluster_dynamics.hpp"
