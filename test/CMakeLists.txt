@@ -13,6 +13,7 @@ target_include_directories(cd_tests PRIVATE ../src/cluster_dynamics)
 target_include_directories(cd_tests PRIVATE ../src/cluster_dynamics/cpu)
 target_link_libraries(cd_tests clusterdynamics)
 target_link_libraries(cd_tests GTest::gtest_main)
+set_property(TARGET cd_tests PROPERTY CUDA_ARCHITECTURES native)
 
 if(GP_BUILD_CUDA)
   add_executable(cd_cuda_tests ./cd_tests.cpp)
