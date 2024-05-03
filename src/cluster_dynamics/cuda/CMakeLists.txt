@@ -8,6 +8,5 @@ if(GP_BUILD_CUDA)
   target_compile_definitions(clusterdynamicscuda PRIVATE USE_CUDA)
   target_include_directories(clusterdynamicscuda PRIVATE ./)
   target_include_directories(clusterdynamicscuda PRIVATE ../)
-  set_property(TARGET clusterdynamicscuda PROPERTY CUDA_ARCHITECTURES native)
 
 endif()
