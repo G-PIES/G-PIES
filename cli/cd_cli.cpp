@@ -1,3 +1,5 @@
+#include <yaml-cpp/yaml.h>
+
 #include <array>
 #include <boost/program_options.hpp>
 #include <cmath>
@@ -6,11 +8,13 @@
 #include <iomanip>
 #include <iostream>
 
+#include "arg_consumer.hpp"
 #include "client_db/client_db.hpp"
 #include "cluster_dynamics/cluster_dynamics.hpp"
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
+#include "utils/sensitivity_variable.hpp"
 #include "utils/timer.hpp"
 
 namespace po = boost::program_options;
@@ -22,10 +26,6 @@ std::ostream os(std::cout.rdbuf());
 bool csv = false;
 bool step_print = false;
 
-size_t sa_num_simulations = 0;
-std::string sa_var = "";
-gp_float sa_var_delta = 0.;
-
 gp_float simulation_time = 1e8;
 gp_float time_delta = 1e6;
 gp_float sample_interval =
@@ -33,13 +33,67 @@ gp_float sample_interval =
 
 ClusterDynamicsConfig config;
 
+void print_reactor() {
+  std::cout
+      << config.reactor.species << "\nflux: " << config.reactor.get_flux()
+      << " dpa/s"
+      << "\ntemperature: " << config.reactor.get_temperature() << " kelvin"
+      << "\nrecombination rate: " << config.reactor.get_recombination()
+      << "\nbi-interstitial generation rate: " << config.reactor.get_i_bi()
+      << "\ntri-interstitial generation rate: " << config.reactor.get_i_tri()
+      << "\nquad-interstitial generation rate: " << config.reactor.get_i_quad()
+      << "\nbi-vacancy generation rate: " << config.reactor.get_v_bi()
+      << "\ntri-vacancy generation rate: " << config.reactor.get_v_tri()
+      << "\nquad-vacancy generation rate: " << config.reactor.get_v_quad()
+      << "\ndislocation density evolution: "
+      << config.reactor.get_dislocation_density_evolution() << std::endl;
+}
+
+void print_material() {
+  std::cout << config.material.species
+            << "\ninterstitial migration: " << config.material.get_i_migration()
+            << " eV"
+            << "\nvacancy migration: " << config.material.get_v_migration()
+            << " eV"
+            << "\ninitial interstitial diffusion: "
+            << config.material.get_i_diffusion_0() << " cm^2/s"
+            << "\ninitial vacancy diffusion: "
+            << config.material.get_v_diffusion_0() << " cm^2/s"
+            << "\ninterstitial formation: " << config.material.get_i_formation()
+            << " eV"
+            << "\nvacancy formation: " << config.material.get_v_formation()
+            << " eV"
+            << "\ninterstitial binding: " << config.material.get_i_binding()
+            << " eV"
+            << "\nvacancy binding: " << config.material.get_v_binding() << " eV"
+            << "\nrecombination radius: "
+            << config.material.get_recombination_radius() << " cm"
+            << "\ninterstitial loop bias: " << config.material.get_i_loop_bias()
+            << "\ninterstitial dislocation bias: "
+            << config.material.get_i_dislocation_bias()
+            << "\ninterstitial dislocation bias param: "
+            << config.material.get_i_dislocation_bias_param()
+            << "\nvacancy loop bias: " << config.material.get_v_loop_bias()
+            << "\nvacancy dislocation bias: "
+            << config.material.get_v_dislocation_bias()
+            << "\nvacancy dislocation bias param: "
+            << config.material.get_v_dislocation_bias_param()
+            << "\ninitial dislocation density: "
+            << config.material.get_dislocation_density_0() << " cm^-2"
+            << "\ngrain size: " << config.material.get_grain_size() << " cm"
+            << "\nlattice parameter: " << config.material.get_lattice_param()
+            << " cm"
+            << "\nburgers vector (lattice_parameter / sqrt(2)): "
+            << config.material.get_burgers_vector() << " cm"
+            << "\natomic volume (lattice_parameter^3 / 4): "
+            << config.material.get_atomic_volume() << "cm^3" << std::endl;
+}
+
 void print_start_message() {
-  // TODO - read species name off of material and reactor objects
   std::cout << "\nG-PIES simulation started\n"
-            << "material: SA304"
-            << "  nuclear reactor: OSIRIS"
+            << "simulation time: " << simulation_time
             << "  time delta: " << time_delta
-            << "  simulation time: " << simulation_time
+            << "  sample interval: " << sample_interval
             << "  max cluster size: "
             << static_cast<int>(config.max_cluster_size)
             << "  data validation: "
@@ -52,6 +106,14 @@ void print_start_message() {
             << "  min integration step: " << config.min_integration_step
             << "  max integration step: " << config.max_integration_step
             << std::endl;
+
+  std::cout << "\nReactor Settings\n";
+  print_reactor();
+
+  std::cout << "\nMaterial Settings\n";
+  print_material();
+
+  std::cout << std::endl;
 }
 
 void print_state(const ClusterDynamicsState& state) {
@@ -144,84 +206,82 @@ void profile() {
   }
 }
 
-enum var_code {
-  e_noMatch,
-  e_iMigration,
-  e_vMigration,
-  e_iFormation,
-  e_vFormation,
-  e_iBinding,
-  e_vBinding,
-  e_dislocationDensity0,
-  e_flux,
-  e_temperature,
-  e_dislocationDensityEvolution
-};
-
-var_code hashit(std::string const& varString) {
-  if (varString == "i_migration") return e_iMigration;
-  if (varString == "v_migration") return e_vMigration;
-  if (varString == "i_formation") return e_iFormation;
-  if (varString == "v_formation") return e_vFormation;
-  if (varString == "i_binding") return e_iBinding;
-  if (varString == "v_binding") return e_vBinding;
-  if (varString == "dislocation_density_0") return e_dislocationDensity0;
-  if (varString == "flux") return e_flux;
-  if (varString == "temperature") return e_temperature;
-  if (varString == "dislocation_density_evolution")
-    return e_dislocationDensityEvolution;
-  return e_noMatch;
-}
-
-void update_for_sensitivity_analysis(ClusterDynamics& cd,
-                                     NuclearReactor& reactor,
-                                     Material& material, const gp_float delta) {
-  switch (hashit(sa_var)) {
-    case e_iMigration:
-      material.set_i_migration(material.get_i_migration() + delta);
-      cd.set_material(material);
-      break;
-    case e_vMigration:
-      material.set_v_migration(material.get_v_migration() + delta);
-      cd.set_material(material);
-      break;
-    case e_iFormation:
-      material.set_i_formation(material.get_i_formation() + delta);
-      cd.set_material(material);
-      break;
-    case e_vFormation:
-      material.set_v_formation(material.get_v_formation() + delta);
-      cd.set_material(material);
-      break;
-    case e_iBinding:
-      material.set_i_binding(material.get_i_binding() + delta);
-      cd.set_material(material);
-      break;
-    case e_vBinding:
-      material.set_v_binding(material.get_v_binding() + delta);
-      cd.set_material(material);
-      break;
-    case e_dislocationDensity0:
-      material.set_dislocation_density_0(material.get_dislocation_density_0() +
-                                         delta);
-      cd.set_material(material);
-      break;
-    case e_flux:
-      reactor.set_flux(reactor.get_flux() + delta);
-      cd.set_reactor(reactor);
-      break;
-    case e_temperature:
-      reactor.set_temperature(reactor.get_temperature() + delta);
-      cd.set_reactor(reactor);
-      break;
-    case e_dislocationDensityEvolution:
-      reactor.set_dislocation_density_evolution(
-          reactor.get_dislocation_density_evolution() + delta);
-      cd.set_reactor(reactor);
-      break;
+gp_float sa_update_config() {
+  switch (config.sa_var) {
+    case SensitivityVariable::interstitial_migration_ev:
+      config.material.set_i_migration(config.material.get_i_migration() +
+                                      config.sa_var_delta);
+      return config.material.get_i_migration();
+    case SensitivityVariable::vacancy_migration_ev:
+      config.material.set_v_migration(config.material.get_v_migration() +
+                                      config.sa_var_delta);
+      return config.material.get_v_migration();
+    case SensitivityVariable::interstitial_formation_ev:
+      config.material.set_i_formation(config.material.get_i_formation() +
+                                      config.sa_var_delta);
+      return config.material.get_i_formation();
+    case SensitivityVariable::vacancy_formation_ev:
+      config.material.set_v_formation(config.material.get_v_formation() +
+                                      config.sa_var_delta);
+      return config.material.get_v_formation();
+    case SensitivityVariable::interstitial_binding_ev:
+      config.material.set_i_binding(config.material.get_i_binding() +
+                                    config.sa_var_delta);
+      return config.material.get_i_binding();
+    case SensitivityVariable::vacancy_binding_ev:
+      config.material.set_v_binding(config.material.get_v_binding() +
+                                    config.sa_var_delta);
+      return config.material.get_v_binding();
+    case SensitivityVariable::initial_dislocation_density_cm:
+      config.material.set_dislocation_density_0(
+          config.material.get_dislocation_density_0() + config.sa_var_delta);
+      return config.material.get_dislocation_density_0();
+    case SensitivityVariable::flux_dpa_s:
+      config.reactor.set_flux(config.reactor.get_flux() + config.sa_var_delta);
+      return config.reactor.get_flux();
+    case SensitivityVariable::temperature_kelvin:
+      config.reactor.set_temperature(config.reactor.get_temperature() +
+                                     config.sa_var_delta);
+      return config.reactor.get_temperature();
+    case SensitivityVariable::dislocation_density_evolution:
+      config.reactor.set_dislocation_density_evolution(
+          config.reactor.get_dislocation_density_evolution() +
+          config.sa_var_delta);
+      return config.reactor.get_dislocation_density_evolution();
     default:
       break;
   }
+
+  return 0.;
+}
+
+gp_float get_sa_var_value() {
+  switch (config.sa_var) {
+    case SensitivityVariable::interstitial_migration_ev:
+      return config.material.get_i_migration();
+    case SensitivityVariable::vacancy_migration_ev:
+      return config.material.get_v_migration();
+    case SensitivityVariable::interstitial_formation_ev:
+      return config.material.get_i_formation();
+    case SensitivityVariable::vacancy_formation_ev:
+      return config.material.get_v_formation();
+    case SensitivityVariable::interstitial_binding_ev:
+      return config.material.get_i_binding();
+    case SensitivityVariable::vacancy_binding_ev:
+      return config.material.get_v_binding();
+    case SensitivityVariable::initial_dislocation_density_cm:
+      return config.material.get_dislocation_density_0();
+    case SensitivityVariable::flux_dpa_s:
+      return config.reactor.get_flux();
+    case SensitivityVariable::temperature_kelvin:
+      return config.reactor.get_temperature();
+    case SensitivityVariable::dislocation_density_evolution:
+      return config.reactor.get_dislocation_density_evolution();
+    default:
+      break;
+  }
+
+  return 0.;
 }
 
 ClusterDynamicsState run_simulation() {
@@ -263,6 +323,75 @@ ClusterDynamicsState run_simulation() {
   // --------------------------------------------------------------------------------------------
 
   return state;
+}
+
+void emit_config_yaml(const std::string& filename) {
+  YAML::Emitter out;
+  YAML::Emitter sa_comment;
+  sa_comment << YAML::BeginMap << YAML::Key << "sensitivity-analysis"
+             << YAML::Value << YAML::BeginMap << YAML::Key << "num-sims"
+             << YAML::Value << "10" << YAML::Key << "sensitivity-var"
+             << YAML::Value << "flux-dpa-s" << YAML::Key
+             << "sensitivity-var-delta" << YAML::Value << "1.0e-7"
+             << YAML::EndMap << YAML::EndMap;
+
+  out << YAML::BeginMap << YAML::Key << "simulation" << YAML::Value
+      << YAML::BeginMap << YAML::Key << "time" << YAML::Value << "1.0e+8"
+      << YAML::Key << "time-delta" << YAML::Value << "1.0e+6" << YAML::Key
+      << "sample-interval" << YAML::Value << "1.0e+6" << YAML::Key
+      << "data-validation" << YAML::Value << "on" << YAML::Key
+      << "max-cluster-size" << YAML::Value << "1001" << YAML::Key
+      << "relative-tolerance" << YAML::Value << "1.0e-6" << YAML::Key
+      << "absolute-tolerance" << YAML::Value << "1.0e+1" << YAML::Key
+      << "max-num-integration-steps" << YAML::Value << "5000" << YAML::Key
+      << "min-integration-step" << YAML::Value << "1.0e-30" << YAML::Key
+      << "max-integration-step" << YAML::Value << "1.0e+20" << YAML::EndMap
+      << YAML::EndMap << YAML::Newline << YAML::Newline << YAML::BeginMap
+      << YAML::Key << "reactor" << YAML::Value << YAML::BeginMap << YAML::Key
+      << "flux-dpa-s" << YAML::Value << "2.9e-7" << YAML::Key
+      << "temperature-kelvin" << YAML::Value << "603.15" << YAML::Key
+      << "recombination-rate" << YAML::Value << "0.3" << YAML::Key
+      << "bi-interstitial-rate" << YAML::Value << "0.5" << YAML::Key
+      << "tri-interstitial-rate" << YAML::Value << "0.2" << YAML::Key
+      << "quad-interstitial-rate" << YAML::Value << "0.06" << YAML::Key
+      << "bi-vacancy-rate" << YAML::Value << "0.06" << YAML::Key
+      << "tri-vacancy-rate" << YAML::Value << "0.03" << YAML::Key
+      << "quad-vacancy-rate" << YAML::Value << "0.02" << YAML::Key
+      << "dislocation-density-evolution" << YAML::Value << "300.0"
+      << YAML::EndMap << YAML::EndMap << YAML::Newline << YAML::Newline
+      << YAML::BeginMap << YAML::Key << "material" << YAML::Value
+      << YAML::BeginMap << YAML::Key << "interstitial-migration-ev"
+      << YAML::Value << "0.45" << YAML::Key << "vacancy-migration-ev"
+      << YAML::Value << "1.35" << YAML::Key << "initial-interstitial-diffusion"
+      << YAML::Value << "1.0e-3" << YAML::Key << "initial-vacancy-diffusion"
+      << YAML::Value << "0.6" << YAML::Key << "interstitial-formation-ev"
+      << YAML::Value << "4.1" << YAML::Key << "vacancy-formation-ev"
+      << YAML::Value << "4.1" << YAML::Key << "interstitial-binding-ev"
+      << YAML::Value << "0.6" << YAML::Key << "vacancy-binding-ev"
+      << YAML::Value << "0.5" << YAML::Key << "recombination-radius-cm"
+      << YAML::Value << "0.7e-7" << YAML::Key << "interstitial-loop-bias"
+      << YAML::Value << "63.0" << YAML::Key << "interstitial-dislocation-bias"
+      << YAML::Value << "0.8" << YAML::Key
+      << "interstitial-dislocation-bias-param" << YAML::Value << "1.1"
+      << YAML::Key << "vacancy-loop-bias" << YAML::Value << "33.0" << YAML::Key
+      << "vacancy-dislocation-bias" << YAML::Value << "0.65" << YAML::Key
+      << "vacancy-dislocation-bias-param" << YAML::Value << "1.0" << YAML::Key
+      << "initial-dislocation-density-cm" << YAML::Value << "10.0e+12"
+      << YAML::Key << "grain-size-cm" << YAML::Value << "4.0e-3" << YAML::Key
+      << "lattice-param-cm" << YAML::Value << "3.6e-8" << YAML::EndMap
+      << YAML::EndMap << YAML::Newline << YAML::Newline
+      << YAML::Comment("NOTE: uncomment to turn on sensitivity analysis")
+      << YAML::Newline << YAML::Comment(sa_comment.c_str()) << YAML::Newline;
+
+  std::ofstream file;
+  file.open(filename);
+  if (file.is_open()) {
+    file << out.c_str();
+    file.close();
+    std::cout << "config file created: " << filename << std::endl;
+  } else {
+    std::cerr << "failed to create config file: " << filename << std::endl;
+  }
 }
 
 /* TODO - Remove
@@ -328,79 +457,24 @@ void valid_integration_search() {
 }
 */
 
-void print_info_SA304() {
-  Material material;
-  materials::SA304(material);
-  std::cout << material.species
-            << "\ninterstitial migration: " << material.get_i_migration()
-            << " eV"
-            << "\nvacancy migration: " << material.get_v_migration() << " eV"
-            << "\ninitial interstitial diffusion: "
-            << material.get_i_diffusion_0() << " cm^2/s"
-            << "\ninitial vacancy diffusion: " << material.get_v_diffusion_0()
-            << " cm^2/s"
-            << "\ninterstitial formation: " << material.get_i_formation()
-            << " eV"
-            << "\nvacancy formation: " << material.get_v_formation() << " eV"
-            << "\ninterstitial binding: " << material.get_i_binding() << " eV"
-            << "\nvacancy binding: " << material.get_v_binding() << " eV"
-            << "\nrecombination radius: " << material.get_recombination_radius()
-            << " cm"
-            << "\ninterstitial loop bias: " << material.get_i_loop_bias()
-            << "\ninterstitial dislocation bias: "
-            << material.get_i_dislocation_bias()
-            << "\ninterstitial dislocation bias param: "
-            << material.get_i_dislocation_bias_param()
-            << "\nvacancy loop bias: " << material.get_v_loop_bias()
-            << "\nvacancy dislocation bias: "
-            << material.get_v_dislocation_bias()
-            << "\nvacancy dislocation bias param: "
-            << material.get_v_dislocation_bias_param()
-            << "\ninitial dislocation density: "
-            << material.get_dislocation_density_0() << " cm^-2"
-            << "\ngrain size: " << material.get_grain_size() << " cm"
-            << "\nlattice parameter (FCC Nickel Approximation): "
-            << material.get_lattice_param() << " cm"
-            << "\nburgers vector (lattice_parameter / sqrt(2)): "
-            << material.get_burgers_vector() << " cm"
-            << "\natomic volume (lattice_parameter^3 / 4): "
-            << material.get_atomic_volume() << "cm^3" << std::endl;
-}
-
-void print_info_OSIRIS() {
-  NuclearReactor reactor;
-  nuclear_reactors::OSIRIS(reactor);
-  std::cout << reactor.species << "\nflux: " << reactor.get_flux() << " dpa/s"
-            << "\ntemperature: " << reactor.get_temperature() << " C"
-            << "\nrecombination rate: " << reactor.get_recombination()
-            << "\nbi-interstitial generation rate (CURRENTLY UNUSED): "
-            << reactor.get_i_bi()
-            << "\ntri-interstitial generation rate: " << reactor.get_i_tri()
-            << "\nquad-interstitial generation rate: " << reactor.get_i_quad()
-            << "\nbi-vacancy generation rate (CURRENTLY UNUSED): "
-            << reactor.get_v_bi()
-            << "\ntri-vacancy generation rate: " << reactor.get_v_tri()
-            << "\nquad-vacancy generation rate: " << reactor.get_v_quad()
-            << "\ndislocation density evolution: "
-            << reactor.get_dislocation_density_evolution() << std::endl;
-}
-
 int main(int argc, char* argv[]) {
   // TODO - Remove (this is just for testing the CVODES implementation)
   // valid_integration_search();
   // return 0;
 
-  materials::SA304(config.material);
-  nuclear_reactors::OSIRIS(config.reactor);
-
   try {
     // Declare the supported options
     po::options_description all_options("General Options");
     all_options.add_options()("help", "display help message")(
-        "material-info", "display information on SA304 stainless steel")(
-        "reactor-info", "display information on the OSIRIS reactor")(
-        "version", "display version information")("csv",
-                                                  "csv output formatting")(
+        "version", "display version information")(
+        "config", po::value<std::string>(),
+        "configure simulation with a .yaml file")(
+        "generate-config-file",
+        po::value<std::string>()
+            ->value_name("filename")
+            ->implicit_value("config.yaml"),
+        "generate an example .yaml config file")("csv",
+                                                 "csv output formatting")(
         "step-print", "display simulation state at every time step")(
         "output-file", po::value<std::string>()->value_name("filename"),
         "write simulation output to a file")("db", "database options")(
@@ -457,54 +531,43 @@ int main(int argc, char* argv[]) {
 
     all_options.add(db_options).add(sa_options);
 
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, all_options), vm);
-    po::notify(vm);
+    ArgConsumer arg_consumer(argc, argv, all_options);
 
     // Help message
-    if (vm.count("help")) {
+    if (arg_consumer.has_arg("help")) {
       std::cout << all_options << "\n";
       return 1;
-    } else if (vm.count("sensitivity-analysis-help")) {
-      // TODO - refactor supported variables, description, and corresponding
-      // enums
-      std::cout << "\nSupported Variables [--sensitivity-var]:\n"
-                << "i_migration\n"
-                << "v_migration\n"
-                << "i_formation\n"
-                << "v_formation\n"
-                << "i_binding\n"
-                << "v_binding\n"
-                << "dislocation_density_0\n"
-                << "flux\n"
-                << "temperature\n"
-                << "dislocation_density_evolution\n";
+    } else if (arg_consumer.has_arg("sensitivity-analysis-help")) {
+      std::cout << "\nSupported Variables [--sensitivity-var]:\n";
+      for (const auto& [key, value] : sensitivity_variables) {
+        std::cout << key << std::endl;
+      }
 
-      std::cout << "\nexample command: run 10 simulations, increasing the "
-                   "reactor flux by 1e-7 for each simulation\n"
-                << "./cd_cli --sensitivity-analysis --num-sims 10 "
-                   "--sensitivity-var flux --sensitivity-var-delta 1e-7\n\n";
+      std::cout
+          << "\nexample command: run 10 simulations, increasing the "
+             "reactor flux by 1e-7 for each simulation\n"
+          << "./cd_cli --sensitivity-analysis --num-sims 10 "
+             "--sensitivity-var flux-dpa-s --sensitivity-var-delta 1e-7\n\n";
       return 1;
-    } else if (vm.count("version")) {
+    } else if (arg_consumer.has_arg("version")) {
       std::cout << "G-PIES version " << GPIES_SEMANTIC_VERSION << "\n";
       return 1;
-    } else if (vm.count("reactor-info")) {
-      print_info_OSIRIS();
-      return 1;
-    } else if (vm.count("material-info")) {
-      print_info_SA304();
+    } else if (arg_consumer.has_arg("generate-config-file")) {
+      std::string filename =
+          arg_consumer.get_value<std::string>("generate-config-file");
+      emit_config_yaml(filename);
       return 1;
     }
 
     // Redirect output to file
-    if (vm.count("output-file")) {
-      filename = vm["output-file"].as<std::string>();
+    if (arg_consumer.has_arg("output-file")) {
+      filename = arg_consumer.get_value<std::string>("output-file");
       output_file.open(filename);
       if (output_file.is_open()) os.rdbuf(output_file.rdbuf());
     }
 
-    if (vm.count("max-cluster-size")) {
-      size_t mcs = vm["max-cluster-size"].as<size_t>();
+    if (arg_consumer.has_arg("max-cluster-size")) {
+      size_t mcs = arg_consumer.get_value<size_t>("max-cluster-size");
       if (mcs <= 0)
         throw GpiesException(
             "Value for max-cluster-size must be a positive, non-zero integer.");
@@ -512,8 +575,8 @@ int main(int argc, char* argv[]) {
       config.max_cluster_size = mcs;
     }
 
-    if (vm.count("time")) {
-      gp_float st = vm["time"].as<gp_float>();
+    if (arg_consumer.has_arg("time")) {
+      gp_float st = arg_consumer.get_value<gp_float>("time");
       if (st <= 0.)
         throw GpiesException(
             "Value for time must be a positive, non-zero decimal.");
@@ -521,8 +584,8 @@ int main(int argc, char* argv[]) {
       simulation_time = st;
     }
 
-    if (vm.count("time-delta")) {
-      gp_float td = vm["time-delta"].as<gp_float>();
+    if (arg_consumer.has_arg("time-delta")) {
+      gp_float td = arg_consumer.get_value<gp_float>("time-delta");
       if (td <= 0.)
         throw GpiesException(
             "Value for time-delta must be a positive, non-zero "
@@ -531,8 +594,8 @@ int main(int argc, char* argv[]) {
       time_delta = td;
     }
 
-    if (vm.count("sample-interval")) {
-      gp_float si = vm["sample-interval"].as<gp_float>();
+    if (arg_consumer.has_arg("sample-interval")) {
+      gp_float si = arg_consumer.get_value<gp_float>("sample-interval");
       if (si <= 0.)
         throw GpiesException(
             "Value for sample-interval must be a positive, non-zero "
@@ -541,8 +604,8 @@ int main(int argc, char* argv[]) {
       sample_interval = si;
     }
 
-    if (vm.count("relative-tolerance")) {
-      gp_float rt = vm["relative-tolerance"].as<gp_float>();
+    if (arg_consumer.has_arg("relative-tolerance")) {
+      gp_float rt = arg_consumer.get_value<gp_float>("relative-tolerance");
       if (rt <= 0.)
         throw GpiesException(
             "Value for relative-tolerance must be a positive, non-zero "
@@ -551,8 +614,8 @@ int main(int argc, char* argv[]) {
       config.relative_tolerance = rt;
     }
 
-    if (vm.count("absolute-tolerance")) {
-      gp_float at = vm["absolute-tolerance"].as<gp_float>();
+    if (arg_consumer.has_arg("absolute-tolerance")) {
+      gp_float at = arg_consumer.get_value<gp_float>("absolute-tolerance");
       if (at <= 0.)
         throw GpiesException(
             "Value for absolute-tolerance must be a positive, non-zero "
@@ -561,8 +624,8 @@ int main(int argc, char* argv[]) {
       config.absolute_tolerance = at;
     }
 
-    if (vm.count("max-num-integration-steps")) {
-      size_t mnis = vm["max-num-integration-steps"].as<size_t>();
+    if (arg_consumer.has_arg("max-num-integration-steps")) {
+      size_t mnis = arg_consumer.get_value<size_t>("max-num-integration-steps");
       if (mnis <= 0)
         throw GpiesException(
             "Value for max-num-integration-steps must be a positive, non-zero "
@@ -571,8 +634,8 @@ int main(int argc, char* argv[]) {
       config.max_num_integration_steps = mnis;
     }
 
-    if (vm.count("min-integration-step")) {
-      gp_float minis = vm["min-integration-step"].as<gp_float>();
+    if (arg_consumer.has_arg("min-integration-step")) {
+      gp_float minis = arg_consumer.get_value<gp_float>("min-integration-step");
       if (minis <= 0.)
         throw GpiesException(
             "Value for min-integration-step must be a positive, non-zero "
@@ -581,8 +644,8 @@ int main(int argc, char* argv[]) {
       config.min_integration_step = minis;
     }
 
-    if (vm.count("max-integration-step")) {
-      gp_float maxis = vm["max-integration-step"].as<gp_float>();
+    if (arg_consumer.has_arg("max-integration-step")) {
+      gp_float maxis = arg_consumer.get_value<gp_float>("max-integration-step");
       if (maxis <= 0.)
         throw GpiesException(
             "Value for max-integration-step must be a positive, non-zero "
@@ -592,13 +655,26 @@ int main(int argc, char* argv[]) {
     }
 
     // Output formatting
-    csv = static_cast<bool>(vm.count("csv"));
-    step_print = static_cast<bool>(vm.count("step-print"));
+    csv = static_cast<bool>(arg_consumer.has_arg("csv"));
+    step_print = static_cast<bool>(arg_consumer.has_arg("step-print"));
 
     // Toggle data validation
-    if (vm.count("data-validation")) {
+    if (arg_consumer.has_arg("data-validation")) {
       config.data_validation_on =
-          0 == vm["data-validation"].as<std::string>().compare("on");
+          0 ==
+          arg_consumer.get_value<std::string>("data-validation").compare("on");
+    }
+
+    if (arg_consumer.has_arg("reactor")) {
+      arg_consumer.populate_reactor(config.reactor);
+    } else {
+      nuclear_reactors::OSIRIS(config.reactor);
+    }
+
+    if (arg_consumer.has_arg("material")) {
+      arg_consumer.populate_material(config.material);
+    } else {
+      materials::SA304(config.material);
     }
 
     ClientDb db(DEV_DEFAULT_CLIENT_DB_PATH, false);
@@ -607,22 +683,22 @@ int main(int argc, char* argv[]) {
 
     // --------------------------------------------------------------------------------------------
     // arg parsing
-    if (vm.count("db")) {  // DATABASE
-      if (vm.count("history")) {
+    if (arg_consumer.has_arg("db", "")) {  // DATABASE
+      if (arg_consumer.has_arg("history", "db")) {
         // print simulation history
         print_simulation_history(db, false);
-      } else if (vm.count("history-detail")) {
+      } else if (arg_consumer.has_arg("history-detail", "db")) {
         // print detailed simulation history
         print_simulation_history(db, true);
-      } else if (vm.count("clear")) {
+      } else if (arg_consumer.has_arg("clear", "db")) {
         // clear history
         if (db.delete_simulations()) {
           std::cout << "Simulation History Cleared. " << db.changes()
                     << " Simulation(s) Deleted.\n";
         }
-      } else if (vm.count("run")) {
+      } else if (arg_consumer.has_arg("run", "db")) {
         // rerun a previous simulation by database id
-        int sim_sqlite_id = vm["run"].as<int>();
+        int sim_sqlite_id = arg_consumer.get_value<int>("run", "db");
         HistorySimulation sim;
         if (db.read_simulation(sim_sqlite_id, sim)) {
           // TODO - support storing sensitivity analysis
@@ -645,18 +721,28 @@ int main(int argc, char* argv[]) {
                     << std::endl;
         }
       }
-    } else if (vm.count("sensitivity-analysis")) {  // SENSITIVITY ANALYSIS
+    } else if (arg_consumer.has_arg("sensitivity-analysis",
+                                    "")) {  // SENSITIVITY ANALYSIS
+      std::string sa_var_name;
       // Set sensitivity analysis mode to true
-      if (vm.count("num-sims") && vm.count("sensitivity-var") &&
-          vm.count("sensitivity-var-delta")) {
-        sa_num_simulations = vm["num-sims"].as<int>();
+      if (arg_consumer.has_arg("num-sims", "sensitivity-analysis") &&
+          arg_consumer.has_arg("sensitivity-var", "sensitivity-analysis") &&
+          arg_consumer.has_arg("sensitivity-var-delta",
+                               "sensitivity-analysis")) {
+        config.sa_on = true;
+        config.sa_num_simulations =
+            arg_consumer.get_value<int>("num-sims", "sensitivity-analysis");
 
-        if (sa_num_simulations <= 0)
+        if (config.sa_num_simulations <= 0)
           throw GpiesException(
               "Value for num-sims must be a positive, non-zero integer.");
 
-        sa_var = vm["sensitivity-var"].as<std::string>();
-        sa_var_delta = vm["sensitivity-var-delta"].as<gp_float>();
+        config.sa_var = arg_consumer.get_sa_var();
+        sa_var_name = arg_consumer.get_value<std::string>(
+            "sensitivity-var", "sensitivity-analysis");
+
+        config.sa_var_delta = arg_consumer.get_value<gp_float>(
+            "sensitivity-var-delta", "sensitivity-analysis");
       } else {
         throw GpiesException(
             "Missing required arguments for sensitivity "
@@ -666,27 +752,34 @@ int main(int argc, char* argv[]) {
       // TODO - support sample interval
       sample_interval = time_delta;
 
+      std::cout << "\nSENSITIVITY ANALYSIS MODE\n"
+                << "# of simulations: " << config.sa_num_simulations
+                << "  sensitivity variable: " << sa_var_name
+                << "  sensitivity variable delta: " << config.sa_var_delta
+                << "\n\n";
+
+      gp_float sa_var_value = get_sa_var_value();
+
       // --------------------------------------------------------------------------------------------
       // sensitivity analysis simulation loop
-      for (size_t n = 0; n < sa_num_simulations; n++) {
+      for (size_t n = 0; n < config.sa_num_simulations; n++) {
         ClusterDynamics cd(config);
-
         ClusterDynamicsState state;
-        update_for_sensitivity_analysis(
-            cd, config.reactor, config.material,
-            static_cast<gp_float>(n) * sa_var_delta);
 
         if (n > 0) os << "\n";  // visual divider for consecutive sims
 
         if (csv) {
-          os << "Simulation " << n + 1 << ",Sensitivity Variable: " << sa_var
-             << ",Delta=" << static_cast<gp_float>(n) * sa_var_delta << "\n\n";
-          os << "Time (s),Cluster Size,"
-                "Interstitials / cm^3,Vacancies / cm^3\n";
+          os << "simulation " << n + 1
+             << ",sensitivity variable: " << sa_var_name
+             << ",current value: " << sa_var_value << ",current delta: "
+             << static_cast<gp_float>(n) * config.sa_var_delta << "\n\n";
+          os << "time (s),cluster size,"
+                "interstitials / cm^3,vacancies / cm^3\n";
         } else {
-          os << "Simulation " << n + 1 << "\tSensitivity Variable: " << sa_var
-             << "\tDelta=" << static_cast<gp_float>(n) * sa_var_delta
-             << std::endl;
+          os << "simulation " << n + 1
+             << "\tsensitivity variable: " << sa_var_name
+             << "\tcurrent value: " << sa_var_value << "\tcurrent delta: "
+             << static_cast<gp_float>(n) * config.sa_var_delta << std::endl;
         }
 
         print_start_message();
@@ -708,6 +801,8 @@ int main(int argc, char* argv[]) {
           print_state(state);
         }
         // ----------------------------------------------------------------
+
+        sa_var_value = sa_update_config();
       }
       // --------------------------------------------------------------------
     } else {  // CLUSTER DYNAMICS OPTIONS

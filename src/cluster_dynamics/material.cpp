@@ -195,6 +195,8 @@ gp_float Material::get_lattice_param() const { return _impl->lattice_param; }
 /// @param val Lattice parameter in cm.
 void Material::set_lattice_param(const gp_float val) {
   _impl->lattice_param = val;
+  _impl->burgers_vector = _impl->lattice_param / std::sqrt(2.);
+  _impl->atomic_volume = std::pow(_impl->lattice_param, 3) / 4.;  // cm^3
 }
 
 /// @brief Returns the magnitude of the burgers vector.
