@@ -469,6 +469,7 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionExportAs"/>
    </widget>
    <widget class="QMenu" name="settingsMenuSettings">
     <property name="title">
@@ -497,6 +498,11 @@
    </property>
    <property name="text">
     <string>icon.png</string>
+   </property>
+  </action>
+  <action name="actionExportAs">
+   <property name="text">
+    <string>Export As..</string>
    </property>
   </action>
   <action name="actionMaterial_Settings">

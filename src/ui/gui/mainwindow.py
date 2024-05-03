@@ -218,6 +218,9 @@ class Ui_MainWindow(object):
         self.actionicon_png.setObjectName("actionicon_png")
         self.actionMaterial_Settings = QtWidgets.QAction(MainWindow)
         self.actionMaterial_Settings.setObjectName("actionMaterial_Settings")
+        self.actionExportAs = QtWidgets.QAction(MainWindow)
+        self.actionExportAs.setObjectName("actionExportAs")
+        self.fileMenuSettings.addAction(self.actionExportAs)
         self.settingsMenuSettings.addAction(self.actionReactor_Settings)
         self.settingsMenuSettings.addAction(self.actionMaterial_Settings)
         self.menubar.addAction(self.fileMenuSettings.menuAction())
@@ -242,4 +245,5 @@ class Ui_MainWindow(object):
         self.actionReactor_Settings.setText(_translate("MainWindow", "Reactor Settings"))
         self.actionicon_png.setText(_translate("MainWindow", "icon.png"))
         self.actionMaterial_Settings.setText(_translate("MainWindow", "Material Settings"))
+        self.actionExportAs.setText(_translate("MainWindow", "Export As.."))
 from .resources_rc import qInitResources
