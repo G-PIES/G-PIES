@@ -95,8 +95,8 @@ add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CUDA>>:S
 set(GP_NO_SANITIZER false CACHE BOOL "Disable sanitizers for debug builds.")
 if(NOT GP_NO_SANITIZER)
   # TODO: Configure sanitizer for MSVC. MSVC requires manually copying ASAN DLLs to the output folder.
-  # add_compile_options("$<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=undefined;-fsanitize=address>")
-  # add_link_options("$<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=address;-fsanitize=undefined>")
+  add_compile_options("$<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>,$<NOT:$<COMPILE_LANGUAGE:CUDA>>>:-fsanitize=undefined;-fsanitize=address>")
+  add_link_options("$<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>,$<NOT:$<COMPILE_LANGUAGE:CUDA>>>:-fsanitize=address;-fsanitize=undefined>")
 endif()
 
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
