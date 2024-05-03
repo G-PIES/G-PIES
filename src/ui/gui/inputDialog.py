@@ -3,7 +3,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QFormLayout
 
 #So this file is where I'm currently putting some stuff that was getting overwritten in mainwindow.py during pyuic5
-
+#need to get material_v properties I just got confused 
 class InputDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -136,5 +136,5 @@ class InputDialog(QDialog):
                self.atomic_i_formation.text(), self.atomic_i_binding.text(), self.atomic_recombination_radius.text(), 
                self.atomic_i_loop_bias.text(), self.atomic_i_dislocation_bias.text(), self.atomic_i_dislocation_bias_param.text(), 
                self.atomic_dislocation_density.text(), self.atomic_grain_size.text(), self.atomic_lattice_param.text(), 
-               self.atomic_burgurs_vector.text(), self.atomic_)
+               self.atomic_burgurs_vector.text())
     

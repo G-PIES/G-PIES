@@ -86,14 +86,53 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         self.input_dialog.getReactorSettings()
         self.input_dialog.exec_()
         inputs = self.input_dialog.getReactorInputs()
-        if inputs[0] != '':  # ignore if empty
+        if inputs[0] != '':  
             self.reactor.set_temperature(float(inputs[0]))
-        if inputs[1] != '':
-            self.material.set_atomic_volume(int(inputs[1]))
+        if inputs[1] != '':  
+            self.reactor.set_flux(float(inputs[1]))
+        if inputs[2] != '':  
+            self.reactor.set_recombination(float(inputs[2]))
+        if inputs[3] != '':  
+            self.reactor.set_i_bi(float(inputs[3]))
+        if inputs[4] != '':  
+            self.reactor.set_i_tri(float(inputs[4]))
+        if inputs[5] != '':  
+            self.reactor.set_i_quad(float(inputs[5]))
+        if inputs[6] != '':  
+            self.reactor.set_dislocation_density_evolution(float(inputs[6]))
+        
+            
 
     def get_material_settings(self):
         self.input_dialog.getMaterialSettings()
         self.input_dialog.exec_()
+        inputs = self.input_dialog.getMaterialInputs()
+        if inputs[0] != '':  
+            self.material.set_atomic_volume(float(inputs[0]))
+        if inputs[1] != '':  
+            self.material.set_i_migration(float(inputs[1]))
+        if inputs[2] != '':  
+            self.material.set_i_diffusion_0(float(inputs[2]))
+        if inputs[3] != '':  
+            self.material.set_i_formation(float(inputs[3]))
+        if inputs[4] != '':  
+            self.material.set_i_binding(float(inputs[4]))
+        if inputs[5] != '':  
+            self.material.set_recombination_radius(float(inputs[5]))
+        if inputs[6] != '':  
+            self.material.set_i_loop_bias(float(inputs[6]))
+        if inputs[7] != '':  
+            self.material.set_i_dislocation_bias(float(inputs[7]))
+        if inputs[8] != '':  
+            self.material.set_i_dislocation_bias_param(float(inputs[8]))
+        if inputs[9] != '':  
+            self.material.set_dislocation_density_0(float(inputs[9]))
+        if inputs[10] != '':  
+            self.material.set_grain_size(float(inputs[10]))
+        if inputs[11] != '':  
+            self.material.set_lattice_param(float(inputs[11]))
+        if inputs[12] != '':  
+            self.material.set_burgers_vector(float(inputs[12]))
         
     def start_simulation(self):
         if self.sim_running:
