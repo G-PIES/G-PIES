@@ -23,6 +23,7 @@ if(GP_BUILD_CUDA)
   target_include_directories(cd_cuda_tests PRIVATE ../src/cluster_dynamics/cuda)
   target_link_libraries(cd_cuda_tests clusterdynamicscuda)
   target_link_libraries(cd_cuda_tests GTest::gtest_main)
+  set_property(TARGET cd_cuda_tests PROPERTY CUDA_ARCHITECTURES native)
 endif()
 
 add_executable(db_tests ./db_tests.cpp)
