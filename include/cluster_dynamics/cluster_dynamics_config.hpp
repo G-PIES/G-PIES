@@ -2,9 +2,11 @@
 #define CLUSTER_DYNAMICS_CONFIG_HPP
 
 #include <cstring>
-#include "utils/types.hpp"
-#include "model/nuclear_reactor.hpp"
+
 #include "model/material.hpp"
+#include "model/nuclear_reactor.hpp"
+#include "utils/sensitivity_variable.hpp"
+#include "utils/types.hpp"
 
 struct ClusterDynamicsConfig {
   bool data_validation_on = true;
@@ -16,6 +18,11 @@ struct ClusterDynamicsConfig {
   size_t max_num_integration_steps = 5000;
   gp_float min_integration_step = 1e-30;
   gp_float max_integration_step = 1e20;
+
+  bool sa_on = false;
+  size_t sa_num_simulations = 0;
+  SensitivityVariable sa_var = SensitivityVariable::NONE;
+  gp_float sa_var_delta = 0.;
 
   NuclearReactor reactor;
   Material material;

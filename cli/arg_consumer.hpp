@@ -8,6 +8,7 @@
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
+#include "utils/sensitivity_variable.hpp"
 #include "utils/timer.hpp"
 
 namespace po = boost::program_options;
@@ -103,6 +104,17 @@ class ArgConsumer {
     material.set_grain_size(config["material"]["grain-size-cm"].as<gp_float>());
     material.set_lattice_param(
         config["material"]["lattice-param-cm"].as<gp_float>());
+  }
+
+  SensitivityVariable get_sa_var() {
+    std::string arg_name =
+        get_value<std::string>("sensitivity-var", "sensitivity-analysis");
+
+    if (sensitivity_variables.count(arg_name)) {
+      return sensitivity_variables[arg_name];
+    }
+
+    return SensitivityVariable::NONE;
   }
 
  private:
