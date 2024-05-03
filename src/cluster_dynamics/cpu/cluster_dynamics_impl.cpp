@@ -1048,6 +1048,8 @@ gp_float ClusterDynamicsImpl::dislocation_promotion_probability(
          / (std::pow(M_PI * mean_dislocation_radius_val / 2., 2) -
             std::pow(cluster_radius(n), 2.));
 
+  if (p < 0.) return 0.;
+  if (p > 1.) return 1.;
   return p;
 }
 
@@ -1211,7 +1213,7 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(ClusterDynamicsConfig &config)
   dislocation_density = vacancies + max_cluster_size + 2;
 
   /* Initialize State Values */
-  N_VConst(1e-1, state);
+  N_VConst(0., state);
   *dislocation_density = material.dislocation_density_0;
   interstitials[0] = 0.0;
   interstitials[max_cluster_size + 1] = 0.0;
