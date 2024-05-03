@@ -1,5 +1,4 @@
-#ifndef DB_QUERIES_HPP
-#define DB_QUERIES_HPP
+#include "db_queries.hpp"
 
 #include <string>
 
@@ -208,5 +207,3 @@ std::string delete_simulation_material =
     "DELETE FROM simulation_materials WHERE id_simulation = ? AND id_material "
     "= ?;";
 }  // namespace db_queries
-
-#endif  // DB_QUERIES_HPP
