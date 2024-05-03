@@ -54,24 +54,32 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         self.timeStepEntry.setValidator(QDoubleValidator())
         self.entrySizeEntry.setValidator(QIntValidator())
 
-        self.input_dialog.first.setValidator(QDoubleValidator())
-        self.input_dialog.second.setValidator(QIntValidator())
+        self.input_dialog.reactor_temp.setValidator(QDoubleValidator())
+        self.input_dialog.atomic_volume.setValidator(QIntValidator())
 
     def init_connections(self):
         self.simulationFinished.connect(self.on_simulation_finished)
 
         self.startButton.clicked.connect(self.start_simulation)
         self.stopButton.clicked.connect(self.stop_simulation)
-        self.settingsButton.clicked.connect(self.get_settings)
+        self.actionReactor_Settings.triggered.connect(self.get_reactor_settings)
+        self.actionMaterial_Settings.triggered.connect(self.get_material_settings)
         
-    def get_settings(self):
+    def get_reactor_settings(self):
+        
+        
+        self.input_dialog.getReactorSettings()
         self.input_dialog.exec_()
-        inputs = self.input_dialog.getInputs()
+        inputs = self.input_dialog.getReactorInputs()
         if inputs[0] != '':  # ignore if empty
             self.reactor.set_temperature(float(inputs[0]))
         if inputs[1] != '':
             self.material.set_atomic_volume(int(inputs[1]))
 
+    def get_material_settings(self):
+        self.input_dialog.getMaterialSettings()
+        self.input_dialog.exec_()
+        
     def start_simulation(self):
         if self.sim_running:
             self.stop_simulation()

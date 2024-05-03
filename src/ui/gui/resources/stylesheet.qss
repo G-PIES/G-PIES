@@ -22,3 +22,11 @@ QGroupBox {
 QAction {
   color:rgb(161, 213, 10);
 }
+QMenu::item {
+    background-color: transparent;
+    color:rgb(161, 213, 10);
+}
+QMenu::item:selected { 
+    background-color: rgb(161, 213, 10);
+    color: rgb(255,255,255);
+}
