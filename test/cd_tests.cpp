@@ -76,7 +76,8 @@
 
 //   // Starts from cluster size = 2
 //   gp_float expected[5] = {2.7011322486896344e-11, 1.7373139700233559e-08,
-//                           5.2198489772795402e-09, 5.2527951507159676e-39, 0.0};
+//                           5.2198489772795402e-09, 5.2527951507159676e-39,
+//                           0.0};
 //   gp_float actual[5];
 //   for (int i = 0; i < 5; ++i) {
 //     actual[i] = cd.i_concentration_derivative(i + 2);
@@ -95,7 +96,8 @@
 
 //   // Starts from cluster size = 2
 //   gp_float expected[5] = {5.2199999999999989e-09, 2.6099999999999995e-09,
-//                           1.7399999999999998e-09, 2.2019179047621176e-44, 0.0};
+//                           1.7399999999999998e-09, 2.2019179047621176e-44,
+//                           0.0};
 //   gp_float actual[5];
 //   for (int i = 0; i < 5; ++i) {
 //     actual[i] = cd.v_concentration_derivative(i + 2);
@@ -252,7 +254,8 @@
 //   ClusterDynamicsImpl cd(SIM_SIZE, *reactor.impl(), *material.impl());
 
 //   // Starts from cluster size = 1
-//   gp_float expected[5] = {6.4379999999999985e-08, 0.0, 1.7399999999999997e-08,
+//   gp_float expected[5] = {6.4379999999999985e-08,
+//   0.0, 1.7399999999999997e-08,
 //                           5.2199999999999989e-09, 0.0};
 //   gp_float actual[5];
 //   for (int i = 0; i < 5; ++i) {
@@ -271,7 +274,8 @@
 
 //   // Starts from cluster size = 1
 //   gp_float expected[5] = {7.7429999999999973e-08, 5.2199999999999989e-09,
-//                           2.6099999999999995e-09, 1.7399999999999998e-09, 0.0};
+//                           2.6099999999999995e-09, 1.7399999999999998e-09,
+//                           0.0};
 //   gp_float actual[5];
 //   for (int i = 0; i < 5; ++i) {
 //     actual[i] = cd.v_defect_production(i + 1);
