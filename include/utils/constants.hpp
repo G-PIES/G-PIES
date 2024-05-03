@@ -9,4 +9,6 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+#define GPIES_SEMANTIC_VERSION "0.1.0-alpha"
+
 #endif  // CONSTANTS_HPP

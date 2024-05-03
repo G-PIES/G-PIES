@@ -1,3 +1,5 @@
+![G-PIES Logo](https://github.com/G-PIES/G-PIES/blob/f6de57ae159a27f9892ebe5cb9fd6fd60ae078e5/assets/logos/G-PIES%20Banner.png)
+
 # G-PIES
 
 ### GPU-Parallelized Irradiation Environment Simulator
