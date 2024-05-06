@@ -817,7 +817,13 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(ClusterDynamicsConfig &config)
   state = N_VNew_Serial(state_size, sun_context);
 
   /* Initialize State Values */
-  N_VConst(0.1, state);
+  gp_float *i_state = N_VGetArrayPointer(state);
+  gp_float *v_state = i_state + max_cluster_size + 2;
+  for (size_t i = 0; i < max_cluster_size; ++i) {
+    i_state[i] = config.init_interstitials[i];
+    v_state[i] = config.init_vacancies[i];
+  }
+
   N_VGetArrayPointer(state)[state_size - 2] = material.dislocation_density_0;
 
   /* Call CVodeCreate to create the solver memory and specify the
