@@ -739,13 +739,13 @@ int main(int argc, char* argv[]) {
     if (arg_consumer.has_arg("init-interstitials", "")) {
       arg_consumer.populate_init_interstitials(config);
     } else {
-      config.init_interstitials = std::vector<gp_float>(0.);
+      config.init_interstitials = std::vector<gp_float>(config.max_cluster_size, 0.);
     }
 
     if (arg_consumer.has_arg("init-vacancies", "")) {
       arg_consumer.populate_init_vacancies(config);
     } else {
-      config.init_vacancies = std::vector<gp_float>(0.);
+      config.init_vacancies = std::vector<gp_float>(config.max_cluster_size, 0.);
     }
 
     ClientDb db(DEV_DEFAULT_CLIENT_DB_PATH, false);
