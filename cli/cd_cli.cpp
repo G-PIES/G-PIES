@@ -114,6 +114,16 @@ void print_start_message() {
   print_material();
 
   std::cout << std::endl;
+
+  std::cout << "\nInitial Defect Clustering";
+  std::cout << "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n";
+  for (size_t n = 1; n < config.max_cluster_size; ++n) {
+    if (config.init_interstitials[n] > 0. || config.init_vacancies[n] > 0.) {
+      std::cout << (long long unsigned int)n << "\t\t\t\t\t"
+                << config.init_interstitials[n] << "\t\t\t"
+                << config.init_vacancies[n] << std::endl;
+    }
+  }
 }
 
 void print_state(const ClusterDynamicsState& state) {
@@ -379,8 +389,57 @@ void emit_config_yaml(const std::string& filename) {
       << "initial-dislocation-density-cm" << YAML::Value << "10.0e+12"
       << YAML::Key << "grain-size-cm" << YAML::Value << "4.0e-3" << YAML::Key
       << "lattice-param-cm" << YAML::Value << "3.6e-8" << YAML::EndMap
-      << YAML::EndMap << YAML::Newline << YAML::Newline
-      << YAML::Comment("NOTE: uncomment to turn on sensitivity analysis")
+      << YAML::EndMap << YAML::Newline << YAML::Newline << YAML::Newline
+      << YAML::Comment(
+             "#################################################################"
+             "####")
+      << YAML::Newline
+      << YAML::Comment(
+             "INITIAL DEFECT CLUSTER CONCENTRATIONS "
+             "###############################")
+      << YAML::Newline
+      << YAML::Comment(
+             "you can define a subset of the array of concentrations with "
+             "\"array\"")
+      << YAML::Newline
+      << YAML::Comment(
+             "and define ranges throughout the array with \"ranges\" ")
+      << YAML::Newline
+      << YAML::Comment(
+             "#################################################################"
+             "####")
+      << YAML::Newline << YAML::BeginMap << YAML::Key << "init-interstitials"
+      << YAML::Value << YAML::BeginMap << YAML::Key << "array" << YAML::Value
+      << YAML::Flow
+      << std::vector<std::string>{"1.0e-13", "6.0e-10", "4.0e-2", "2.0e-1"}
+      << YAML::Comment("cluster concentrations for cluster sizes 1-4")
+      << YAML::Key << "ranges" << YAML::Value << YAML::BeginSeq << YAML::Flow
+      << std::vector<std::string>{"50", "55", "9.9e+30"}
+      << YAML::Comment("cluster concentrations for cluster sizes 50-55")
+      << YAML::Flow << std::vector<std::string>{"90", "102", "5.5e+29"}
+      << YAML::Comment("cluster concentrations for cluster sizes 90-102")
+      << YAML::Flow << std::vector<std::string>{"995", "1000", "2.2e+22"}
+      << YAML::Comment("cluster concentrations for cluster sizes 995-1000")
+      << YAML::EndSeq << YAML::EndMap << YAML::EndMap << YAML::Newline
+      << YAML::Newline << YAML::BeginMap << YAML::Key << "init-vacancies"
+      << YAML::Value << YAML::BeginMap << YAML::Key << "array" << YAML::Value
+      << YAML::Flow
+      << std::vector<std::string>{"1.0e-5", "2.3e-1", "4.2e-20", "1.3e-13"}
+      << YAML::Comment("cluster concentrations for cluster sizes 1-4")
+      << YAML::Key << "ranges" << YAML::Value << YAML::BeginSeq << YAML::Flow
+      << std::vector<std::string>{"50", "55", "6.2e+29"}
+      << YAML::Comment("cluster concentrations for cluster sizes 50-55")
+      << YAML::Flow << std::vector<std::string>{"90", "102", "1.5e+13"}
+      << YAML::Comment("cluster concentrations for cluster sizes 90-102")
+      << YAML::Flow << std::vector<std::string>{"995", "1000", "4.3e+12"}
+      << YAML::Comment("cluster concentrations for cluster sizes 995-1000")
+      << YAML::EndSeq << YAML::EndMap << YAML::EndMap << YAML::Newline
+      << YAML::Newline
+      << YAML::Comment(
+             "#################################################################"
+             "####")
+      << YAML::Newline << YAML::Newline
+      << YAML::Comment("UNCOMMENT LINES BELOW TO TURN ON SENSITIVITY ANALYSIS")
       << YAML::Newline << YAML::Comment(sa_comment.c_str()) << YAML::Newline;
 
   std::ofstream file;
@@ -675,6 +734,18 @@ int main(int argc, char* argv[]) {
       arg_consumer.populate_material(config.material);
     } else {
       materials::SA304(config.material);
+    }
+
+    if (arg_consumer.has_arg("init-interstitials", "")) {
+      arg_consumer.populate_init_interstitials(config);
+    } else {
+      config.init_interstitials = std::vector<gp_float>(0.);
+    }
+
+    if (arg_consumer.has_arg("init-vacancies", "")) {
+      arg_consumer.populate_init_vacancies(config);
+    } else {
+      config.init_vacancies = std::vector<gp_float>(0.);
     }
 
     ClientDb db(DEV_DEFAULT_CLIENT_DB_PATH, false);

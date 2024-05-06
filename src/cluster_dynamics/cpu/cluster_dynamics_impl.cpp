@@ -1217,11 +1217,13 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(ClusterDynamicsConfig& config)
   dislocation_density = vacancies + max_cluster_size + 2;
 
   /* Initialize State Values */
-  N_VConst(0., state);
+  for (size_t i = 0; i < max_cluster_size; ++i) {
+    interstitials[i] = config.init_interstitials[i];
+    vacancies[i] = config.init_vacancies[i];
+  }
+
   *dislocation_density = material.dislocation_density_0;
-  interstitials[0] = 0.0;
   interstitials[max_cluster_size + 1] = 0.0;
-  vacancies[0] = 0.0;
   vacancies[max_cluster_size + 1] = 0.0;
 
   /* Call CVodeCreate to create the solver memory and specify the

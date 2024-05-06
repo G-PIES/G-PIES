@@ -2,6 +2,7 @@
 #define CLUSTER_DYNAMICS_CONFIG_HPP
 
 #include <cstring>
+#include <vector>
 
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
@@ -26,6 +27,9 @@ struct ClusterDynamicsConfig {
 
   NuclearReactor reactor;
   Material material;
+
+  std::vector<gp_float> init_interstitials;
+  std::vector<gp_float> init_vacancies;
 };
 
 #endif  // CLUSTER_DYNAMICS_CONFIG_HPP
