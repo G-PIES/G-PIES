@@ -1040,7 +1040,7 @@ gp_float ClusterDynamicsImpl::faulted_dislocation_loop_energy_barrier(
     size_t n) const {
   return material.i_binding + material.i_migration;
 }
-#pragma GCC diagnostic pop 
+#pragma GCC diagnostic pop
 
 // --------------------------------------------------------------------------------------------
 /*
