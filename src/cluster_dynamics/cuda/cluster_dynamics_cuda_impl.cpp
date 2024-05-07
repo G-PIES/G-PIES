@@ -188,7 +188,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::i_promotion_rate(size_t n) const {
       // (2)
       * interstitials[1]
       // (3)
-      * (1 - dislocation_promotion_probability(n + 1));
+      * (1 - i_dislocation_loop_unfault_probability(n + 1));
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2d
@@ -606,41 +606,44 @@ gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const {
 }
 
 // --------------------------------------------------------------------------------------------
-/*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.12
+/*  TODO: find a source for the Arrhenius equation
  */
 __CUDADECL__ gp_float
-ClusterDynamicsImpl::dislocation_promotion_probability(size_t n) const {
-  return 0;
+ClusterDynamicsImpl::i_dislocation_loop_unfault_probability(size_t n) const {
+  gp_float energy_barrier = faulted_dislocation_loop_energy_barrier(n);
+  gp_float arrhenius =
+      exp(-energy_barrier / (BOLTZMANN_EV_KELVIN * reactor.temperature));
 
-  gp_float dr = cluster_radius(n + 1) - cluster_radius(n);
-
-  return (2. * cluster_radius(n) * dr + std::pow(dr, 2.)) /
-         (std::pow(M_PI * mean_dislocation_radius_val / 2., 2) -
-          std::pow(cluster_radius(n), 2.));
+  return arrhenius;
 }
 // --------------------------------------------------------------------------------------------
+
+/*  TODO: find a source for the energy barrier equation
+ */
+__CUDADECL__ gp_float
+ClusterDynamicsImpl::faulted_dislocation_loop_energy_barrier(size_t n) const {
+  return material.i_binding + material.i_migration;
+}
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 8
  */
 gp_float ClusterDynamicsImpl::dislocation_density_derivative() const {
-  return 0;
+  auto self = this->self;
+  gp_float gain = thrust::transform_reduce(
+      indices.begin(), indices.end(),
+      [self] __CUDADECL__(const int &idx) {
+        return self->cluster_radius(idx) *
+               self->i_dislocation_loop_unfault_probability(idx) *
+               self->ii_absorption(idx) * self->interstitials[idx];
+      },
+      0.0, thrust::plus<gp_float>());
 
-  // auto self = this->self;
-  // gp_float gain = thrust::transform_reduce(
-  //     indices.begin(), indices.end(),
-  //     [self] __CUDADECL__(const int &idx) {
-  //       return self->cluster_radius(idx) *
-  //              self->dislocation_promotion_probability(idx) *
-  //              self->ii_absorption(idx) * self->interstitials[idx];
-  //     },
-  //     0.0, thrust::plus<gp_float>());
+  gain *= 2. * M_PI / material.atomic_volume;
 
-  // gain *= 2. * M_PI / material.atomic_volume;
-
-  // return gain - reactor.dislocation_density_evolution *
-  //                   std::pow(material.burgers_vector, 2.) *
-  //                   std::pow(dislocation_density, 3. / 2.);
+  return gain - reactor.dislocation_density_evolution *
+                    std::pow(material.burgers_vector, 2.) *
+                    std::pow(dislocation_density, 3. / 2.);
 }
 
 // --------------------------------------------------------------------------------------------
