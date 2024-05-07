@@ -1023,10 +1023,8 @@ gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const {
 /** @brief Returns the probability an interstitial dislocation loop will unfault
  * into a dislocation network using the arrhenius equation.
  */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
 gp_float ClusterDynamicsImpl::i_dislocation_loop_unfault_probability(
-    size_t n) const {
+    [[maybe_unused]] size_t n) const {
   gp_float energy_barrier = faulted_dislocation_loop_energy_barrier(n);
   gp_float arrhenius =
       exp(-energy_barrier / (BOLTZMANN_EV_KELVIN * reactor.temperature));
@@ -1037,10 +1035,9 @@ gp_float ClusterDynamicsImpl::i_dislocation_loop_unfault_probability(
 /*  TODO: find a source for the energy barrier equation
  */
 gp_float ClusterDynamicsImpl::faulted_dislocation_loop_energy_barrier(
-    size_t n) const {
+    [[maybe_unused]] size_t n) const {
   return material.i_binding + material.i_migration;
 }
-#pragma GCC diagnostic pop
 
 // --------------------------------------------------------------------------------------------
 /*
