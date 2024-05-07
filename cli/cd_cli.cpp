@@ -16,6 +16,7 @@
 #include "model/nuclear_reactor.hpp"
 #include "utils/sensitivity_variable.hpp"
 #include "utils/timer.hpp"
+#include "utils/progress_bar.hpp"
 
 namespace po = boost::program_options;
 
@@ -307,6 +308,12 @@ ClusterDynamicsState run_simulation() {
     os << "\n";
   }
 
+  progressbar bar(simulation_time);
+  bar.set_todo_char(" ");
+  bar.set_done_char("█");
+  bar.set_opening_bracket_char("[");
+  bar.set_closing_bracket_char("]");
+
   // TODO - support sample interval
   sample_interval = time_delta;
 
@@ -314,6 +321,10 @@ ClusterDynamicsState run_simulation() {
   // --------------------------------------------------------------------------------------------
   // main simulation loop
   for (gp_float t = 0; t < simulation_time; t = state.time) {
+    if (!step_print) {
+      bar.update();
+    } 
+
     // run simulation for this time slice
     state = cd.run(time_delta, sample_interval);
 
@@ -329,7 +340,7 @@ ClusterDynamicsState run_simulation() {
   // print results
   if (!csv && !step_print) {
     print_state(state);
-  }
+  } 
   // --------------------------------------------------------------------------------------------
 
   return state;
