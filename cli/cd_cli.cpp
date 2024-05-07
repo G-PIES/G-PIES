@@ -336,75 +336,7 @@ void valid_integration_search() {
   }
 }
 
-int main(int argc, char* argv[]) {
-  // TODO - Remove (this is just for testing the CVODES implementation)
-  valid_integration_search();
-  return 0;
-
-  try {
-    // Declare the supported options
-    po::options_description all_options("General Options");
-    all_options.add_options()("help", "display help message")(
-        "csv", "csv output formatting")(
-        "step-print", "print simulation state at every time step")(
-        "output-file", po::value<std::string>()->value_name("filename"),
-        "write simulation output to a file")("db", "database options")(
-        "data-validation",
-        po::value<std::string>()->value_name("toggle")->implicit_value("on"),
-        "turn on/off data validation (on by default)")(
-        "max-cluster-size",
-        po::value<size_t>()->implicit_value(max_cluster_size),
-        "set the max size of defect clustering to model")(
-        "time", po::value<gp_float>()->implicit_value(simulation_time),
-        "the simulation environment time span to model (in seconds)")(
-        "time-delta", po::value<gp_float>()->implicit_value(time_delta),
-        "the time delta for every step of the simulation (in seconds)")(
-        "sample-interval",
-        po::value<gp_float>()->implicit_value(sample_interval),
-        "how often to record simulation environment state (in seconds)")
-        ("relative-tolerance",
-        po::value<gp_float>()->implicit_value(relative_tolerance),
-        "scalar relative tolerance for integration error")
-        ("absolute-tolerance",
-        po::value<gp_float>()->implicit_value(absolute_tolerance),
-        "absolute relative tolerance for integration error")
-        ("max-num-integration-steps",
-        po::value<size_t>()->implicit_value(max_num_integration_steps),
-        "maximum allowed number of integration steps to achieve a single estimation")
-        ("min-integration-step",
-        po::value<gp_float>()->implicit_value(min_integration_step),
-        "minimum step size for integration")
-        ("max-integration-step",
-        po::value<gp_float>()->implicit_value(max_integration_step),
-        "maximum step size for integration");
-
-    po::options_description db_options("Database Options [--db]");
-    db_options.add_options()("history,h", "display simulation history")(
-        "history-detail", "display detailed simulation history")(
-        "run,r", po::value<int>()->value_name("id"),
-        "run a simulation from the history by [id]")(
-        "clear,c", "clear simulation history");
-
-    po::options_description sa_options(
-        "Sensitivity Analysis Options [--sensitivity-analysis]");
-    sa_options.add_options()(
-        "sensitivity-analysis-help",
-        "display sensitivity analysis supported variables and example command")(
-        "sensitivity-analysis,s", "use sensitivity analysis mode")(
-        "num-sims,n", po::value<int>()->implicit_value(2),
-        "number of simulations you want to run in sensititivy analysis "
-        "mode (REQUIRED)")(
-        "sensitivity-var,v", po::value<std::string>()->value_name("var name"),
-        "specify the variable to do sensitivity analysis on (REQUIRED)")(
-        "sensitivity-var-delta,d", po::value<gp_float>(),
-        "amount to change [sensitivity-var] by for each simulation (REQUIRED)");
-
-    all_options.add(db_options).add(sa_options);
-
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, all_options), vm);
-    po::notify(vm);
-
+int variables_map_setup(po::variables_map &vm, po::options_description all_options){
     // Help message
     if (vm.count("help")) {
       std::cout << all_options << "\n";
@@ -535,6 +467,210 @@ int main(int argc, char* argv[]) {
       data_validation_on =
           0 == vm["data-validation"].as<std::string>().compare("on");
     }
+    return 0;
+}
+
+void options_description_setup(po::options_description &all_options, po::options_description &db_options, po::options_description &sa_options){
+  all_options.add_options()("help", "display help message")(
+        "csv", "csv output formatting")(
+        "step-print", "print simulation state at every time step")(
+        "output-file", po::value<std::string>()->value_name("filename"),
+        "write simulation output to a file")("db", "database options")(
+        "data-validation",
+        po::value<std::string>()->value_name("toggle")->implicit_value("on"),
+        "turn on/off data validation (on by default)")(
+        "max-cluster-size",
+        po::value<size_t>()->implicit_value(max_cluster_size),
+        "set the max size of defect clustering to model")(
+        "time", po::value<gp_float>()->implicit_value(simulation_time),
+        "the simulation environment time span to model (in seconds)")(
+        "time-delta", po::value<gp_float>()->implicit_value(time_delta),
+        "the time delta for every step of the simulation (in seconds)")(
+        "sample-interval",
+        po::value<gp_float>()->implicit_value(sample_interval),
+        "how often to record simulation environment state (in seconds)")
+        ("relative-tolerance",
+        po::value<gp_float>()->implicit_value(relative_tolerance),
+        "scalar relative tolerance for integration error")
+        ("absolute-tolerance",
+        po::value<gp_float>()->implicit_value(absolute_tolerance),
+        "absolute relative tolerance for integration error")
+        ("max-num-integration-steps",
+        po::value<size_t>()->implicit_value(max_num_integration_steps),
+        "maximum allowed number of integration steps to achieve a single estimation")
+        ("min-integration-step",
+        po::value<gp_float>()->implicit_value(min_integration_step),
+        "minimum step size for integration")
+        ("max-integration-step",
+        po::value<gp_float>()->implicit_value(max_integration_step),
+        "maximum step size for integration");
+  
+  db_options.add_options()("history,h", "display simulation history")(
+        "history-detail", "display detailed simulation history")(
+        "run,r", po::value<int>()->value_name("id"),
+        "run a simulation from the history by [id]")(
+        "clear,c", "clear simulation history");
+  
+  sa_options.add_options()(
+        "sensitivity-analysis-help",
+        "display sensitivity analysis supported variables and example command")(
+        "sensitivity-analysis,s", "use sensitivity analysis mode")(
+        "num-sims,n", po::value<int>()->implicit_value(2),
+        "number of simulations you want to run in sensititivy analysis "
+        "mode (REQUIRED)")(
+        "sensitivity-var,v", po::value<std::string>()->value_name("var name"),
+        "specify the variable to do sensitivity analysis on (REQUIRED)")(
+        "sensitivity-var-delta,d", po::value<gp_float>(),
+        "amount to change [sensitivity-var] by for each simulation (REQUIRED)");
+
+  all_options.add(db_options).add(sa_options);
+}
+
+void database(po::variables_map &vm, ClientDb &db){
+  if (vm.count("history")) {
+    // print simulation history
+    print_simulation_history(db, false);
+  } else if (vm.count("history-detail")) {
+    // print detailed simulation history
+    print_simulation_history(db, true);
+  } else if (vm.count("clear")) {
+    // clear history
+    if (db.delete_simulations()) {
+      std::cout << "Simulation History Cleared. " << db.changes()
+                << " Simulation(s) Deleted.\n";
+    }
+  } else if (vm.count("run")) {
+    // rerun a previous simulation by database id
+    int sim_sqlite_id = vm["run"].as<int>();
+    HistorySimulation sim;
+    if (db.read_simulation(sim_sqlite_id, sim)) {
+      // TODO - support storing sensitivity analysis
+      std::cout << "Running simulation " << sim_sqlite_id << std::endl;
+      max_cluster_size = sim.max_cluster_size;
+      simulation_time = sim.simulation_time;
+
+      // TODO - Support sample interval and set a max resolution to
+      // avoid bloating the database. For this to work we will need a
+      // list of ClusterDynamicState objects and a SQLite intersection
+      // table.
+      time_delta = sample_interval = sim.time_delta;
+
+      run_simulation(sim.reactor, sim.material);
+    } else {
+      std::cerr << "Could not find simulation " << sim_sqlite_id
+                << std::endl;
+    }
+  }
+}
+
+void sensitivity_analysis(po::variables_map &vm, NuclearReactor &reactor, Material &material){
+  // Set sensitivity analysis mode to true
+  if (vm.count("num-sims") && vm.count("sensitivity-var") &&
+      vm.count("sensitivity-var-delta")) {
+    sa_num_simulations = vm["num-sims"].as<int>();
+
+    if (sa_num_simulations <= 0)
+      throw GpiesException(
+          "Value for num-sims must be a positive, non-zero integer.");
+
+    sa_var = vm["sensitivity-var"].as<std::string>();
+    sa_var_delta = vm["sensitivity-var-delta"].as<gp_float>();
+  } else {
+    throw GpiesException(
+        "Missing required arguments for sensitivity "
+        "analysis.\n--help to see required variables.");
+  }
+
+  // TODO - support sample interval
+  sample_interval = time_delta;
+
+  // --------------------------------------------------------------------------------------------
+  // sensitivity analysis simulation loop
+  for (size_t n = 0; n < sa_num_simulations; n++) {
+    ClusterDynamics cd(max_cluster_size, reactor, material);
+    cd.set_data_validation(data_validation_on);
+    cd.set_relative_tolerance(relative_tolerance);
+    cd.set_absolute_tolerance(absolute_tolerance);
+    cd.set_max_num_integration_steps(max_num_integration_steps);
+    cd.set_min_integration_step(min_integration_step);
+    cd.set_max_integration_step(max_integration_step);
+    cd.init();
+
+    ClusterDynamicsState state;
+    update_for_sensitivity_analysis(
+        cd, reactor, material, static_cast<gp_float>(n) * sa_var_delta);
+
+    if (n > 0) os << "\n";  // visual divider for consecutive sims
+
+    if (csv) {
+      os << "Simulation " << n + 1 << ",Sensitivity Variable: " << sa_var
+          << ",Delta=" << static_cast<gp_float>(n) * sa_var_delta << "\n\n";
+      os << "Time (s),Cluster Size,"
+            "Interstitials / cm^3,Vacancies / cm^3\n";
+    } else {
+      os << "Simulation " << n + 1 << "\tSensitivity Variable: " << sa_var
+          << "\tDelta=" << static_cast<gp_float>(n) * sa_var_delta
+          << std::endl;
+    }
+
+    print_start_message();
+
+    for (gp_float t = 0; t < simulation_time; t = state.time) {
+      // run simulation for this time slice
+      state = cd.run(time_delta, sample_interval);
+
+      if (step_print) {
+        step_print_prompt(state);
+      } else if (csv) {
+        print_csv(state);
+      }
+    }
+
+    // ----------------------------------------------------------------
+    // print results
+    if (!step_print && !csv) {
+      print_state(state);
+    }
+    // ----------------------------------------------------------------
+  }
+  // --------------------------------------------------------------------
+}
+
+void cluster_dynamics_options(ClientDb db, NuclearReactor &reactor, Material &material){
+  ClusterDynamicsState state = run_simulation(reactor, material);
+
+  // --------------------------------------------------------------------------------------------
+  // Write simulation result to the database
+  HistorySimulation history_simulation(max_cluster_size, simulation_time,
+                                        time_delta, reactor, material,
+                                        state);
+
+  db.create_simulation(history_simulation);
+  // --------------------------------------------------------------------------------------------
+}
+
+int main(int argc, char* argv[]) {
+  // TODO - Remove (this is just for testing the CVODES implementation)
+  valid_integration_search();
+  return 0;
+
+  try {
+    // Declare the supported options
+    po::options_description all_options("General Options");
+
+    po::options_description db_options("Database Options [--db]");
+
+    po::options_description sa_options(
+        "Sensitivity Analysis Options [--sensitivity-analysis]");
+
+    options_description_setup(all_options, db_options, sa_options);
+
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, all_options), vm);
+    po::notify(vm);
+
+    if(variables_map_setup(vm, all_options))
+      return 1;
 
     ClientDb db(DEV_DEFAULT_CLIENT_DB_PATH, false);
     // Open SQLite connection and create database
@@ -549,122 +685,11 @@ int main(int argc, char* argv[]) {
     // --------------------------------------------------------------------------------------------
     // arg parsing
     if (vm.count("db")) {  // DATABASE
-      if (vm.count("history")) {
-        // print simulation history
-        print_simulation_history(db, false);
-      } else if (vm.count("history-detail")) {
-        // print detailed simulation history
-        print_simulation_history(db, true);
-      } else if (vm.count("clear")) {
-        // clear history
-        if (db.delete_simulations()) {
-          std::cout << "Simulation History Cleared. " << db.changes()
-                    << " Simulation(s) Deleted.\n";
-        }
-      } else if (vm.count("run")) {
-        // rerun a previous simulation by database id
-        int sim_sqlite_id = vm["run"].as<int>();
-        HistorySimulation sim;
-        if (db.read_simulation(sim_sqlite_id, sim)) {
-          // TODO - support storing sensitivity analysis
-          std::cout << "Running simulation " << sim_sqlite_id << std::endl;
-          max_cluster_size = sim.max_cluster_size;
-          simulation_time = sim.simulation_time;
-
-          // TODO - Support sample interval and set a max resolution to
-          // avoid bloating the database. For this to work we will need a
-          // list of ClusterDynamicState objects and a SQLite intersection
-          // table.
-          time_delta = sample_interval = sim.time_delta;
-
-          run_simulation(sim.reactor, sim.material);
-        } else {
-          std::cerr << "Could not find simulation " << sim_sqlite_id
-                    << std::endl;
-        }
-      }
+      database(vm, db);
     } else if (vm.count("sensitivity-analysis")) {  // SENSITIVITY ANALYSIS
-      // Set sensitivity analysis mode to true
-      if (vm.count("num-sims") && vm.count("sensitivity-var") &&
-          vm.count("sensitivity-var-delta")) {
-        sa_num_simulations = vm["num-sims"].as<int>();
-
-        if (sa_num_simulations <= 0)
-          throw GpiesException(
-              "Value for num-sims must be a positive, non-zero integer.");
-
-        sa_var = vm["sensitivity-var"].as<std::string>();
-        sa_var_delta = vm["sensitivity-var-delta"].as<gp_float>();
-      } else {
-        throw GpiesException(
-            "Missing required arguments for sensitivity "
-            "analysis.\n--help to see required variables.");
-      }
-
-      // TODO - support sample interval
-      sample_interval = time_delta;
-
-      // --------------------------------------------------------------------------------------------
-      // sensitivity analysis simulation loop
-      for (size_t n = 0; n < sa_num_simulations; n++) {
-        ClusterDynamics cd(max_cluster_size, reactor, material);
-        cd.set_data_validation(data_validation_on);
-        cd.set_relative_tolerance(relative_tolerance);
-        cd.set_absolute_tolerance(absolute_tolerance);
-        cd.set_max_num_integration_steps(max_num_integration_steps);
-        cd.set_min_integration_step(min_integration_step);
-        cd.set_max_integration_step(max_integration_step);
-        cd.init();
-
-        ClusterDynamicsState state;
-        update_for_sensitivity_analysis(
-            cd, reactor, material, static_cast<gp_float>(n) * sa_var_delta);
-
-        if (n > 0) os << "\n";  // visual divider for consecutive sims
-
-        if (csv) {
-          os << "Simulation " << n + 1 << ",Sensitivity Variable: " << sa_var
-             << ",Delta=" << static_cast<gp_float>(n) * sa_var_delta << "\n\n";
-          os << "Time (s),Cluster Size,"
-                "Interstitials / cm^3,Vacancies / cm^3\n";
-        } else {
-          os << "Simulation " << n + 1 << "\tSensitivity Variable: " << sa_var
-             << "\tDelta=" << static_cast<gp_float>(n) * sa_var_delta
-             << std::endl;
-        }
-
-        print_start_message();
-
-        for (gp_float t = 0; t < simulation_time; t = state.time) {
-          // run simulation for this time slice
-          state = cd.run(time_delta, sample_interval);
-
-          if (step_print) {
-            step_print_prompt(state);
-          } else if (csv) {
-            print_csv(state);
-          }
-        }
-
-        // ----------------------------------------------------------------
-        // print results
-        if (!step_print && !csv) {
-          print_state(state);
-        }
-        // ----------------------------------------------------------------
-      }
-      // --------------------------------------------------------------------
+      sensitivity_analysis(vm, reactor, material);
     } else {  // CLUSTER DYNAMICS OPTIONS
-      ClusterDynamicsState state = run_simulation(reactor, material);
-
-      // --------------------------------------------------------------------------------------------
-      // Write simulation result to the database
-      HistorySimulation history_simulation(max_cluster_size, simulation_time,
-                                           time_delta, reactor, material,
-                                           state);
-
-      db.create_simulation(history_simulation);
-      // --------------------------------------------------------------------------------------------
+      cluster_dynamics_options(db, reactor, material);
     }
   } catch (const ClusterDynamicsException& e) {
     std::cerr << "A simulation error occured.\n"
