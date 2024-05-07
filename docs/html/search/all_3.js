@@ -20,5 +20,6 @@ var searchData=
   ['constants_2ehpp_25',['constants.hpp',['../constants_8hpp.html',1,'']]],
   ['conversions_2ehpp_26',['conversions.hpp',['../conversions_8hpp.html',1,'']]],
   ['copy_27',['copy',['../structMaterial.html#ac82536c1fd847e78eecd48217782cb1d',1,'Material::copy()'],['../structNuclearReactor.html#abf9cfb187f2487d8402fb66782619974',1,'NuclearReactor::copy()']]],
-  ['creation_5fdatetime_28',['creation_datetime',['../structHistorySimulation.html#ac4be2bfb7d88675aa3838c132bce0e2c',1,'HistorySimulation::creation_datetime()'],['../structMaterial.html#a146c03d68345f2393ff077a95b218c23',1,'Material::creation_datetime()'],['../structNuclearReactor.html#a198e7bcc273626d46676bc107d31e4b7',1,'NuclearReactor::creation_datetime()']]]
+  ['creation_5fdatetime_28',['creation_datetime',['../structHistorySimulation.html#ac4be2bfb7d88675aa3838c132bce0e2c',1,'HistorySimulation::creation_datetime()'],['../structMaterial.html#a146c03d68345f2393ff077a95b218c23',1,'Material::creation_datetime()'],['../structNuclearReactor.html#a198e7bcc273626d46676bc107d31e4b7',1,'NuclearReactor::creation_datetime()']]],
+  ['cvodes_5fmemory_5fblock_29',['cvodes_memory_block',['../classClusterDynamicsImpl.html#a8bf492de82dd5bc8b0dc729ce7add392',1,'ClusterDynamicsImpl']]]
 ];

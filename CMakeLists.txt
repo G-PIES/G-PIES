@@ -3,10 +3,17 @@ include(FetchContent)
 
 project(G-PIES)
 
+# Use the new behavior of DOWNLOAD_EXTRACT_TIMESTAMP if CMake supports it
+if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
+  cmake_policy(SET CMP0135 NEW)
+endif()
+
 set(GP_BUILD_CUDA false CACHE BOOL "Build CUDA-dependent targets.")
 set(CUDA_ARCHITECTURES native CACHE STRING "CUDA architectures.")
 add_compile_options("$<$<COMPILE_LANGUAGE:CUDA>:--expt-extended-lambda>")
 if(GP_BUILD_CUDA)
+  # This variable is required by SUNDIALS
+  set(ENABLE_CUDA ON)
   enable_language(CUDA)
 endif()
 
@@ -18,6 +25,25 @@ if(GP_BUILD_METAL)
   )
   FetchContent_MakeAvailable(metal-cpp)
   set(METAL_INCLUDE_DIRS ${metal-cpp_SOURCE_DIR})
+endif()
+
+find_package(SUNDIALS CONFIG)
+if(NOT SUNDIALS_FOUND)
+  set(EXAMPLES_ENABLE_C OFF)
+  set(BUILD_ARKODE OFF)
+  set(BUILD_IDA OFF)
+  set(BUILD_IDAS OFF)
+  set(BUILD_KINSOL OFF)
+  set(BUILD_SHARED_LIBS OFF)
+  FetchContent_Declare(
+    SUNDIALS
+    URL https://github.com/LLNL/sundials/releases/download/v7.0.0/sundials-7.0.0.tar.gz
+  )
+  
+  set(HOLDER ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/.build/lib)
+  FetchContent_MakeAvailable(SUNDIALS)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${HOLDER})
 endif()
 
 set(Boost_USE_STATIC_LIBS       ON)
@@ -48,6 +74,19 @@ else()
   set(SQLite3_LIBRARY_TARGET sqlite3_lib)
 endif()
 
+FetchContent_Declare(
+  yaml-cpp
+  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+  GIT_TAG master # Can be a tag (yaml-cpp-x.x.x), a commit hash, or a branch name (master)
+)
+FetchContent_GetProperties(yaml-cpp)
+
+if(NOT yaml-cpp_POPULATED)
+  message(STATUS "Fetching yaml-cpp...")
+  FetchContent_Populate(yaml-cpp)
+  add_subdirectory(${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR})
+endif()
+
 set(PROJECT_ROOT ${CMAKE_CURRENT_LIST_DIR})
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/out)
@@ -55,6 +94,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/out)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/out)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CUDA_STANDARD 20)
+
 add_compile_definitions($<$<PLATFORM_ID:Windows>:_USE_MATH_DEFINES>)
 
 # TODO: Consider replacing /W2 with /W4 or /Wall for MSVC.
@@ -67,8 +108,8 @@ add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CUDA>>:S
 set(GP_NO_SANITIZER false CACHE BOOL "Disable sanitizers for debug builds.")
 if(NOT GP_NO_SANITIZER)
   # TODO: Configure sanitizer for MSVC. MSVC requires manually copying ASAN DLLs to the output folder.
-  add_compile_options("$<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=undefined;-fsanitize=address>")
-  add_link_options("$<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=address;-fsanitize=undefined>")
+  add_compile_options("$<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>,$<NOT:$<COMPILE_LANGUAGE:CUDA>>>:-fsanitize=undefined;-fsanitize=address>")
+  add_link_options("$<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>,$<NOT:$<COMPILE_LANGUAGE:CUDA>>>:-fsanitize=address;-fsanitize=undefined>")
 endif()
 
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)

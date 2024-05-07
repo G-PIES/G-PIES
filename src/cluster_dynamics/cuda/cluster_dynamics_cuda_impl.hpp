@@ -1,6 +1,10 @@
 #ifndef CLUSTER_DYNAMICS_CUDA_IMPL_HPP
 #define CLUSTER_DYNAMICS_CUDA_IMPL_HPP
 
+#include <cvodes/cvodes.h>
+#include <nvector/nvector_serial.h>
+#include <sunlinsol/sunlinsol_dense.h>
+#include <sunmatrix/sunmatrix_dense.h>
 #include <thrust/device_free.h>
 #include <thrust/device_malloc.h>
 #include <thrust/device_vector.h>
@@ -11,6 +15,7 @@
 #include <cmath>
 #include <vector>
 
+#include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "cluster_dynamics/cluster_dynamics_state.hpp"
 #include "material_impl.hpp"
 #include "nuclear_reactor_impl.hpp"
@@ -21,12 +26,20 @@
 class ClusterDynamicsImpl {
  public:
   gp_float time;
+  gp_float dpa;
+
+  N_Vector state;
+  SUNContext sun_context;
+  SUNMatrix jacobian_matrix;
+  SUNLinearSolver linear_solver;
+  void* cvodes_memory_block;
 
   thrust::device_vector<gp_float> interstitials;
-  thrust::device_vector<gp_float> interstitials_temp;
   thrust::device_vector<gp_float> vacancies;
-  thrust::device_vector<gp_float> vacancies_temp;
+  thrust::device_vector<gp_float> device_i_derivatives;
+  thrust::device_vector<gp_float> device_v_derivatives;
 
+  size_t state_size;
   size_t max_cluster_size;
   gp_float dislocation_density;
 
@@ -43,10 +56,15 @@ class ClusterDynamicsImpl {
 
   thrust::device_vector<int> indices;
   thrust::device_ptr<ClusterDynamicsImpl> self;
-  thrust::host_vector<double> host_interstitials;
-  thrust::host_vector<double> host_vacancies;
+  thrust::host_vector<gp_float> host_interstitials;
+  thrust::host_vector<gp_float> host_vacancies;
 
   bool data_validation_on;
+  gp_float relative_tolerance;
+  gp_float absolute_tolerance;
+  size_t max_num_integration_steps;
+  gp_float min_integration_step;
+  gp_float max_integration_step;
 
   // Physics Model Functions
   __CUDADECL__ gp_float i_concentration_derivative(size_t) const;
@@ -81,7 +99,8 @@ class ClusterDynamicsImpl {
   __CUDADECL__ gp_float v_bias_factor(size_t) const;
   __CUDADECL__ gp_float i_binding_energy(size_t) const;
   __CUDADECL__ gp_float v_binding_energy(size_t) const;
-  __CUDADECL__ gp_float dislocation_promotion_probability(size_t) const;
+  __CUDADECL__ gp_float i_dislocation_loop_unfault_probability(size_t) const;
+  __CUDADECL__ gp_float faulted_dislocation_loop_energy_barrier(size_t) const;
   __CUDADECL__ gp_float cluster_radius(size_t) const;
 
   // Value Precalculation Functions
@@ -94,20 +113,15 @@ class ClusterDynamicsImpl {
   gp_float mean_dislocation_cell_radius() const;
 
   // Simulation Operation Functions
-  void update_clusters_1(gp_float);
-  void update_clusters(gp_float);
   void step_init();
-  void step(gp_float);
-  void validate_all() const;
-  void validate(size_t) const;
+  static int system(gp_float t, N_Vector state, N_Vector state_derivatives,
+                    void* user_data);
 
   // Interface functions
-  ClusterDynamicsImpl(size_t max_cluster_size,
-                      const NuclearReactorImpl& reactor,
-                      const MaterialImpl& material);
+  explicit ClusterDynamicsImpl(ClusterDynamicsConfig& config);
   ~ClusterDynamicsImpl();
 
-  ClusterDynamicsState run(gp_float time_delta, gp_float total_time);
+  ClusterDynamicsState run(gp_float total_time);
   MaterialImpl get_material() const;
   void set_material(const MaterialImpl& material);
   NuclearReactorImpl get_reactor() const;

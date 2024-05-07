@@ -7,5 +7,4 @@ The interface for the cluster dynamics simulation is the ClusterDynamics class. 
 frontend is shown in `example/cd_example.cpp`.
 
 More details:  
-  [Classes](annotated.html)  
-  [Makefile Documentation](md_makefile.html)
+  [Classes](annotated.html)
