@@ -158,12 +158,10 @@ gp_float ClusterDynamicsImpl::v1_concentration_derivative() const {
  * instead.
  */
 gp_float ClusterDynamicsImpl::dislocation_density_derivative() const {
-  return 0.;
-
   gp_float gain = 0.0;
   for (size_t n = 1; n < max_cluster_size; ++n) {
     gain += cluster_radius(n) * ii_absorption(n) * interstitials[n] *
-            dislocation_promotion_probability(n);
+            i_dislocation_loop_unfault_probability(n);
   }
 
   gain *= 2. * M_PI / material.atomic_volume;
@@ -394,7 +392,7 @@ gp_float ClusterDynamicsImpl::i_promotion_rate(size_t n) const {
       // (2)
       * interstitials[1]
       // (3)
-      * (1 - dislocation_promotion_probability(n + 1));
+      * (1 - i_dislocation_loop_unfault_probability(n + 1));
 }
 
 /** @brief Returns the rate that a vacancy cluster of size n - 1 can evolve into
@@ -1020,39 +1018,20 @@ gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const {
 }
 
 // --------------------------------------------------------------------------------------------
-/*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.12
+/*  TODO: find a source for the Arrhenius equation
  */
-/** @brief Returns the probability that an interstitial cluster of size n will
- * unfurl to join the dislocation network when it grows to size n + 1. \todo
- * Document units \todo Consider reworking the equation to remove the squaring
- * of mean_dislocation_radius_val. We also do a sqrt to calculate
- * mean_dislocation_radius_val and they'll cancel out.
- *
- *  <hr>
- *
- *  N. Sakaguchi / Acta Materialia 1131 (2001), Equation 3.12
- *
- *  \f$
- *    \dwn{P_{unf}(n) =}
- *    \frac
- *       {\ann{1}{2r_i(n)(r_i(n+1) - r_i(n))} \dwn{+}
- * \ann{2}{(r_i(n+1)-r_i(n))^2}}
- *       {\ann{3}{(\pi r_0 / 2)^2} \dwn{-} \ann{4}{r_i(n)^2}}
- *  \f$
+/** @brief Returns the probability an interstitial dislocation loop will unfault
+ * into a dislocation network using the arrhenius equation.
  */
-gp_float ClusterDynamicsImpl::dislocation_promotion_probability(
+gp_float ClusterDynamicsImpl::i_dislocation_loop_unfault_probability(
     size_t n) const {
-  return 0.;
+  gp_float energy_barrier = material.i_binding + material.i_migration;
+  // NOTE: n is unused, n * 0. to satisfy -Wunused-parameter
+  n = 0;
+  gp_float arrhenius =
+      exp(-energy_barrier / (BOLTZMANN_EV_KELVIN * reactor.temperature)) + n * 0.;
 
-  gp_float dr = cluster_radius(n + 1) - cluster_radius(n);
-
-  //      (1)                           (2)
-  gp_float p = (2. * cluster_radius(n) * dr + std::pow(dr, 2.))
-               //    (3)                                                    (4)
-               / (std::pow(M_PI * mean_dislocation_radius_val / 2., 2) -
-                  std::pow(cluster_radius(n), 2.));
-
-  return p;
+  return arrhenius;
 }
 
 // --------------------------------------------------------------------------------------------

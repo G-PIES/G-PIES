@@ -95,7 +95,7 @@ class ClusterDynamicsImpl {
   gp_float v_bias_factor(size_t) const;
   gp_float i_binding_energy(size_t) const;
   gp_float v_binding_energy(size_t) const;
-  gp_float dislocation_promotion_probability(size_t) const;
+  gp_float i_dislocation_loop_unfault_probability(size_t) const;
   gp_float cluster_radius(size_t) const;
 
   gp_float i_diffusion() const;
