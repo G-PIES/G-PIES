@@ -610,16 +610,20 @@ gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const {
  */
 __CUDADECL__ gp_float
 ClusterDynamicsImpl::i_dislocation_loop_unfault_probability(size_t n) const {
-  gp_float energy_barrier = material.i_binding + material.i_migration;
-  // NOTE: n is unused, n * 0. to satisfy -Wunused-parameter
-  n = 0;
+  gp_float energy_barrier = faulted_dislocation_loop_energy_barrier(n);
   gp_float arrhenius =
-      exp(-energy_barrier / (BOLTZMANN_EV_KELVIN * reactor.temperature)) +
-      n * 0.;
+      exp(-energy_barrier / (BOLTZMANN_EV_KELVIN * reactor.temperature));
 
   return arrhenius;
 }
 // --------------------------------------------------------------------------------------------
+
+/*  TODO: find a source for the energy barrier equation
+ */
+__CUDADECL__ gp_float
+ClusterDynamicsImpl::faulted_dislocation_loop_energy_barrier(size_t n) const {
+  return material.i_binding + material.i_migration;
+}
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 8
