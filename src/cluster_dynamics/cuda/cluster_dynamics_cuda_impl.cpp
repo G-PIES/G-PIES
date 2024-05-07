@@ -609,7 +609,8 @@ gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const {
 /*  TODO: find a source for the Arrhenius equation
  */
 __CUDADECL__ gp_float
-ClusterDynamicsImpl::i_dislocation_loop_unfault_probability(size_t n) const {
+ClusterDynamicsImpl::i_dislocation_loop_unfault_probability(
+    [[maybe_unused]] size_t n) const {
   gp_float energy_barrier = faulted_dislocation_loop_energy_barrier(n);
   gp_float arrhenius =
       exp(-energy_barrier / (BOLTZMANN_EV_KELVIN * reactor.temperature));
@@ -621,7 +622,8 @@ ClusterDynamicsImpl::i_dislocation_loop_unfault_probability(size_t n) const {
 /*  TODO: find a source for the energy barrier equation
  */
 __CUDADECL__ gp_float
-ClusterDynamicsImpl::faulted_dislocation_loop_energy_barrier(size_t n) const {
+ClusterDynamicsImpl::faulted_dislocation_loop_energy_barrier(
+    [[maybe_unused]] size_t n) const {
   return material.i_binding + material.i_migration;
 }
 
