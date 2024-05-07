@@ -55,7 +55,8 @@ class progressbar {
 
   // default constructor, must call set_niter later
   inline progressbar();
-  inline progressbar(int n, bool showbar = true, std::ostream& out = std::cerr);
+  explicit inline progressbar(int n, bool showbar = true,
+                              std::ostream& out = std::cerr);
 
   // reset bar to use it again
   inline void reset();
@@ -141,8 +142,9 @@ inline void progressbar::update() {
       output << opening_bracket_char;
       for (int _ = 0; _ < 50; _++) output << todo_char;
       output << closing_bracket_char << " 0%";
-    } else
+    } else {
       output << "0%";
+    }
   }
   update_is_called = true;
 
@@ -155,12 +157,13 @@ inline void progressbar::update() {
   // update percentage each unit
   if (perc == last_perc + 1) {
     // erase the correct  number of characters
-    if (perc <= 10)
+    if (perc <= 10) {
       output << "\b\b" << perc << '%';
-    else if (perc > 10 and perc < 100)
+    } else if (perc > 10 && perc < 100) {
       output << "\b\b\b" << perc << '%';
-    else if (perc == 100)
+    } else if (perc == 100) {
       output << "\b\b\b" << perc << '%';
+    }
   }
   if (do_show_bar == true) {
     // update bar every ten units
