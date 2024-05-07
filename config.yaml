@@ -1,0 +1,75 @@
+simulation:
+  time: 1.0e+8
+  time-delta: 1.0e+6
+  sample-interval: 1.0e+6
+  data-validation: on
+  max-cluster-size: 1001
+  relative-tolerance: 1.0e-6
+  absolute-tolerance: 1.0e+1
+  max-num-integration-steps: 5000
+  min-integration-step: 1.0e-30
+  max-integration-step: 1.0e+20
+
+
+reactor:
+  flux-dpa-s: 2.9e-7
+  temperature-kelvin: 603.15
+  recombination-rate: 0.3
+  bi-interstitial-rate: 0.5
+  tri-interstitial-rate: 0.2
+  quad-interstitial-rate: 0.06
+  bi-vacancy-rate: 0.06
+  tri-vacancy-rate: 0.03
+  quad-vacancy-rate: 0.02
+  dislocation-density-evolution: 300.0
+
+
+material:
+  interstitial-migration-ev: 0.45
+  vacancy-migration-ev: 1.35
+  initial-interstitial-diffusion: 1.0e-3
+  initial-vacancy-diffusion: 0.6
+  interstitial-formation-ev: 4.1
+  vacancy-formation-ev: 4.1
+  interstitial-binding-ev: 0.6
+  vacancy-binding-ev: 0.5
+  recombination-radius-cm: 0.7e-7
+  interstitial-loop-bias: 63.0
+  interstitial-dislocation-bias: 0.8
+  interstitial-dislocation-bias-param: 1.1
+  vacancy-loop-bias: 33.0
+  vacancy-dislocation-bias: 0.65
+  vacancy-dislocation-bias-param: 1.0
+  initial-dislocation-density-cm: 10.0e+12
+  grain-size-cm: 4.0e-3
+  lattice-param-cm: 3.6e-8
+
+
+# #####################################################################
+# INITIAL DEFECT CLUSTER CONCENTRATIONS ###############################
+# you can define a subset of the array of concentrations with "array"
+# and define ranges throughout the array with "ranges" 
+# #####################################################################
+
+init-interstitials:
+  array: [1.0e-13, 6.0e-10, 4.0e-2, 2.0e-1]  # cluster concentrations for cluster sizes 1-4
+  ranges:
+    - [50, 55, 9.9e+30]  # cluster concentrations for cluster sizes 50-55
+    - [90, 102, 5.5e+29]  # cluster concentrations for cluster sizes 90-102
+    - [995, 1000, 2.2e+22]  # cluster concentrations for cluster sizes 995-1000
+
+
+init-vacancies:
+  array: [1.0e-5, 2.3e-1, 4.2e-20, 1.3e-13]  # cluster concentrations for cluster sizes 1-4
+  ranges:
+    - [50, 55, 6.2e+29]  # cluster concentrations for cluster sizes 50-55
+    - [90, 102, 1.5e+13]  # cluster concentrations for cluster sizes 90-102
+    - [995, 1000, 4.3e+12]  # cluster concentrations for cluster sizes 995-1000
+
+# #####################################################################
+
+# UNCOMMENT LINES BELOW TO TURN ON SENSITIVITY ANALYSIS
+# sensitivity-analysis:
+#   num-sims: 10
+#   sensitivity-var: flux-dpa-s
+#   sensitivity-var-delta: 1.0e-7
