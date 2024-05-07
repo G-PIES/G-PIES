@@ -151,7 +151,7 @@ inline void progressbar::update() {
   int perc = 0;
 
   // compute percentage, if did not change, do nothing and return
-  perc = progress * 100. / (n_cycles - 1);
+  perc = static_cast<int>(progress * 100. / (n_cycles - 1));
   if (perc < last_perc) return;
 
   // update percentage each unit
