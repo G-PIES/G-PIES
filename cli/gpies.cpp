@@ -186,7 +186,7 @@ void print_simulation_history(ClientDb& db, bool print_details) {
 
   if (!simulations.empty()) {
     os << "ID ~ Max Cluster Size ~ Simulation Time ~ Delta "
-          "Time ~ Reactor ~ Material ~ Creation Datetime\n\n";
+          "Time ~ Reactor ~ Material ~ Simulation Completion Datetime\n\n";
 
     for (HistorySimulation s : simulations) {
       os << s.sqlite_id << " ~ "
