@@ -138,4 +138,32 @@ void OSIRIS(NuclearReactor &reactor) {
   reactor._impl->v_quad = .02;
   reactor._impl->dislocation_density_evolution = 300.;
 }
+
+void BOR60(NuclearReactor &reactor) {
+  reactor.species = "BOR-60";
+  reactor._impl->flux = 9.4e-7;
+  reactor._impl->temperature = CELCIUS_KELVIN_CONV(375.);
+  reactor._impl->recombination = .15;
+  reactor._impl->i_bi = .5;
+  reactor._impl->i_tri = .2;
+  reactor._impl->i_quad = .06;
+  reactor._impl->v_bi = .06;
+  reactor._impl->v_tri = .03;
+  reactor._impl->v_quad = .02;
+  reactor._impl->dislocation_density_evolution = 970.;
+}
+
+void EBRII(NuclearReactor &reactor) {
+  reactor.species = "EBR-II";
+  reactor._impl->flux = 1.4e-6;
+  reactor._impl->temperature = CELCIUS_KELVIN_CONV(330.);
+  reactor._impl->recombination = .15;
+  reactor._impl->i_bi = .5;
+  reactor._impl->i_tri = .2;
+  reactor._impl->i_quad = .06;
+  reactor._impl->v_bi = .15;
+  reactor._impl->v_tri = .7;
+  reactor._impl->v_quad = .15;
+  reactor._impl->dislocation_density_evolution = 14400.;
+}
 }  // namespace nuclear_reactors
