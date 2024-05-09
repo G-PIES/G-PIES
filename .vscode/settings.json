@@ -102,6 +102,7 @@
       "valarray": "cpp",
       "execution": "cpp",
       "queue": "cpp",
-      "stack": "cpp"
+      "stack": "cpp",
+      "__availability": "cpp"
     }
 }

@@ -14,6 +14,7 @@
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
+#include "utils/progress_bar.hpp"
 #include "utils/sensitivity_variable.hpp"
 #include "utils/timer.hpp"
 
@@ -90,7 +91,7 @@ void print_material() {
 }
 
 void print_start_message() {
-  std::cout << "\nG-PIES simulation started\n"
+  std::cout << "\nG-PIES SIMULATION CONFIGURATION\n"
             << "simulation time: " << simulation_time
             << "  time delta: " << time_delta
             << "  sample interval: " << sample_interval
@@ -116,14 +117,27 @@ void print_start_message() {
   std::cout << std::endl;
 
   std::cout << "\nInitial Defect Clustering";
-  std::cout << "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n";
+  bool is_perfect_lattice = true;
   for (size_t n = 1; n < config.max_cluster_size; ++n) {
     if (config.init_interstitials[n] > 0. || config.init_vacancies[n] > 0.) {
+      // only print header if there is information to display
+      if (is_perfect_lattice) {
+        is_perfect_lattice = false;
+        std::cout
+            << "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n";
+      }
       std::cout << (long long unsigned int)n << "\t\t\t\t\t"
                 << config.init_interstitials[n] << "\t\t\t"
                 << config.init_vacancies[n] << std::endl;
     }
   }
+
+  // indicate that there are no defect clusters
+  if (is_perfect_lattice) {
+    std::cout << ": No Defects (Perfect Lattice)\n";
+  }
+
+  std::cout << std::endl;
 }
 
 void print_state(const ClusterDynamicsState& state) {
@@ -311,9 +325,25 @@ ClusterDynamicsState run_simulation() {
   sample_interval = time_delta;
 
   ClusterDynamicsState state;
+
+  progressbar bar(static_cast<int>(simulation_time / time_delta), true,
+                  std::cout);
+  bar.set_todo_char(" ");
+  bar.set_done_char("█");
+  bar.set_opening_bracket_char("[");
+  bar.set_closing_bracket_char("]");
+
+  if (!step_print) {
+    std::cout << "G-PIES Simulation Running..." << std::endl;
+  }
+
   // --------------------------------------------------------------------------------------------
   // main simulation loop
-  for (gp_float t = 0; t < simulation_time; t = state.time) {
+  for (gp_float t = 0.; t < simulation_time; t = state.time) {
+    if (!step_print) {
+      bar.update();
+    }
+
     // run simulation for this time slice
     state = cd.run(time_delta, sample_interval);
 
