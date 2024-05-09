@@ -69,12 +69,12 @@ __CUDADECL__ gp_float
 ClusterDynamicsImpl::i_concentration_derivative(size_t in) const {
   return
       // (1)
-      i_defect_production(in)
+      i_defect_production(in) / material.atomic_volume
       // (2)
       + i_demotion_rate(in + 1) * interstitials[in + 1]
-      // // (3)
+      // (3)
       - i_combined_promotion_demotion_rate(in) * interstitials[in]
-      // // (4)
+      // (4)
       + i_promotion_rate(in - 1) * interstitials[in - 1];
 }
 
@@ -89,7 +89,7 @@ __CUDADECL__ gp_float
 ClusterDynamicsImpl::v_concentration_derivative(size_t vn) const {
   return
       // (1)
-      v_defect_production(vn)
+      v_defect_production(vn) / material.atomic_volume
       // (2)
       + v_demotion_rate(vn + 1) * vacancies[vn + 1]
       // (3)
@@ -188,7 +188,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::i_promotion_rate(size_t n) const {
       // (2)
       * interstitials[1]
       // (3)
-      * (1 - dislocation_promotion_probability(n + 1));
+      * (1 - i_dislocation_loop_unfault_probability(n + 1));
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 2d
@@ -227,7 +227,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::v_promotion_rate(size_t n) const {
 gp_float ClusterDynamicsImpl::i1_concentration_derivative() const {
   return
       // (1)
-      i_defect_production(1)
+      i_defect_production(1) / material.atomic_volume
       // (2)
       - annihilation_rate() * host_interstitials[1] * host_vacancies[1]
       // (3)
@@ -259,7 +259,7 @@ gp_float ClusterDynamicsImpl::i1_concentration_derivative() const {
 gp_float ClusterDynamicsImpl::v1_concentration_derivative() const {
   return
       // (1)
-      v_defect_production(1)
+      v_defect_production(1) / material.atomic_volume
       // (2)
       - annihilation_rate() * host_interstitials[1] * host_vacancies[1]
       // (3)
@@ -606,17 +606,26 @@ gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const {
 }
 
 // --------------------------------------------------------------------------------------------
-/*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.12
+/*  TODO: find a source for the Arrhenius equation
  */
 __CUDADECL__ gp_float
-ClusterDynamicsImpl::dislocation_promotion_probability(size_t n) const {
-  gp_float dr = cluster_radius(n + 1) - cluster_radius(n);
+ClusterDynamicsImpl::i_dislocation_loop_unfault_probability(
+    [[maybe_unused]] size_t n) const {
+  gp_float energy_barrier = faulted_dislocation_loop_energy_barrier(n);
+  gp_float arrhenius =
+      exp(-energy_barrier / (BOLTZMANN_EV_KELVIN * reactor.temperature));
 
-  return (2. * cluster_radius(n) * dr + std::pow(dr, 2.)) /
-         (std::pow(M_PI * mean_dislocation_radius_val / 2., 2) -
-          std::pow(cluster_radius(n), 2.));
+  return arrhenius;
 }
 // --------------------------------------------------------------------------------------------
+
+/*  TODO: find a source for the energy barrier equation
+ */
+__CUDADECL__ gp_float
+ClusterDynamicsImpl::faulted_dislocation_loop_energy_barrier(
+    [[maybe_unused]] size_t n) const {
+  return material.i_binding + material.i_migration;
+}
 
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 8
@@ -627,7 +636,7 @@ gp_float ClusterDynamicsImpl::dislocation_density_derivative() const {
       indices.begin(), indices.end(),
       [self] __CUDADECL__(const int &idx) {
         return self->cluster_radius(idx) *
-               self->dislocation_promotion_probability(idx) *
+               self->i_dislocation_loop_unfault_probability(idx) *
                self->ii_absorption(idx) * self->interstitials[idx];
       },
       0.0, thrust::plus<gp_float>());
@@ -667,49 +676,19 @@ void ClusterDynamicsImpl::step_init() {
   iv_sum_absorption_val = iv_sum_absorption(max_cluster_size - 1);
   vi_sum_absorption_val = vi_sum_absorption(max_cluster_size - 1);
   vv_sum_absorption_val = vv_sum_absorption(max_cluster_size - 1);
-}
-
-void ClusterDynamicsImpl::step(gp_float time_delta) {
-  step_init();
-
-  update_clusters_1(time_delta);
-  update_clusters(time_delta);
-  dislocation_density += dislocation_density_derivative() * time_delta;
-
-  interstitials = interstitials_temp;
-  vacancies = vacancies_temp;
 
   cudaMemcpy(thrust::raw_pointer_cast(self), this, sizeof(ClusterDynamicsImpl),
              cudaMemcpyHostToDevice);
-  cudaMemcpy(thrust::raw_pointer_cast(self), this, sizeof(ClusterDynamicsImpl),
-             cudaMemcpyHostToDevice);
 }
 
-void ClusterDynamicsImpl::update_clusters_1(gp_float time_delta) {
-  interstitials_temp[1] += i1_concentration_derivative() * time_delta;
-  vacancies_temp[1] += v1_concentration_derivative() * time_delta;
-  return validate(1);
+ClusterDynamicsImpl::~ClusterDynamicsImpl() {
+  N_VDestroy_Serial(state);
+  SUNMatDestroy(jacobian_matrix);
+  SUNLinSolFree(linear_solver);
+  CVodeFree(&cvodes_memory_block);
+  SUNContext_Free(&sun_context);
+  thrust::device_free(self);
 }
-
-void ClusterDynamicsImpl::update_clusters(gp_float time_delta) {
-  auto self = this->self;
-
-  thrust::transform(indices.begin() + 1, indices.end(),
-                    interstitials_temp.begin() + 2,
-                    [self, time_delta] __CUDADECL__(const int &idx) {
-                      return self->interstitials[idx] +
-                             self->i_concentration_derivative(idx) * time_delta;
-                    });
-
-  thrust::transform(indices.begin() + 1, indices.end(),
-                    vacancies_temp.begin() + 2,
-                    [self, time_delta] __CUDADECL__(const int &idx) {
-                      return self->vacancies[idx] +
-                             self->v_concentration_derivative(idx) * time_delta;
-                    });
-}
-
-ClusterDynamicsImpl::~ClusterDynamicsImpl() { thrust::device_free(self); }
 
 gp_float ClusterDynamicsImpl::ii_sum_absorption(size_t) const {
   auto self = this->self;
@@ -751,31 +730,53 @@ gp_float ClusterDynamicsImpl::vi_sum_absorption(size_t) const {
       0.0, thrust::plus<gp_float>());
 }
 
-void ClusterDynamicsImpl::validate_all() const {
-  if (!data_validation_on) return;
+int ClusterDynamicsImpl::system([[maybe_unused]] double t,
+                                N_Vector state_vector,
+                                N_Vector derivatives_vector, void *user_data) {
+  ClusterDynamicsImpl *cd = static_cast<ClusterDynamicsImpl *>(user_data);
 
-  for (size_t n = 1; n < max_cluster_size; ++n) {
-    validate(n);
-  }
-}
+  gp_float *i_state = N_VGetArrayPointer(state_vector);
+  gp_float *v_state = i_state + cd->max_cluster_size + 2;
+  cd->dislocation_density = *(v_state + cd->max_cluster_size + 2);
 
-void ClusterDynamicsImpl::validate(size_t n) const {
-  if (!data_validation_on) return;
+  cd->step_init();
 
-  if (std::isnan(interstitials_temp[n]) || std::isnan(vacancies_temp[n]) ||
-      std::isinf(interstitials_temp[n]) || std::isinf(vacancies_temp[n]) ||
-      interstitials_temp[n] < 0. || vacancies_temp[n] < 0.) {
-    throw ClusterDynamicsException(
-        "Simulation Validation Failed For Cluster Size " + std::to_string(n) +
-            ".",
-        ClusterDynamicsState{
-            .time = time,
-            .interstitials = std::vector<gp_float>(
-                interstitials_temp.begin(), interstitials_temp.end() - 1),
-            .vacancies = std::vector<gp_float>(vacancies_temp.begin(),
-                                               vacancies_temp.end() - 1),
-            .dislocation_density = dislocation_density});
-  }
+  thrust::copy(i_state, i_state + cd->max_cluster_size,
+               cd->interstitials.begin());
+  thrust::copy(v_state, v_state + cd->max_cluster_size, cd->vacancies.begin());
+
+  cd->host_interstitials = cd->interstitials;
+  cd->host_vacancies = cd->vacancies;
+
+  gp_float *i_derivatives = N_VGetArrayPointer(derivatives_vector);
+  gp_float *v_derivatives = i_derivatives + cd->max_cluster_size + 2;
+  gp_float *dislocation_derivative = v_derivatives + cd->max_cluster_size + 2;
+
+  N_VConst(0.0, derivatives_vector);
+
+  auto self = cd->self;
+  thrust::transform(cd->indices.begin() + 1, cd->indices.end(),
+                    cd->device_i_derivatives.begin() + 2,
+                    [self] __CUDADECL__(const int &idx) {
+                      return self->i_concentration_derivative(idx);
+                    });
+
+  thrust::transform(cd->indices.begin() + 1, cd->indices.end(),
+                    cd->device_v_derivatives.begin() + 2,
+                    [self] __CUDADECL__(const int &idx) {
+                      return self->v_concentration_derivative(idx);
+                    });
+
+  thrust::copy(cd->device_i_derivatives.begin(), cd->device_i_derivatives.end(),
+               i_derivatives);
+  thrust::copy(cd->device_v_derivatives.begin(), cd->device_v_derivatives.end(),
+               v_derivatives);
+
+  i_derivatives[1] = cd->i1_concentration_derivative();
+  v_derivatives[1] = cd->v1_concentration_derivative();
+  *dislocation_derivative = cd->dislocation_density_derivative();
+
+  return 0;
 }
 
 // --------------------------------------------------------------------------------------------
@@ -787,22 +788,113 @@ void ClusterDynamicsImpl::validate(size_t n) const {
 // --------------------------------------------------------------------------------------------
 
 // TODO - clean up the uses of random +1/+2/-1/etc throughout the code
-ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
-                                         const NuclearReactorImpl &reactor,
-                                         const MaterialImpl &material)
+ClusterDynamicsImpl::ClusterDynamicsImpl(ClusterDynamicsConfig &config)
     : time(0.0),
-      interstitials(max_cluster_size + 1, 0.0),
-      interstitials_temp(max_cluster_size + 1, 0.0),
-      vacancies(max_cluster_size + 1, 0.0),
-      vacancies_temp(max_cluster_size + 1, 0.0),
-      max_cluster_size(max_cluster_size),
-      dislocation_density(material.dislocation_density_0),
-      material(material),
-      reactor(reactor),
-      indices(max_cluster_size - 1, 0),
-      host_interstitials(max_cluster_size + 1, 0.0),
-      host_vacancies(max_cluster_size + 1, 0.0),
-      data_validation_on(true) {
+      interstitials(config.max_cluster_size + 2, 0.0),
+      device_i_derivatives(config.max_cluster_size + 2, 0.0),
+      vacancies(config.max_cluster_size + 2, 0.0),
+      device_v_derivatives(config.max_cluster_size + 2, 0.0),
+      material(*config.material.impl()),
+      reactor(*config.reactor.impl()),
+      indices(config.max_cluster_size, 0),
+      host_interstitials(config.max_cluster_size + 1, 0.0),
+      host_vacancies(config.max_cluster_size + 1, 0.0) {
+  max_cluster_size = config.max_cluster_size;
+  data_validation_on = config.data_validation_on;
+  relative_tolerance = config.relative_tolerance;
+  absolute_tolerance = config.absolute_tolerance;
+  max_num_integration_steps = config.max_num_integration_steps;
+  min_integration_step = config.min_integration_step;
+  max_integration_step = config.max_integration_step;
+
+  dislocation_density = material.dislocation_density_0;
+
+  state_size = 2 * (max_cluster_size + 2) + 1;
+
+  /* Create the SUNDIALS context */
+  int sunerr = SUNContext_Create(SUN_COMM_NULL, &sun_context);
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
+
+  /* Create the initial state */
+  /// \todo Check errors
+  state = N_VNew_Serial(state_size, sun_context);
+
+  /* Initialize State Values */
+  gp_float *i_state = N_VGetArrayPointer(state);
+  gp_float *v_state = i_state + max_cluster_size + 2;
+  for (size_t i = 0; i < max_cluster_size; ++i) {
+    i_state[i] = config.init_interstitials[i];
+    v_state[i] = config.init_vacancies[i];
+  }
+
+  N_VGetArrayPointer(state)[state_size - 2] = material.dislocation_density_0;
+
+  /* Call CVodeCreate to create the solver memory and specify the
+   * Backward Differentiation Formula */
+  cvodes_memory_block = CVodeCreate(CV_BDF, sun_context);
+
+  /* Call CVodeInit to initialize the integrator memory and specify the
+   * user's right hand side function in y'=f(t,y), the initial time T0, and
+   * the initial dependent variable vector y. */
+  sunerr = CVodeInit(cvodes_memory_block, system, 0, state);
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
+
+  /* Call CVodeSVtolerances to specify the scalar relative tolerance
+   * and scalar absolute tolerances */
+  sunerr = CVodeSStolerances(cvodes_memory_block, relative_tolerance,
+                             absolute_tolerance);
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
+
+  /* Create dense jacobian matrix */
+  jacobian_matrix = SUNDenseMatrix(state_size, state_size, sun_context);
+
+  /* Create linear solver object for use by CVode */
+  linear_solver = SUNLinSol_Dense(state, jacobian_matrix, sun_context);
+
+  sunerr = CVodeSetUserData(cvodes_memory_block, static_cast<void *>(this));
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
+
+  sunerr = CVodeSetMaxNumSteps(cvodes_memory_block, max_num_integration_steps);
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
+
+  sunerr = CVodeSetMinStep(cvodes_memory_block, min_integration_step);
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
+
+  sunerr = CVodeSetMaxStep(cvodes_memory_block, max_integration_step);
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
+
+  // TODO - set to time delta?
+  sunerr = CVodeSetInitStep(cvodes_memory_block, 1e-10);
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
+
+  /* Attach the matrix and linear solver */
+  sunerr =
+      CVodeSetLinearSolver(cvodes_memory_block, linear_solver, jacobian_matrix);
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
+
+  sunerr = CVodeSetInterpolateStopTime(cvodes_memory_block, SUNTRUE);
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
+
   ClusterDynamicsImpl *raw_self;
   cudaMalloc(&raw_self, sizeof(ClusterDynamicsImpl));
   cudaMemcpy(raw_self, this, sizeof(ClusterDynamicsImpl),
@@ -811,19 +903,25 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(size_t max_cluster_size,
   thrust::sequence(indices.begin(), indices.end(), 1);
 }
 
-ClusterDynamicsState ClusterDynamicsImpl::run(gp_float time_delta,
-                                              gp_float total_time) {
-  for (gp_float endtime = time + total_time; time < endtime;
-       time += time_delta) {
-    step(time_delta);
-    validate_all();
-  }
+ClusterDynamicsState ClusterDynamicsImpl::run(gp_float total_time) {
+  gp_float out_time;
+  const int sunerr = CVode(cvodes_memory_block, time + total_time, state,
+                           &out_time, CV_NORMAL);
+  if (sunerr)
+    throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
+                                   ClusterDynamicsState());
 
-  host_interstitials = interstitials;
-  host_vacancies = vacancies;
+  time = out_time;
+
+  gp_float *i_state = N_VGetArrayPointer(state);
+  gp_float *v_state = i_state + max_cluster_size + 2;
+  dislocation_density = *(v_state + max_cluster_size + 2);
+  thrust::copy(i_state, i_state + max_cluster_size, host_interstitials.begin());
+  thrust::copy(v_state, v_state + max_cluster_size, host_vacancies.begin());
 
   return ClusterDynamicsState{
       .time = time,
+      .dpa = time * reactor.flux,
       .interstitials = std::vector<gp_float>(host_interstitials.begin(),
                                              host_interstitials.end() - 1),
       .vacancies = std::vector<gp_float>(host_vacancies.begin(),

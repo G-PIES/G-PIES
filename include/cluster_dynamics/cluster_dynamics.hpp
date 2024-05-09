@@ -9,6 +9,7 @@
 #include "model/nuclear_reactor.hpp"
 #include "utils/types.hpp"
 #include "utils/gpies_exception.hpp"
+#include "cluster_dynamics/cluster_dynamics_config.hpp"
 
 class ClusterDynamicsImpl;
 
@@ -31,8 +32,7 @@ class ClusterDynamics {
    *  @param material A Material object containing the material parameters the
    * simulation will use.
    */
-  ClusterDynamics(size_t max_cluster_size, const NuclearReactor &reactor,
-                  const Material &material);
+  explicit ClusterDynamics(ClusterDynamicsConfig &config);
   ~ClusterDynamics();
 
   /** @brief Runs the simulation and returns the end simulation state as a
@@ -75,6 +75,11 @@ class ClusterDynamics {
   void set_reactor(const NuclearReactor &reactor);
 
   void set_data_validation(const bool data_validation_on);
+  void set_relative_tolerance(const gp_float relative_tolerance);
+  void set_absolute_tolerance(const gp_float absolute_tolerance);
+  void set_max_num_integration_steps(const size_t max_num_integration_steps);
+  void set_min_integration_step(const gp_float min_integration_step);
+  void set_max_integration_step(const gp_float max_integration_step);
 };
 
 class ClusterDynamicsException : public GpiesException {

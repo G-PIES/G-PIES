@@ -96,7 +96,7 @@ if [ "$HELP" ]; then
   echo "                      Cannot be usage together with --release."
   echo "  --release           Build release build (max optimizations)."
   echo "                      Cannot be usage together with --debug."
-  echo "  --no-sanitizier     Do not use sanitizer for debug builds."
+  echo "  --no-sanitizer      Do not use sanitizer for debug builds."
   echo "  --cmake-verbose     Enable verbose output in the build process."
   echo "                      (CMAKE_VERBOSE_MAKEFILE=ON)"
   exit $ERROR
