@@ -635,7 +635,7 @@ int main(int argc, char* argv[]) {
       std::cout
           << "\nexample command: run 10 simulations, increasing the "
              "reactor flux by 1e-7 for each simulation\n"
-          << "./cd_cli --sensitivity-analysis --num-sims 10 "
+          << "./gpies --sensitivity-analysis --num-sims 10 "
              "--sensitivity-var flux-dpa-s --sensitivity-var-delta 1e-7\n\n";
       return 1;
     } else if (arg_consumer.has_arg("version")) {

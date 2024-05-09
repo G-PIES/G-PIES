@@ -58,6 +58,6 @@ jobs:
           path: ${{ env.out_dir }}/*
       
       - name: Run Cluster Dynamics Tests
-        run: ${{ env.out_dir }}/cd_tests
+        run: ${{ env.out_dir }}/gpies_tests
       - name: Run DB Tests
         run: ${{ env.out_dir }}/db_tests
