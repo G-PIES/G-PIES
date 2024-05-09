@@ -9,6 +9,7 @@
 #include <string>
 
 #include "cluster_dynamics/cluster_dynamics.hpp"
+#include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
 #include "timer.hpp"
@@ -172,14 +173,14 @@ struct Simulation {
       : concentration_boundary(concentration_boundary),
         simulation_time(simulation_time),
         delta_time(delta_time) {
+    ClusterDynamicsConfig config;
     main_sim_reactor = Sim_Reactor();
     main_sim_material = Sim_Material();
-    cd = std::make_unique<ClusterDynamics>(concentration_boundary,
-                                           main_sim_reactor.get_reactor(),
-                                           main_sim_material.get_material());
+    cd = std::make_unique<ClusterDynamics>(config);
   }
 
   // Overloaded Constructor
+  /*
   Simulation(size_t concentration_boundary, double simulation_time,
              double delta_time, Sim_Material material, Sim_Reactor reactor)
       : concentration_boundary(concentration_boundary),
@@ -190,6 +191,7 @@ struct Simulation {
     cd = std::make_unique<ClusterDynamics>(
         concentration_boundary, reactor.get_reactor(), material.get_material());
   }
+  */
 
   void run() { state = (*cd).run(delta_time, sample_interval); }
 
@@ -257,7 +259,7 @@ PYBIND11_MODULE(pyclusterdynamics, m) {
   // The name of the python class object is Simulation
   py::class_<Simulation>(m, "Simulation")
       .def(py::init<size_t, double, double>())
-      .def(py::init<size_t, double, double, Sim_Material, Sim_Reactor>())
+      //.def(py::init<size_t, double, double, Sim_Material, Sim_Reactor>())
       .def("run", &Simulation::run)
       .def("print_state", &Simulation::print_state)
       .def("string_state", &Simulation::string_state)
