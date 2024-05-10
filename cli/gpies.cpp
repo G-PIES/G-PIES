@@ -441,27 +441,27 @@ void emit_config_yaml(const std::string& filename) {
       << YAML::Newline << YAML::BeginMap << YAML::Key << "init-interstitials"
       << YAML::Value << YAML::BeginMap << YAML::Key << "array" << YAML::Value
       << YAML::Flow
-      << std::vector<std::string>{"1.0e-13", "6.0e-10", "4.0e-2", "2.0e-1"}
+      << std::vector<std::string>{"1.0e-13", "6.0e-10", "4.0e-20", "2.0e-1"}
       << YAML::Comment("cluster concentrations for cluster sizes 1-4")
       << YAML::Key << "ranges" << YAML::Value << YAML::BeginSeq << YAML::Flow
-      << std::vector<std::string>{"50", "55", "9.9e+30"}
+      << std::vector<std::string>{"50", "55", "9.9e-30"}
       << YAML::Comment("cluster concentrations for cluster sizes 50-55")
-      << YAML::Flow << std::vector<std::string>{"90", "102", "5.5e+29"}
+      << YAML::Flow << std::vector<std::string>{"90", "102", "5.5e-29"}
       << YAML::Comment("cluster concentrations for cluster sizes 90-102")
-      << YAML::Flow << std::vector<std::string>{"995", "1000", "2.2e+22"}
+      << YAML::Flow << std::vector<std::string>{"995", "1000", "2.2e-22"}
       << YAML::Comment("cluster concentrations for cluster sizes 995-1000")
       << YAML::EndSeq << YAML::EndMap << YAML::EndMap << YAML::Newline
       << YAML::Newline << YAML::BeginMap << YAML::Key << "init-vacancies"
       << YAML::Value << YAML::BeginMap << YAML::Key << "array" << YAML::Value
       << YAML::Flow
-      << std::vector<std::string>{"1.0e-5", "2.3e-1", "4.2e-20", "1.3e-13"}
+      << std::vector<std::string>{"1.0e-5", "2.3e-12", "4.2e-20", "1.3e-13"}
       << YAML::Comment("cluster concentrations for cluster sizes 1-4")
       << YAML::Key << "ranges" << YAML::Value << YAML::BeginSeq << YAML::Flow
-      << std::vector<std::string>{"50", "55", "6.2e+29"}
+      << std::vector<std::string>{"50", "55", "6.2e-29"}
       << YAML::Comment("cluster concentrations for cluster sizes 50-55")
-      << YAML::Flow << std::vector<std::string>{"90", "102", "1.5e+13"}
+      << YAML::Flow << std::vector<std::string>{"90", "102", "1.5e-13"}
       << YAML::Comment("cluster concentrations for cluster sizes 90-102")
-      << YAML::Flow << std::vector<std::string>{"995", "1000", "4.3e+12"}
+      << YAML::Flow << std::vector<std::string>{"995", "1000", "4.3e-12"}
       << YAML::Comment("cluster concentrations for cluster sizes 995-1000")
       << YAML::EndSeq << YAML::EndMap << YAML::EndMap << YAML::Newline
       << YAML::Newline
