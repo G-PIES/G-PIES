@@ -130,6 +130,9 @@ for target in "${TARGETS[@]}"; do
     db)
       CPU_TARGETS+=("clientdb")
       ;;
+    pylib)
+      CPU_TARGETS+=("pylib")
+      ;;
     dbcli)
       CPU_RUNNABLE_TARGETS+=("db_cli")
       ;;

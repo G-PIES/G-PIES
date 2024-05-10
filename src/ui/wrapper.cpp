@@ -12,7 +12,7 @@
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
-#include "timer.hpp"
+#include "utils/timer.hpp"
 
 namespace py = pybind11;
 
