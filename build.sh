@@ -131,7 +131,7 @@ for target in "${TARGETS[@]}"; do
       CPU_TARGETS+=("clientdb")
       ;;
     pylib)
-      CPU_TARGETS+=("pylib")
+      CPU_TARGETS+=("pyclusterdynamics")
       ;;
     dbcli)
       CPU_RUNNABLE_TARGETS+=("db_cli")
