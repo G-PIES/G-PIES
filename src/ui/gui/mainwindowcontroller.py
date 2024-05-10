@@ -15,10 +15,10 @@ from gui.visualization.dataaccumulator import DataAccumulator
 from gui.visualization.graphcontroller import GraphController
 from gui.visualization.legendcheckbox import LegendCheckBox
 
-import pyclusterdynamics as pycd
+import libpyclusterdynamics as pycd
 import sys
 import os
-sys.path.append('../G-PIES/lib')
+sys.path.append('../G-PIES/out')
 
 
 class MainWindowController(QMainWindow, Ui_MainWindow):

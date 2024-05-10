@@ -1,8 +1,8 @@
 from multiprocessing import Process, shared_memory
 import numpy as np
 import sys
-sys.path.append('../../lib')
-import pyclusterdynamics as pycd
+sys.path.append('../../out')
+import libpyclusterdynamics as pycd
 
 
 class SimulationProcess(Process):

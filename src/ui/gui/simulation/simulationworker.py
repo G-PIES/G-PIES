@@ -1,7 +1,7 @@
 from PyQt5.QtCore import pyqtSignal, QObject
 import sys
-sys.path.append('../../lib')
-import pyclusterdynamics as pycd
+sys.path.append('../../out')
+import libpyclusterdynamics as pycd
 
 import pandas as pd
 
