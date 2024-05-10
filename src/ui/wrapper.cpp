@@ -253,7 +253,7 @@ struct Simulation {
 };
 
 // Binds the current backend Cluster Dynamics code with these wrapper functions
-PYBIND11_MODULE(pyclusterdynamics, m) {
+PYBIND11_MODULE(libpyclusterdynamics, m) {
   // Description
   m.doc() = "Cluster Dynamics C++ backend interface for python3.";
   // The name of the python class object is Simulation
