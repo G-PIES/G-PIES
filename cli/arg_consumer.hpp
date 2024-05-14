@@ -45,8 +45,7 @@ class ArgConsumer {
   }
 
   template <typename T>
-  T get_value(const std::string &arg,
-              const std::string &config_category = "") {
+  T get_value(const std::string &arg, const std::string &config_category = "") {
     if (vm.count(arg)) return vm[arg].as<T>();
 
     if (has_config_file()) {
