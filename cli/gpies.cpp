@@ -466,13 +466,12 @@ void emit_config_yaml(const std::string& filename) {
       << YAML::Comment(
              "#################################################################"
              "####")
-      << YAML::Newline 
-      << YAML::Newline
+      << YAML::Newline << YAML::Newline
       << YAML::Comment(
              "UNCOMMENT LINES BELOW TO DEFINE INITIAL DEFECT CLUSTER "
              "CONCENTRATIONS")
+      << YAML::Newline << YAML::Comment(arrays_comment.c_str()) << YAML::Newline
       << YAML::Newline
-      << YAML::Comment(arrays_comment.c_str()) << YAML::Newline << YAML::Newline
       << YAML::Comment("UNCOMMENT LINES BELOW TO TURN ON SENSITIVITY ANALYSIS")
       << YAML::Newline << YAML::Comment(sa_comment.c_str()) << YAML::Newline;
 
