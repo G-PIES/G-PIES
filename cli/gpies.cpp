@@ -659,7 +659,8 @@ int main(int argc, char* argv[]) {
     }
 
     if (arg_consumer.has_arg("max-cluster-size", "simulation")) {
-      size_t mcs = arg_consumer.get_value<size_t>("max-cluster-size", "simulation");
+      size_t mcs =
+          arg_consumer.get_value<size_t>("max-cluster-size", "simulation");
       if (mcs <= 0)
         throw GpiesException(
             "Value for max-cluster-size must be a positive, non-zero integer.");
@@ -677,7 +678,8 @@ int main(int argc, char* argv[]) {
     }
 
     if (arg_consumer.has_arg("time-delta", "simulation")) {
-      gp_float td = arg_consumer.get_value<gp_float>("time-delta", "simulation");
+      gp_float td =
+          arg_consumer.get_value<gp_float>("time-delta", "simulation");
       if (td <= 0.)
         throw GpiesException(
             "Value for time-delta must be a positive, non-zero "
@@ -687,7 +689,8 @@ int main(int argc, char* argv[]) {
     }
 
     if (arg_consumer.has_arg("sample-interval", "simulation")) {
-      gp_float si = arg_consumer.get_value<gp_float>("sample-interval", "simulation");
+      gp_float si =
+          arg_consumer.get_value<gp_float>("sample-interval", "simulation");
       if (si <= 0.)
         throw GpiesException(
             "Value for sample-interval must be a positive, non-zero "
@@ -697,7 +700,8 @@ int main(int argc, char* argv[]) {
     }
 
     if (arg_consumer.has_arg("relative-tolerance", "simulation")) {
-      gp_float rt = arg_consumer.get_value<gp_float>("relative-tolerance", "simulation");
+      gp_float rt =
+          arg_consumer.get_value<gp_float>("relative-tolerance", "simulation");
       if (rt <= 0.)
         throw GpiesException(
             "Value for relative-tolerance must be a positive, non-zero "
@@ -707,7 +711,8 @@ int main(int argc, char* argv[]) {
     }
 
     if (arg_consumer.has_arg("absolute-tolerance", "simulation")) {
-      gp_float at = arg_consumer.get_value<gp_float>("absolute-tolerance", "simulation");
+      gp_float at =
+          arg_consumer.get_value<gp_float>("absolute-tolerance", "simulation");
       if (at <= 0.)
         throw GpiesException(
             "Value for absolute-tolerance must be a positive, non-zero "
@@ -717,7 +722,8 @@ int main(int argc, char* argv[]) {
     }
 
     if (arg_consumer.has_arg("max-num-integration-steps", "simulation")) {
-      size_t mnis = arg_consumer.get_value<size_t>("max-num-integration-steps", "simulation");
+      size_t mnis = arg_consumer.get_value<size_t>("max-num-integration-steps",
+                                                   "simulation");
       if (mnis <= 0)
         throw GpiesException(
             "Value for max-num-integration-steps must be a positive, non-zero "
@@ -727,7 +733,8 @@ int main(int argc, char* argv[]) {
     }
 
     if (arg_consumer.has_arg("min-integration-step", "simulation")) {
-      gp_float minis = arg_consumer.get_value<gp_float>("min-integration-step", "simulation");
+      gp_float minis = arg_consumer.get_value<gp_float>("min-integration-step",
+                                                        "simulation");
       if (minis <= 0.)
         throw GpiesException(
             "Value for min-integration-step must be a positive, non-zero "
@@ -737,7 +744,8 @@ int main(int argc, char* argv[]) {
     }
 
     if (arg_consumer.has_arg("max-integration-step", "simulation")) {
-      gp_float maxis = arg_consumer.get_value<gp_float>("max-integration-step", "simulation");
+      gp_float maxis = arg_consumer.get_value<gp_float>("max-integration-step",
+                                                        "simulation");
       if (maxis <= 0.)
         throw GpiesException(
             "Value for max-integration-step must be a positive, non-zero "
@@ -748,13 +756,15 @@ int main(int argc, char* argv[]) {
 
     // Output formatting
     csv = static_cast<bool>(arg_consumer.has_arg("csv", "simulation"));
-    step_print = static_cast<bool>(arg_consumer.has_arg("step-print", "simulation"));
+    step_print =
+        static_cast<bool>(arg_consumer.has_arg("step-print", "simulation"));
 
     // Toggle data validation
     if (arg_consumer.has_arg("data-validation", "simulation")) {
       config.data_validation_on =
           0 ==
-          arg_consumer.get_value<std::string>("data-validation", "simulation").compare("on");
+          arg_consumer.get_value<std::string>("data-validation", "simulation")
+              .compare("on");
     }
 
     if (arg_consumer.has_arg("reactor")) {
