@@ -17,21 +17,23 @@ namespace po = boost::program_options;
 
 class ArgConsumer {
  public:
-  ArgConsumer(int argc, char *argv[], const po::options_description &options)
-      : has_config_file(false) {
+  ArgConsumer(int argc, char *argv[], const po::options_description &options) {
     po::store(po::parse_command_line(argc, argv, options), vm);
     po::notify(vm);
 
     if (vm.count("config")) {
       std::string config_filename = vm["config"].as<std::string>();
       config = YAML::LoadFile(config_filename);
-      has_config_file = !config.IsNull();
     }
   }
 
+  bool has_config_file() { return !config.IsNull(); }
+
   bool has_arg(const std::string &arg,
-               const std::string &config_category = "simulation") {
-    if (has_config_file) {
+               const std::string &config_category = "") {
+    if (vm.count(arg)) return true;
+
+    if (has_config_file()) {
       if (config_category.empty()) {
         return static_cast<bool>(config[arg]);
       }
@@ -39,13 +41,19 @@ class ArgConsumer {
       return static_cast<bool>(config[config_category][arg]);
     }
 
-    return vm.count(arg);
+    return false;
   }
 
   template <typename T>
   T get_value(const std::string &arg,
-              const std::string &config_category = "simulation") {
-    if (has_config_file) {
+              const std::string &config_category = "") {
+    if (vm.count(arg)) return vm[arg].as<T>();
+
+    if (has_config_file()) {
+      if (config_category.empty()) {
+        return config[arg].as<T>();
+      }
+
       return config[config_category][arg].as<T>();
     }
 
@@ -139,11 +147,10 @@ class ArgConsumer {
  private:
   po::variables_map vm;
   YAML::Node config;
-  bool has_config_file;
 
   void populate_vector_from_config(std::vector<gp_float> &vec,
                                    const YAML::Node &vec_config) {
-    if (has_config_file && vec_config.IsMap()) {
+    if (has_config_file() && vec_config.IsMap()) {
       YAML::Node array_node = vec_config["array"];
       YAML::Node ranges_node = vec_config["ranges"];
 
