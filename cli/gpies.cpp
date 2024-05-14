@@ -159,7 +159,7 @@ void print_state(const ClusterDynamicsState& state) {
 }
 
 void print_csv(const ClusterDynamicsState& state) {
-  os << state.time;
+  os << state.time << ", " << state.dislocation_density;
   for (uint64_t n = 1; n < config.max_cluster_size; ++n) {
     os << "," << state.interstitials[n] << "," << state.vacancies[n];
   }
@@ -314,7 +314,7 @@ ClusterDynamicsState run_simulation() {
   print_start_message();
 
   if (csv) {
-    os << "Time (s),";
+    os << "Time (s), Dislocation Density (cm^-2),";
     for (size_t i = 1; i < config.max_cluster_size; ++i) {
       os << "i" << i << ",v" << i << ",";
     }
