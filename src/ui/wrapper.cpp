@@ -3,15 +3,18 @@
 #include <pybind11/stl.h>
 
 #include <array>
+#include <boost/program_options.hpp>
 #include <cmath>
+#include <cstring>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <string>
 
 #include "cluster_dynamics/cluster_dynamics.hpp"
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
+#include "utils/sensitivity_variable.hpp"
 #include "utils/timer.hpp"
 
 namespace py = pybind11;
@@ -173,27 +176,36 @@ struct Simulation {
       : concentration_boundary(concentration_boundary),
         simulation_time(simulation_time),
         delta_time(delta_time) {
-    ClusterDynamicsConfig config;
     main_sim_reactor = Sim_Reactor();
     main_sim_material = Sim_Material();
+    config.data_validation_on = true;
+    config.max_cluster_size = 1001;
+    config.relative_tolerance = 1.0e-6;
+    config.absolute_tolerance = 1.0e+1;
+    config.max_num_integration_steps = 5000;
+    config.min_integration_step = 1.0e-30;
+    config.max_integration_step = 1.0e+20;
+    config.init_interstitials = std::vector<gp_float>(config.max_cluster_size, 0.);
+    config.init_vacancies = std::vector<gp_float>(config.max_cluster_size, 0.);
     cd = std::make_unique<ClusterDynamics>(config);
   }
 
   // Overloaded Constructor
-  /*
+
+/*
   Simulation(size_t concentration_boundary, double simulation_time,
              double delta_time, Sim_Material material, Sim_Reactor reactor)
       : concentration_boundary(concentration_boundary),
         simulation_time(simulation_time),
         delta_time(delta_time) {
-    main_sim_material = material;
-    main_sim_reactor = reactor;
-    cd = std::make_unique<ClusterDynamics>(
-        concentration_boundary, reactor.get_reactor(), material.get_material());
+    (*cd).set_reactor(reactor.get_reactor());
+    (*cd).set_material(material.get_material());
+    cd = std::make_unique<ClusterDynamics>(config);
   }
-  */
-
-  void run() { state = (*cd).run(delta_time, sample_interval); }
+*/
+  void run() {
+    state = (*cd).run(delta_time, sample_interval); 
+  }
 
   void print_state() {
     fprintf(stdout, "\nTime=%g", state.time);
@@ -242,7 +254,7 @@ struct Simulation {
 
   size_t concentration_boundary;
   double simulation_time;
-  double delta_time;
+  double delta_time = 1.0e+6;
   double sample_interval = delta_time;
 
   std::unique_ptr<ClusterDynamics> cd;
@@ -250,6 +262,7 @@ struct Simulation {
   Sim_Reactor main_sim_reactor;
   Sim_Material main_sim_material;
   ClusterDynamicsState state;
+  ClusterDynamicsConfig config;
 };
 
 // Binds the current backend Cluster Dynamics code with these wrapper functions
