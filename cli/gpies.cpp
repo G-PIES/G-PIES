@@ -159,7 +159,7 @@ void print_state(const ClusterDynamicsState& state) {
 }
 
 void print_csv(const ClusterDynamicsState& state) {
-  os << state.time;
+  os << state.time << ", " << state.dislocation_density;
   for (uint64_t n = 1; n < config.max_cluster_size; ++n) {
     os << "," << state.interstitials[n] << "," << state.vacancies[n];
   }
@@ -314,7 +314,7 @@ ClusterDynamicsState run_simulation() {
   print_start_message();
 
   if (csv) {
-    os << "Time (s),";
+    os << "Time (s), Dislocation Density (cm^-2),";
     for (size_t i = 1; i < config.max_cluster_size; ++i) {
       os << "i" << i << ",v" << i << ",";
     }
@@ -416,7 +416,7 @@ void emit_config_yaml(const std::string& filename) {
       << YAML::Key << "vacancy-loop-bias" << YAML::Value << "33.0" << YAML::Key
       << "vacancy-dislocation-bias" << YAML::Value << "0.65" << YAML::Key
       << "vacancy-dislocation-bias-param" << YAML::Value << "1.0" << YAML::Key
-      << "initial-dislocation-density-cm" << YAML::Value << "10.0e+12"
+      << "initial-dislocation-density-cm^-2" << YAML::Value << "10.0e+12"
       << YAML::Key << "grain-size-cm" << YAML::Value << "4.0e-3" << YAML::Key
       << "lattice-param-cm" << YAML::Value << "3.6e-8" << YAML::EndMap
       << YAML::EndMap << YAML::Newline << YAML::Newline << YAML::Newline
@@ -652,11 +652,15 @@ int main(int argc, char* argv[]) {
     if (arg_consumer.has_arg("output-file")) {
       filename = arg_consumer.get_value<std::string>("output-file");
       output_file.open(filename);
-      if (output_file.is_open()) os.rdbuf(output_file.rdbuf());
+      if (output_file.is_open()) {
+        std::cout << "\nOutput File: " << filename << std::endl;
+        os.rdbuf(output_file.rdbuf());
+      }
     }
 
-    if (arg_consumer.has_arg("max-cluster-size")) {
-      size_t mcs = arg_consumer.get_value<size_t>("max-cluster-size");
+    if (arg_consumer.has_arg("max-cluster-size", "simulation")) {
+      size_t mcs =
+          arg_consumer.get_value<size_t>("max-cluster-size", "simulation");
       if (mcs <= 0)
         throw GpiesException(
             "Value for max-cluster-size must be a positive, non-zero integer.");
@@ -664,8 +668,8 @@ int main(int argc, char* argv[]) {
       config.max_cluster_size = mcs;
     }
 
-    if (arg_consumer.has_arg("time")) {
-      gp_float st = arg_consumer.get_value<gp_float>("time");
+    if (arg_consumer.has_arg("time", "simulation")) {
+      gp_float st = arg_consumer.get_value<gp_float>("time", "simulation");
       if (st <= 0.)
         throw GpiesException(
             "Value for time must be a positive, non-zero decimal.");
@@ -673,8 +677,9 @@ int main(int argc, char* argv[]) {
       simulation_time = st;
     }
 
-    if (arg_consumer.has_arg("time-delta")) {
-      gp_float td = arg_consumer.get_value<gp_float>("time-delta");
+    if (arg_consumer.has_arg("time-delta", "simulation")) {
+      gp_float td =
+          arg_consumer.get_value<gp_float>("time-delta", "simulation");
       if (td <= 0.)
         throw GpiesException(
             "Value for time-delta must be a positive, non-zero "
@@ -683,8 +688,9 @@ int main(int argc, char* argv[]) {
       time_delta = td;
     }
 
-    if (arg_consumer.has_arg("sample-interval")) {
-      gp_float si = arg_consumer.get_value<gp_float>("sample-interval");
+    if (arg_consumer.has_arg("sample-interval", "simulation")) {
+      gp_float si =
+          arg_consumer.get_value<gp_float>("sample-interval", "simulation");
       if (si <= 0.)
         throw GpiesException(
             "Value for sample-interval must be a positive, non-zero "
@@ -693,8 +699,9 @@ int main(int argc, char* argv[]) {
       sample_interval = si;
     }
 
-    if (arg_consumer.has_arg("relative-tolerance")) {
-      gp_float rt = arg_consumer.get_value<gp_float>("relative-tolerance");
+    if (arg_consumer.has_arg("relative-tolerance", "simulation")) {
+      gp_float rt =
+          arg_consumer.get_value<gp_float>("relative-tolerance", "simulation");
       if (rt <= 0.)
         throw GpiesException(
             "Value for relative-tolerance must be a positive, non-zero "
@@ -703,8 +710,9 @@ int main(int argc, char* argv[]) {
       config.relative_tolerance = rt;
     }
 
-    if (arg_consumer.has_arg("absolute-tolerance")) {
-      gp_float at = arg_consumer.get_value<gp_float>("absolute-tolerance");
+    if (arg_consumer.has_arg("absolute-tolerance", "simulation")) {
+      gp_float at =
+          arg_consumer.get_value<gp_float>("absolute-tolerance", "simulation");
       if (at <= 0.)
         throw GpiesException(
             "Value for absolute-tolerance must be a positive, non-zero "
@@ -713,8 +721,9 @@ int main(int argc, char* argv[]) {
       config.absolute_tolerance = at;
     }
 
-    if (arg_consumer.has_arg("max-num-integration-steps")) {
-      size_t mnis = arg_consumer.get_value<size_t>("max-num-integration-steps");
+    if (arg_consumer.has_arg("max-num-integration-steps", "simulation")) {
+      size_t mnis = arg_consumer.get_value<size_t>("max-num-integration-steps",
+                                                   "simulation");
       if (mnis <= 0)
         throw GpiesException(
             "Value for max-num-integration-steps must be a positive, non-zero "
@@ -723,8 +732,9 @@ int main(int argc, char* argv[]) {
       config.max_num_integration_steps = mnis;
     }
 
-    if (arg_consumer.has_arg("min-integration-step")) {
-      gp_float minis = arg_consumer.get_value<gp_float>("min-integration-step");
+    if (arg_consumer.has_arg("min-integration-step", "simulation")) {
+      gp_float minis = arg_consumer.get_value<gp_float>("min-integration-step",
+                                                        "simulation");
       if (minis <= 0.)
         throw GpiesException(
             "Value for min-integration-step must be a positive, non-zero "
@@ -733,8 +743,9 @@ int main(int argc, char* argv[]) {
       config.min_integration_step = minis;
     }
 
-    if (arg_consumer.has_arg("max-integration-step")) {
-      gp_float maxis = arg_consumer.get_value<gp_float>("max-integration-step");
+    if (arg_consumer.has_arg("max-integration-step", "simulation")) {
+      gp_float maxis = arg_consumer.get_value<gp_float>("max-integration-step",
+                                                        "simulation");
       if (maxis <= 0.)
         throw GpiesException(
             "Value for max-integration-step must be a positive, non-zero "
@@ -744,14 +755,16 @@ int main(int argc, char* argv[]) {
     }
 
     // Output formatting
-    csv = static_cast<bool>(arg_consumer.has_arg("csv"));
-    step_print = static_cast<bool>(arg_consumer.has_arg("step-print"));
+    csv = static_cast<bool>(arg_consumer.has_arg("csv", "simulation"));
+    step_print =
+        static_cast<bool>(arg_consumer.has_arg("step-print", "simulation"));
 
     // Toggle data validation
-    if (arg_consumer.has_arg("data-validation")) {
+    if (arg_consumer.has_arg("data-validation", "simulation")) {
       config.data_validation_on =
           0 ==
-          arg_consumer.get_value<std::string>("data-validation").compare("on");
+          arg_consumer.get_value<std::string>("data-validation", "simulation")
+              .compare("on");
     }
 
     if (arg_consumer.has_arg("reactor")) {
@@ -766,14 +779,14 @@ int main(int argc, char* argv[]) {
       materials::SA304(config.material);
     }
 
-    if (arg_consumer.has_arg("init-interstitials", "")) {
+    if (arg_consumer.has_arg("init-interstitials")) {
       arg_consumer.populate_init_interstitials(config);
     } else {
       config.init_interstitials =
           std::vector<gp_float>(config.max_cluster_size, 0.);
     }
 
-    if (arg_consumer.has_arg("init-vacancies", "")) {
+    if (arg_consumer.has_arg("init-vacancies")) {
       arg_consumer.populate_init_vacancies(config);
     } else {
       config.init_vacancies =

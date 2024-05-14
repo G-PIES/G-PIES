@@ -27,7 +27,7 @@ static std::map<std::string, SensitivityVariable> sensitivity_variables{
     {"vacancy-formation-ev", SensitivityVariable::vacancy_formation_ev},
     {"interstitial-binding-ev", SensitivityVariable::interstitial_binding_ev},
     {"vacancy-binding-ev", SensitivityVariable::vacancy_binding_ev},
-    {"initial-dislocation-density-cm",
+    {"initial-dislocation-density-cm^-2",
      SensitivityVariable::initial_dislocation_density_cm},
     {"flux-dpa-s", SensitivityVariable::flux_dpa_s},
     {"temperature-kelvin", SensitivityVariable::temperature_kelvin},
