@@ -1,5 +1,3 @@
-#include <yaml-cpp/yaml.h>
-
 #include <array>
 #include <boost/program_options.hpp>
 #include <cmath>
@@ -8,12 +6,12 @@
 #include <iomanip>
 #include <iostream>
 
-#include "arg_consumer.hpp"
 #include "client_db/client_db.hpp"
 #include "cluster_dynamics/cluster_dynamics.hpp"
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
+#include "utils/arg_consumer.hpp"
 #include "utils/progress_bar.hpp"
 #include "utils/sensitivity_variable.hpp"
 #include "utils/timer.hpp"
