@@ -178,6 +178,7 @@ struct Simulation {
         delta_time(delta_time) {
     main_sim_reactor = Sim_Reactor();
     main_sim_material = Sim_Material();
+    
     config.data_validation_on = true;
     config.max_cluster_size = 1001;
     config.relative_tolerance = 1.0e-6;
@@ -185,6 +186,22 @@ struct Simulation {
     config.max_num_integration_steps = 5000;
     config.min_integration_step = 1.0e-30;
     config.max_integration_step = 1.0e+20;
+/*
+    config.reactor.set_temperature(603.15);
+    config.reactor.set_flux(2.9e-7);
+    config.reactor.set_dislocation_density_evolution(300.0);
+
+    config.material.set_i_migration(0.45);
+    config.material.set_v_migration(1.35);
+    config.material.set_i_formation(4.1);
+    config.material.set_v_formation(4.1);
+    config.material.set_i_binding(0.6);
+    config.material.set_v_binding(0.5);
+    config.material.set_dislocation_density_0(10.0e+12);
+*/
+    config.reactor = main_sim_reactor.get_reactor();
+    config.material = main_sim_material.get_material();
+
     config.init_interstitials = std::vector<gp_float>(config.max_cluster_size, 0.);
     config.init_vacancies = std::vector<gp_float>(config.max_cluster_size, 0.);
     cd = std::make_unique<ClusterDynamics>(config);
