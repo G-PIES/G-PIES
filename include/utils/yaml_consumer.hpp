@@ -1,62 +1,40 @@
+#ifndef YAML_CONSUMER
+#define YAML_CONSUMER
+
 #include <yaml-cpp/yaml.h>
 
-#include <boost/program_options.hpp>
 #include <exception>
 #include <string>
 #include <vector>
 
-#include "client_db/client_db.hpp"
-#include "cluster_dynamics/cluster_dynamics.hpp"
-#include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
-#include "utils/sensitivity_variable.hpp"
-#include "utils/timer.hpp"
+#include "cluster_dynamics/cluster_dynamics_config.hpp"
 
-namespace po = boost::program_options;
-
-class ArgConsumer {
+class YamlConsumer {
  public:
-  ArgConsumer(int argc, char *argv[], const po::options_description &options) {
-    po::store(po::parse_command_line(argc, argv, options), vm);
-    po::notify(vm);
-
-    if (vm.count("config")) {
-      std::string config_filename = vm["config"].as<std::string>();
-      config = YAML::LoadFile(config_filename);
-    }
+  void load_yaml(const std::string &yaml_filename) {
+    config = YAML::LoadFile(yaml_filename);
   }
 
   bool has_config_file() { return !config.IsNull(); }
 
   bool has_arg(const std::string &arg,
                const std::string &config_category = "") {
-    if (vm.count(arg)) return true;
-
-    if (has_config_file()) {
-      if (config_category.empty()) {
-        return static_cast<bool>(config[arg]);
-      }
-
-      return static_cast<bool>(config[config_category][arg]);
+    if (config_category.empty()) {
+      return static_cast<bool>(config[arg]);
     }
 
-    return false;
+    return static_cast<bool>(config[config_category][arg]);
   }
 
   template <typename T>
   T get_value(const std::string &arg, const std::string &config_category = "") {
-    if (vm.count(arg)) return vm[arg].as<T>();
-
-    if (has_config_file()) {
-      if (config_category.empty()) {
-        return config[arg].as<T>();
-      }
-
-      return config[config_category][arg].as<T>();
+    if (config_category.empty()) {
+      return config[arg].as<T>();
     }
 
-    return vm[arg].as<T>();
+    return config[config_category][arg].as<T>();
   }
 
   void populate_reactor(NuclearReactor &reactor) {
@@ -132,19 +110,7 @@ class ArgConsumer {
                                 config["init-vacancies"]);
   }
 
-  SensitivityVariable get_sa_var() {
-    std::string arg_name =
-        get_value<std::string>("sensitivity-var", "sensitivity-analysis");
-
-    if (sensitivity_variables.count(arg_name)) {
-      return sensitivity_variables[arg_name];
-    }
-
-    return SensitivityVariable::NONE;
-  }
-
  private:
-  po::variables_map vm;
   YAML::Node config;
 
   void populate_vector_from_config(std::vector<gp_float> &vec,
@@ -200,3 +166,5 @@ class ArgConsumer {
     }
   }
 };
+
+#endif  // YAML_CONSUMER

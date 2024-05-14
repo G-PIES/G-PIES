@@ -1,5 +1,3 @@
-#include <yaml-cpp/yaml.h>
-
 #include <array>
 #include <boost/program_options.hpp>
 #include <cmath>
@@ -8,12 +6,12 @@
 #include <iomanip>
 #include <iostream>
 
-#include "arg_consumer.hpp"
 #include "client_db/client_db.hpp"
 #include "cluster_dynamics/cluster_dynamics.hpp"
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
+#include "utils/arg_consumer.hpp"
 #include "utils/progress_bar.hpp"
 #include "utils/sensitivity_variable.hpp"
 #include "utils/timer.hpp"
@@ -368,6 +366,34 @@ ClusterDynamicsState run_simulation() {
 void emit_config_yaml(const std::string& filename) {
   YAML::Emitter out;
   YAML::Emitter sa_comment;
+  YAML::Emitter arrays_comment;
+
+  arrays_comment
+      << YAML::BeginMap << YAML::Key << "init-interstitials" << YAML::Value
+      << YAML::BeginMap << YAML::Key << "array" << YAML::Value << YAML::Flow
+      << std::vector<std::string>{"1.0e-13", "6.0e-10", "4.0e-20", "2.0e-1"}
+      << YAML::Comment("cluster concentrations for cluster sizes 1-4")
+      << YAML::Key << "ranges" << YAML::Value << YAML::BeginSeq << YAML::Flow
+      << std::vector<std::string>{"50", "55", "9.9e-30"}
+      << YAML::Comment("cluster concentrations for cluster sizes 50-55")
+      << YAML::Flow << std::vector<std::string>{"90", "102", "5.5e-29"}
+      << YAML::Comment("cluster concentrations for cluster sizes 90-102")
+      << YAML::Flow << std::vector<std::string>{"995", "1000", "2.2e-22"}
+      << YAML::Comment("cluster concentrations for cluster sizes 995-1000")
+      << YAML::EndSeq << YAML::EndMap << YAML::EndMap << YAML::Newline
+      << YAML::Newline << YAML::BeginMap << YAML::Key << "init-vacancies"
+      << YAML::Value << YAML::BeginMap << YAML::Key << "array" << YAML::Value
+      << YAML::Flow
+      << std::vector<std::string>{"1.0e-5", "2.3e-12", "4.2e-20", "1.3e-13"}
+      << YAML::Comment("cluster concentrations for cluster sizes 1-4")
+      << YAML::Key << "ranges" << YAML::Value << YAML::BeginSeq << YAML::Flow
+      << std::vector<std::string>{"50", "55", "6.2e-29"}
+      << YAML::Comment("cluster concentrations for cluster sizes 50-55")
+      << YAML::Flow << std::vector<std::string>{"90", "102", "1.5e-13"}
+      << YAML::Comment("cluster concentrations for cluster sizes 90-102")
+      << YAML::Flow << std::vector<std::string>{"995", "1000", "4.3e-12"}
+      << YAML::Comment("cluster concentrations for cluster sizes 995-1000")
+      << YAML::EndSeq << YAML::EndMap << YAML::EndMap;
   sa_comment << YAML::BeginMap << YAML::Key << "sensitivity-analysis"
              << YAML::Value << YAML::BeginMap << YAML::Key << "num-sims"
              << YAML::Value << "10" << YAML::Key << "sensitivity-var"
@@ -438,37 +464,12 @@ void emit_config_yaml(const std::string& filename) {
       << YAML::Comment(
              "#################################################################"
              "####")
-      << YAML::Newline << YAML::BeginMap << YAML::Key << "init-interstitials"
-      << YAML::Value << YAML::BeginMap << YAML::Key << "array" << YAML::Value
-      << YAML::Flow
-      << std::vector<std::string>{"1.0e-13", "6.0e-10", "4.0e-20", "2.0e-1"}
-      << YAML::Comment("cluster concentrations for cluster sizes 1-4")
-      << YAML::Key << "ranges" << YAML::Value << YAML::BeginSeq << YAML::Flow
-      << std::vector<std::string>{"50", "55", "9.9e-30"}
-      << YAML::Comment("cluster concentrations for cluster sizes 50-55")
-      << YAML::Flow << std::vector<std::string>{"90", "102", "5.5e-29"}
-      << YAML::Comment("cluster concentrations for cluster sizes 90-102")
-      << YAML::Flow << std::vector<std::string>{"995", "1000", "2.2e-22"}
-      << YAML::Comment("cluster concentrations for cluster sizes 995-1000")
-      << YAML::EndSeq << YAML::EndMap << YAML::EndMap << YAML::Newline
-      << YAML::Newline << YAML::BeginMap << YAML::Key << "init-vacancies"
-      << YAML::Value << YAML::BeginMap << YAML::Key << "array" << YAML::Value
-      << YAML::Flow
-      << std::vector<std::string>{"1.0e-5", "2.3e-12", "4.2e-20", "1.3e-13"}
-      << YAML::Comment("cluster concentrations for cluster sizes 1-4")
-      << YAML::Key << "ranges" << YAML::Value << YAML::BeginSeq << YAML::Flow
-      << std::vector<std::string>{"50", "55", "6.2e-29"}
-      << YAML::Comment("cluster concentrations for cluster sizes 50-55")
-      << YAML::Flow << std::vector<std::string>{"90", "102", "1.5e-13"}
-      << YAML::Comment("cluster concentrations for cluster sizes 90-102")
-      << YAML::Flow << std::vector<std::string>{"995", "1000", "4.3e-12"}
-      << YAML::Comment("cluster concentrations for cluster sizes 995-1000")
-      << YAML::EndSeq << YAML::EndMap << YAML::EndMap << YAML::Newline
-      << YAML::Newline
-      << YAML::Comment(
-             "#################################################################"
-             "####")
       << YAML::Newline << YAML::Newline
+      << YAML::Comment(
+             "UNCOMMENT LINES BELOW TO DEFINE INITIAL DEFECT CLUSTER "
+             "CONCENTRATIONS")
+      << YAML::Newline << YAML::Comment(arrays_comment.c_str()) << YAML::Newline
+      << YAML::Newline
       << YAML::Comment("UNCOMMENT LINES BELOW TO TURN ON SENSITIVITY ANALYSIS")
       << YAML::Newline << YAML::Comment(sa_comment.c_str()) << YAML::Newline;
 
@@ -483,74 +484,7 @@ void emit_config_yaml(const std::string& filename) {
   }
 }
 
-/* TODO - Remove
-void valid_integration_search() {
-  Timer timer;
-
-  ClusterDynamicsState state;
-
-  NuclearReactor reactor;
-  nuclear_reactors::OSIRIS(reactor);
-
-  Material material;
-  materials::SA304(material);
-
-
-  for (size_t n = 100; n < 1000; n += 100) {
-    max_cluster_size = n;
-    gp_float td = 10.;
-    gp_float t = 100.;
-    gp_float rt = relative_tolerance;
-    gp_float at = absolute_tolerance;
-    gp_float minis = 1e-5;
-    gp_float maxis = max_integration_step;
-
-    for (size_t i = 0; i < 21; ++i) {
-      //time_delta = td;
-      //simulation_time = t;
-      relative_tolerance = rt;
-      absolute_tolerance = at;
-      min_integration_step = minis;
-      max_integration_step = maxis;
-
-      try {
-        timer.Start();
-        state = run_simulation(reactor, material);
-        gp_float time = timer.Stop();
-        os << "\nValid Simulation\n"
-          << "time delta: " << time_delta
-          << "  simulation time: " << simulation_time
-          << "  max cluster size: " << static_cast<int>(max_cluster_size)
-          << std::endl
-          << "Integration Settings\n"
-          << "  relative tolerance: " << relative_tolerance
-          << "  absolute tolerance: " << absolute_tolerance
-          << "  max num integration steps: " << max_num_integration_steps
-          << "  min integration step: " << min_integration_step
-          << "  max integration step: " << max_integration_step
-          << "\nTime Elapsed: " << time
-          << std::endl;
-          print_state(state);
-      } catch (...) {
-        timer.Stop();
-      }
-
-      //td *= 10.;
-      //t *= 10.;
-      //rt *= 10.;
-      //at *= 10.;
-      minis /= 10.;
-      //maxis *= 10.;
-    }
-  }
-}
-*/
-
 int main(int argc, char* argv[]) {
-  // TODO - Remove (this is just for testing the CVODES implementation)
-  // valid_integration_search();
-  // return 0;
-
   try {
     // Declare the supported options
     po::options_description all_options("General Options");
