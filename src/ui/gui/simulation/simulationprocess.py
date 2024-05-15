@@ -24,8 +24,8 @@ class SimulationProcess(Process):
 
         t = 0
         block_idx = 0
-        # cd = pycd.Simulation(self.params.C, self.params.simulation_time, self.params.step, self.params.reactor, self.params.material)
-        cd = pycd.Simulation(self.params.C, self.params.simulation_time, self.params.step)
+        #cd = pycd.Simulation(self.params.C, self.params.simulation_time, self.params.step, self.material, self.reactor) 
+        cd = pycd.Simulation(self.params.C, self.params.simulation_time, self.params.step) # DEFAULT REACTOR AND MATERIAL
 
         # Run simulation, read / store data every read_interval number of iterations,
         # set data_ready_event every runner_block_size number of completed read_intervals
