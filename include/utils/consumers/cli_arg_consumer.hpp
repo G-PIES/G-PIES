@@ -1,11 +1,12 @@
-#ifndef ARG_CONSUMER
-#define ARG_CONSUMER
+#ifndef CLI_ARG_CONSUMER
+#define CLI_ARG_CONSUMER
 
 #include <boost/program_options.hpp>
 #include <exception>
 #include <string>
 #include <vector>
 
+#include "arg_consumer.hpp"
 #include "client_db/client_db.hpp"
 #include "cluster_dynamics/cluster_dynamics.hpp"
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
@@ -17,9 +18,10 @@
 
 namespace po = boost::program_options;
 
-class ArgConsumer {
+class CliArgConsumer : public ArgConsumer {
  public:
-  ArgConsumer(int argc, char *argv[], const po::options_description &options) {
+  CliArgConsumer(int argc, char *argv[],
+                 const po::options_description &options) {
     po::store(po::parse_command_line(argc, argv, options), vm);
     po::notify(vm);
 
@@ -27,6 +29,10 @@ class ArgConsumer {
       std::string config_filename = vm["config"].as<std::string>();
       yaml_consumer.load_yaml(config_filename);
     }
+  }
+
+  void populate_cd_config(ClusterDynamicsConfig &cd_config) {
+    ArgConsumer::populate_cd_config(cd_config);
   }
 
   bool has_arg(const std::string &arg,
@@ -40,6 +46,24 @@ class ArgConsumer {
     return false;
   }
 
+  std::string get_string(const std::string &arg,
+                         const std::string &config_category = "") {
+    if (!has_arg(arg, config_category)) return "";
+    return get_value<std::string>(arg, config_category);
+  }
+
+  size_t get_size_t(const std::string &arg,
+                    const std::string &config_category = "") {
+    if (!has_arg(arg, config_category)) return 0;
+    return get_value<size_t>(arg, config_category);
+  }
+
+  gp_float get_float(const std::string &arg,
+                     const std::string &config_category = "") {
+    if (!has_arg(arg, config_category)) return 0.;
+    return get_value<gp_float>(arg, config_category);
+  }
+
   template <typename T>
   T get_value(const std::string &arg, const std::string &config_category = "") {
     if (vm.count(arg)) return vm[arg].as<T>();
@@ -49,17 +73,6 @@ class ArgConsumer {
     }
 
     return vm[arg].as<T>();
-  }
-
-  SensitivityVariable get_sa_var() {
-    std::string arg_name =
-        get_value<std::string>("sensitivity-var", "sensitivity-analysis");
-
-    if (sensitivity_variables.count(arg_name)) {
-      return sensitivity_variables[arg_name];
-    }
-
-    return SensitivityVariable::NONE;
   }
 
   void populate_reactor(NuclearReactor &reactor) {
@@ -82,4 +95,4 @@ class ArgConsumer {
   YamlConsumer yaml_consumer;
 };
 
-#endif  // ARG_CONSUMER
+#endif  // CLI_ARG_CONSUMER

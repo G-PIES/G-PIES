@@ -7,14 +7,25 @@
 #include <string>
 #include <vector>
 
+#include "arg_consumer.hpp"
+#include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
-#include "cluster_dynamics/cluster_dynamics_config.hpp"
 
-class YamlConsumer {
+class YamlConsumer : public ArgConsumer {
  public:
+  YamlConsumer() {}
+
+  explicit YamlConsumer(const std::string &yaml_filename) {
+    load_yaml(yaml_filename);
+  }
+
   void load_yaml(const std::string &yaml_filename) {
     config = YAML::LoadFile(yaml_filename);
+  }
+
+  void populate_cd_config(ClusterDynamicsConfig &cd_config) {
+    ArgConsumer::populate_cd_config(cd_config);
   }
 
   bool has_config_file() { return !config.IsNull(); }
@@ -28,6 +39,24 @@ class YamlConsumer {
     return static_cast<bool>(config[config_category][arg]);
   }
 
+  std::string get_string(const std::string &arg,
+                         const std::string &config_category = "") {
+    if (!has_arg(arg, config_category)) return "";
+    return get_value<std::string>(arg, config_category);
+  }
+
+  size_t get_size_t(const std::string &arg,
+                    const std::string &config_category = "") {
+    if (!has_arg(arg, config_category)) return 0;
+    return get_value<size_t>(arg, config_category);
+  }
+
+  gp_float get_float(const std::string &arg,
+                     const std::string &config_category = "") {
+    if (!has_arg(arg, config_category)) return 0.;
+    return get_value<gp_float>(arg, config_category);
+  }
+
   template <typename T>
   T get_value(const std::string &arg, const std::string &config_category = "") {
     if (config_category.empty()) {
@@ -35,63 +64,6 @@ class YamlConsumer {
     }
 
     return config[config_category][arg].as<T>();
-  }
-
-  void populate_reactor(NuclearReactor &reactor) {
-    reactor.set_flux(config["reactor"]["flux-dpa-s"].as<gp_float>());
-    reactor.set_temperature(
-        config["reactor"]["temperature-kelvin"].as<gp_float>());
-    reactor.set_recombination(
-        config["reactor"]["recombination-rate"].as<gp_float>());
-    reactor.set_i_bi(config["reactor"]["bi-interstitial-rate"].as<gp_float>());
-    reactor.set_i_tri(
-        config["reactor"]["tri-interstitial-rate"].as<gp_float>());
-    reactor.set_i_quad(
-        config["reactor"]["quad-interstitial-rate"].as<gp_float>());
-    reactor.set_v_bi(config["reactor"]["bi-vacancy-rate"].as<gp_float>());
-    reactor.set_v_tri(config["reactor"]["tri-vacancy-rate"].as<gp_float>());
-    reactor.set_v_quad(config["reactor"]["quad-vacancy-rate"].as<gp_float>());
-    reactor.set_dislocation_density_evolution(
-        config["reactor"]["dislocation-density-evolution"].as<gp_float>());
-  }
-
-  void populate_material(Material &material) {
-    material.set_i_migration(
-        config["material"]["interstitial-migration-ev"].as<gp_float>());
-    material.set_v_migration(
-        config["material"]["vacancy-migration-ev"].as<gp_float>());
-    material.set_i_diffusion_0(
-        config["material"]["initial-interstitial-diffusion"].as<gp_float>());
-    material.set_v_diffusion_0(
-        config["material"]["initial-vacancy-diffusion"].as<gp_float>());
-    material.set_i_formation(
-        config["material"]["interstitial-formation-ev"].as<gp_float>());
-    material.set_v_formation(
-        config["material"]["vacancy-formation-ev"].as<gp_float>());
-    material.set_i_binding(
-        config["material"]["interstitial-binding-ev"].as<gp_float>());
-    material.set_v_binding(
-        config["material"]["vacancy-binding-ev"].as<gp_float>());
-    material.set_recombination_radius(
-        config["material"]["recombination-radius-cm"].as<gp_float>());
-    material.set_i_loop_bias(
-        config["material"]["interstitial-loop-bias"].as<gp_float>());
-    material.set_i_dislocation_bias(
-        config["material"]["interstitial-dislocation-bias"].as<gp_float>());
-    material.set_i_dislocation_bias_param(
-        config["material"]["interstitial-dislocation-bias-param"]
-            .as<gp_float>());
-    material.set_v_loop_bias(
-        config["material"]["vacancy-loop-bias"].as<gp_float>());
-    material.set_v_dislocation_bias(
-        config["material"]["vacancy-dislocation-bias"].as<gp_float>());
-    material.set_v_dislocation_bias_param(
-        config["material"]["vacancy-dislocation-bias-param"].as<gp_float>());
-    material.set_dislocation_density_0(
-        config["material"]["initial-dislocation-density-cm^-2"].as<gp_float>());
-    material.set_grain_size(config["material"]["grain-size-cm"].as<gp_float>());
-    material.set_lattice_param(
-        config["material"]["lattice-param-cm"].as<gp_float>());
   }
 
   void populate_init_interstitials(ClusterDynamicsConfig &cd_config) {
