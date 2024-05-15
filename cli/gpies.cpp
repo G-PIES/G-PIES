@@ -35,7 +35,8 @@ void print_reactor() {
       << "\nrecombination rate: " << cd_config.reactor.get_recombination()
       << "\nbi-interstitial generation rate: " << cd_config.reactor.get_i_bi()
       << "\ntri-interstitial generation rate: " << cd_config.reactor.get_i_tri()
-      << "\nquad-interstitial generation rate: " << cd_config.reactor.get_i_quad()
+      << "\nquad-interstitial generation rate: "
+      << cd_config.reactor.get_i_quad()
       << "\nbi-vacancy generation rate: " << cd_config.reactor.get_v_bi()
       << "\ntri-vacancy generation rate: " << cd_config.reactor.get_v_tri()
       << "\nquad-vacancy generation rate: " << cd_config.reactor.get_v_quad()
@@ -44,25 +45,26 @@ void print_reactor() {
 }
 
 void print_material() {
-  std::cout << cd_config.material.species
-            << "\ninterstitial migration: " << cd_config.material.get_i_migration()
-            << " eV"
+  std::cout << cd_config.material.species << "\ninterstitial migration: "
+            << cd_config.material.get_i_migration() << " eV"
             << "\nvacancy migration: " << cd_config.material.get_v_migration()
             << " eV"
             << "\ninitial interstitial diffusion: "
             << cd_config.material.get_i_diffusion_0() << " cm^2/s"
             << "\ninitial vacancy diffusion: "
             << cd_config.material.get_v_diffusion_0() << " cm^2/s"
-            << "\ninterstitial formation: " << cd_config.material.get_i_formation()
-            << " eV"
+            << "\ninterstitial formation: "
+            << cd_config.material.get_i_formation() << " eV"
             << "\nvacancy formation: " << cd_config.material.get_v_formation()
             << " eV"
             << "\ninterstitial binding: " << cd_config.material.get_i_binding()
             << " eV"
-            << "\nvacancy binding: " << cd_config.material.get_v_binding() << " eV"
+            << "\nvacancy binding: " << cd_config.material.get_v_binding()
+            << " eV"
             << "\nrecombination radius: "
             << cd_config.material.get_recombination_radius() << " cm"
-            << "\ninterstitial loop bias: " << cd_config.material.get_i_loop_bias()
+            << "\ninterstitial loop bias: "
+            << cd_config.material.get_i_loop_bias()
             << "\ninterstitial dislocation bias: "
             << cd_config.material.get_i_dislocation_bias()
             << "\ninterstitial dislocation bias param: "
@@ -112,7 +114,8 @@ void print_start_message() {
   std::cout << "\nInitial Defect Clustering";
   bool is_perfect_lattice = true;
   for (size_t n = 1; n < cd_config.max_cluster_size; ++n) {
-    if (cd_config.init_interstitials[n] > 0. || cd_config.init_vacancies[n] > 0.) {
+    if (cd_config.init_interstitials[n] > 0. ||
+        cd_config.init_vacancies[n] > 0.) {
       // only print header if there is information to display
       if (is_perfect_lattice) {
         is_perfect_lattice = false;
@@ -227,38 +230,40 @@ gp_float sa_update_config() {
   switch (cd_config.sa_var) {
     case SensitivityVariable::interstitial_migration_ev:
       cd_config.material.set_i_migration(cd_config.material.get_i_migration() +
-                                      cd_config.sa_var_delta);
+                                         cd_config.sa_var_delta);
       return cd_config.material.get_i_migration();
     case SensitivityVariable::vacancy_migration_ev:
       cd_config.material.set_v_migration(cd_config.material.get_v_migration() +
-                                      cd_config.sa_var_delta);
+                                         cd_config.sa_var_delta);
       return cd_config.material.get_v_migration();
     case SensitivityVariable::interstitial_formation_ev:
       cd_config.material.set_i_formation(cd_config.material.get_i_formation() +
-                                      cd_config.sa_var_delta);
+                                         cd_config.sa_var_delta);
       return cd_config.material.get_i_formation();
     case SensitivityVariable::vacancy_formation_ev:
       cd_config.material.set_v_formation(cd_config.material.get_v_formation() +
-                                      cd_config.sa_var_delta);
+                                         cd_config.sa_var_delta);
       return cd_config.material.get_v_formation();
     case SensitivityVariable::interstitial_binding_ev:
       cd_config.material.set_i_binding(cd_config.material.get_i_binding() +
-                                    cd_config.sa_var_delta);
+                                       cd_config.sa_var_delta);
       return cd_config.material.get_i_binding();
     case SensitivityVariable::vacancy_binding_ev:
       cd_config.material.set_v_binding(cd_config.material.get_v_binding() +
-                                    cd_config.sa_var_delta);
+                                       cd_config.sa_var_delta);
       return cd_config.material.get_v_binding();
     case SensitivityVariable::initial_dislocation_density_cm:
       cd_config.material.set_dislocation_density_0(
-          cd_config.material.get_dislocation_density_0() + cd_config.sa_var_delta);
+          cd_config.material.get_dislocation_density_0() +
+          cd_config.sa_var_delta);
       return cd_config.material.get_dislocation_density_0();
     case SensitivityVariable::flux_dpa_s:
-      cd_config.reactor.set_flux(cd_config.reactor.get_flux() + cd_config.sa_var_delta);
+      cd_config.reactor.set_flux(cd_config.reactor.get_flux() +
+                                 cd_config.sa_var_delta);
       return cd_config.reactor.get_flux();
     case SensitivityVariable::temperature_kelvin:
       cd_config.reactor.set_temperature(cd_config.reactor.get_temperature() +
-                                     cd_config.sa_var_delta);
+                                        cd_config.sa_var_delta);
       return cd_config.reactor.get_temperature();
     case SensitivityVariable::dislocation_density_evolution:
       cd_config.reactor.set_dislocation_density_evolution(
@@ -316,8 +321,9 @@ ClusterDynamicsState run_simulation() {
 
   ClusterDynamicsState state;
 
-  progressbar bar(static_cast<int>(cd_config.simulation_time / cd_config.time_delta), true,
-                  std::cout);
+  progressbar bar(
+      static_cast<int>(cd_config.simulation_time / cd_config.time_delta), true,
+      std::cout);
   bar.set_todo_char(" ");
   bar.set_done_char("█");
   bar.set_opening_bracket_char("[");
@@ -499,9 +505,11 @@ int main(int argc, char* argv[]) {
         "max-cluster-size",
         po::value<size_t>()->implicit_value(cd_config.max_cluster_size),
         "set the max size of defect clustering to model")(
-        "time", po::value<gp_float>()->implicit_value(cd_config.simulation_time),
+        "time",
+        po::value<gp_float>()->implicit_value(cd_config.simulation_time),
         "the simulation environment time span to model (in seconds)")(
-        "time-delta", po::value<gp_float>()->implicit_value(cd_config.time_delta),
+        "time-delta",
+        po::value<gp_float>()->implicit_value(cd_config.time_delta),
         "the time delta for every step of the simulation (in seconds)")(
         "sample-interval",
         po::value<gp_float>()->implicit_value(cd_config.sample_interval),
@@ -513,7 +521,8 @@ int main(int argc, char* argv[]) {
         po::value<gp_float>()->implicit_value(cd_config.absolute_tolerance),
         "absolute relative tolerance for integration error")(
         "max-num-integration-steps",
-        po::value<size_t>()->implicit_value(cd_config.max_num_integration_steps),
+        po::value<size_t>()->implicit_value(
+            cd_config.max_num_integration_steps),
         "maximum allowed number of integration steps to achieve a single "
         "estimation")(
         "min-integration-step",
@@ -722,8 +731,8 @@ int main(int argc, char* argv[]) {
       // --------------------------------------------------------------------------------------------
       // Write simulation result to the database
       HistorySimulation history_simulation(
-          cd_config.max_cluster_size, cd_config.simulation_time, cd_config.time_delta, cd_config.reactor,
-          cd_config.material, state);
+          cd_config.max_cluster_size, cd_config.simulation_time,
+          cd_config.time_delta, cd_config.reactor, cd_config.material, state);
 
       db.create_simulation(history_simulation);
       // --------------------------------------------------------------------------------------------

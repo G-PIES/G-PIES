@@ -7,10 +7,10 @@
 #include <string>
 #include <vector>
 
+#include "arg_consumer.hpp"
+#include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
-#include "cluster_dynamics/cluster_dynamics_config.hpp"
-#include "arg_consumer.hpp"
 
 class YamlConsumer : public ArgConsumer {
  public:
@@ -32,17 +32,20 @@ class YamlConsumer : public ArgConsumer {
     return static_cast<bool>(config[config_category][arg]);
   }
 
-  std::string get_string(const std::string &arg, const std::string &config_category = "") {
+  std::string get_string(const std::string &arg,
+                         const std::string &config_category = "") {
     if (!has_arg(arg, config_category)) return "";
     return get_value<std::string>(arg, config_category);
   }
 
-  size_t get_size_t(const std::string &arg, const std::string &config_category = "") {
+  size_t get_size_t(const std::string &arg,
+                    const std::string &config_category = "") {
     if (!has_arg(arg, config_category)) return 0;
     return get_value<size_t>(arg, config_category);
   }
 
-  gp_float get_float(const std::string &arg, const std::string &config_category = "") {
+  gp_float get_float(const std::string &arg,
+                     const std::string &config_category = "") {
     if (!has_arg(arg, config_category)) return 0.;
     return get_value<gp_float>(arg, config_category);
   }

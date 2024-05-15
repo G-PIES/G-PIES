@@ -158,41 +158,34 @@ class ArgConsumer {
 
   void populate_material(Material &material) {
     if (has_arg("material")) {
-    material.set_i_migration(
-        get_float("interstitial-migration-ev", "material"));
-    material.set_v_migration(
-        get_float("vacancy-migration-ev", "material"));
-    material.set_i_diffusion_0(
-        get_float("initial-interstitial-diffusion", "material"));
-    material.set_v_diffusion_0(
-        get_float("initial-vacancy-diffusion", "material"));
-    material.set_i_formation(
-        get_float("interstitial-formation-ev", "material"));
-    material.set_v_formation(
-        get_float("vacancy-formation-ev", "material"));
-    material.set_i_binding(
-        get_float("interstitial-binding-ev", "material"));
-    material.set_v_binding(
-        get_float("vacancy-binding-ev", "material"));
-    material.set_recombination_radius(
-        get_float("recombination-radius-cm", "material"));
-    material.set_i_loop_bias(
-        get_float("interstitial-loop-bias", "material"));
-    material.set_i_dislocation_bias(
-        get_float("interstitial-dislocation-bias", "material"));
-    material.set_i_dislocation_bias_param(
-        get_float("interstitial-dislocation-bias-param", "material"));
-    material.set_v_loop_bias(
-        get_float("vacancy-loop-bias", "material"));
-    material.set_v_dislocation_bias(
-        get_float("vacancy-dislocation-bias", "material"));
-    material.set_v_dislocation_bias_param(
-        get_float("vacancy-dislocation-bias-param", "material"));
-    material.set_dislocation_density_0(
-        get_float("initial-dislocation-density-cm^-2", "material"));
-    material.set_grain_size(get_float("grain-size-cm", "material"));
-    material.set_lattice_param(
-        get_float("lattice-param-cm", "material"));
+      material.set_i_migration(
+          get_float("interstitial-migration-ev", "material"));
+      material.set_v_migration(get_float("vacancy-migration-ev", "material"));
+      material.set_i_diffusion_0(
+          get_float("initial-interstitial-diffusion", "material"));
+      material.set_v_diffusion_0(
+          get_float("initial-vacancy-diffusion", "material"));
+      material.set_i_formation(
+          get_float("interstitial-formation-ev", "material"));
+      material.set_v_formation(get_float("vacancy-formation-ev", "material"));
+      material.set_i_binding(get_float("interstitial-binding-ev", "material"));
+      material.set_v_binding(get_float("vacancy-binding-ev", "material"));
+      material.set_recombination_radius(
+          get_float("recombination-radius-cm", "material"));
+      material.set_i_loop_bias(get_float("interstitial-loop-bias", "material"));
+      material.set_i_dislocation_bias(
+          get_float("interstitial-dislocation-bias", "material"));
+      material.set_i_dislocation_bias_param(
+          get_float("interstitial-dislocation-bias-param", "material"));
+      material.set_v_loop_bias(get_float("vacancy-loop-bias", "material"));
+      material.set_v_dislocation_bias(
+          get_float("vacancy-dislocation-bias", "material"));
+      material.set_v_dislocation_bias_param(
+          get_float("vacancy-dislocation-bias-param", "material"));
+      material.set_dislocation_density_0(
+          get_float("initial-dislocation-density-cm^-2", "material"));
+      material.set_grain_size(get_float("grain-size-cm", "material"));
+      material.set_lattice_param(get_float("lattice-param-cm", "material"));
     }
   }
 
