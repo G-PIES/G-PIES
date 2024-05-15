@@ -11,7 +11,7 @@
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
-#include "utils/cli_arg_consumer.hpp"
+#include "utils/consumers/cli_arg_consumer.hpp"
 #include "utils/progress_bar.hpp"
 #include "utils/sensitivity_variable.hpp"
 #include "utils/timer.hpp"
