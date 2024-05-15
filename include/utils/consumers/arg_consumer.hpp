@@ -2,6 +2,7 @@
 #define ARG_CONSUMER
 
 #include <string>
+#include <vector>
 
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "utils/gpies_exception.hpp"
