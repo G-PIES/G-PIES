@@ -14,13 +14,20 @@
 
 class YamlConsumer : public ArgConsumer {
  public:
-  void populate_cd_config(ClusterDynamicsConfig &cd_config) {
-    ArgConsumer::populate_cd_config(cd_config);
+  YamlConsumer() {};
+
+  YamlConsumer(const std::string &yaml_filename) {
+    load_yaml(yaml_filename);
   }
 
   void load_yaml(const std::string &yaml_filename) {
     config = YAML::LoadFile(yaml_filename);
   }
+
+  void populate_cd_config(ClusterDynamicsConfig &cd_config) {
+    ArgConsumer::populate_cd_config(cd_config);
+  }
+
   bool has_config_file() { return !config.IsNull(); }
 
   bool has_arg(const std::string &arg,

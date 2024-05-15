@@ -85,7 +85,7 @@ class ArgConsumer {
     }
 
     if (has_arg("max-num-integration-steps", "simulation")) {
-      size_t maxnis = get_float("max-num-integration-steps", "simulation");
+      size_t maxnis = get_size_t("max-num-integration-steps", "simulation");
       if (maxnis <= 0)
         throw GpiesException(
             "Value for max-num-integration-steps must be a positive, non-zero "
