@@ -83,31 +83,32 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
             self.setWindowTitle(str(os.path.basename(fileName)) )
 
     def import_yaml(self):
-        config_name = 'config.yaml'
-        with open('../../'+config_name, 'r') as file:
-            sim_config = yaml.safe_load(file)
-        if (sim_config):
-            print(config_name + " imported successfully")
-            #print(sim_config)
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        config_name, _ = QtWidgets.QFileDialog.getOpenFileName(self,
+            "Open YML Config", "","YAML Files (*.yml, *.yaml)", options=options)
+        if config_name:
+            print(str(os.path.basename(config_name)))
+            with open(config_name, 'r') as file:
+                sim_config = yaml.safe_load(file)
+            if (sim_config):
+                print(config_name + " imported successfully")
 
-        try:
-            temp = sim_config['reactor']['temperature-kelvin']
-            self.reactor.set_temperature(temp)
-        except:
-            self.reactor.set_temperature(603.15)
+            try:
+                temp = sim_config['reactor']['temperature-kelvin']
+                self.reactor.set_temperature(temp)
+            except:
+                self.reactor.set_temperature(603.15)
 
-        try:
-            temp = sim_config['reactor']['flux-dpa-s']
-            self.reactor.set_flux(temp)
-        except:
-            self.reactor.set_flux(2.9e-7)
-        
-        #....
+            try:
+                temp = sim_config['reactor']['flux-dpa-s']
+                self.reactor.set_flux(temp)
+            except:
+                self.reactor.set_flux(2.9e-7)
+            #....
             
 
     def get_reactor_settings(self):
-        
-        
         self.input_dialog.getReactorSettings()
         self.input_dialog.exec_()
         inputs = self.input_dialog.getReactorInputs()
