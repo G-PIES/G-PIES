@@ -16,7 +16,9 @@ class YamlConsumer : public ArgConsumer {
  public:
   YamlConsumer() {}
 
-  explicit YamlConsumer(const std::string &yaml_filename) { load_yaml(yaml_filename); }
+  explicit YamlConsumer(const std::string &yaml_filename) {
+    load_yaml(yaml_filename);
+  }
 
   void load_yaml(const std::string &yaml_filename) {
     config = YAML::LoadFile(yaml_filename);
