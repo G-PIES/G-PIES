@@ -18,6 +18,7 @@ from gui.visualization.legendcheckbox import LegendCheckBox
 import libpyclusterdynamics as pycd
 import sys
 import os
+import yaml
 sys.path.append('../G-PIES/out')
 
 
@@ -29,7 +30,7 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
         self.input_dialog = InputDialog(self)
-        self.init_element_states()
+        #self.init_element_states() removed
         self.init_connections()
         self.reactor=0
         self.material= pycd.Sim_Material()
@@ -68,6 +69,7 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         self.actionReactor_Settings.triggered.connect(self.get_reactor_settings)
         self.actionMaterial_Settings.triggered.connect(self.get_material_settings)
         self.actionExportAs.triggered.connect(self.export_as)
+        self.actionImport.triggered.connect(self.import_yaml)
 
     def export_as(self):
         options = QtWidgets.QFileDialog.Options()
@@ -79,6 +81,29 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
                 f.write(''.join(self.npcsvarry))
             self.fileName = fileName
             self.setWindowTitle(str(os.path.basename(fileName)) )
+
+    def import_yaml(self):
+        config_name = 'config.yaml'
+        with open('../../'+config_name, 'r') as file:
+            sim_config = yaml.safe_load(file)
+        if (sim_config):
+            print(config_name + " imported successfully")
+            #print(sim_config)
+
+        try:
+            temp = sim_config['reactor']['temperature-kelvin']
+            self.reactor.set_temperature(temp)
+        except:
+            self.reactor.set_temperature(603.15)
+
+        try:
+            temp = sim_config['reactor']['flux-dpa-s']
+            self.reactor.set_flux(temp)
+        except:
+            self.reactor.set_flux(2.9e-7)
+        
+        #....
+            
 
     def get_reactor_settings(self):
         
