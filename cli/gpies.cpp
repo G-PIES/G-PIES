@@ -516,10 +516,10 @@ int main(int argc, char* argv[]) {
         "how often to record simulation environment state (in seconds)")(
         "relative-tolerance",
         po::value<gp_float>()->implicit_value(cd_config.relative_tolerance),
-        "scalar relative tolerance for integration error")(
+        "relative tolerance for integration error")(
         "absolute-tolerance",
         po::value<gp_float>()->implicit_value(cd_config.absolute_tolerance),
-        "absolute relative tolerance for integration error")(
+        "absolute tolerance for integration solution error")(
         "max-num-integration-steps",
         po::value<size_t>()->implicit_value(
             cd_config.max_num_integration_steps),
