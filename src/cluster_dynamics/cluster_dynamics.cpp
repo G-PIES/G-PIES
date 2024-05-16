@@ -7,14 +7,23 @@
 #elif defined(USE_METAL)
 #include "cluster_dynamics_metal_impl.hpp"
 #else
-#include "cluster_dynamics_impl.hpp"
+#include "cluster_dynamics_cpu_impl.hpp"
 #endif
 
-ClusterDynamics::ClusterDynamics(ClusterDynamicsConfig &config) {
-  this->reactor = config.reactor;
-  this->material = config.material;
-  _impl = std::make_unique<ClusterDynamicsImpl>(config);
+ClusterDynamics ClusterDynamics::cpu(ClusterDynamicsConfig &config) {
+  #if defined(USE_CUDA)
+  auto impl = std::make_unique<ClusterDynamicsCudaImpl>(config);
+  #else
+  auto impl = std::make_unique<ClusterDynamicsCpuImpl>(config);
+  #endif
+  return ClusterDynamics(config, std::move(impl));
 }
+
+ClusterDynamics::ClusterDynamics(ClusterDynamicsConfig &config,
+                                 std::unique_ptr<ClusterDynamicsImpl> impl)
+    : _impl(std::move(impl)),
+      material(config.material),
+      reactor(config.reactor) {}
 
 /** We cannot use the default destructor that the header would've defined
  * because unique_ptr needs to know how to delete the type it contains:

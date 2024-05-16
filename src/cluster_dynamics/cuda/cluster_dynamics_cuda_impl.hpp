@@ -21,9 +21,11 @@
 #include "nuclear_reactor_impl.hpp"
 #include "utils/constants.hpp"
 
+#include "../cluster_dynamics_impl.hpp"
+
 #define __CUDADECL__ __device__ __host__
 
-class ClusterDynamicsImpl {
+class ClusterDynamicsCudaImpl : public ClusterDynamicsImpl {
  public:
   gp_float time;
   gp_float dpa;
@@ -55,7 +57,7 @@ class ClusterDynamicsImpl {
   NuclearReactorImpl reactor;
 
   thrust::device_vector<int> indices;
-  thrust::device_ptr<ClusterDynamicsImpl> self;
+  thrust::device_ptr<ClusterDynamicsCudaImpl> self;
   thrust::host_vector<gp_float> host_interstitials;
   thrust::host_vector<gp_float> host_vacancies;
 
@@ -118,8 +120,8 @@ class ClusterDynamicsImpl {
                     void* user_data);
 
   // Interface functions
-  explicit ClusterDynamicsImpl(ClusterDynamicsConfig& config);
-  ~ClusterDynamicsImpl();
+  explicit ClusterDynamicsCudaImpl(ClusterDynamicsConfig& config);
+  ~ClusterDynamicsCudaImpl();
 
   ClusterDynamicsState run(gp_float total_time);
   MaterialImpl get_material() const;

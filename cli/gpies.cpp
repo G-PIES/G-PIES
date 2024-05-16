@@ -211,12 +211,12 @@ void profile() {
   nuclear_reactors::OSIRIS(cd_config.reactor);
   materials::SA304(cd_config.material);
 
-  ClusterDynamics cd(cd_config);
+  ClusterDynamics cd = ClusterDynamics::cpu(cd_config);
   cd.run(1e-5, 1e-5);
 
   for (int n = 100; n < 400000; n += 10000) {
     os << "N=" << n << std::endl;
-    ClusterDynamics cd(cd_config);
+    ClusterDynamics cd = ClusterDynamics::cpu(cd_config);
 
     timer.Start();
     state = cd.run(1e-5, 1e-5);
@@ -307,7 +307,7 @@ gp_float get_sa_var_value() {
 }
 
 ClusterDynamicsState run_simulation() {
-  ClusterDynamics cd(cd_config);
+  ClusterDynamics cd = ClusterDynamics::cpu(cd_config);
 
   print_start_message();
 
@@ -683,7 +683,7 @@ int main(int argc, char* argv[]) {
       // --------------------------------------------------------------------------------------------
       // sensitivity analysis simulation loop
       for (size_t n = 0; n < cd_config.sa_num_simulations; n++) {
-        ClusterDynamics cd(cd_config);
+        ClusterDynamics cd = ClusterDynamics::cpu(cd_config);
         ClusterDynamicsState state;
 
         if (n > 0) os << "\n";  // visual divider for consecutive sims
