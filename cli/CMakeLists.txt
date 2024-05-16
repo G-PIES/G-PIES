@@ -19,18 +19,3 @@ if(GP_BUILD_CUDA)
   target_link_libraries(gpies_cuda Boost::program_options)
   target_link_libraries(gpies_cuda yaml-cpp::yaml-cpp) 
 endif()
-
-if(GP_BUILD_METAL)
-  add_executable(gpies_metal ./gpies.cpp)
-  target_compile_definitions(gpies_metal PRIVATE USE_METAL)
-  target_compile_definitions(gpies_metal PUBLIC GP_FLOAT=float)
-  target_include_directories(gpies_metal PRIVATE ../src/cluster_dynamics)
-  target_link_libraries(gpies_metal clusterdynamicsmetal)
-  target_link_libraries(gpies_metal clientdbmetal)
-  target_link_libraries(gpies_metal
-    "-framework Metal"
-    "-framework Foundation"
-    "-framework QuartzCore"
-  )
-  target_link_libraries(gpies_metal Boost::program_options)
-endif()

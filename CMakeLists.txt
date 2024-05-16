@@ -25,16 +25,6 @@ if(GP_BUILD_CUDA)
   enable_language(CUDA)
 endif()
 
-set(GP_BUILD_METAL false CACHE BOOL "Build Metal-dependent targets.")
-if(GP_BUILD_METAL)
-  FetchContent_Declare(
-    metal-cpp
-    URL https://developer.apple.com/metal/cpp/files/metal-cpp_macOS14.2_iOS17.2.zip
-  )
-  FetchContent_MakeAvailable(metal-cpp)
-  set(METAL_INCLUDE_DIRS ${metal-cpp_SOURCE_DIR})
-endif()
-
 find_package(SUNDIALS CONFIG)
 if(NOT SUNDIALS_FOUND)
   set(EXAMPLES_ENABLE_C OFF)
@@ -143,6 +133,5 @@ add_subdirectory(./cli)
 add_subdirectory(./src/client_db)
 add_subdirectory(./src/cluster_dynamics/cpu)
 add_subdirectory(./src/cluster_dynamics/cuda)
-add_subdirectory(./src/cluster_dynamics/metal)
 add_subdirectory(./src/okmc)
 add_subdirectory(./test)

@@ -4,8 +4,6 @@
 
 #if defined(USE_CUDA)
 #include "cluster_dynamics_cuda_impl.hpp"
-#elif defined(USE_METAL)
-#include "cluster_dynamics_metal_impl.hpp"
 #else
 #include "cluster_dynamics_cpu_impl.hpp"
 #endif
