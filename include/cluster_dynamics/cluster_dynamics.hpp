@@ -25,6 +25,9 @@ class ClusterDynamics {
 
  public:
   static ClusterDynamics cpu(ClusterDynamicsConfig &config);
+#if defined(USE_CUDA)
+  static ClusterDynamics cuda(ClusterDynamicsConfig &config);
+#endif
 
   ~ClusterDynamics();
 

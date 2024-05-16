@@ -9,13 +9,16 @@
 #endif
 
 ClusterDynamics ClusterDynamics::cpu(ClusterDynamicsConfig &config) {
-  #if defined(USE_CUDA)
-  auto impl = std::make_unique<ClusterDynamicsCudaImpl>(config);
-  #else
   auto impl = std::make_unique<ClusterDynamicsCpuImpl>(config);
-  #endif
   return ClusterDynamics(config, std::move(impl));
 }
+
+#if defined(USE_CUDA)
+ClusterDynamics ClusterDynamics::cuda(ClusterDynamicsConfig &config) {
+  auto impl = std::make_unique<ClusterDynamicsCudaImpl>(config);
+  return ClusterDynamics(config, std::move(impl));
+}
+#endif
 
 ClusterDynamics::ClusterDynamics(ClusterDynamicsConfig &config,
                                  std::unique_ptr<ClusterDynamicsImpl> impl)
