@@ -12,7 +12,8 @@
     The rate of production of interstital defects from the irradiation cascade
     for size (n) clusters.
 */
-__CUDADECL__ gp_float ClusterDynamicsCudaImpl::i_defect_production(size_t n) const {
+__CUDADECL__ gp_float
+ClusterDynamicsCudaImpl::i_defect_production(size_t n) const {
   switch (n) {
     case 1:
       return reactor.recombination * reactor.flux *
@@ -36,7 +37,8 @@ __CUDADECL__ gp_float ClusterDynamicsCudaImpl::i_defect_production(size_t n) con
     The rate of production of vacancy defects from the irradiation cascade for
     size (n) clusters.
 */
-__CUDADECL__ gp_float ClusterDynamicsCudaImpl::v_defect_production(size_t n) const {
+__CUDADECL__ gp_float
+ClusterDynamicsCudaImpl::v_defect_production(size_t n) const {
   switch (n) {
     case 1:
       return reactor.recombination * reactor.flux *
@@ -181,7 +183,8 @@ ClusterDynamicsCudaImpl::v_combined_promotion_demotion_rate(size_t n) const {
                (1)           (2)     (3)
     c[i,n-1] = B[i,i](n-1) * Ci(1) * P_unf(n)
 */
-__CUDADECL__ gp_float ClusterDynamicsCudaImpl::i_promotion_rate(size_t n) const {
+__CUDADECL__ gp_float
+ClusterDynamicsCudaImpl::i_promotion_rate(size_t n) const {
   return
       // (1)
       ii_absorption(n)
@@ -198,7 +201,8 @@ __CUDADECL__ gp_float ClusterDynamicsCudaImpl::i_promotion_rate(size_t n) const 
                (1)           (2)
     c[v,n-1] = B[v,v](n-1) * Cv(1)
 */
-__CUDADECL__ gp_float ClusterDynamicsCudaImpl::v_promotion_rate(size_t n) const {
+__CUDADECL__ gp_float
+ClusterDynamicsCudaImpl::v_promotion_rate(size_t n) const {
   return
       // (1)
       vv_absorption(n) *
@@ -551,7 +555,8 @@ __CUDADECL__ gp_float ClusterDynamicsCudaImpl::v_bias_factor(size_t vn) const {
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 6
     Interstitial binding energy.
 */
-__CUDADECL__ gp_float ClusterDynamicsCudaImpl::i_binding_energy(size_t in) const {
+__CUDADECL__ gp_float
+ClusterDynamicsCudaImpl::i_binding_energy(size_t in) const {
   return material.i_formation +
          (material.i_binding - material.i_formation) / (std::pow(2., .8) - 1) *
              (std::pow((gp_float)in, .8) - std::pow((gp_float)in - 1., .8));
@@ -560,7 +565,8 @@ __CUDADECL__ gp_float ClusterDynamicsCudaImpl::i_binding_energy(size_t in) const
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 6
     Vacancy binding energy.
 */
-__CUDADECL__ gp_float ClusterDynamicsCudaImpl::v_binding_energy(size_t vn) const {
+__CUDADECL__ gp_float
+ClusterDynamicsCudaImpl::v_binding_energy(size_t vn) const {
   return material.v_formation +
          (material.v_binding - material.v_formation) / (std::pow(2., .8) - 1) *
              (std::pow((gp_float)vn, .8) - std::pow((gp_float)vn - 1., .8));
@@ -678,8 +684,7 @@ void ClusterDynamicsCudaImpl::step_init() {
   vv_sum_absorption_val = vv_sum_absorption(max_cluster_size - 1);
 
   cudaMemcpy(thrust::raw_pointer_cast(self), this,
-             sizeof(ClusterDynamicsCudaImpl),
-             cudaMemcpyHostToDevice);
+             sizeof(ClusterDynamicsCudaImpl), cudaMemcpyHostToDevice);
 }
 
 ClusterDynamicsCudaImpl::~ClusterDynamicsCudaImpl() {
@@ -732,9 +737,11 @@ gp_float ClusterDynamicsCudaImpl::vi_sum_absorption(size_t) const {
 }
 
 int ClusterDynamicsCudaImpl::system([[maybe_unused]] double t,
-                                N_Vector state_vector,
-                                N_Vector derivatives_vector, void *user_data) {
-  ClusterDynamicsCudaImpl *cd = static_cast<ClusterDynamicsCudaImpl *>(user_data);
+                                    N_Vector state_vector,
+                                    N_Vector derivatives_vector,
+                                    void *user_data) {
+  ClusterDynamicsCudaImpl *cd =
+      static_cast<ClusterDynamicsCudaImpl *>(user_data);
 
   gp_float *i_state = N_VGetArrayPointer(state_vector);
   gp_float *v_state = i_state + cd->max_cluster_size + 2;
@@ -936,7 +943,9 @@ void ClusterDynamicsCudaImpl::set_material(const MaterialImpl &material) {
   this->material = MaterialImpl(material);
 }
 
-NuclearReactorImpl ClusterDynamicsCudaImpl::get_reactor() const { return reactor; }
+NuclearReactorImpl ClusterDynamicsCudaImpl::get_reactor() const {
+  return reactor;
+}
 
 void ClusterDynamicsCudaImpl::set_reactor(const NuclearReactorImpl &reactor) {
   this->reactor = NuclearReactorImpl(reactor);
