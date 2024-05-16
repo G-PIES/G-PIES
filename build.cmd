@@ -245,7 +245,7 @@ goto :eof
     set cuda_targets=%cuda_targets% clusterdynamicscuda
   ) else if "%1" equ "gpies" (
     set cpu_runnable_targets=%cpu_runnable_targets% gpies
-    set cuda_runnable_targets=%cuda_runnable_targets% gpies_cuda
+    set cuda_runnable_targets=%cuda_runnable_targets% gpies
   ) else if "%1" equ "gpiestests" (
     set cpu_runnable_targets=%cpu_runnable_targets% gpies_tests
     set cuda_runnable_targets=%cuda_runnable_targets% gpies_cuda_tests

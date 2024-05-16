@@ -113,7 +113,7 @@ for target in "${TARGETS[@]}"; do
       ;;
     gpies)
       CPU_RUNNABLE_TARGETS+=("gpies")
-      CUDA_RUNNABLE_TARGETS+=("gpies_cuda")
+      CUDA_RUNNABLE_TARGETS+=("gpies")
       ;;
     gpiestests)
       CPU_RUNNABLE_TARGETS+=("gpies_tests")

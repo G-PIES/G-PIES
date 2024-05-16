@@ -111,6 +111,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/out)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CUDA_STANDARD 20)
 
+if(GP_BUILD_CUDA)
+  add_compile_definitions(USE_CUDA)
+  include_directories(clusterdynamics PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+endif()
+
 add_compile_definitions($<$<PLATFORM_ID:Windows>:_USE_MATH_DEFINES>)
 
 # TODO: Consider replacing /W2 with /W4 or /Wall for MSVC.
@@ -131,7 +136,6 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 
 add_subdirectory(./cli)
 add_subdirectory(./src/client_db)
-add_subdirectory(./src/cluster_dynamics/cpu)
-add_subdirectory(./src/cluster_dynamics/cuda)
+add_subdirectory(./src/cluster_dynamics)
 add_subdirectory(./src/okmc)
 add_subdirectory(./test)

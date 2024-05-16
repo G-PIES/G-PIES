@@ -2,10 +2,10 @@
 
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
 
+#include "cpu/cluster_dynamics_cpu_impl.hpp"
+
 #if defined(USE_CUDA)
-#include "cluster_dynamics_cuda_impl.hpp"
-#else
-#include "cluster_dynamics_cpu_impl.hpp"
+#include "cuda/cluster_dynamics_cuda_impl.hpp"
 #endif
 
 ClusterDynamics ClusterDynamics::cpu(ClusterDynamicsConfig &config) {
