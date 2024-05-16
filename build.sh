@@ -21,7 +21,6 @@ process_option() {
     --cpu) CPU=1 ;;
     --cuda) CUDA=1 ;;
     --cuda-all-major) CUDA=1; CUDA_ALL=1 ;;
-    --metal) METAL=1 ;;
     --debug) DEBUG=1 ;;
     --release) RELEASE=1 ;;
     --help|-h) HELP=1 ;;
@@ -64,9 +63,6 @@ if [ "$HELP" ]; then
   echo "  # Build all CPU targets"
   echo "  $0"
   echo ""
-  echo "  # Build all CPU and Metal targets"
-  echo "  $0 --cpu --metal"
-  echo ""
   echo "  # Build and run Cluster Dynamics CLI with CUDA"
   echo "  $0 --cuda --run gpies"
   echo ""
@@ -86,12 +82,11 @@ if [ "$HELP" ]; then
   echo "                      Removes build, out, and db directories."
   echo "  --force, -f         Do not ask for confirmation when --clean is specified."
   echo "  --cpu               Build CPU targets."
-  echo "                      This option is assumed if no --cuda or --metal specified."
+  echo "                      This option is assumed if no --cuda specified."
   echo "  --cuda              Build CUDA targets for the current GPU architecture."
   echo "                      (nvcc -arch=native)"
   echo "  --cuda-all-major    Build CUDA targets for all major GPU architectures."
   echo "                      (nvcc -arch=all-major)"
-  echo "  --metal             Build Metal targets."
   echo "  --debug             Build debug build (optimizations and sanitizer turned on)."
   echo "                      Cannot be usage together with --release."
   echo "  --release           Build release build (max optimizations)."
@@ -106,7 +101,7 @@ if [ "$DEBUG" -a "$RELEASE" ]; then
   echo_error "Both --debug and --release cannot be used at the same time."
 fi
 
-if [ ! "$CUDA" -a ! "$METAL" ]; then
+if [ ! "$CUDA" ]; then
   CPU=1
 fi
 
@@ -115,17 +110,14 @@ for target in "${TARGETS[@]}"; do
     cd)
       CPU_TARGETS+=("clusterdynamics")
       CUDA_TARGETS+=("clusterdynamicscuda")
-      METAL_TARGETS+=("clusterdynamicsmetal")
       ;;
     gpies)
       CPU_RUNNABLE_TARGETS+=("gpies")
-      CUDA_RUNNABLE_TARGETS+=("gpies_cuda")
-      METAL_RUNNABLE_TARGETS+=("gpies_metal")
+      CUDA_RUNNABLE_TARGETS+=("gpies")
       ;;
     gpiestests)
       CPU_RUNNABLE_TARGETS+=("gpies_tests")
       CUDA_RUNNABLE_TARGETS+=("gpies_cuda_tests")
-      METAL_RUNNABLE_TARGETS+=("gpies_metal_tests")
       ;;
     db)
       CPU_TARGETS+=("clientdb")
@@ -153,11 +145,6 @@ fi
 if [ "$CUDA" ]; then
   TARGETS_TO_BUILD+=(${CUDA_TARGETS[@]})
   TARGETS_TO_RUN+=(${CUDA_RUNNABLE_TARGETS[@]})
-fi
-
-if [ "$METAL" ]; then
-  TARGETS_TO_BUILD+=(${METAL_TARGETS[@]})
-  TARGETS_TO_RUN+=(${METAL_RUNNABLE_TARGETS[@]})
 fi
 
 TARGETS_TO_BUILD+=(${TARGETS_TO_RUN[@]})
@@ -200,12 +187,6 @@ if [ "$CUDA_ALL" ]; then
   CMAKE_CONFIGURE_OPTIONS+=" -DCUDA_ARCHITECTURES=all-major"
 else
   CMAKE_CONFIGURE_OPTIONS+=" -DCUDA_ARCHITECTURES=native"
-fi
-
-if [ "$METAL" ]; then
-  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_METAL:BOOL=true"
-else
-  CMAKE_CONFIGURE_OPTIONS+=" -DGP_BUILD_METAL:BOOL=false"
 fi
 
 if [ "$NO_SANITIZER" ]; then

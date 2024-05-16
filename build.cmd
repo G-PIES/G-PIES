@@ -34,9 +34,6 @@ if "%option_help%" neq "" (
   echo   # Build all CPU targets"
   echo   %this_script%
   echo.
-  echo   # Build all CPU and Metal targets
-  echo   %this_script% --cpu --metal
-  echo.
   echo   # Build and run Cluster Dynamics CLI with CUDA
   echo   %this_script% --cuda --run gpies
   echo.
@@ -56,12 +53,11 @@ if "%option_help%" neq "" (
   echo                       Removes build, out, and db directories.
   echo   --force, -f         Do not ask for confirmation when --clean is specified.
   echo   --cpu               Build CPU targets.
-  echo                       This option is assumed if no --cuda or --metal specified.
+  echo                       This option is assumed if no --cuda specified.
   echo   --cuda              Build CUDA targets for the current GPU architecture.
   echo                       ^(nvcc -arch=native^)
   echo   --cuda-all-major    Build CUDA targets for all major GPU architectures.
   echo                       ^(nvcc -arch=all-major^)
-  echo   --metal             Build Metal targets.
   echo   --debug             Build debug build ^(optimizations and sanitizer turned on^).
   echo                       Cannot be usage together with --release.
   echo   --release           Build release build ^(max optimizations^).
@@ -76,7 +72,7 @@ if "%option_debug%%option_release%" equ "11" (
   call :echo_error "Both --debug and --release cannot be used at the same time."
 )
 
-if "%option_cuda%%option_metal%" equ "" (
+if "%option_cuda%" equ "" (
   set option_cpu=1
 )
 
@@ -92,11 +88,6 @@ if "%option_cpu%" neq "" (
 if "%option_cuda%" neq "" (
   set targets_to_build=%targets_to_build% %cuda_targets%
   set targets_to_run=%targets_to_run% %cuda_runnable_targets%
-)
-
-if "%option_metal%" neq "" (
-  set targets_to_build=%targets_to_build% %metal_targets%
-  set targets_to_run=%targets_to_run% %metal_runnable_targets%
 )
 
 set targets_to_build=%targets_to_build% %targets_to_run%
@@ -148,12 +139,6 @@ if "%option_cuda_all%" neq "" (
   set cmake_configure_options=%cmake_configure_options% -DCUDA_ARCHITECTURES=all-major
 ) else (
   set cmake_configure_options=%cmake_configure_options% -DCUDA_ARCHITECTURES=native
-)
-
-if "%option_metal%" neq "" (
-  set cmake_configure_options=%cmake_configure_options% -DGP_BUILD_METAL=true
-) else (
-  set cmake_configure_options=%cmake_configure_options% -DGP_BUILD_METAL=false
 )
 
 if "%no_sanizier%" neq "" (
@@ -246,7 +231,6 @@ goto :eof
   if "%1" equ "--cpu"            set "option_cpu=1"     && goto :eof
   if "%1" equ "--cuda"           set "option_cuda=1"    && goto :eof
   if "%1" equ "--cuda-all-major" set "option_cuda=1" && set "option_cuda_all=1" && goto :eof
-  if "%1" equ "--metal"          set "option_metal=1"   && goto :eof
   if "%1" equ "--debug"          set "option_debug=1"   && goto :eof
   if "%1" equ "--release"        set "option_release=1" && goto :eof
   if "%1" equ "--no-sanitizer"   set "no_sanitizer=1"   && goto :eof
@@ -259,15 +243,12 @@ goto :eof
   if "%1" equ "cd" (
     set cpu_targets=%cpu_targets% clusterdynamics
     set cuda_targets=%cuda_targets% clusterdynamicscuda
-    set metal_targets=%metal_targets% clusterdynamicsmetal
   ) else if "%1" equ "gpies" (
     set cpu_runnable_targets=%cpu_runnable_targets% gpies
-    set cuda_runnable_targets=%cuda_runnable_targets% gpies_cuda
-    set metal_runnable_targets=%metal_runnable_targets% gpies_metal
+    set cuda_runnable_targets=%cuda_runnable_targets% gpies
   ) else if "%1" equ "gpiestests" (
     set cpu_runnable_targets=%cpu_runnable_targets% gpies_tests
     set cuda_runnable_targets=%cuda_runnable_targets% gpies_cuda_tests
-    set metal_runnable_targets=%metal_runnable_targets% gpies_metal_tests
   ) else if "%1" equ "db" (
     set cpu_targets=%cpu_targets% clientdb
   ) else if "%1" equ "dbcli" (

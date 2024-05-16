@@ -1,5 +1,5 @@
-#ifndef CLUSTER_DYNAMICS_IMPL_HPP
-#define CLUSTER_DYNAMICS_IMPL_HPP
+#ifndef CLUSTER_DYNAMICS_CPU_IMPL_HPP
+#define CLUSTER_DYNAMICS_CPU_IMPL_HPP
 
 #include "utils/diagnostics.hpp"
 
@@ -15,13 +15,14 @@ DIAGNOSTIC_POP
 #include <iostream>
 #include <vector>
 
+#include "../cluster_dynamics_impl.hpp"
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "cluster_dynamics/cluster_dynamics_state.hpp"
 #include "material_impl.hpp"
 #include "nuclear_reactor_impl.hpp"
 #include "utils/constants.hpp"
 
-class ClusterDynamicsImpl {
+class ClusterDynamicsCpuImpl : public ClusterDynamicsImpl {
  public:
   gp_float time;
   gp_float dpa;
@@ -54,13 +55,6 @@ class ClusterDynamicsImpl {
 
   MaterialImpl material;
   NuclearReactorImpl reactor;
-
-  bool data_validation_on;
-  gp_float relative_tolerance;
-  gp_float absolute_tolerance;
-  size_t max_num_integration_steps;
-  gp_float min_integration_step;
-  gp_float max_integration_step;
 
   // Physics Model Functions
   gp_float i_concentration_derivative(size_t) const;
@@ -114,8 +108,8 @@ class ClusterDynamicsImpl {
   void validate(size_t) const;
 
   // Interface functions
-  explicit ClusterDynamicsImpl(ClusterDynamicsConfig& config);
-  ~ClusterDynamicsImpl();
+  explicit ClusterDynamicsCpuImpl(ClusterDynamicsConfig& config);
+  ~ClusterDynamicsCpuImpl();
 
   ClusterDynamicsState run(gp_float total_time);
   MaterialImpl get_material() const;
@@ -124,4 +118,4 @@ class ClusterDynamicsImpl {
   void set_reactor(const NuclearReactorImpl& reactor);
 };
 
-#endif  // CLUSTER_DYNAMICS_IMPL_HPP
+#endif  // CLUSTER_DYNAMICS_CPU_IMPL_HPP
