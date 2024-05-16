@@ -8,6 +8,13 @@ if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
   cmake_policy(SET CMP0135 NEW)
 endif()
 
+find_program(HOMEBREW brew)
+if(HOMEBREW)
+  execute_process(COMMAND brew --prefix OUTPUT_VARIABLE HOMEBREW_PREFIX)
+  string(REPLACE "\n" "" HOMEBREW_PREFIX ${HOMEBREW_PREFIX})
+  link_directories(${HOMEBREW_PREFIX}/lib)
+endif()
+
 set(GP_BUILD_CUDA false CACHE BOOL "Build CUDA-dependent targets.")
 set(CUDA_ARCHITECTURES native CACHE STRING "CUDA architectures.")
 add_compile_options("$<$<COMPILE_LANGUAGE:CUDA>:--expt-extended-lambda>")
@@ -46,24 +53,40 @@ if(NOT SUNDIALS_FOUND)
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${HOLDER})
 endif()
 
-set(Boost_USE_STATIC_LIBS       ON)
-set(Boost_USE_STATIC_RUNTIME    OFF)
-set(Boost_USE_MULTITHREADED     OFF)
-find_package(Boost COMPONENTS program_options)
+find_package(BZip2)
+if (NOT BZIP2_FOUND)
+  FetchContent_Declare(
+    BZip2
+    GIT_REPOSITORY https://gitlab.com/bzip2/bzip2
+    GIT_TAG 66c46b8c9436613fd81bc5d03f63a61933a4dcc3)
+  set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+  set(ENABLE_LIB_ONLY   ON)
+  set(ENABLE_STATIC_LIB ON)
+  set(ENABLE_TESTS      OFF)
+  FetchContent_MakeAvailable(BZip2)
+  set(BZIP2_LIBRARIES bz2_static)
+  set(BZIP2_INCLUDE_DIR ${bzip2_SOURCE_DIR})
+  include_directories(${BZIP2_INCLUDE_DIR})
+  add_library(BZip2::BZip2 ALIAS ${BZIP2_LIBRARIES})
+endif()
+
+set(Boost_USE_STATIC_LIBS        ON)
+set(Boost_USE_STATIC_RUNTIME     OFF)
+set(Boost_USE_MULTITHREADED      OFF)
+set(BOOST_IOSTREAMS_ENABLE_BZIP2 ON)
+find_package(Boost COMPONENTS program_options iostreams)
 if(NOT Boost_FOUND)
   FetchContent_Declare(
     Boost
     URL https://github.com/boostorg/boost/releases/download/boost-1.84.0/boost-1.84.0.7z # downloading a zip release speeds up the download
   )
   set(BOOST_ENABLE_CMAKE ON)
-  set(BOOST_INCLUDE_LIBRARIES program_options)
+  set(BOOST_INCLUDE_LIBRARIES program_options iostreams)
   FetchContent_MakeAvailable(Boost)
 endif()
 
 find_package(SQLite3)
-if(SQLite3_FOUND)
-  set(SQLite3_LIBRARY_TARGET SQLite::SQLite3)
-else()
+if(NOT SQLite3_FOUND)
   FetchContent_Declare(
     sqlite3
     URL https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip
@@ -71,7 +94,8 @@ else()
   FetchContent_MakeAvailable(sqlite3)
   add_library(sqlite3_lib ${sqlite3_SOURCE_DIR}/sqlite3.c)
   set(SQLite3_INCLUDE_DIRS ${sqlite3_SOURCE_DIR})
-  set(SQLite3_LIBRARY_TARGET sqlite3_lib)
+  set(SQLite3_LIBRARIES sqlite3_lib)
+  add_library(SQLite::SQLite3 ALIAS ${SQLite3_LIBRARIES})
 endif()
 
 FetchContent_Declare(

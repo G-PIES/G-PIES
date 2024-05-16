@@ -38,12 +38,12 @@ if "%option_help%" neq "" (
   echo   %this_script% --cpu --metal
   echo.
   echo   # Build and run Cluster Dynamics CLI with CUDA
-  echo   %this_script% --cuda --run cdcli
+  echo   %this_script% --cuda --run gpies
   echo.
   echo Targets:
   echo   cd                  The Cluster Dynamics library
-  echo   cdcli               The CLI for the Cluster Dynamics library
-  echo   cdtests             GoogleTest based tests for Cluster Dynamics library
+  echo   gpies               The CLI for the Cluster Dynamics library
+  echo   gpiestests          GoogleTest based tests for Cluster Dynamics library
   echo   db                  The DB Library
   echo   dbcli               The CLI for the DB library
   echo   dbtests             GoogleTest based tests for DB library
@@ -260,14 +260,14 @@ goto :eof
     set cpu_targets=%cpu_targets% clusterdynamics
     set cuda_targets=%cuda_targets% clusterdynamicscuda
     set metal_targets=%metal_targets% clusterdynamicsmetal
-  ) else if "%1" equ "cdcli" (
-    set cpu_runnable_targets=%cpu_runnable_targets% cd_cli
-    set cuda_runnable_targets=%cuda_runnable_targets% cd_cuda_cli
-    set metal_runnable_targets=%metal_runnable_targets% cd_metal_cli
-  ) else if "%1" equ "cdtests" (
-    set cpu_runnable_targets=%cpu_runnable_targets% cd_tests
-    set cuda_runnable_targets=%cuda_runnable_targets% cd_cuda_tests
-    set metal_runnable_targets=%metal_runnable_targets% cd_metal_tests
+  ) else if "%1" equ "gpies" (
+    set cpu_runnable_targets=%cpu_runnable_targets% gpies
+    set cuda_runnable_targets=%cuda_runnable_targets% gpies_cuda
+    set metal_runnable_targets=%metal_runnable_targets% gpies_metal
+  ) else if "%1" equ "gpiestests" (
+    set cpu_runnable_targets=%cpu_runnable_targets% gpies_tests
+    set cuda_runnable_targets=%cuda_runnable_targets% gpies_cuda_tests
+    set metal_runnable_targets=%metal_runnable_targets% gpies_metal_tests
   ) else if "%1" equ "db" (
     set cpu_targets=%cpu_targets% clientdb
   ) else if "%1" equ "dbcli" (

@@ -254,4 +254,56 @@ void SA304(Material &material) {
   material._impl->atomic_volume = std::pow(lattice_param, 3) / 4.;  // cm^3
 }
 
+void CW316(Material &material) {
+  gp_float lattice_param = lattice_params::chromium;
+
+  material.species = "CW316";
+  material._impl->i_migration = .43;             // eV
+  material._impl->v_migration = 1.35;            // eV
+  material._impl->i_diffusion_0 = 1e-3;          // cm^2/s
+  material._impl->v_diffusion_0 = .6;            // cm^2/s
+  material._impl->i_formation = 4.1;             // eV
+  material._impl->v_formation = 1.7;             // eV
+  material._impl->i_binding = .6;                // eV
+  material._impl->v_binding = .5;                // eV
+  material._impl->recombination_radius = .7e-7;  // cm
+  material._impl->i_loop_bias = 63.;
+  material._impl->i_dislocation_bias = .8;
+  material._impl->i_dislocation_bias_param = 1.1;
+  material._impl->v_loop_bias = 33.;
+  material._impl->v_dislocation_bias = .65;
+  material._impl->v_dislocation_bias_param = 1.;
+  material._impl->dislocation_density_0 = 1. / (gp_float)M_CM_CONV(10e10);
+  material._impl->grain_size = 4e-3;
+  material._impl->lattice_param = lattice_param;  // cm
+  material._impl->burgers_vector = lattice_param / std::sqrt(2.);
+  material._impl->atomic_volume = std::pow(lattice_param, 3) / 4.;  // cm^3
+}
+
+void CW316Ti(Material &material) {
+  gp_float lattice_param = lattice_params::chromium;
+
+  material.species = "CW316Ti";
+  material._impl->i_migration = .43;             // eV
+  material._impl->v_migration = 1.35;            // eV
+  material._impl->i_diffusion_0 = 1e-3;          // cm^2/s
+  material._impl->v_diffusion_0 = .6;            // cm^2/s
+  material._impl->i_formation = 4.1;             // eV
+  material._impl->v_formation = 1.7;             // eV
+  material._impl->i_binding = .6;                // eV
+  material._impl->v_binding = .5;                // eV
+  material._impl->recombination_radius = .7e-7;  // cm
+  material._impl->i_loop_bias = 63.;
+  material._impl->i_dislocation_bias = .8;
+  material._impl->i_dislocation_bias_param = 1.1;
+  material._impl->v_loop_bias = 33.;
+  material._impl->v_dislocation_bias = .65;
+  material._impl->v_dislocation_bias_param = 1.;
+  material._impl->dislocation_density_0 = 1. / (gp_float)M_CM_CONV(10e10);
+  material._impl->grain_size = 4e-3;
+  material._impl->lattice_param = lattice_param;  // cm
+  material._impl->burgers_vector = lattice_param / std::sqrt(2.);
+  material._impl->atomic_volume = std::pow(lattice_param, 3) / 4.;  // cm^3
+}
+
 }  // namespace materials

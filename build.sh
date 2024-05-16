@@ -68,12 +68,12 @@ if [ "$HELP" ]; then
   echo "  $0 --cpu --metal"
   echo ""
   echo "  # Build and run Cluster Dynamics CLI with CUDA"
-  echo "  $0 --cuda --run cdcli"
+  echo "  $0 --cuda --run gpies"
   echo ""
   echo "Targets:"
   echo "  cd                  The Cluster Dynamics library"
-  echo "  cdcli               The CLI for the Cluster Dynamics library"
-  echo "  cdtests             GoogleTest based tests for Cluster Dynamics library"
+  echo "  gpies               The CLI for the Cluster Dynamics library"
+  echo "  gpiestests             GoogleTest based tests for Cluster Dynamics library"
   echo "  db                  The DB Library"
   echo "  dbcli               The CLI for the DB library"
   echo "  dbtests             GoogleTest based tests for DB library"
@@ -117,15 +117,15 @@ for target in "${TARGETS[@]}"; do
       CUDA_TARGETS+=("clusterdynamicscuda")
       METAL_TARGETS+=("clusterdynamicsmetal")
       ;;
-    cdcli)
-      CPU_RUNNABLE_TARGETS+=("cd_cli")
-      CUDA_RUNNABLE_TARGETS+=("cd_cuda_cli")
-      METAL_RUNNABLE_TARGETS+=("cd_metal_cli")
+    gpies)
+      CPU_RUNNABLE_TARGETS+=("gpies")
+      CUDA_RUNNABLE_TARGETS+=("gpies_cuda")
+      METAL_RUNNABLE_TARGETS+=("gpies_metal")
       ;;
-    cdtests)
-      CPU_RUNNABLE_TARGETS+=("cd_tests")
-      CUDA_RUNNABLE_TARGETS+=("cd_cuda_tests")
-      METAL_RUNNABLE_TARGETS+=("cd_metal_tests")
+    gpiestests)
+      CPU_RUNNABLE_TARGETS+=("gpies_tests")
+      CUDA_RUNNABLE_TARGETS+=("gpies_cuda_tests")
+      METAL_RUNNABLE_TARGETS+=("gpies_metal_tests")
       ;;
     db)
       CPU_TARGETS+=("clientdb")

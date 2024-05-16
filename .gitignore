@@ -71,3 +71,6 @@ out
 lib
 bin
 db
+
+# G-PIES generated config files
+config.yaml
