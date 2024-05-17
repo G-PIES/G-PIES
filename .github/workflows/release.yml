@@ -1,0 +1,64 @@
+name: Build and attach artifacts to a release
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macos-14, macos-13 ]
+        include:
+          - os: windows-latest
+            cuda: false
+            asset_name: windows-x64
+          - os: ubuntu-latest
+            cuda: false
+            asset_name: linux-x64
+          - os: macos-14
+            cuda: false
+            asset_name: macos-arm64
+          - os: macos-13
+            cuda: false
+            asset_name: macos-x64
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      MAKE_TERMOUT: 1
+      CMAKE_COLOR_DIAGNOSTICS: ON
+      GTEST_COLOR: yes
+      out_dir: ${{ startsWith(matrix.os, 'windows') && './out/release || './out' }}
+      cuda_install_method: ${{ startsWith(matrix.os, 'windows') && 'local' || 'network' }}
+      cuda_packages: ${{ startsWith(matrix.os, 'windows') && '[ "nvcc", "cudart", "visual_studio_integration" ]' || '[ "nvcc" ]' }}
+      build_script: ${{ startsWith(matrix.os, 'windows') && '.\build.cmd' || './build.sh' }}
+      build_options: ${{ matrix.cuda && '--cuda-all-major --cpu' || '--cpu' }}
+      asset_full_name: g-pies-${{ github.event.release.tag_name }}-${{ matrix.asset_name }}.zip
+
+    steps:
+      - name: Install CUDA Toolkit
+        uses: Jimver/cuda-toolkit@v0.2.14
+        with:
+          cuda: '12.3.2'
+          method: network
+          sub-packages: ${{ env.cuda_packages }}
+          log-file-suffix: ${{ matrix.configuration }}-${{ matrix.os }}-log.txt
+        if: ${{ matrix.cuda }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: ${{ env.build_script }} ${{ env.build_options }} --${{ matrix.configuration }} --no-sanitizer
+      
+      - name: Create release asset
+        run: 7z a ${{ env.asset_full_name }} ${{ env.out_dir }}/*
+
+      - name: Upload release asset
+        run: gh release upload ${{ github.event.release.tag_name }} ${{ env.asset_full_name }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
