@@ -37,7 +37,7 @@ jobs:
       cuda_packages: ${{ startsWith(matrix.os, 'windows') && '[ "nvcc", "cudart", "visual_studio_integration" ]' || '[ "nvcc" ]' }}
       build_script: ${{ startsWith(matrix.os, 'windows') && '.\build.cmd' || './build.sh' }}
       build_options: ${{ matrix.cuda && '--cuda-all-major --cpu' || '--cpu' }}
-      asset_full_name: g-pies-${{ github.event.release.tag_name }}-${{ matrix.asset_name }}.zip
+      asset_full_name: gpies-${{ github.event.release.tag_name }}-${{ matrix.asset_name }}.zip
 
     steps:
       - name: Install CUDA Toolkit
