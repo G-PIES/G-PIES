@@ -87,35 +87,67 @@ $(function() {
 <a href="blob__converter_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef BLOB_CONVERTER_HPP</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define BLOB_CONVERTER_HPP</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;cstring&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;sstream&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;sstream&gt;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="types_8hpp.html">types.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">// TODO: Consider adding compression/decompression</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="classBlobConverter.html">   12</a></span>&#160;<span class="keyword">class </span><a class="code" href="classBlobConverter.html">BlobConverter</a> {</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classBlobConverter.html#affc551e03b53c17273e82c0a113ebbb2">   14</a></span>&#160;  <span class="keyword">static</span> std::vector&lt;char&gt; <a class="code" href="classBlobConverter.html#affc551e03b53c17273e82c0a113ebbb2">to_blob</a>(<span class="keyword">const</span> std::vector&lt;gp_float&gt;&amp; vec) {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    std::vector&lt;char&gt; blob(vec.size() * <span class="keyword">sizeof</span>(<a class="code" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>));</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    std::memcpy(blob.data(), vec.data(), blob.size());</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="keywordflow">return</span> blob;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  }</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="classBlobConverter.html#ab6e4b750c3a91355146781f556c6fb9f">   20</a></span>&#160;  <span class="keyword">static</span> std::vector&lt;gp_float&gt; <a class="code" href="classBlobConverter.html#ab6e4b750c3a91355146781f556c6fb9f">from_blob</a>(<span class="keyword">const</span> std::vector&lt;char&gt;&amp; blob) {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    std::vector&lt;gp_float&gt; vec(blob.size() / <span class="keyword">sizeof</span>(<a class="code" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>));</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    std::memcpy(vec.data(), blob.data(), blob.size());</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keywordflow">return</span> vec;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  }</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;};</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#endif  // BLOB_CONVERTER_HPP</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#ifdef __GNUC__</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma GCC diagnostic push</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#pragma GCC diagnostic ignored &quot;-Wdeprecated-copy&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;boost/iostreams/copy.hpp&gt;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;boost/iostreams/filter/bzip2.hpp&gt;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;boost/iostreams/filtering_streambuf.hpp&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#ifdef __GNUC__</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#pragma GCC diagnostic pop</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="types_8hpp.html">types.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="classBlobConverter.html">   21</a></span>&#160;<span class="keyword">class </span><a class="code" href="classBlobConverter.html">BlobConverter</a> {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="classBlobConverter.html#affc551e03b53c17273e82c0a113ebbb2">   23</a></span>&#160;  <span class="keyword">static</span> std::vector&lt;char&gt; <a class="code" href="classBlobConverter.html#affc551e03b53c17273e82c0a113ebbb2">to_blob</a>(<span class="keyword">const</span> std::vector&lt;gp_float&gt; &amp;vec) {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keywordflow">if</span> (vec.empty()) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    std::stringstream data;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    data.write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(vec.data()),</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;               vec.size() * <span class="keyword">sizeof</span>(<a class="code" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>));</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    std::stringstream data_comp;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    boost::iostreams::filtering_streambuf&lt;boost::iostreams::output&gt; out;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    out.push(boost::iostreams::bzip2_compressor());</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    out.push(data_comp);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    boost::iostreams::copy(data, out);  <span class="comment">// NOLINT(build/include_what_you_use)</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    std::string str_comp = data_comp.str();</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    std::vector&lt;char&gt; blob(str_comp.begin(), str_comp.end());</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordflow">return</span> blob;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  }</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classBlobConverter.html#ab6e4b750c3a91355146781f556c6fb9f">   41</a></span>&#160;  <span class="keyword">static</span> std::vector&lt;gp_float&gt; <a class="code" href="classBlobConverter.html#ab6e4b750c3a91355146781f556c6fb9f">from_blob</a>(<span class="keyword">const</span> std::vector&lt;char&gt; &amp;blob) {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordflow">if</span> (blob.empty()) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    std::string str_comp(blob.begin(), blob.end());</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    std::stringstream data_comp(str_comp);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    std::stringstream data;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    boost::iostreams::filtering_streambuf&lt;boost::iostreams::input&gt; in;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    in.push(boost::iostreams::bzip2_decompressor());</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    in.push(data_comp);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    boost::iostreams::copy(in, data);  <span class="comment">// NOLINT(build/include_what_you_use)</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    std::vector&lt;gp_float&gt; vec(data.str().size() / <span class="keyword">sizeof</span>(<a class="code" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>));</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    data.read(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(vec.data()), data.str().size());</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">return</span> vec;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;};</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor">#endif  // BLOB_CONVERTER_HPP</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassBlobConverter_html_affc551e03b53c17273e82c0a113ebbb2"><div class="ttname"><a href="classBlobConverter.html#affc551e03b53c17273e82c0a113ebbb2">BlobConverter::to_blob</a></div><div class="ttdeci">static std::vector&lt; char &gt; to_blob(const std::vector&lt; gp_float &gt; &amp;vec)</div><div class="ttdef"><b>Definition:</b> <a href="blob__converter_8hpp_source.html#l00014">blob_converter.hpp:14</a></div></div>
-<div class="ttc" id="aclassBlobConverter_html_ab6e4b750c3a91355146781f556c6fb9f"><div class="ttname"><a href="classBlobConverter.html#ab6e4b750c3a91355146781f556c6fb9f">BlobConverter::from_blob</a></div><div class="ttdeci">static std::vector&lt; gp_float &gt; from_blob(const std::vector&lt; char &gt; &amp;blob)</div><div class="ttdef"><b>Definition:</b> <a href="blob__converter_8hpp_source.html#l00020">blob_converter.hpp:20</a></div></div>
+<div class="ttc" id="aclassBlobConverter_html_affc551e03b53c17273e82c0a113ebbb2"><div class="ttname"><a href="classBlobConverter.html#affc551e03b53c17273e82c0a113ebbb2">BlobConverter::to_blob</a></div><div class="ttdeci">static std::vector&lt; char &gt; to_blob(const std::vector&lt; gp_float &gt; &amp;vec)</div><div class="ttdef"><b>Definition:</b> <a href="blob__converter_8hpp_source.html#l00023">blob_converter.hpp:23</a></div></div>
+<div class="ttc" id="aclassBlobConverter_html_ab6e4b750c3a91355146781f556c6fb9f"><div class="ttname"><a href="classBlobConverter.html#ab6e4b750c3a91355146781f556c6fb9f">BlobConverter::from_blob</a></div><div class="ttdeci">static std::vector&lt; gp_float &gt; from_blob(const std::vector&lt; char &gt; &amp;blob)</div><div class="ttdef"><b>Definition:</b> <a href="blob__converter_8hpp_source.html#l00041">blob_converter.hpp:41</a></div></div>
 <div class="ttc" id="atypes_8hpp_html"><div class="ttname"><a href="types_8hpp.html">types.hpp</a></div></div>
-<div class="ttc" id="aclassBlobConverter_html"><div class="ttname"><a href="classBlobConverter.html">BlobConverter</a></div><div class="ttdef"><b>Definition:</b> <a href="blob__converter_8hpp_source.html#l00012">blob_converter.hpp:12</a></div></div>
+<div class="ttc" id="aclassBlobConverter_html"><div class="ttname"><a href="classBlobConverter.html">BlobConverter</a></div><div class="ttdef"><b>Definition:</b> <a href="blob__converter_8hpp_source.html#l00021">blob_converter.hpp:21</a></div></div>
 <div class="ttc" id="atypes_8hpp_html_a31d268d843edeb05b5069e0d7a3dabe8"><div class="ttname"><a href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a></div><div class="ttdeci">GP_FLOAT gp_float</div><div class="ttdef"><b>Definition:</b> <a href="types_8hpp_source.html#l00008">types.hpp:8</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

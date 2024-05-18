@@ -88,6 +88,10 @@ Functions</h2></td></tr>
 <tr class="memitem:af3cea3d510b1584de6eb38d3f67e2ec7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacematerials.html#af3cea3d510b1584de6eb38d3f67e2ec7">SA304</a> (<a class="el" href="structMaterial.html">Material</a> &amp;material)</td></tr>
 <tr class="memdesc:af3cea3d510b1584de6eb38d3f67e2ec7"><td class="mdescLeft">&#160;</td><td class="mdescRight">A function which fills a <a class="el" href="structMaterial.html" title="A class which represents the material property parameters for a ClusterDynamics simulation.">Material</a> object with parameters that roughly correspond to the properties of SA304 steel.  <a href="namespacematerials.html#af3cea3d510b1584de6eb38d3f67e2ec7">More...</a><br /></td></tr>
 <tr class="separator:af3cea3d510b1584de6eb38d3f67e2ec7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c24bfeea41608346aa8261f1958241f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacematerials.html#a7c24bfeea41608346aa8261f1958241f">CW316</a> (<a class="el" href="structMaterial.html">Material</a> &amp;material)</td></tr>
+<tr class="separator:a7c24bfeea41608346aa8261f1958241f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae17412ef9b624f77342e873754aa9479"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacematerials.html#ae17412ef9b624f77342e873754aa9479">CW316Ti</a> (<a class="el" href="structMaterial.html">Material</a> &amp;material)</td></tr>
+<tr class="separator:ae17412ef9b624f77342e873754aa9479"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="af3cea3d510b1584de6eb38d3f67e2ec7"></a>
@@ -115,37 +119,128 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00229">229</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;                               {</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  <a class="code" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> lattice_param = <a class="code" href="namespacelattice__params.html#abb5841494d0f7797e58c5961e0cb95ac">lattice_params::fcc_nickel</a>;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160; </div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  material.<a class="code" href="structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd">species</a> = <span class="stringliteral">&quot;SA304&quot;</span>;</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_migration = .45;             <span class="comment">// eV</span></div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_migration = 1.35;            <span class="comment">// eV</span></div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_diffusion_0 = 1e-3;          <span class="comment">// cm^2/s</span></div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_diffusion_0 = .6;            <span class="comment">// cm^2/s</span></div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_formation = 4.1;             <span class="comment">// eV</span></div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_formation = 1.7;             <span class="comment">// eV</span></div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_binding = .6;                <span class="comment">// eV</span></div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_binding = .5;                <span class="comment">// eV</span></div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;recombination_radius = .7e-7;  <span class="comment">// cm</span></div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_loop_bias = 63.;</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_dislocation_bias = .8;</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_dislocation_bias_param = 1.1;</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_loop_bias = 33.;</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_dislocation_bias = .65;</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_dislocation_bias_param = 1.;</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;dislocation_density_0 = 1. / (<a class="code" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>)<a class="code" href="conversions_8hpp.html#a994ab38e8589a1f1620b3b3152117775">M_CM_CONV</a>(10e10);</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;grain_size = 4e-3;</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;lattice_param = lattice_param;  <span class="comment">// cm</span></div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;burgers_vector = lattice_param / std::sqrt(2.);</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;atomic_volume = std::pow(lattice_param, 3) / 4.;  <span class="comment">// cm^3</span></div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00231">231</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;                               {</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  <a class="code" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> lattice_param = <a class="code" href="namespacelattice__params.html#abb5841494d0f7797e58c5961e0cb95ac">lattice_params::fcc_nickel</a>;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160; </div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  material.<a class="code" href="structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd">species</a> = <span class="stringliteral">&quot;SA304&quot;</span>;</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_migration = .45;             <span class="comment">// eV</span></div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_migration = 1.35;            <span class="comment">// eV</span></div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_diffusion_0 = 1e-3;          <span class="comment">// cm^2/s</span></div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_diffusion_0 = .6;            <span class="comment">// cm^2/s</span></div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_formation = 4.1;             <span class="comment">// eV</span></div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_formation = 1.7;             <span class="comment">// eV</span></div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_binding = .6;                <span class="comment">// eV</span></div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_binding = .5;                <span class="comment">// eV</span></div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;recombination_radius = .7e-7;  <span class="comment">// cm</span></div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_loop_bias = 63.;</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_dislocation_bias = .8;</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_dislocation_bias_param = 1.1;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_loop_bias = 33.;</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_dislocation_bias = .65;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_dislocation_bias_param = 1.;</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;dislocation_density_0 = 1. / (<a class="code" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>)<a class="code" href="conversions_8hpp.html#a994ab38e8589a1f1620b3b3152117775">M_CM_CONV</a>(10e10);</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;grain_size = 4e-3;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;lattice_param = lattice_param;  <span class="comment">// cm</span></div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;burgers_vector = lattice_param / std::sqrt(2.);</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;atomic_volume = std::pow(lattice_param, 3) / 4.;  <span class="comment">// cm^3</span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7c24bfeea41608346aa8261f1958241f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c24bfeea41608346aa8261f1958241f">&#9670;&nbsp;</a></span>CW316()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void materials::CW316 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structMaterial.html">Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>material</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00257">257</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;                               {</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  <a class="code" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> lattice_param = <a class="code" href="namespacelattice__params.html#ab68c8daf577812bacd4f24183d18c171">lattice_params::chromium</a>;</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160; </div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  material.<a class="code" href="structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd">species</a> = <span class="stringliteral">&quot;CW316&quot;</span>;</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_migration = .43;             <span class="comment">// eV</span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_migration = 1.35;            <span class="comment">// eV</span></div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_diffusion_0 = 1e-3;          <span class="comment">// cm^2/s</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_diffusion_0 = .6;            <span class="comment">// cm^2/s</span></div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_formation = 4.1;             <span class="comment">// eV</span></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_formation = 1.7;             <span class="comment">// eV</span></div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_binding = .6;                <span class="comment">// eV</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_binding = .5;                <span class="comment">// eV</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;recombination_radius = .7e-7;  <span class="comment">// cm</span></div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_loop_bias = 63.;</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_dislocation_bias = .8;</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_dislocation_bias_param = 1.1;</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_loop_bias = 33.;</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_dislocation_bias = .65;</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_dislocation_bias_param = 1.;</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;dislocation_density_0 = 1. / (<a class="code" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>)<a class="code" href="conversions_8hpp.html#a994ab38e8589a1f1620b3b3152117775">M_CM_CONV</a>(10e10);</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;grain_size = 4e-3;</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;lattice_param = lattice_param;  <span class="comment">// cm</span></div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;burgers_vector = lattice_param / std::sqrt(2.);</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;atomic_volume = std::pow(lattice_param, 3) / 4.;  <span class="comment">// cm^3</span></div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae17412ef9b624f77342e873754aa9479"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae17412ef9b624f77342e873754aa9479">&#9670;&nbsp;</a></span>CW316Ti()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void materials::CW316Ti </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structMaterial.html">Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>material</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00283">283</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;                                 {</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;  <a class="code" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a> lattice_param = <a class="code" href="namespacelattice__params.html#ab68c8daf577812bacd4f24183d18c171">lattice_params::chromium</a>;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160; </div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  material.<a class="code" href="structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd">species</a> = <span class="stringliteral">&quot;CW316Ti&quot;</span>;</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_migration = .43;             <span class="comment">// eV</span></div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_migration = 1.35;            <span class="comment">// eV</span></div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_diffusion_0 = 1e-3;          <span class="comment">// cm^2/s</span></div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_diffusion_0 = .6;            <span class="comment">// cm^2/s</span></div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_formation = 4.1;             <span class="comment">// eV</span></div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_formation = 1.7;             <span class="comment">// eV</span></div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_binding = .6;                <span class="comment">// eV</span></div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_binding = .5;                <span class="comment">// eV</span></div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;recombination_radius = .7e-7;  <span class="comment">// cm</span></div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_loop_bias = 63.;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_dislocation_bias = .8;</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;i_dislocation_bias_param = 1.1;</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_loop_bias = 33.;</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_dislocation_bias = .65;</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;v_dislocation_bias_param = 1.;</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;dislocation_density_0 = 1. / (<a class="code" href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a>)<a class="code" href="conversions_8hpp.html#a994ab38e8589a1f1620b3b3152117775">M_CM_CONV</a>(10e10);</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;grain_size = 4e-3;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;lattice_param = lattice_param;  <span class="comment">// cm</span></div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;burgers_vector = lattice_param / std::sqrt(2.);</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  material.<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;atomic_volume = std::pow(lattice_param, 3) / 4.;  <span class="comment">// cm^3</span></div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
 </div><!-- contents -->
 <div class="ttc" id="astructMaterial_html_a1467b74d319e6bf387cb51f4dc08c5dd"><div class="ttname"><a href="structMaterial.html#a1467b74d319e6bf387cb51f4dc08c5dd">Material::species</a></div><div class="ttdeci">std::string species</div><div class="ttdoc">A name for what kind of material this data represents.</div><div class="ttdef"><b>Definition:</b> <a href="material_8hpp_source.html#l00178">material.hpp:178</a></div></div>
+<div class="ttc" id="anamespacelattice__params_html_ab68c8daf577812bacd4f24183d18c171"><div class="ttname"><a href="namespacelattice__params.html#ab68c8daf577812bacd4f24183d18c171">lattice_params::chromium</a></div><div class="ttdeci">const gp_float chromium</div><div class="ttdef"><b>Definition:</b> <a href="material_8hpp_source.html#l00186">material.hpp:186</a></div></div>
 <div class="ttc" id="astructMaterial_html_ae12f33ea29619dfc2978f93f3751af10"><div class="ttname"><a href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">Material::_impl</a></div><div class="ttdeci">std::shared_ptr&lt; MaterialImpl &gt; _impl</div><div class="ttdef"><b>Definition:</b> <a href="material_8hpp_source.html#l00180">material.hpp:180</a></div></div>
 <div class="ttc" id="anamespacelattice__params_html_abb5841494d0f7797e58c5961e0cb95ac"><div class="ttname"><a href="namespacelattice__params.html#abb5841494d0f7797e58c5961e0cb95ac">lattice_params::fcc_nickel</a></div><div class="ttdeci">const gp_float fcc_nickel</div><div class="ttdef"><b>Definition:</b> <a href="material_8hpp_source.html#l00188">material.hpp:188</a></div></div>
 <div class="ttc" id="atypes_8hpp_html_a31d268d843edeb05b5069e0d7a3dabe8"><div class="ttname"><a href="types_8hpp.html#a31d268d843edeb05b5069e0d7a3dabe8">gp_float</a></div><div class="ttdeci">GP_FLOAT gp_float</div><div class="ttdef"><b>Definition:</b> <a href="types_8hpp_source.html#l00008">types.hpp:8</a></div></div>

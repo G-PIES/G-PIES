@@ -87,7 +87,11 @@ $(function() {
 <div class="title">cluster_dynamics_cuda_impl.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;thrust/device_free.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;cvodes/cvodes.h&gt;</code><br />
+<code>#include &lt;nvector/nvector_serial.h&gt;</code><br />
+<code>#include &lt;sunlinsol/sunlinsol_dense.h&gt;</code><br />
+<code>#include &lt;sunmatrix/sunmatrix_dense.h&gt;</code><br />
+<code>#include &lt;thrust/device_free.h&gt;</code><br />
 <code>#include &lt;thrust/device_malloc.h&gt;</code><br />
 <code>#include &lt;thrust/device_vector.h&gt;</code><br />
 <code>#include &lt;thrust/host_vector.h&gt;</code><br />
@@ -95,29 +99,46 @@ $(function() {
 <code>#include &lt;thrust/transform_reduce.h&gt;</code><br />
 <code>#include &lt;cmath&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;<a class="el" href="cluster__dynamics__config_8hpp_source.html">cluster_dynamics/cluster_dynamics_config.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="cluster__dynamics__state_8hpp_source.html">cluster_dynamics/cluster_dynamics_state.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="material__impl_8hpp_source.html">material_impl.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="nuclear__reactor__impl_8hpp_source.html">nuclear_reactor_impl.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="constants_8hpp_source.html">utils/constants.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="cluster__dynamics__impl_8hpp_source.html">../cluster_dynamics_impl.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for cluster_dynamics_cuda_impl.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="cluster__dynamics__cuda__impl_8hpp__incl.png" border="0" usemap="#_2home_2omnicryptical_2School_2CS46X_2cd-prototype_2src_2cluster__dynamics_2cuda_2cluster__dynamics__cuda__impl_8hpp" alt=""/></div>
 <map name="_2home_2omnicryptical_2School_2CS46X_2cd-prototype_2src_2cluster__dynamics_2cuda_2cluster__dynamics__cuda__impl_8hpp" id="_2home_2omnicryptical_2School_2CS46X_2cd-prototype_2src_2cluster__dynamics_2cuda_2cluster__dynamics__cuda__impl_8hpp">
-<area shape="rect" title=" " alt="" coords="955,5,1197,76"/>
-<area shape="rect" title=" " alt="" coords="5,131,157,158"/>
-<area shape="rect" title=" " alt="" coords="181,131,352,158"/>
-<area shape="rect" title=" " alt="" coords="377,131,543,158"/>
-<area shape="rect" title=" " alt="" coords="567,131,718,158"/>
-<area shape="rect" title=" " alt="" coords="743,131,881,158"/>
-<area shape="rect" title=" " alt="" coords="906,131,1097,158"/>
-<area shape="rect" title=" " alt="" coords="1121,131,1183,158"/>
-<area shape="rect" title=" " alt="" coords="1255,213,1318,240"/>
-<area shape="rect" href="cluster__dynamics__state_8hpp.html" title=" " alt="" coords="1259,124,1443,165"/>
-<area shape="rect" href="material__impl_8hpp.html" title=" " alt="" coords="1467,131,1608,158"/>
-<area shape="rect" href="nuclear__reactor__impl_8hpp.html" title=" " alt="" coords="1632,131,1819,158"/>
-<area shape="rect" href="constants_8hpp.html" title=" " alt="" coords="1843,131,1989,158"/>
-<area shape="rect" href="types_8hpp.html" title=" " alt="" coords="1478,213,1597,240"/>
+<area shape="rect" title=" " alt="" coords="1493,5,1736,76"/>
+<area shape="rect" title=" " alt="" coords="5,131,136,158"/>
+<area shape="rect" title=" " alt="" coords="160,131,339,158"/>
+<area shape="rect" title=" " alt="" coords="363,124,506,165"/>
+<area shape="rect" title=" " alt="" coords="530,124,689,165"/>
+<area shape="rect" title=" " alt="" coords="713,131,865,158"/>
+<area shape="rect" title=" " alt="" coords="889,131,1060,158"/>
+<area shape="rect" title=" " alt="" coords="1085,131,1251,158"/>
+<area shape="rect" title=" " alt="" coords="1275,131,1426,158"/>
+<area shape="rect" title=" " alt="" coords="1451,131,1589,158"/>
+<area shape="rect" title=" " alt="" coords="1614,131,1805,158"/>
+<area shape="rect" title=" " alt="" coords="1774,377,1837,404"/>
+<area shape="rect" title=" " alt="" coords="2753,303,2815,329"/>
+<area shape="rect" href="cluster__dynamics__config_8hpp.html" title=" " alt="" coords="2147,213,2331,255"/>
+<area shape="rect" href="constants_8hpp.html" title=" " alt="" coords="1861,377,2006,404"/>
+<area shape="rect" href="cluster__dynamics__state_8hpp.html" title=" " alt="" coords="2423,213,2607,255"/>
+<area shape="rect" href="material__impl_8hpp.html" title=" " alt="" coords="2631,221,2772,247"/>
+<area shape="rect" href="nuclear__reactor__impl_8hpp.html" title=" " alt="" coords="2796,221,2983,247"/>
+<area shape="rect" href="cluster__dynamics__impl_8hpp.html" title=" " alt="" coords="2457,124,2605,165"/>
+<area shape="rect" title=" " alt="" coords="2157,303,2224,329"/>
+<area shape="rect" href="material_8hpp.html" title=" " alt="" coords="1982,303,2133,329"/>
+<area shape="rect" href="types_8hpp.html" title=" " alt="" coords="2725,377,2843,404"/>
+<area shape="rect" href="nuclear__reactor_8hpp.html" title=" " alt="" coords="2248,303,2443,329"/>
+<area shape="rect" href="sensitivity__variable_8hpp.html" title=" " alt="" coords="2467,303,2677,329"/>
+<area shape="rect" title=" " alt="" coords="2316,377,2401,404"/>
+<area shape="rect" title=" " alt="" coords="2031,377,2108,404"/>
+<area shape="rect" title=" " alt="" coords="2425,377,2484,404"/>
+<area shape="rect" href="conversions_8hpp.html" title=" " alt="" coords="2132,377,2292,404"/>
+<area shape="rect" title=" " alt="" coords="2547,377,2597,404"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -134,7 +155,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classClusterDynamicsImpl.html">ClusterDynamicsImpl</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classClusterDynamicsCudaImpl.html">ClusterDynamicsCudaImpl</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -155,7 +176,7 @@ Macros</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="cluster__dynamics__cuda__impl_8hpp_source.html#l00019">19</a> of file <a class="el" href="cluster__dynamics__cuda__impl_8hpp_source.html">cluster_dynamics_cuda_impl.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="cluster__dynamics__cuda__impl_8hpp_source.html#l00026">26</a> of file <a class="el" href="cluster__dynamics__cuda__impl_8hpp_source.html">cluster_dynamics_cuda_impl.hpp</a>.</p>
 
 </div>
 </div>
