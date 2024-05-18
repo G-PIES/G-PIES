@@ -11,20 +11,20 @@ Code Documentation:
 
 ### Method 1: Build From Source
 Clone the repository:
->git clone https://github.com/G-PIES/G-PIES.git
+> git clone https://github.com/G-PIES/G-PIES.git
 
 Build gpies:
->./build.sh gpies
+> ./build.sh gpies
 
 If this fails, try:
->./build.sh gpies --no-sanitizer
+> ./build.sh gpies --no-sanitizer
 
 gpies binary will be at:
->./out/gpies
+> ./out/gpies
 
 ### Method 2: Pre-built Binary
 Download a release at: 
->https://github.com/G-PIES/G-PIES/releases
+> https://github.com/G-PIES/G-PIES/releases
 
 ### Help Command
 For more information about running the binary, run (ensure you are in the same directory as the G-PIES executable):

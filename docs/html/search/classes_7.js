@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['timer_264',['Timer',['../classTimer.html',1,'']]]
+  ['randomizer_322',['Randomizer',['../classRandomizer.html',1,'']]]
 ];

@@ -1,18 +1,17 @@
 var searchData=
 [
-  ['v_5fbi_488',['v_bi',['../structNuclearReactorImpl.html#a7a65a10ed1998fff0b84cc03730c74b1',1,'NuclearReactorImpl']]],
-  ['v_5fbinding_489',['v_binding',['../structMaterialImpl.html#a1867e7f3f73a3964be392483fc022340',1,'MaterialImpl']]],
-  ['v_5fdiffusion_5f0_490',['v_diffusion_0',['../structMaterialImpl.html#ab5c3debd29322e1426924a7b417f4e9b',1,'MaterialImpl']]],
-  ['v_5fdiffusion_5fval_491',['v_diffusion_val',['../classClusterDynamicsImpl.html#a89146488c5051e98bb605204a8322701',1,'ClusterDynamicsImpl']]],
-  ['v_5fdislocation_5fbias_492',['v_dislocation_bias',['../structMaterialImpl.html#ae4f091074666065aeeae4ce8e65f1b93',1,'MaterialImpl']]],
-  ['v_5fdislocation_5fbias_5fparam_493',['v_dislocation_bias_param',['../structMaterialImpl.html#ae2f93a62d34ea9ebcc9b9560059eb95a',1,'MaterialImpl']]],
-  ['v_5fformation_494',['v_formation',['../structMaterialImpl.html#ab9a43d0e12b79f5402e1d8e4763d96f1',1,'MaterialImpl']]],
-  ['v_5floop_5fbias_495',['v_loop_bias',['../structMaterialImpl.html#a01541457ba26a84d527f3906d5410b16',1,'MaterialImpl']]],
-  ['v_5fmigration_496',['v_migration',['../structMaterialImpl.html#a646eec674b43ebb837aefae2fd42f43c',1,'MaterialImpl']]],
-  ['v_5fquad_497',['v_quad',['../structNuclearReactorImpl.html#a3708ee679b4c1ab12825e004bda75cdc',1,'NuclearReactorImpl']]],
-  ['v_5ftri_498',['v_tri',['../structNuclearReactorImpl.html#acf1ed32e4b3d184b1cc99046f99825ff',1,'NuclearReactorImpl']]],
-  ['vacancies_499',['vacancies',['../structClusterDynamicsState.html#ad87db339b84dbc937548c6fbbf93b980',1,'ClusterDynamicsState::vacancies()'],['../classClusterDynamicsImpl.html#ab312d5dfa62ea875374a5e45a68c757d',1,'ClusterDynamicsImpl::vacancies()'],['../classClusterDynamicsImpl.html#a7f15156f756dc3edb1d81dcb9d3de2bf',1,'ClusterDynamicsImpl::vacancies()']]],
-  ['vacancies_5ftemp_500',['vacancies_temp',['../classClusterDynamicsImpl.html#a8fb665ddaa4d7b5b78dfd773ba01f6d9',1,'ClusterDynamicsImpl']]],
-  ['vi_5fsum_5fabsorption_5fval_501',['vi_sum_absorption_val',['../classClusterDynamicsImpl.html#ad2c6f0c96b12df5ca87828f6ad515f3e',1,'ClusterDynamicsImpl']]],
-  ['vv_5fsum_5fabsorption_5fval_502',['vv_sum_absorption_val',['../classClusterDynamicsImpl.html#a63dc562576beb81bb9014adb96706c07',1,'ClusterDynamicsImpl']]]
+  ['v_5fbi_584',['v_bi',['../structNuclearReactorImpl.html#a7a65a10ed1998fff0b84cc03730c74b1',1,'NuclearReactorImpl']]],
+  ['v_5fbinding_585',['v_binding',['../structMaterialImpl.html#a1867e7f3f73a3964be392483fc022340',1,'MaterialImpl']]],
+  ['v_5fdiffusion_5f0_586',['v_diffusion_0',['../structMaterialImpl.html#ab5c3debd29322e1426924a7b417f4e9b',1,'MaterialImpl']]],
+  ['v_5fdiffusion_5fval_587',['v_diffusion_val',['../classClusterDynamicsCpuImpl.html#aeba4b18eeb4cf9755b27bda86af5d31a',1,'ClusterDynamicsCpuImpl::v_diffusion_val()'],['../classClusterDynamicsCudaImpl.html#a58145313809ab42d59d9fb841ba2c0b7',1,'ClusterDynamicsCudaImpl::v_diffusion_val()']]],
+  ['v_5fdislocation_5fbias_588',['v_dislocation_bias',['../structMaterialImpl.html#ae4f091074666065aeeae4ce8e65f1b93',1,'MaterialImpl']]],
+  ['v_5fdislocation_5fbias_5fparam_589',['v_dislocation_bias_param',['../structMaterialImpl.html#ae2f93a62d34ea9ebcc9b9560059eb95a',1,'MaterialImpl']]],
+  ['v_5fformation_590',['v_formation',['../structMaterialImpl.html#ab9a43d0e12b79f5402e1d8e4763d96f1',1,'MaterialImpl']]],
+  ['v_5floop_5fbias_591',['v_loop_bias',['../structMaterialImpl.html#a01541457ba26a84d527f3906d5410b16',1,'MaterialImpl']]],
+  ['v_5fmigration_592',['v_migration',['../structMaterialImpl.html#a646eec674b43ebb837aefae2fd42f43c',1,'MaterialImpl']]],
+  ['v_5fquad_593',['v_quad',['../structNuclearReactorImpl.html#a3708ee679b4c1ab12825e004bda75cdc',1,'NuclearReactorImpl']]],
+  ['v_5ftri_594',['v_tri',['../structNuclearReactorImpl.html#acf1ed32e4b3d184b1cc99046f99825ff',1,'NuclearReactorImpl']]],
+  ['vacancies_595',['vacancies',['../structClusterDynamicsState.html#ad87db339b84dbc937548c6fbbf93b980',1,'ClusterDynamicsState::vacancies()'],['../classClusterDynamicsCpuImpl.html#a66a9347046a67e74fa0ca1483f1934b1',1,'ClusterDynamicsCpuImpl::vacancies()'],['../classClusterDynamicsCudaImpl.html#a27f1f6c21dcf1b72834026be6b3c6ecb',1,'ClusterDynamicsCudaImpl::vacancies()']]],
+  ['vi_5fsum_5fabsorption_5fval_596',['vi_sum_absorption_val',['../classClusterDynamicsCpuImpl.html#a1280f76011a7a5169465e328f9182520',1,'ClusterDynamicsCpuImpl::vi_sum_absorption_val()'],['../classClusterDynamicsCudaImpl.html#a40386ac20188acaae52941977b1dcaa7',1,'ClusterDynamicsCudaImpl::vi_sum_absorption_val()']]],
+  ['vv_5fsum_5fabsorption_5fval_597',['vv_sum_absorption_val',['../classClusterDynamicsCpuImpl.html#a56ca9ba1b20e1f5f26f94f74d4d654c2',1,'ClusterDynamicsCpuImpl::vv_sum_absorption_val()'],['../classClusterDynamicsCudaImpl.html#aeb0bf78c1ebc31caf2f042fe06feafb1',1,'ClusterDynamicsCudaImpl::vv_sum_absorption_val()']]]
 ];

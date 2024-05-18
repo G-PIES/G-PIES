@@ -1305,7 +1305,9 @@ Public Attributes</h2></td></tr>
 <p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00196">196</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
 <div class="fragment"><div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;                                                   {</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  <a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;lattice_param = val;</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;}</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;burgers_vector = <a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;lattice_param / std::sqrt(2.);</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  <a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;atomic_volume = std::pow(<a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;lattice_param, 3) / 4.;  <span class="comment">// cm^3</span></div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1326,8 +1328,8 @@ Public Attributes</h2></td></tr>
 
 <p>Returns the magnitude of the burgers vector. </p>
 
-<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00201">201</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;{ <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;burgers_vector; }</div>
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00203">203</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;{ <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;burgers_vector; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1355,10 +1357,10 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00205">205</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;                                                    {</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  <a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;burgers_vector = val;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00207">207</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;                                                    {</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  <a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;burgers_vector = val;</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1379,8 +1381,8 @@ Public Attributes</h2></td></tr>
 
 <p>Returns the average volume of a single atom in the material lattice in cm^3. </p>
 
-<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00211">211</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;{ <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;atomic_volume; }</div>
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00213">213</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;{ <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;atomic_volume; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1408,10 +1410,10 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00215">215</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;                                                   {</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  <a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;atomic_volume = val;</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;}</div>
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00217">217</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;                                                   {</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;  <a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>-&gt;atomic_volume = val;</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1432,8 +1434,8 @@ Public Attributes</h2></td></tr>
 
 <p>Returns a raw pointer to the underlying <a class="el" href="structMaterialImpl.html">MaterialImpl</a> object. </p>
 
-<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00220">220</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;{ <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>.get(); }</div>
+<p class="definition">Definition at line <a class="el" href="material_8cpp_source.html#l00222">222</a> of file <a class="el" href="material_8cpp_source.html">material.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;{ <span class="keywordflow">return</span> <a class="code" href="structMaterial.html#ae12f33ea29619dfc2978f93f3751af10">_impl</a>.get(); }</div>
 </div><!-- fragment -->
 </div>
 </div>
