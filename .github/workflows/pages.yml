@@ -1,0 +1,11 @@
+name: Build and deploy GitHub pages
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: TODO
+        run: echo "This is a workflow stub"
