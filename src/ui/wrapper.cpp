@@ -15,6 +15,7 @@
 #include "model/material.hpp"
 #include "model/nuclear_reactor.hpp"
 #include "utils/sensitivity_variable.hpp"
+#include "utils/consumers/yaml_consumer.hpp"
 #include "utils/timer.hpp"
 
 namespace py = pybind11;
@@ -170,39 +171,9 @@ struct Sim_Material {
 // C++ wrapper file for the Python implementation of cluster dyanamics, based
 // off of the example C++ cluster dynamics files.
 struct Simulation {
-  // Default Constructor
-  Simulation(size_t concentration_boundary, double simulation_time,
-             double delta_time)
-      : concentration_boundary(concentration_boundary),
-        simulation_time(simulation_time),
-        delta_time(delta_time) {
-    main_sim_reactor = Sim_Reactor();
-    main_sim_material = Sim_Material();
-    
-    config.data_validation_on = true;
-    config.max_cluster_size = 1001;
-    config.relative_tolerance = 1.0e-6;
-    config.absolute_tolerance = 1.0e+1;
-    config.max_num_integration_steps = 5000;
-    config.min_integration_step = 1.0e-30;
-    config.max_integration_step = 1.0e+20;
-
-    config.reactor = main_sim_reactor.get_reactor();
-    config.material = main_sim_material.get_material();
-
-    config.init_interstitials = std::vector<gp_float>(config.max_cluster_size, 0.);
-    config.init_vacancies = std::vector<gp_float>(config.max_cluster_size, 0.);
-
-    cd = std::make_unique<ClusterDynamics>(config);
-  }
-
-  // Overloaded Constructor
-
-  Simulation(size_t concentration_boundary, double simulation_time,
-             double delta_time, Sim_Material material, Sim_Reactor reactor)
-      : concentration_boundary(concentration_boundary),
-        simulation_time(simulation_time),
-        delta_time(delta_time) {
+  Simulation(std::string config_name)
+      : config_name(config_name) {
+    /*
     config.data_validation_on = true;
     config.max_cluster_size = 1001;
     config.relative_tolerance = 1.0e-6;
@@ -213,66 +184,38 @@ struct Simulation {
 
     config.reactor = reactor.get_reactor();
     config.material = material.get_material();
-
+    */
+    YamlConsumer yaml_consumer(config_name);
+    yaml_consumer.populate_cd_config(config);
     config.init_interstitials = std::vector<gp_float>(config.max_cluster_size, 0.);
     config.init_vacancies = std::vector<gp_float>(config.max_cluster_size, 0.);
-
     cd = std::make_unique<ClusterDynamics>(config);
+    std::cout << "Config settings:" << std::endl;
+    std::cout << " [DEBUG] time_delta: " << config.time_delta << std::endl;
+    std::cout << " [DEBUG] max_cluster_size: " << config.max_cluster_size << std::endl;
+    std::cout << " [DEBUG] relative_tolerance: " << config.relative_tolerance << std::endl;
+    std::cout << " [DEBUG] max_num_integration_steps: " << config.max_num_integration_steps << std::endl;
+    std::cout << " [DEBUG] min_integration_step: " << config.min_integration_step << std::endl;
+    std::cout << " [DEBUG] max_integration_step: " << config.max_integration_step << std::endl;
+    std::cout << " [DEBUG] flux: " << config.reactor.get_flux() << std::endl;
+    std::cout << " [DEBUG] material eV: " << config.material.get_i_migration() << std::endl;
   }
 
   void run() {
-    state = (*cd).run(delta_time, sample_interval); 
-  }
-
-  void print_state() {
-    fprintf(stdout, "\nTime=%g", state.time);
-    if (state.interstitials.size() != concentration_boundary ||
-        state.vacancies.size() != concentration_boundary) {
-      fprintf(stderr, "\nError: Output data is incorrect size.\n");
-      return;
-    }
-    fprintf(stdout,
-            "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n");
-    for (uint64_t n = 1; n < concentration_boundary; ++n) {
-      fprintf(stdout, "%llu\t\t\t\t\t%13g\t\t\t  %15g\n\n",
-              (unsigned long long)n, state.interstitials[n],
-              state.vacancies[n]);
-    }
-    fprintf(stderr, "\nDislocation Network Density: %g\n\n",
-            state.dislocation_density);
-  }
-
-  std::string string_state() {
-    std::stringstream str_state;
-    std::string str_to_cat;
-
-    str_state << "\nTime=" << state.time;
-    if (state.interstitials.size() != concentration_boundary ||
-        state.vacancies.size() != concentration_boundary) {
-      str_state << "\nError: Output data is incorrect size.\n";
-      return str_state.str();
-    }
-    str_state << "\nCluster Size\t-\tInterstitials\t-\tVacancies\n\n";
-    for (uint64_t n = 1; n < concentration_boundary; ++n) {
-      str_state << (unsigned long long)n << "\t\t" << state.interstitials[n]
-                << "\t\t" << state.vacancies[n] << "\n\n";
-    }
-    str_state << "\nDislocation Network Density: " << state.dislocation_density
-              << "\n\n";
-
-    return str_state.str();
+    state = (*cd).run(config.time_delta, config.sample_interval); 
   }
 
   double get_state_time() { return state.time; }
+
+  double get_simulation_time() { return config.simulation_time; }
 
   double get_int_idx(int i) { return state.interstitials[i]; }
 
   double get_vac_idx(int i) { return state.vacancies[i]; }
 
-  size_t concentration_boundary;
-  double simulation_time;
-  double delta_time = 1.0e+6;
-  double sample_interval = delta_time;
+  std::string config_name;
+
+  //double sample_interval = delta_time;
 
   std::unique_ptr<ClusterDynamics> cd;
 
@@ -288,14 +231,12 @@ PYBIND11_MODULE(libpyclusterdynamics, m) {
   m.doc() = "Cluster Dynamics C++ backend interface for python3.";
   // The name of the python class object is Simulation
   py::class_<Simulation>(m, "Simulation")
-      .def(py::init<size_t, double, double>())
-      .def(py::init<size_t, double, double, Sim_Material, Sim_Reactor>())
+      .def(py::init<std::string>())
       .def("run", &Simulation::run)
-      .def("print_state", &Simulation::print_state)
-      .def("string_state", &Simulation::string_state)
       .def("get_state_time", &Simulation::get_state_time)
-      .def("get_int_idx", &Simulation::get_int_idx)   // vacancies
-      .def("get_vac_idx", &Simulation::get_vac_idx);  // interstials
+      .def("get_simulation_time", &Simulation::get_simulation_time)
+      .def("get_int_idx", &Simulation::get_int_idx)
+      .def("get_vac_idx", &Simulation::get_vac_idx);
 
   py::class_<Sim_Reactor>(m, "Sim_Reactor")
       .def(py::init<>())

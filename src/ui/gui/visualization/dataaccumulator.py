@@ -13,7 +13,7 @@ class DataAccumulator(QObject):
         self.shm_ready = shm_ready
         # Threshold for downsampling to be applied
         self.max_data_points = max_data_points
-        self.data = np.empty((0, self.simulation_params.C - 1, self.simulation_params.entry_size), dtype=np.float64)
+        self.data = np.empty((0, 1001 - 1, self.simulation_params.entry_size), dtype=np.float64)
         # Tracks downsampling depth
         self.index_distance = 1
 
@@ -28,7 +28,7 @@ class DataAccumulator(QObject):
         while True:
             self.shm_ready.wait()
             # Receive data block and downsample to current downsampling depth of stored data
-            new_data = np.ndarray((block_size, self.simulation_params.C - 1, data_point_size), dtype=np.float64, buffer=shm.buf)
+            new_data = np.ndarray((block_size, 1001 - 1, data_point_size), dtype=np.float64, buffer=shm.buf)
             downsampled_new_data = new_data[::self.index_distance]
             self.data = np.append(self.data, downsampled_new_data, axis=0)
             # Increase downsampling depth if length exceeds max_data_points

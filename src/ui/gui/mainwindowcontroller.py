@@ -18,7 +18,6 @@ from gui.visualization.legendcheckbox import LegendCheckBox
 import libpyclusterdynamics as pycd
 import sys
 import os
-import yaml
 sys.path.append('../G-PIES/out')
 
 
@@ -30,7 +29,7 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
         self.input_dialog = InputDialog(self)
-        #self.init_element_states() removed
+        self.init_element_states()
         self.init_connections()
         self.reactor=0
         self.material= pycd.Sim_Material()
@@ -48,14 +47,14 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         if self.groupBox.layout() is None:
             layout = QVBoxLayout()
             self.groupBox.setLayout(layout)
-        self.simLenEntry.setText('1.0')
-        self.clusterSizeEntry.setText('10')
-        self.timeStepEntry.setText('0.00001')
+        #self.simLenEntry.setText('1.0')
+        #self.clusterSizeEntry.setText('10')
+        #self.timeStepEntry.setText('0.00001')
         self.entrySizeEntry.setText('4')
 
-        self.simLenEntry.setValidator(QDoubleValidator())
-        self.clusterSizeEntry.setValidator(QIntValidator())
-        self.timeStepEntry.setValidator(QDoubleValidator())
+        #self.simLenEntry.setValidator(QDoubleValidator())
+        #self.clusterSizeEntry.setValidator(QIntValidator())
+        #self.timeStepEntry.setValidator(QDoubleValidator())
         self.entrySizeEntry.setValidator(QIntValidator())
 
         self.input_dialog.reactor_temp.setValidator(QDoubleValidator())
@@ -88,24 +87,7 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         config_name, _ = QtWidgets.QFileDialog.getOpenFileName(self,
             "Open YML Config", "","YAML Files (*.yml, *.yaml)", options=options)
         if config_name:
-            print(str(os.path.basename(config_name)))
-            with open(config_name, 'r') as file:
-                sim_config = yaml.safe_load(file)
-            if (sim_config):
-                print(config_name + " imported successfully")
-
-            try:
-                temp = sim_config['reactor']['temperature-kelvin']
-                self.reactor.set_temperature(temp)
-            except:
-                self.reactor.set_temperature(603.15)
-
-            try:
-                temp = sim_config['reactor']['flux-dpa-s']
-                self.reactor.set_flux(temp)
-            except:
-                self.reactor.set_flux(2.9e-7)
-            #....
+            self.config_to_str = str(config_name)
             
 
     def get_reactor_settings(self):
@@ -164,16 +146,18 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         if self.sim_running:
             self.stop_simulation()
 
-        userInputTime = float(self.simLenEntry.text())
-        userInputC = int(self.clusterSizeEntry.text())
-        userInputStep = float(self.timeStepEntry.text())
-        userInputEntrySize = int(self.entrySizeEntry.text())
+        #userInputTime = 1.0 #float(self.simLenEntry.text())
+        userInputC = 10 #int(self.clusterSizeEntry.text())
+        #userInputStep = 0.00001 #float(self.timeStepEntry.text())
+        userInputEntrySize = 4 #int(self.entrySizeEntry.text())
+        print(self.config_to_str)
+        configName = self.config_to_str
 
-        self.params = SimulationParams(userInputC, userInputTime, userInputStep, userInputEntrySize, runner_block_size=1000)
-        self.gc.init_graph(self.params.C)
+        self.params = SimulationParams(configName, userInputEntrySize, runner_block_size=1000)
+        self.gc.init_graph(userInputC)
 
         # Init shared memory for SimulationProcess / DataAccumulator communication
-        shm_size = self.params.runner_block_size * (self.params.C - 1) * self.params.entry_size * 8
+        shm_size = self.params.runner_block_size * (userInputC - 1) * self.params.entry_size * 8
         self.shm = shared_memory.SharedMemory(create=True, size=shm_size)
         self.shm_name = self.shm.name
         self.shm_ready = Event()
@@ -181,8 +165,7 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         # Init SimulationProcess and start
         self.sim_running = True
         self.start_time = QDateTime.currentDateTime()
-        self.sim_process = SimulationProcess(simulation_params=self.params,
-                                             read_interval=10, shm_name=self.shm_name, shm_ready=self.shm_ready,sim_material=self.material,sim_reactor=self.reactor)
+        self.sim_process = SimulationProcess(simulation_params=self.params, read_interval=10, shm_name=self.shm_name, shm_ready=self.shm_ready)
         
         self.thread = threading.Thread(target=self.start_waiting_for_task)
         self.thread.start()
