@@ -1,0 +1,2 @@
+d/dt C = -C
+INITIAL C = 10.0
