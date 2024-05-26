@@ -1,4 +1,7 @@
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout
 from multiprocessing import Process, shared_memory
+from gui.mainwindow import Ui_MainWindow
+
 import numpy as np
 import sys
 sys.path.append('../../out')
@@ -6,7 +9,7 @@ import libpyclusterdynamics as pycd
 
 
 class SimulationProcess(Process):
-    def __init__(self, simulation_params, read_interval, shm_name, shm_ready):
+    def __init__(self, simulation_params, read_interval, shm_name, shm_ready, sim_material, sim_reactor):
         super().__init__()
         self.params = simulation_params
         # Number of time steps between state reads, limits usage of pycd getters and shared memory writes
@@ -15,21 +18,24 @@ class SimulationProcess(Process):
         self.shm_name = shm_name
         self.shm_ready = shm_ready
 
+        self.material = sim_material
+        self.reactor = sim_reactor
+
     def run(self):
         shm = shared_memory.SharedMemory(name=self.shm_name)
-        data_block = np.ndarray((self.params.runner_block_size, 10 - 1, self.params.entry_size), dtype=np.float64, buffer=shm.buf)
+        data_block = np.ndarray((self.params.runner_block_size, self.params.C - 1, self.params.entry_size), dtype=np.float64, buffer=shm.buf)
 
         t = 0
         block_idx = 0
-        #cd = pycd.Simulation(self.params.C, self.params.simulation_time, self.params.step, self.material, self.reactor) 
+        #cd = pycd.Simulation(self.params.C, self.params.simulation_time, self.params.step, ) 
         cd = pycd.Simulation(self.params.config_name) # DEFAULT REACTOR AND MATERIAL
 
         # Run simulation, read / store data every read_interval number of iterations,
         # set data_ready_event every runner_block_size number of completed read_intervals
-        while t < cd.get_simulation_time(): #self.params.simulation_time
+        while t < self.params.simulation_time: #self.params.simulation_time
             for _ in range(self.read_interval):
                 cd.run()
-            for i in range(1, 10):
+            for i in range(1, self.params.C):
                 data_block[block_idx, i - 1, :] = [t, i, cd.get_int_idx(i), cd.get_vac_idx(i)]
 
             block_idx += 1

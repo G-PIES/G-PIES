@@ -18,7 +18,7 @@ from gui.visualization.legendcheckbox import LegendCheckBox
 import libpyclusterdynamics as pycd
 import sys
 import os
-sys.path.append('../G-PIES/out')
+sys.path.append('../../out')
 
 
 class MainWindowController(QMainWindow, Ui_MainWindow):
@@ -146,14 +146,14 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         if self.sim_running:
             self.stop_simulation()
 
-        #userInputTime = 1.0 #float(self.simLenEntry.text())
-        userInputC = 10 #int(self.clusterSizeEntry.text())
-        #userInputStep = 0.00001 #float(self.timeStepEntry.text())
+        userInputTime = 1.0 #float(self.simLenEntry.text())
+        userInputC = 1001 #int(self.clusterSizeEntry.text())
+        userInputStep = 0.00001 #float(self.timeStepEntry.text())
         userInputEntrySize = 4 #int(self.entrySizeEntry.text())
         print(self.config_to_str)
         configName = self.config_to_str
 
-        self.params = SimulationParams(configName, userInputEntrySize, runner_block_size=1000)
+        self.params = SimulationParams(userInputC, userInputTime, userInputStep, configName, userInputEntrySize, runner_block_size=1000)
         self.gc.init_graph(userInputC)
 
         # Init shared memory for SimulationProcess / DataAccumulator communication
@@ -165,7 +165,7 @@ class MainWindowController(QMainWindow, Ui_MainWindow):
         # Init SimulationProcess and start
         self.sim_running = True
         self.start_time = QDateTime.currentDateTime()
-        self.sim_process = SimulationProcess(simulation_params=self.params, read_interval=10, shm_name=self.shm_name, shm_ready=self.shm_ready)
+        self.sim_process = SimulationProcess(simulation_params=self.params, read_interval=10, shm_name=self.shm_name, shm_ready=self.shm_ready, sim_material=self.material, sim_reactor=self.reactor)
         
         self.thread = threading.Thread(target=self.start_waiting_for_task)
         self.thread.start()

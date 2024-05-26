@@ -1,7 +1,8 @@
-// Need to have pybind11 installed with "pip install pybind11"
+// Need to have pybind11 installed with "pip install pybind11" or can be installed with the CMake build system when built.
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+// Required by the simulation.
 #include <array>
 #include <boost/program_options.hpp>
 #include <cmath>
@@ -10,6 +11,7 @@
 #include <iomanip>
 #include <iostream>
 
+// Include all the required libraries that exist within the gpies.cpp file. (running a full simulation.)
 #include "cluster_dynamics/cluster_dynamics.hpp"
 #include "cluster_dynamics/cluster_dynamics_config.hpp"
 #include "model/material.hpp"
@@ -17,12 +19,16 @@
 #include "utils/sensitivity_variable.hpp"
 #include "utils/consumers/yaml_consumer.hpp"
 #include "utils/timer.hpp"
+#include "utils/progress_bar.hpp"
 
+// Create the pybind11 namespace.
 namespace py = pybind11;
 
+// C++ Sim Reactor struct to store the constructor and functions that will be converted into the python
+// classes 
 struct Sim_Reactor {
   Sim_Reactor() {
-    nuclear_reactors::OSIRIS(reactor);  // For now..
+    nuclear_reactors::OSIRIS(reactor);  // For now.. Default reactor. Future plans to implement mysql implementation
   }
 
   NuclearReactor get_reactor() { return reactor; }
@@ -64,10 +70,16 @@ struct Sim_Reactor {
   NuclearReactor reactor;
 };
 
+// C++ Sim Material struct to store the constructor and functions that will be converted into the python
+// classes 
 struct Sim_Material {
   Sim_Material() {
-    materials::SA304(material);  // For now..
+    materials::SA304(material);  // For now.. Default material. Future plans to implement mysql implementation
   }
+
+  // Getters and setters for material properties, possibly out of date considering the new config yaml code.
+  // Kept in the file as the UI python code still rely on a few of these function. Same for the getters and setters
+  // in the reactor class.
 
   Material get_material() { return material; }
 
@@ -173,37 +185,67 @@ struct Sim_Material {
 struct Simulation {
   Simulation(std::string config_name)
       : config_name(config_name) {
-    /*
-    config.data_validation_on = true;
-    config.max_cluster_size = 1001;
-    config.relative_tolerance = 1.0e-6;
-    config.absolute_tolerance = 1.0e+1;
-    config.max_num_integration_steps = 5000;
-    config.min_integration_step = 1.0e-30;
-    config.max_integration_step = 1.0e+20;
-
-    config.reactor = reactor.get_reactor();
-    config.material = material.get_material();
-    */
+    // Load the YAML config via a name provided, absolute path of the config file.
     YamlConsumer yaml_consumer(config_name);
     yaml_consumer.populate_cd_config(config);
+    // initialize the cluster interstials and vacancies to the default amounts.
     config.init_interstitials = std::vector<gp_float>(config.max_cluster_size, 0.);
     config.init_vacancies = std::vector<gp_float>(config.max_cluster_size, 0.);
+    // sets the cd variable to a pointer to the new ClusterDynamics C++ class.
     cd = std::make_unique<ClusterDynamics>(config);
-    std::cout << "Config settings:" << std::endl;
-    std::cout << " [DEBUG] time_delta: " << config.time_delta << std::endl;
-    std::cout << " [DEBUG] max_cluster_size: " << config.max_cluster_size << std::endl;
-    std::cout << " [DEBUG] relative_tolerance: " << config.relative_tolerance << std::endl;
-    std::cout << " [DEBUG] max_num_integration_steps: " << config.max_num_integration_steps << std::endl;
-    std::cout << " [DEBUG] min_integration_step: " << config.min_integration_step << std::endl;
-    std::cout << " [DEBUG] max_integration_step: " << config.max_integration_step << std::endl;
-    std::cout << " [DEBUG] flux: " << config.reactor.get_flux() << std::endl;
-    std::cout << " [DEBUG] material eV: " << config.material.get_i_migration() << std::endl;
   }
 
   void run() {
+    // Deference ClusterDynamics and call the run function, useful if the user wants to define 
+    // their own simulation in Python instead of using the below `run_full_simulation` function.
     state = (*cd).run(config.time_delta, config.sample_interval); 
   }
+
+  // Copy of the main simulation loop function in the gpies.cpp file.
+  void run_full_simulation(bool print_step) {
+    progressbar bar(
+      static_cast<int>(config.simulation_time / config.time_delta), true,
+      std::cout);
+    bar.set_todo_char(" ");
+    bar.set_done_char("█");
+    bar.set_opening_bracket_char("[");
+    bar.set_closing_bracket_char("]");
+
+    for (gp_float t = 0.; t < config.simulation_time; t = state.time) {
+      if (!print_step) {
+        bar.update();
+      }
+
+      state = (*cd).run(config.time_delta, config.sample_interval);
+      //Prints the state at each interval
+      if (print_step) {
+        print_state();
+      }
+    }
+    std::cout << "RESULT:" << std::endl;
+    //Result
+    print_state();
+  }
+
+  // Copy of the function that exists in the gpies.cpp file. Just prints the current state of the sim.
+  void print_state() {
+    std::cout << "\nTime=" << state.time;
+    size_t size = state.interstitials.size();
+    std::cout << "\nCluster Size\t\t-\t\tInterstitials\t\t-\t\tVacancies\n\n";
+    for (size_t n = 1; n < size; ++n) {
+      for (size_t n = 1; n < size; ++n) {
+        std::cout << (long long unsigned int)n << "\t\t\t\t\t" << std::setprecision(13)
+          << state.interstitials[n] << "\t\t\t" << std::setprecision(15)
+          << state.vacancies[n] << std::endl;
+      }
+
+      std::cout << "\nDislocation Network Density: " << state.dislocation_density
+        << std::endl;
+    }
+  }
+
+  // Getters and setters useful for the UI implementation. Getting simulation values can be 
+  // achieved with similar function in the future.
 
   double get_state_time() { return state.time; }
 
@@ -213,12 +255,15 @@ struct Simulation {
 
   double get_vac_idx(int i) { return state.vacancies[i]; }
 
+  // Name of the configuration in the absolute path.
   std::string config_name;
 
   //double sample_interval = delta_time;
 
   std::unique_ptr<ClusterDynamics> cd;
 
+  // The public varaibles for the current simulations reactor and material types. As well as the state and config.
+  // Used to access the values with getters and setters.
   Sim_Reactor main_sim_reactor;
   Sim_Material main_sim_material;
   ClusterDynamicsState state;
@@ -233,6 +278,7 @@ PYBIND11_MODULE(libpyclusterdynamics, m) {
   py::class_<Simulation>(m, "Simulation")
       .def(py::init<std::string>())
       .def("run", &Simulation::run)
+      .def("run_full_simulation", &Simulation::run_full_simulation)
       .def("get_state_time", &Simulation::get_state_time)
       .def("get_simulation_time", &Simulation::get_simulation_time)
       .def("get_int_idx", &Simulation::get_int_idx)
