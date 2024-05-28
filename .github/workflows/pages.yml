@@ -1,16 +1,9 @@
 name: Build and deploy GitHub pages
 
 on:
+  push:
+    branches: ["main"]
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
 
 jobs:
   doxygen:
@@ -30,7 +23,12 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./docs/html
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v4
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+      - name: Trigger deploymanet
+        run: >-
+          gh workflow run pages.yml
+          --ref pages-workflow
+          --repo G-PIES/g-pies.github.io
+          --field source_run_id=${{ github.run_id }}
+          --field source_repository=${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ secrets.GPIES_GITHUB_IO_DEPLOYMENT_TOKEN }}
