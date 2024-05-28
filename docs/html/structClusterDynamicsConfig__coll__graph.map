@@ -1,5 +1,0 @@
-<map id="ClusterDynamicsConfig" name="ClusterDynamicsConfig">
-<area shape="rect" id="node1" title=" " alt="" coords="17,95,192,121"/>
-<area shape="rect" id="node2" href="$structMaterial.html" title="A class which represents the material property parameters for a ClusterDynamics simulation." alt="" coords="5,5,81,32"/>
-<area shape="rect" id="node3" href="$structNuclearReactor.html" title="A class which represents the radiation environment parameters for a ClusterDynamics simulation." alt="" coords="106,5,229,32"/>
-</map>
