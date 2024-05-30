@@ -27,3 +27,13 @@ if(NOT GP_NO_SANITIZER AND GP_BUILD_CUDA)
   # TODO: Fix sanitizers for non-cuda code
   message(WARNING "Sanitizers are disabled for CUDA builds.")
 endif()
+
+if(GP_TEST_COVERAGE)
+  set(GCOVR_ADDITIONAL_ARGS "--txt")
+  append_coverage_compiler_flags()
+endif()
+
+set(GP_CODE_COVERAGE_TARGETS "")
+function(gpies_add_code_coverage_target name)
+  list(APPEND GP_CODE_COVERAGE_TARGETS ${name})
+endfunction()

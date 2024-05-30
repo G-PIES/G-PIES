@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(G-PIES)
+project(
+  G-PIES
+  LANGUAGES C CXX)
 
 # Use the new behavior of DOWNLOAD_EXTRACT_TIMESTAMP if CMake supports it
 if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
@@ -29,3 +31,5 @@ add_subdirectory(./src/client_db)
 add_subdirectory(./src/cluster_dynamics)
 add_subdirectory(./src/okmc)
 add_subdirectory(./test)
+
+include(cmake/GpiesCodeCoverageTarget.cmake)

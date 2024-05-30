@@ -1,5 +1,6 @@
 include(FetchContent)
 
+include(cmake/GpiesSetupCMakeModules.cmake)
 include(cmake/GpiesSetupSundials.cmake)
 include(cmake/GpiesSetupBZip2.cmake)
 include(cmake/GpiesSetupBoost.cmake)

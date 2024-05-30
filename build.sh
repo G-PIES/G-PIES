@@ -26,6 +26,7 @@ process_option() {
     --help|-h) HELP=1 ;;
     --no-sanitizer) NO_SANITIZER=1 ;;
     --cmake-verbose) CMAKE_VERBOSE=1 ;;
+    --test-coverage) TEST_COVERAGE=1 ;;
     *)
       echo_error "Unknown option $1"
       HELP=1
@@ -94,11 +95,16 @@ if [ "$HELP" ]; then
   echo "  --no-sanitizer      Do not use sanitizer for debug builds."
   echo "  --cmake-verbose     Enable verbose output in the build process."
   echo "                      (CMAKE_VERBOSE_MAKEFILE=ON)"
+  echo "  --test-coverage     Calculate unit tests coverage."
   exit $ERROR
 fi
 
 if [ "$DEBUG" -a "$RELEASE" ]; then
   echo_error "Both --debug and --release cannot be used at the same time."
+fi
+
+if [ "$TEST_COVERAGE" -a "$RELEASE" ]; then
+  echo_error "Both --test-coverage and --release cannot be used at the same time."
 fi
 
 if [ ! "$CUDA" ]; then
@@ -154,6 +160,8 @@ if [ "${#UNKNOWN_TARGETS[@]}" -gt 0 ]; then
   echo_error "$error_text"
 elif [ "${#TARGETS[@]}" -gt 0 -a "${#TARGETS_TO_BUILD[@]}" -eq 0 ]; then
   echo_error "No targets to build. You might forgot to specify --cpu."
+elif [ "$TEST_COVERAGE" -a "${#TARGETS_TO_BUILD[@]}" -ne 0 ]; then
+  echo_error "--test-coverage cannot be used for specific targets."
 fi
 
 if [ "$RUN" -a "${#TARGETS_TO_RUN[@]}" -gt 1 ]; then
@@ -201,6 +209,12 @@ else
   CMAKE_CONFIGURE_OPTIONS+=" -DCMAKE_VERBOSE_MAKEFILE:BOOL=false"
 fi
 
+if [ "$TEST_COVERAGE" ]; then
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_TEST_COVERAGE:BOOL=true"
+else
+  CMAKE_CONFIGURE_OPTIONS+=" -DGP_TEST_COVERAGE:BOOL=false"
+fi
+
 for target in "${TARGETS_TO_BUILD[@]}"; do
   CMAKE_BUILD_OPTIONS+=" --target $target"
 done
@@ -224,6 +238,9 @@ fi
 
 cmake $CMAKE_CONFIGURE_OPTIONS
 cmake $CMAKE_BUILD_OPTIONS
+if [ "$TEST_COVERAGE" ]; then
+  cmake $CMAKE_BUILD_OPTIONS --target test test_coverage
+fi
 
 if [ "$RUN" ]; then
   eval "./out/$TARGETS_TO_RUN $RUN_OPTIONS"

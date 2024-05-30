@@ -65,11 +65,16 @@ if "%option_help%" neq "" (
   echo   --no-sanitizer      Do not use sanitizer for debug builds.
   echo   --cmake-verbose     Enable verbose output in the build process.
   echo                       ^(CMAKE_VERBOSE_MAKEFILE=ON^)
+  echo   --test-coverage     Calculate unit tests coverage.
   goto :exit
 )
 
 if "%option_debug%%option_release%" equ "11" (
   call :echo_error "Both --debug and --release cannot be used at the same time."
+)
+
+if "%test_coverage%%option_release%" equ "11" (
+  call :echo_error "Both --test-coverage and --release cannot be used at the same time."
 )
 
 if "%option_cuda%" equ "" (
@@ -100,6 +105,9 @@ if "%unknown_targets%" neq "" (
   for %%t in (%targets_to_build%) do set has_target_to_build=1
   if "!has_targets!!has_target_to_build!" equ "10" (
     call :echo_error "No targets to build. You might forgot to specify --cpu."
+  )
+  if "!has_targets!!test_coverage!" equ "11" (
+    call :echo_error  "--test-coverage cannot be used for specific targets." 
   )
 )
 
@@ -153,6 +161,12 @@ if "%cmake_verbose%" neq "" (
   set cmake_configure_options=%cmake_configure_options% -DCMAKE_VERBOSE_MAKEFILE:BOOL=false
 )
 
+if "%test_coverage%" neq "" (
+  set cmake_configure_options=%cmake_configure_options% -DGP_TEST_COVERAGE:BOOL=true
+) else (
+  set cmake_configure_options=%cmake_configure_options% -DGP_TEST_COVERAGE:BOOL=false
+)
+
 for %%t in (%targets_to_build%) do (
   set cmake_build_options=!cmake_build_options! --target %%t
 )
@@ -185,6 +199,14 @@ call cmake %cmake_build_options%
 if errorlevel 1 (
   call :echo_error "cmake returned %ERRORLEVEL%"
   goto :exit
+)
+
+if "%test_coverage%" neq "" (
+  call cmake %cmake_build_options% --target test test_coverage
+  if errorlevel 1 (
+    call :echo_error "cmake returned %ERRORLEVEL%"
+    goto :exit
+  )
 )
 
 if "%option_run%" neq "" (
@@ -235,6 +257,7 @@ goto :eof
   if "%1" equ "--release"        set "option_release=1" && goto :eof
   if "%1" equ "--no-sanitizer"   set "no_sanitizer=1"   && goto :eof
   if "%1" equ "--cmake-verbose"  set "cmake_verbose=1"  && goto :eof
+  if "%1" equ "--test-coverage"  set "test_coverage=1"  && goto :eof
   call :echo_error "Unknown option %1"
 goto :eof
 
