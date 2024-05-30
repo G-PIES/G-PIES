@@ -55,4 +55,4 @@ jobs:
           path: ${{ env.out_dir }}/*
       
       - name: Run DB Tests
-        run: ${{ env.out_dir }}/db_tests
+        run: ${{ env.out_dir }}/test_clientdb

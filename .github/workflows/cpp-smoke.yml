@@ -25,4 +25,4 @@ jobs:
           path: ./out/*
       
       - name: Run DB Tests
-        run: ./out/db_tests
+        run: ./out/test_clientdb

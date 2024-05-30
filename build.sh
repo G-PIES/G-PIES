@@ -121,7 +121,7 @@ for target in "${TARGETS[@]}"; do
       CPU_RUNNABLE_TARGETS+=("db_cli")
       ;;
     dbtests)
-      CPU_RUNNABLE_TARGETS+=("db_tests")
+      CPU_RUNNABLE_TARGETS+=("test_clientdb")
       ;;
     okmc)
       CPU_RUNNABLE_TARGETS+=("okmc")

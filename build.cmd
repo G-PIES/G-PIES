@@ -250,7 +250,7 @@ goto :eof
   ) else if "%1" equ "dbcli" (
     set cpu_runnable_targets=%cpu_runnable_targets% db_cli
   ) else if "%1" equ "dbtests" (
-    set cpu_runnable_targets=%cpu_runnable_targets% db_tests
+    set cpu_runnable_targets=%cpu_runnable_targets% test_clientdb
   ) else if "%1" equ "okmc" (
     set cpu_runnable_targets=%cpu_runnable_targets% okmc
   ) else (
