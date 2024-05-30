@@ -1,63 +1,52 @@
-#include "model/history_simulation.hpp"
+#include "history_simulation.hpp"
 
 #include <gtest/gtest.h>
+#include <vector>
 
 #include "client_db/client_db.hpp"
 #include "entity_test.hpp"
+#include "model/history_simulation.hpp"
 #include "utils/randomizer.hpp"
 
-class MaterialDescriptor {
- public:
-  void assert_equal(Material &first, Material &second, bool ignore_sqlite_id);
-};
+bool HistorySimulationDescriptor::create_entity(ClientDb &db,
+                                                HistorySimulation &entity,
+                                                int *sqlite_result_code) {
+  return db.create_simulation(entity, sqlite_result_code);
+}
 
-class NuclearReactorDescriptor {
- public:
-  void assert_equal(NuclearReactor &first, NuclearReactor &second,
-                    bool ignore_sqlite_id);
-};
+bool HistorySimulationDescriptor::read_entity(ClientDb &db, const int sqlite_id,
+                                              HistorySimulation &entity,
+                                              int *sqlite_result_code) {
+  return db.read_simulation(sqlite_id, entity, sqlite_result_code);
+}
 
-class HistorySimulationDescriptor {
- public:
-  Randomizer randomizer;
-  MaterialDescriptor material_descriptor;
-  NuclearReactorDescriptor nuclear_reactor_descriptor;
+bool HistorySimulationDescriptor::read_entities(
+    ClientDb &db, std::vector<HistorySimulation> &entities,
+    int *sqlite_result_code) {
+  return db.read_simulations(entities, sqlite_result_code);
+}
 
-  bool create_entity(ClientDb &db, HistorySimulation &entity,
-                     int *sqlite_result_code) {
-    return db.create_simulation(entity, sqlite_result_code);
+bool HistorySimulationDescriptor::delete_entity(ClientDb &db,
+                                                const HistorySimulation &entity,
+                                                int *sqlite_result_code) {
+  return db.delete_simulation(entity, sqlite_result_code);
+}
+
+void HistorySimulationDescriptor::randomize(HistorySimulation &entity) {
+  randomizer.simulation_randomize(entity);
+}
+
+void HistorySimulationDescriptor::assert_equal(HistorySimulation &first,
+                                               HistorySimulation &second,
+                                               bool ignore_sqlite_id) {
+  if (!ignore_sqlite_id) {
+    ASSERT_EQ(first.sqlite_id, second.sqlite_id);
   }
-
-  bool read_entity(ClientDb &db, const int sqlite_id, HistorySimulation &entity,
-                   int *sqlite_result_code) {
-    return db.read_simulation(sqlite_id, entity, sqlite_result_code);
-  }
-
-  bool read_entities(ClientDb &db, std::vector<HistorySimulation> &entities,
-                     int *sqlite_result_code) {
-    return db.read_simulations(entities, sqlite_result_code);
-  }
-
-  bool delete_entity(ClientDb &db, const HistorySimulation &entity,
-                     int *sqlite_result_code) {
-    return db.delete_simulation(entity, sqlite_result_code);
-  }
-
-  void randomize(HistorySimulation &entity) {
-    randomizer.simulation_randomize(entity);
-  }
-
-  void assert_equal(HistorySimulation &first, HistorySimulation &second,
-                    bool ignore_sqlite_id) {
-    if (!ignore_sqlite_id) {
-      ASSERT_EQ(first.sqlite_id, second.sqlite_id);
-    }
-    material_descriptor.assert_equal(first.material, second.material,
-                                     ignore_sqlite_id);
-    nuclear_reactor_descriptor.assert_equal(first.reactor, second.reactor,
-                                            ignore_sqlite_id);
-  }
-};
+  material_descriptor.assert_equal(first.material, second.material,
+                                   ignore_sqlite_id);
+  nuclear_reactor_descriptor.assert_equal(first.reactor, second.reactor,
+                                          ignore_sqlite_id);
+}
 
 ENTITY_TEST(HistorySimulation, CreateAndRead_Success)
 ENTITY_TEST(HistorySimulation, InvalidRead_DoesNotChangeInputObject)
