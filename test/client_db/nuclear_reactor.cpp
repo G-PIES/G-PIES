@@ -40,7 +40,7 @@ class NuclearReactorDescriptor {
   }
 
   void assert_equal(NuclearReactor &first, NuclearReactor &second,
-                    bool ignore_sqlite_id = false) {
+                    bool ignore_sqlite_id) {
     if (!ignore_sqlite_id) {
       ASSERT_EQ(first.sqlite_id, second.sqlite_id);
     }

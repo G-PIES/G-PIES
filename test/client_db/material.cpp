@@ -36,8 +36,7 @@ class MaterialDescriptor {
 
   void randomize(Material &entity) { randomizer.material_randomize(entity); }
 
-  void assert_equal(Material &first, Material &second,
-                    bool ignore_sqlite_id = false) {
+  void assert_equal(Material &first, Material &second, bool ignore_sqlite_id) {
     if (!ignore_sqlite_id) {
       ASSERT_EQ(first.sqlite_id, second.sqlite_id);
     }

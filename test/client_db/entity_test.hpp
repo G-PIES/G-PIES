@@ -47,7 +47,7 @@ class EntityTest : public ::testing::Test {
     ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
 
     // read one equality
-    descriptor.assert_equal(entity, entity_copy);
+    descriptor.assert_equal(entity, entity_copy, false);
   }
 
   template <typename TEntity, typename TEntityDescriptor>
@@ -98,7 +98,7 @@ class EntityTest : public ::testing::Test {
     ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
 
     // read one equality
-    descriptor.assert_equal(entity, entity_copy);
+    descriptor.assert_equal(entity, entity_copy, false);
 
     // update one
     descriptor.randomize(entity);
@@ -112,7 +112,7 @@ class EntityTest : public ::testing::Test {
     ASSERT_TRUE(db.is_sqlite_success(sqlite_code));
 
     // read one equality after update
-    descriptor.assert_equal(entity, entity_copy);
+    descriptor.assert_equal(entity, entity_copy, false);
   }
 
   template <typename TEntity, typename TEntityDescriptor>
@@ -194,7 +194,7 @@ class EntityTest : public ::testing::Test {
     ASSERT_EQ(entities.size(), entity_copies.size());
 
     for (int i = 0; i < 20; ++i) {
-      descriptor.assert_equal(entities[i], entity_copies[i]);
+      descriptor.assert_equal(entities[i], entity_copies[i], false);
     }
   }
 
@@ -228,7 +228,7 @@ class EntityTest : public ::testing::Test {
     ASSERT_EQ(entities.size(), entity_copies.size());
 
     for (int i = 0; i < 20; ++i) {
-      descriptor.assert_equal(entities[i], entity_copies[i]);
+      descriptor.assert_equal(entities[i], entity_copies[i], false);
     }
   }
 
