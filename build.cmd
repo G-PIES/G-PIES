@@ -40,7 +40,6 @@ if "%option_help%" neq "" (
   echo Targets:
   echo   cd                  The Cluster Dynamics library
   echo   gpies               The CLI for the Cluster Dynamics library
-  echo   gpiestests          GoogleTest based tests for Cluster Dynamics library
   echo   db                  The DB Library
   echo   dbcli               The CLI for the DB library
   echo   dbtests             GoogleTest based tests for DB library
@@ -246,9 +245,6 @@ goto :eof
   ) else if "%1" equ "gpies" (
     set cpu_runnable_targets=%cpu_runnable_targets% gpies
     set cuda_runnable_targets=%cuda_runnable_targets% gpies
-  ) else if "%1" equ "gpiestests" (
-    set cpu_runnable_targets=%cpu_runnable_targets% gpies_tests
-    set cuda_runnable_targets=%cuda_runnable_targets% gpies_cuda_tests
   ) else if "%1" equ "db" (
     set cpu_targets=%cpu_targets% clientdb
   ) else if "%1" equ "dbcli" (

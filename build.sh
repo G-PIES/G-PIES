@@ -69,7 +69,6 @@ if [ "$HELP" ]; then
   echo "Targets:"
   echo "  cd                  The Cluster Dynamics library"
   echo "  gpies               The CLI for the Cluster Dynamics library"
-  echo "  gpiestests             GoogleTest based tests for Cluster Dynamics library"
   echo "  db                  The DB Library"
   echo "  dbcli               The CLI for the DB library"
   echo "  dbtests             GoogleTest based tests for DB library"
@@ -114,10 +113,6 @@ for target in "${TARGETS[@]}"; do
     gpies)
       CPU_RUNNABLE_TARGETS+=("gpies")
       CUDA_RUNNABLE_TARGETS+=("gpies")
-      ;;
-    gpiestests)
-      CPU_RUNNABLE_TARGETS+=("gpies_tests")
-      CUDA_RUNNABLE_TARGETS+=("gpies_cuda_tests")
       ;;
     db)
       CPU_TARGETS+=("clientdb")

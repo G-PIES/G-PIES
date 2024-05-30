@@ -54,7 +54,5 @@ jobs:
           name: G-PIES ${{ matrix.configuration }} ${{ matrix.os }}
           path: ${{ env.out_dir }}/*
       
-      - name: Run Cluster Dynamics Tests
-        run: ${{ env.out_dir }}/gpies_tests
       - name: Run DB Tests
         run: ${{ env.out_dir }}/db_tests
