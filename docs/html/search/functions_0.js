@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['annihilation_5frate_293',['annihilation_rate',['../classClusterDynamicsImpl.html#a3fde6d7356149681a1b18f9385db004f',1,'ClusterDynamicsImpl::annihilation_rate() const'],['../classClusterDynamicsImpl.html#a3fde6d7356149681a1b18f9385db004f',1,'ClusterDynamicsImpl::annihilation_rate() const']]]
+  ['annihilation_5frate_357',['annihilation_rate',['../classClusterDynamicsCpuImpl.html#a925e181a563e583c2de158c99f4b673a',1,'ClusterDynamicsCpuImpl::annihilation_rate()'],['../classClusterDynamicsCudaImpl.html#a6249e579a31e635b0175b0cc497edb33',1,'ClusterDynamicsCudaImpl::annihilation_rate()']]]
 ];

@@ -1,9 +1,10 @@
 <map id="/home/omnicryptical/School/CS46X/cd&#45;prototype/src/cluster_dynamics/material_impl.hpp" name="/home/omnicryptical/School/CS46X/cd&#45;prototype/src/cluster_dynamics/material_impl.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="269,5,492,76"/>
-<area shape="rect" id="node2" href="$material_8cpp.html" title=" " alt="" coords="5,131,255,187"/>
-<area shape="rect" id="node3" href="$cluster__dynamics__impl_8hpp.html" title=" " alt="" coords="279,124,483,195"/>
-<area shape="rect" id="node6" href="$cluster__dynamics__cuda__impl_8hpp.html" title=" " alt="" coords="507,124,750,195"/>
-<area shape="rect" id="node4" href="$cluster__dynamics_8cpp.html" title=" " alt="" coords="46,243,257,313"/>
-<area shape="rect" id="node5" href="$cluster__dynamics__impl_8cpp.html" title=" " alt="" coords="281,243,483,313"/>
-<area shape="rect" id="node7" href="$cluster__dynamics__cuda__impl_8cpp.html" title=" " alt="" coords="508,243,749,313"/>
+<area shape="rect" id="node1" title=" " alt="" coords="442,5,665,76"/>
+<area shape="rect" id="node2" href="$cluster__dynamics__impl_8hpp.html" title=" " alt="" coords="377,124,588,195"/>
+<area shape="rect" id="node3" href="$cluster__dynamics__cpu__impl_8hpp.html" title=" " alt="" coords="233,243,468,313"/>
+<area shape="rect" id="node6" href="$cluster__dynamics__cuda__impl_8hpp.html" title=" " alt="" coords="497,243,740,313"/>
+<area shape="rect" id="node8" href="$material_8cpp.html" title=" " alt="" coords="662,131,911,187"/>
+<area shape="rect" id="node4" href="$cluster__dynamics_8cpp.html" title=" " alt="" coords="5,361,216,432"/>
+<area shape="rect" id="node5" href="$cluster__dynamics__cpu__impl_8cpp.html" title=" " alt="" coords="241,361,474,432"/>
+<area shape="rect" id="node7" href="$cluster__dynamics__cuda__impl_8cpp.html" title=" " alt="" coords="498,361,739,432"/>
 </map>

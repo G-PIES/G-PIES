@@ -9,28 +9,3 @@ add_executable(db_cli ./db_cli.cpp)
 target_include_directories(db_cli PRIVATE ../src/cluster_dynamics)
 target_link_libraries(db_cli clientdb)
 target_link_libraries(db_cli clusterdynamics)
-
-if(GP_BUILD_CUDA)
-  add_executable(gpies_cuda ./gpies.cpp)
-  target_compile_definitions(gpies_cuda PRIVATE USE_CUDA)
-  target_include_directories(gpies_cuda PRIVATE ../src/cluster_dynamics)
-  target_link_libraries(gpies_cuda clusterdynamicscuda)
-  target_link_libraries(gpies_cuda clientdb)
-  target_link_libraries(gpies_cuda Boost::program_options)
-  target_link_libraries(gpies_cuda yaml-cpp::yaml-cpp) 
-endif()
-
-if(GP_BUILD_METAL)
-  add_executable(gpies_metal ./gpies.cpp)
-  target_compile_definitions(gpies_metal PRIVATE USE_METAL)
-  target_compile_definitions(gpies_metal PUBLIC GP_FLOAT=float)
-  target_include_directories(gpies_metal PRIVATE ../src/cluster_dynamics)
-  target_link_libraries(gpies_metal clusterdynamicsmetal)
-  target_link_libraries(gpies_metal clientdbmetal)
-  target_link_libraries(gpies_metal
-    "-framework Metal"
-    "-framework Foundation"
-    "-framework QuartzCore"
-  )
-  target_link_libraries(gpies_metal Boost::program_options)
-endif()

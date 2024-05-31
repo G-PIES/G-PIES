@@ -12,7 +12,8 @@
     The rate of production of interstital defects from the irradiation cascade
     for size (n) clusters.
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::i_defect_production(size_t n) const {
+__CUDADECL__ gp_float
+ClusterDynamicsCudaImpl::i_defect_production(size_t n) const {
   switch (n) {
     case 1:
       return reactor.recombination * reactor.flux *
@@ -36,7 +37,8 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::i_defect_production(size_t n) const {
     The rate of production of vacancy defects from the irradiation cascade for
     size (n) clusters.
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::v_defect_production(size_t n) const {
+__CUDADECL__ gp_float
+ClusterDynamicsCudaImpl::v_defect_production(size_t n) const {
   switch (n) {
     case 1:
       return reactor.recombination * reactor.flux *
@@ -66,7 +68,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::v_defect_production(size_t n) const {
     Ci(n-1)
 */
 __CUDADECL__ gp_float
-ClusterDynamicsImpl::i_concentration_derivative(size_t in) const {
+ClusterDynamicsCudaImpl::i_concentration_derivative(size_t in) const {
   return
       // (1)
       i_defect_production(in) / material.atomic_volume
@@ -86,7 +88,7 @@ ClusterDynamicsImpl::i_concentration_derivative(size_t in) const {
     Cv(n-1)
 */
 __CUDADECL__ gp_float
-ClusterDynamicsImpl::v_concentration_derivative(size_t vn) const {
+ClusterDynamicsCudaImpl::v_concentration_derivative(size_t vn) const {
   return
       // (1)
       v_defect_production(vn) / material.atomic_volume
@@ -108,7 +110,7 @@ ClusterDynamicsImpl::v_concentration_derivative(size_t vn) const {
                (1)             (2)     (3)
     a[i,n+1] = B[i,v](n + 1) * Cv(1) + E[i,i](n + 1)
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::i_demotion_rate(size_t n) const {
+__CUDADECL__ gp_float ClusterDynamicsCudaImpl::i_demotion_rate(size_t n) const {
   return
       // (1)
       iv_absorption(n) *
@@ -126,7 +128,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::i_demotion_rate(size_t n) const {
                (1)             (2)     (3)
     a[v,n+1] = B[v,i](n + 1) * Ci(1) + E[v,v](n + 1)
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::v_demotion_rate(size_t n) const {
+__CUDADECL__ gp_float ClusterDynamicsCudaImpl::v_demotion_rate(size_t n) const {
   return
       // (1)
       vi_absorption(n) *
@@ -145,7 +147,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::v_demotion_rate(size_t n) const {
     b[i,n] = B[i,v](n) * Cv(1) + B[i,i](n) * Ci(1) + E[i,i](n)
 */
 __CUDADECL__ gp_float
-ClusterDynamicsImpl::i_combined_promotion_demotion_rate(size_t n) const {
+ClusterDynamicsCudaImpl::i_combined_promotion_demotion_rate(size_t n) const {
   return
       // (1)
       iv_absorption(n) * vacancies[1]
@@ -164,7 +166,7 @@ ClusterDynamicsImpl::i_combined_promotion_demotion_rate(size_t n) const {
     b[v,n] = B[v,i](n) * Ci(1) + B[v,v](n) * Cv(1) + E[v,v](n)
 */
 __CUDADECL__ gp_float
-ClusterDynamicsImpl::v_combined_promotion_demotion_rate(size_t n) const {
+ClusterDynamicsCudaImpl::v_combined_promotion_demotion_rate(size_t n) const {
   return
       // (1)
       vi_absorption(n) * interstitials[1]
@@ -181,7 +183,8 @@ ClusterDynamicsImpl::v_combined_promotion_demotion_rate(size_t n) const {
                (1)           (2)     (3)
     c[i,n-1] = B[i,i](n-1) * Ci(1) * P_unf(n)
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::i_promotion_rate(size_t n) const {
+__CUDADECL__ gp_float
+ClusterDynamicsCudaImpl::i_promotion_rate(size_t n) const {
   return
       // (1)
       ii_absorption(n)
@@ -198,7 +201,8 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::i_promotion_rate(size_t n) const {
                (1)           (2)
     c[v,n-1] = B[v,v](n-1) * Cv(1)
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::v_promotion_rate(size_t n) const {
+__CUDADECL__ gp_float
+ClusterDynamicsCudaImpl::v_promotion_rate(size_t n) const {
   return
       // (1)
       vv_absorption(n) *
@@ -224,7 +228,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::v_promotion_rate(size_t n) const {
             (6)
             1 / (tEi)
 */
-gp_float ClusterDynamicsImpl::i1_concentration_derivative() const {
+gp_float ClusterDynamicsCudaImpl::i1_concentration_derivative() const {
   return
       // (1)
       i_defect_production(1) / material.atomic_volume
@@ -256,7 +260,7 @@ gp_float ClusterDynamicsImpl::i1_concentration_derivative() const {
             (6)
             1 / (tEv)
 */
-gp_float ClusterDynamicsImpl::v1_concentration_derivative() const {
+gp_float ClusterDynamicsCudaImpl::v1_concentration_derivative() const {
   return
       // (1)
       v_defect_production(1) / material.atomic_volume
@@ -282,7 +286,7 @@ gp_float ClusterDynamicsImpl::v1_concentration_derivative() const {
     tEi(n) = SUM ( E[i,i](n) * Ci(n) ) + 4 * E[i,i](2) * Ci(2) + B[i,v](2) *
     Cv(1) * Ci(2)
 */
-gp_float ClusterDynamicsImpl::i_emission_rate() const {
+gp_float ClusterDynamicsCudaImpl::i_emission_rate() const {
   auto self = this->self;
   gp_float time = thrust::transform_reduce(
       indices.begin() + 2, indices.end(),
@@ -308,7 +312,7 @@ gp_float ClusterDynamicsImpl::i_emission_rate() const {
     tEv(n) = SUM[n>0] ( E[v,v](n) * Cv(n) ) + 4 * E[v,v](2) * Cv(2) + B[v,i](2)
     * Cv(2) * Ci(1)
 */
-gp_float ClusterDynamicsImpl::v_emission_rate() const {
+gp_float ClusterDynamicsCudaImpl::v_emission_rate() const {
   auto self = this->self;
   gp_float time = thrust::transform_reduce(
       indices.begin() + 2, indices.end(),
@@ -335,7 +339,7 @@ gp_float ClusterDynamicsImpl::v_emission_rate() const {
                         (1)                              (2)
     tAi(n) = SUM[n>0] ( B[i,i](n) * Ci(n) ) + SUM[n>1] ( B[v,i](n) * Cv(n) )
 */
-gp_float ClusterDynamicsImpl::i_absorption_rate() const {
+gp_float ClusterDynamicsCudaImpl::i_absorption_rate() const {
   auto self = this->self;
   gp_float time = ii_absorption(1) * host_interstitials[1];
   time += thrust::transform_reduce(
@@ -356,7 +360,7 @@ gp_float ClusterDynamicsImpl::i_absorption_rate() const {
                         (1)                              (2)
     tAv(n) = SUM[n>0] ( B[v,v](n) * Cv(n) ) + SUM[n>1] ( B[i,v](n) * Ci(n) )
 */
-gp_float ClusterDynamicsImpl::v_absorption_rate() const {
+gp_float ClusterDynamicsCudaImpl::v_absorption_rate() const {
   auto self = this->self;
   gp_float time = vv_absorption(1) * host_vacancies[1];
   time += thrust::transform_reduce(
@@ -378,7 +382,7 @@ gp_float ClusterDynamicsImpl::v_absorption_rate() const {
           (1)      (2)         (3)
     Riv = 4 * PI * (Di + Dv) * riv
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::annihilation_rate() const {
+__CUDADECL__ gp_float ClusterDynamicsCudaImpl::annihilation_rate() const {
   return
       // (1)
       4. * M_PI *
@@ -397,7 +401,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::annihilation_rate() const {
     tAdi = p  *  Di  *  Zi
 */
 __CUDADECL__ gp_float
-ClusterDynamicsImpl::i_dislocation_annihilation_rate() const {
+ClusterDynamicsCudaImpl::i_dislocation_annihilation_rate() const {
   return
       // (1)
       dislocation_density *
@@ -414,7 +418,7 @@ ClusterDynamicsImpl::i_dislocation_annihilation_rate() const {
     tAdv = p  *  Dv  *  Zv
 */
 __CUDADECL__ gp_float
-ClusterDynamicsImpl::v_dislocation_annihilation_rate() const {
+ClusterDynamicsCudaImpl::v_dislocation_annihilation_rate() const {
   return
       // (1)
       dislocation_density *
@@ -434,7 +438,7 @@ ClusterDynamicsImpl::v_dislocation_annihilation_rate() const {
     Cv(n) ) ) / d
 */
 __CUDADECL__ gp_float
-ClusterDynamicsImpl::i_grain_boundary_annihilation_rate() const {
+ClusterDynamicsCudaImpl::i_grain_boundary_annihilation_rate() const {
   return
       // (1)
       6. * i_diffusion_val *
@@ -457,7 +461,7 @@ ClusterDynamicsImpl::i_grain_boundary_annihilation_rate() const {
     Ci(n) ) ) / d
 */
 __CUDADECL__ gp_float
-ClusterDynamicsImpl::v_grain_boundary_annihilation_rate() const {
+ClusterDynamicsCudaImpl::v_grain_boundary_annihilation_rate() const {
   return
       // (1)
       6. * v_diffusion_val *
@@ -476,7 +480,7 @@ ClusterDynamicsImpl::v_grain_boundary_annihilation_rate() const {
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4a
     Rate of emission of an interstitial by an interstital loop of size (n).
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::ii_emission(size_t n) const {
+__CUDADECL__ gp_float ClusterDynamicsCudaImpl::ii_emission(size_t n) const {
   return 2. * M_PI * cluster_radius(n) * i_bias_factor(n) * i_diffusion_val /
          material.atomic_volume *
          exp(-i_binding_energy(n) /
@@ -486,21 +490,21 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::ii_emission(size_t n) const {
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4b
     Rate of absorption of an interstitial by an interstital loop of size (n).
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::ii_absorption(size_t n) const {
+__CUDADECL__ gp_float ClusterDynamicsCudaImpl::ii_absorption(size_t n) const {
   return 2. * M_PI * cluster_radius(n) * i_bias_factor(n) * i_diffusion_val;
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4c
     Rate of absorption of an interstitial by a vacancy loop of size (n).
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::iv_absorption(size_t n) const {
+__CUDADECL__ gp_float ClusterDynamicsCudaImpl::iv_absorption(size_t n) const {
   return 2. * M_PI * cluster_radius(n) * v_bias_factor(n) * v_diffusion_val;
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4d
     Rate of emission of a vacancy by a vacancy loop of size (n).
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::vv_emission(size_t n) const {
+__CUDADECL__ gp_float ClusterDynamicsCudaImpl::vv_emission(size_t n) const {
   return 2. * M_PI * cluster_radius(n) * v_bias_factor(n) * v_diffusion_val *
          exp(-v_binding_energy(n) /
              (BOLTZMANN_EV_KELVIN * reactor.temperature));
@@ -509,14 +513,14 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::vv_emission(size_t n) const {
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4e
     Rate of absorption of a vacancy by a vacancy loop of size (n).
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::vv_absorption(size_t n) const {
+__CUDADECL__ gp_float ClusterDynamicsCudaImpl::vv_absorption(size_t n) const {
   return 2. * M_PI * cluster_radius(n) * v_bias_factor(n) * v_diffusion_val;
 }
 
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 4f
     Rate of absorption of a vacancy by an interstitial loop of size (n).
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::vi_absorption(size_t n) const {
+__CUDADECL__ gp_float ClusterDynamicsCudaImpl::vi_absorption(size_t n) const {
   return 2. * M_PI * cluster_radius(n) * i_bias_factor(n) * i_diffusion_val;
 }
 // --------------------------------------------------------------------------------------------
@@ -525,7 +529,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::vi_absorption(size_t n) const {
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 5
     Interstitial bias factor.
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::i_bias_factor(size_t in) const {
+__CUDADECL__ gp_float ClusterDynamicsCudaImpl::i_bias_factor(size_t in) const {
   return material.i_dislocation_bias +
          (std::sqrt(material.burgers_vector /
                     (8. * M_PI * material.lattice_param)) *
@@ -537,7 +541,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::i_bias_factor(size_t in) const {
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 5
     Vacancy bias factor.
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::v_bias_factor(size_t vn) const {
+__CUDADECL__ gp_float ClusterDynamicsCudaImpl::v_bias_factor(size_t vn) const {
   return material.v_dislocation_bias +
          (std::sqrt(material.burgers_vector /
                     (8. * M_PI * material.lattice_param)) *
@@ -551,7 +555,8 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::v_bias_factor(size_t vn) const {
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 6
     Interstitial binding energy.
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::i_binding_energy(size_t in) const {
+__CUDADECL__ gp_float
+ClusterDynamicsCudaImpl::i_binding_energy(size_t in) const {
   return material.i_formation +
          (material.i_binding - material.i_formation) / (std::pow(2., .8) - 1) *
              (std::pow((gp_float)in, .8) - std::pow((gp_float)in - 1., .8));
@@ -560,7 +565,8 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::i_binding_energy(size_t in) const {
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 6
     Vacancy binding energy.
 */
-__CUDADECL__ gp_float ClusterDynamicsImpl::v_binding_energy(size_t vn) const {
+__CUDADECL__ gp_float
+ClusterDynamicsCudaImpl::v_binding_energy(size_t vn) const {
   return material.v_formation +
          (material.v_binding - material.v_formation) / (std::pow(2., .8) - 1) *
              (std::pow((gp_float)vn, .8) - std::pow((gp_float)vn - 1., .8));
@@ -571,7 +577,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::v_binding_energy(size_t vn) const {
 /*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017),
  * pg 193, 4.59
  */
-gp_float ClusterDynamicsImpl::i_diffusion() const {
+gp_float ClusterDynamicsCudaImpl::i_diffusion() const {
   return material.i_diffusion_0 *
          std::exp(-material.i_migration /
                   (BOLTZMANN_EV_KELVIN * reactor.temperature));
@@ -580,7 +586,7 @@ gp_float ClusterDynamicsImpl::i_diffusion() const {
 /*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017),
  * pg 193, 4.59
  */
-gp_float ClusterDynamicsImpl::v_diffusion() const {
+gp_float ClusterDynamicsCudaImpl::v_diffusion() const {
   return material.v_diffusion_0 *
          std::exp(-material.v_migration /
                   (BOLTZMANN_EV_KELVIN * reactor.temperature));
@@ -590,7 +596,7 @@ gp_float ClusterDynamicsImpl::v_diffusion() const {
 // --------------------------------------------------------------------------------------------
 /*  N. Sakaguchi / Acta Materialia 1131 (2001), 3.10
  */
-gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const {
+gp_float ClusterDynamicsCudaImpl::mean_dislocation_cell_radius() const {
   auto self = this->self;
 
   gp_float r_0_factor = thrust::transform_reduce(
@@ -609,7 +615,7 @@ gp_float ClusterDynamicsImpl::mean_dislocation_cell_radius() const {
 /*  TODO: find a source for the Arrhenius equation
  */
 __CUDADECL__ gp_float
-ClusterDynamicsImpl::i_dislocation_loop_unfault_probability(
+ClusterDynamicsCudaImpl::i_dislocation_loop_unfault_probability(
     [[maybe_unused]] size_t n) const {
   gp_float energy_barrier = faulted_dislocation_loop_energy_barrier(n);
   gp_float arrhenius =
@@ -622,7 +628,7 @@ ClusterDynamicsImpl::i_dislocation_loop_unfault_probability(
 /*  TODO: find a source for the energy barrier equation
  */
 __CUDADECL__ gp_float
-ClusterDynamicsImpl::faulted_dislocation_loop_energy_barrier(
+ClusterDynamicsCudaImpl::faulted_dislocation_loop_energy_barrier(
     [[maybe_unused]] size_t n) const {
   return material.i_binding + material.i_migration;
 }
@@ -630,7 +636,7 @@ ClusterDynamicsImpl::faulted_dislocation_loop_energy_barrier(
 // --------------------------------------------------------------------------------------------
 /*  C. Pokor / Journal of Nuclear Materials 326 (2004), 8
  */
-gp_float ClusterDynamicsImpl::dislocation_density_derivative() const {
+gp_float ClusterDynamicsCudaImpl::dislocation_density_derivative() const {
   auto self = this->self;
   gp_float gain = thrust::transform_reduce(
       indices.begin(), indices.end(),
@@ -654,7 +660,7 @@ gp_float ClusterDynamicsImpl::dislocation_density_derivative() const {
 /*  G. Was / Fundamentals of Radiation Materials Science (2nd Edition) (2017),
  * pg. 346, 7.63
  */
-__CUDADECL__ gp_float ClusterDynamicsImpl::cluster_radius(size_t n) const {
+__CUDADECL__ gp_float ClusterDynamicsCudaImpl::cluster_radius(size_t n) const {
   return std::sqrt(std::sqrt(3.) * std::pow(material.lattice_param, 2.) *
                    (gp_float)n / (4. * M_PI));
 }
@@ -668,7 +674,7 @@ __CUDADECL__ gp_float ClusterDynamicsImpl::cluster_radius(size_t n) const {
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-void ClusterDynamicsImpl::step_init() {
+void ClusterDynamicsCudaImpl::step_init() {
   i_diffusion_val = i_diffusion();
   v_diffusion_val = v_diffusion();
   mean_dislocation_radius_val = mean_dislocation_cell_radius();
@@ -677,11 +683,11 @@ void ClusterDynamicsImpl::step_init() {
   vi_sum_absorption_val = vi_sum_absorption(max_cluster_size - 1);
   vv_sum_absorption_val = vv_sum_absorption(max_cluster_size - 1);
 
-  cudaMemcpy(thrust::raw_pointer_cast(self), this, sizeof(ClusterDynamicsImpl),
-             cudaMemcpyHostToDevice);
+  cudaMemcpy(thrust::raw_pointer_cast(self), this,
+             sizeof(ClusterDynamicsCudaImpl), cudaMemcpyHostToDevice);
 }
 
-ClusterDynamicsImpl::~ClusterDynamicsImpl() {
+ClusterDynamicsCudaImpl::~ClusterDynamicsCudaImpl() {
   N_VDestroy_Serial(state);
   SUNMatDestroy(jacobian_matrix);
   SUNLinSolFree(linear_solver);
@@ -690,7 +696,7 @@ ClusterDynamicsImpl::~ClusterDynamicsImpl() {
   thrust::device_free(self);
 }
 
-gp_float ClusterDynamicsImpl::ii_sum_absorption(size_t) const {
+gp_float ClusterDynamicsCudaImpl::ii_sum_absorption(size_t) const {
   auto self = this->self;
   return thrust::transform_reduce(
       indices.begin(), indices.end(),
@@ -700,7 +706,7 @@ gp_float ClusterDynamicsImpl::ii_sum_absorption(size_t) const {
       0.0, thrust::plus<gp_float>());
 }
 
-gp_float ClusterDynamicsImpl::iv_sum_absorption(size_t) const {
+gp_float ClusterDynamicsCudaImpl::iv_sum_absorption(size_t) const {
   auto self = this->self;
   return thrust::transform_reduce(
       indices.begin(), indices.end(),
@@ -710,7 +716,7 @@ gp_float ClusterDynamicsImpl::iv_sum_absorption(size_t) const {
       0.0, thrust::plus<gp_float>());
 }
 
-gp_float ClusterDynamicsImpl::vv_sum_absorption(size_t) const {
+gp_float ClusterDynamicsCudaImpl::vv_sum_absorption(size_t) const {
   auto self = this->self;
   return thrust::transform_reduce(
       indices.begin(), indices.end(),
@@ -720,7 +726,7 @@ gp_float ClusterDynamicsImpl::vv_sum_absorption(size_t) const {
       0.0, thrust::plus<gp_float>());
 }
 
-gp_float ClusterDynamicsImpl::vi_sum_absorption(size_t) const {
+gp_float ClusterDynamicsCudaImpl::vi_sum_absorption(size_t) const {
   auto self = this->self;
   return thrust::transform_reduce(
       indices.begin(), indices.end(),
@@ -730,10 +736,12 @@ gp_float ClusterDynamicsImpl::vi_sum_absorption(size_t) const {
       0.0, thrust::plus<gp_float>());
 }
 
-int ClusterDynamicsImpl::system([[maybe_unused]] double t,
-                                N_Vector state_vector,
-                                N_Vector derivatives_vector, void *user_data) {
-  ClusterDynamicsImpl *cd = static_cast<ClusterDynamicsImpl *>(user_data);
+int ClusterDynamicsCudaImpl::system([[maybe_unused]] double t,
+                                    N_Vector state_vector,
+                                    N_Vector derivatives_vector,
+                                    void *user_data) {
+  ClusterDynamicsCudaImpl *cd =
+      static_cast<ClusterDynamicsCudaImpl *>(user_data);
 
   gp_float *i_state = N_VGetArrayPointer(state_vector);
   gp_float *v_state = i_state + cd->max_cluster_size + 2;
@@ -788,7 +796,7 @@ int ClusterDynamicsImpl::system([[maybe_unused]] double t,
 // --------------------------------------------------------------------------------------------
 
 // TODO - clean up the uses of random +1/+2/-1/etc throughout the code
-ClusterDynamicsImpl::ClusterDynamicsImpl(ClusterDynamicsConfig &config)
+ClusterDynamicsCudaImpl::ClusterDynamicsCudaImpl(ClusterDynamicsConfig &config)
     : time(0.0),
       interstitials(config.max_cluster_size + 2, 0.0),
       device_i_derivatives(config.max_cluster_size + 2, 0.0),
@@ -895,15 +903,15 @@ ClusterDynamicsImpl::ClusterDynamicsImpl(ClusterDynamicsConfig &config)
     throw ClusterDynamicsException(SUNGetErrMsg(sunerr),
                                    ClusterDynamicsState());
 
-  ClusterDynamicsImpl *raw_self;
-  cudaMalloc(&raw_self, sizeof(ClusterDynamicsImpl));
-  cudaMemcpy(raw_self, this, sizeof(ClusterDynamicsImpl),
+  ClusterDynamicsCudaImpl *raw_self;
+  cudaMalloc(&raw_self, sizeof(ClusterDynamicsCudaImpl));
+  cudaMemcpy(raw_self, this, sizeof(ClusterDynamicsCudaImpl),
              cudaMemcpyHostToDevice);
-  self = thrust::device_ptr<ClusterDynamicsImpl>(raw_self);
+  self = thrust::device_ptr<ClusterDynamicsCudaImpl>(raw_self);
   thrust::sequence(indices.begin(), indices.end(), 1);
 }
 
-ClusterDynamicsState ClusterDynamicsImpl::run(gp_float total_time) {
+ClusterDynamicsState ClusterDynamicsCudaImpl::run(gp_float total_time) {
   gp_float out_time;
   const int sunerr = CVode(cvodes_memory_block, time + total_time, state,
                            &out_time, CV_NORMAL);
@@ -929,14 +937,16 @@ ClusterDynamicsState ClusterDynamicsImpl::run(gp_float total_time) {
       .dislocation_density = dislocation_density};
 }
 
-MaterialImpl ClusterDynamicsImpl::get_material() const { return material; }
+MaterialImpl ClusterDynamicsCudaImpl::get_material() const { return material; }
 
-void ClusterDynamicsImpl::set_material(const MaterialImpl &material) {
+void ClusterDynamicsCudaImpl::set_material(const MaterialImpl &material) {
   this->material = MaterialImpl(material);
 }
 
-NuclearReactorImpl ClusterDynamicsImpl::get_reactor() const { return reactor; }
+NuclearReactorImpl ClusterDynamicsCudaImpl::get_reactor() const {
+  return reactor;
+}
 
-void ClusterDynamicsImpl::set_reactor(const NuclearReactorImpl &reactor) {
+void ClusterDynamicsCudaImpl::set_reactor(const NuclearReactorImpl &reactor) {
   this->reactor = NuclearReactorImpl(reactor);
 }

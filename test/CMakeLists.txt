@@ -21,7 +21,7 @@ if(GP_BUILD_CUDA)
   target_include_directories(gpies_cuda_tests PRIVATE ./)
   target_include_directories(gpies_cuda_tests PRIVATE ../src/cluster_dynamics)
   target_include_directories(gpies_cuda_tests PRIVATE ../src/cluster_dynamics/cuda)
-  target_link_libraries(gpies_cuda_tests clusterdynamicscuda)
+  target_link_libraries(gpies_cuda_tests clusterdynamics)
   target_link_libraries(gpies_cuda_tests GTest::gtest_main)
 endif()
 

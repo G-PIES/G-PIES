@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['m_5fcm_5fconv_508',['M_CM_CONV',['../conversions_8hpp.html#a994ab38e8589a1f1620b3b3152117775',1,'conversions.hpp']]],
-  ['m_5fpi_509',['M_PI',['../constants_8hpp.html#ae71449b1cc6e6250b91f539153a7a0d3',1,'constants.hpp']]]
+  ['gp_5ffloat_617',['GP_FLOAT',['../types_8hpp.html#ae314b02ab65cdea7823675caf8f0c434',1,'types.hpp']]],
+  ['gpies_5fsemantic_5fversion_618',['GPIES_SEMANTIC_VERSION',['../constants_8hpp.html#a15ffb1d05826f42a9cc8041b87a22868',1,'constants.hpp']]]
 ];

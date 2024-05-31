@@ -211,12 +211,12 @@ void profile() {
   nuclear_reactors::OSIRIS(cd_config.reactor);
   materials::SA304(cd_config.material);
 
-  ClusterDynamics cd(cd_config);
+  ClusterDynamics cd = ClusterDynamics::cpu(cd_config);
   cd.run(1e-5, 1e-5);
 
   for (int n = 100; n < 400000; n += 10000) {
     os << "N=" << n << std::endl;
-    ClusterDynamics cd(cd_config);
+    ClusterDynamics cd = ClusterDynamics::cpu(cd_config);
 
     timer.Start();
     state = cd.run(1e-5, 1e-5);
@@ -306,9 +306,7 @@ gp_float get_sa_var_value() {
   return 0.;
 }
 
-ClusterDynamicsState run_simulation() {
-  ClusterDynamics cd(cd_config);
-
+ClusterDynamicsState run_simulation(ClusterDynamics& cd) {
   print_start_message();
 
   if (csv) {
@@ -482,12 +480,24 @@ void emit_config_yaml(const std::string& filename) {
   }
 }
 
+ClusterDynamics create_cd([[maybe_unused]] CliArgConsumer& arg_consumer) {
+#if defined(USE_CUDA)
+  if (arg_consumer.has_arg("cuda")) {
+    return ClusterDynamics::cuda(cd_config);
+  }
+#endif
+  return ClusterDynamics::cpu(cd_config);
+}
+
 int main(int argc, char* argv[]) {
   try {
     // Declare the supported options
     po::options_description all_options("General Options");
     all_options.add_options()("help", "display help message")(
         "version", "display version information")(
+#if defined(USE_CUDA)
+        "cuda", "use the CUDA-accelerated simulation engine")(
+#endif
         "config", po::value<std::string>(),
         "configure simulation with a .yaml file")(
         "generate-config-file",
@@ -639,7 +649,8 @@ int main(int argc, char* argv[]) {
           cd_config.material = sim.material;
           cd_config.reactor = sim.reactor;
 
-          run_simulation();
+          ClusterDynamics cd = create_cd(arg_consumer);
+          run_simulation(cd);
         } else {
           std::cerr << "Could not find simulation " << sim_sqlite_id
                     << std::endl;
@@ -683,7 +694,7 @@ int main(int argc, char* argv[]) {
       // --------------------------------------------------------------------------------------------
       // sensitivity analysis simulation loop
       for (size_t n = 0; n < cd_config.sa_num_simulations; n++) {
-        ClusterDynamics cd(cd_config);
+        ClusterDynamics cd = create_cd(arg_consumer);
         ClusterDynamicsState state;
 
         if (n > 0) os << "\n";  // visual divider for consecutive sims
@@ -726,7 +737,8 @@ int main(int argc, char* argv[]) {
       }
       // --------------------------------------------------------------------
     } else {  // CLUSTER DYNAMICS OPTIONS
-      ClusterDynamicsState state = run_simulation();
+      ClusterDynamics cd = create_cd(arg_consumer);
+      ClusterDynamicsState state = run_simulation(cd);
 
       // --------------------------------------------------------------------------------------------
       // Write simulation result to the database
