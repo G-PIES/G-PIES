@@ -25,7 +25,8 @@
 namespace py = pybind11;
 
 // C++ Sim Reactor struct to store the constructor and functions that will be converted into the python
-// classes 
+// classes
+
 struct Sim_Reactor {
   Sim_Reactor() {
     nuclear_reactors::OSIRIS(reactor);  // For now.. Default reactor. Future plans to implement mysql implementation
@@ -165,16 +166,6 @@ struct Sim_Material {
   void set_lattice_param(const gp_float val) {
     material.set_lattice_param(val);
   }
-  gp_float get_lattice_param() { return material.get_lattice_param(); }
-
-  void set_burgers_vector(const gp_float val) {
-    material.set_burgers_vector(val);
-  }
-  gp_float get_burgers_vector() { return material.get_burgers_vector(); }
-
-  void set_atomic_volume(const gp_float val) {
-    material.set_atomic_volume(val);
-  }
   gp_float get_atomic_volume() { return material.get_atomic_volume(); }
 
   Material material;
@@ -191,18 +182,25 @@ struct Simulation {
     // initialize the cluster interstials and vacancies to the default amounts.
     config.init_interstitials = std::vector<gp_float>(config.max_cluster_size, 0.);
     config.init_vacancies = std::vector<gp_float>(config.max_cluster_size, 0.);
-    // sets the cd variable to a pointer to the new ClusterDynamics C++ class.
-    cd = std::make_unique<ClusterDynamics>(config);
+    
   }
 
   void run() {
+    // Creates a new ClusterDynamics with CPU capabilities
+    ClusterDynamics cd = ClusterDynamics::cpu(config);
     // Deference ClusterDynamics and call the run function, useful if the user wants to define 
     // their own simulation in Python instead of using the below `run_full_simulation` function.
-    state = (*cd).run(config.time_delta, config.sample_interval); 
+    state = cd.run(config.time_delta, config.sample_interval); 
   }
 
   // Copy of the main simulation loop function in the gpies.cpp file.
-  void run_full_simulation(bool print_step) {
+  void run_full_simulation(bool print_step, bool create_csv) {
+    // Creates a new ClusterDynamics with CPU capabilities
+    ClusterDynamics cd = ClusterDynamics::cpu(config);
+
+    std::cout << "ClusterDynamics Python Simulation:" << std::endl;
+    std::cout << "(Simulation may take a while to initialize...)" << std::endl;
+    
     progressbar bar(
       static_cast<int>(config.simulation_time / config.time_delta), true,
       std::cout);
@@ -216,15 +214,31 @@ struct Simulation {
         bar.update();
       }
 
-      state = (*cd).run(config.time_delta, config.sample_interval);
+      state = cd.run(config.time_delta, config.sample_interval);
       //Prints the state at each interval
       if (print_step) {
         print_state();
       }
     }
-    std::cout << "RESULT:" << std::endl;
-    //Result
-    print_state();
+    if (!create_csv) {
+      std::cout << "Results:" << std::endl;
+      //stdout Result
+      print_state();
+    }
+    else {
+      write_csv();
+      std::cout << "\nWrote results to \'./out.csv\'." << std::endl;
+    }
+  }
+
+  void write_csv() {
+    std::ofstream csv;
+    csv.open("./out.csv");
+    csv << state.time << ", " << state.dislocation_density;
+    for (uint64_t n = 1; n < config.max_cluster_size; ++n) {
+      csv << "," << state.interstitials[n] << "," << state.vacancies[n];
+    }
+    csv << std::endl;
   }
 
   // Copy of the function that exists in the gpies.cpp file. Just prints the current state of the sim.
@@ -259,8 +273,6 @@ struct Simulation {
   std::string config_name;
 
   //double sample_interval = delta_time;
-
-  std::unique_ptr<ClusterDynamics> cd;
 
   // The public varaibles for the current simulations reactor and material types. As well as the state and config.
   // Used to access the values with getters and setters.
@@ -369,17 +381,17 @@ PYBIND11_MODULE(libpyclusterdynamics, m) {
       .def("set_dislocation_density_0",
            &Sim_Material::set_dislocation_density_0)
       .def("get_dislocation_density_0",
-           &Sim_Material::get_dislocation_density_0)
+           &Sim_Material::get_dislocation_density_0);
 
-      .def("set_grain_size", &Sim_Material::set_grain_size)
-      .def("get_grain_size", &Sim_Material::get_grain_size)
+      //.def("set_grain_size", &Sim_Material::set_grain_size)
+      //.def("get_grain_size", &Sim_Material::get_grain_size)
 
-      .def("set_lattice_param", &Sim_Material::set_lattice_param)
-      .def("get_lattice_param", &Sim_Material::get_lattice_param)
+      //.def("set_lattice_param", &Sim_Material::set_lattice_param)
+      //.def("get_lattice_param", &Sim_Material::get_lattice_param)
 
-      .def("set_burgers_vector", &Sim_Material::set_burgers_vector)
-      .def("get_burgers_vector", &Sim_Material::get_burgers_vector)
+      //.def("set_burgers_vector", &Sim_Material::set_burgers_vector)
+      //.def("get_burgers_vector", &Sim_Material::get_burgers_vector)
 
-      .def("set_atomic_volume", &Sim_Material::set_atomic_volume)
-      .def("get_atomic_volume", &Sim_Material::get_atomic_volume);
+      //.def("set_atomic_volume", &Sim_Material::set_atomic_volume)
+      //.def("get_atomic_volume", &Sim_Material::get_atomic_volume);
 }
