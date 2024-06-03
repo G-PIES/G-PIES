@@ -1,0 +1,11 @@
+_deps/
+lib/
+CMakeFiles/
+.vscode/
+cmake_install.cmake
+CMakeCache.txt
+out.csv
+generator
+solver
+tests
+Makefile
