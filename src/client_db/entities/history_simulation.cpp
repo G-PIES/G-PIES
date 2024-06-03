@@ -91,8 +91,8 @@ void HistorySimulationEntity::read_row(sqlite3_stmt *stmt,
 
   simulation.cd_state.dpa = sqlite3_column_double(stmt, 10);
 
-  _material_entity.read_row(stmt, simulation.material, 11);
-  _nuclear_reactor_entity.read_row(stmt, simulation.reactor, 25);
+  _nuclear_reactor_entity.read_row(stmt, simulation.reactor, 11);
+  _material_entity.read_row(stmt, simulation.material, 25);
 }
 
 std::string HistorySimulationEntity::get_entity_name() { return "simulation"; }
