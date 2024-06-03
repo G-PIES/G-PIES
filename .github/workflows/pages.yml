@@ -1,11 +1,34 @@
 name: Build and deploy GitHub pages
 
 on:
+  push:
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
-  deploy:
+  doxygen:
     runs-on: ubuntu-latest
     steps:
-      - name: TODO
-        run: echo "This is a workflow stub"
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Doxygen
+        run: sudo apt-get install -y doxygen graphviz
+      - name: Configure Doxygen
+        run: echo "GPIES__STRIP_FROM_PATH=$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+      - name: Build Doxygen site
+        run: cd ./docs && doxygen ./BackendDoxyfile
+      - name: git status
+        run: git status
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs/html
+      - name: Trigger deploymanet
+        run: >-
+          gh workflow run pages.yml
+          --ref pages-workflow
+          --repo G-PIES/g-pies.github.io
+          --field source_run_id=${{ github.run_id }}
+          --field source_repository=${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ secrets.GPIES_GITHUB_IO_DEPLOYMENT_TOKEN }}
