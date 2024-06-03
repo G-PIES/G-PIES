@@ -6,3 +6,4 @@ target_link_libraries(test_clientdb GTest::gtest_main)
 
 include(GoogleTest)
 gtest_discover_tests(test_clientdb)
+gpies_add_code_coverage_target(test_clientdb)
