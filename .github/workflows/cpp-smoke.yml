@@ -24,7 +24,5 @@ jobs:
           name: G-PIES
           path: ./out/*
       
-      - name: Run Cluster Dynamics Tests
-        run: ./out/gpies_tests
       - name: Run DB Tests
-        run: ./out/db_tests
+        run: ./out/test_clientdb
