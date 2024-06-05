@@ -489,8 +489,8 @@ ClusterDynamics create_cd([[maybe_unused]] CliArgConsumer& arg_consumer) {
   return ClusterDynamics::cpu(cd_config);
 }
 
-void option_description_setup(po::options_description &all_options, 
-                              po::options_description &db_options, 
+void option_description_setup(po::options_description &all_options,
+                              po::options_description &db_options,
                               po::options_description &sa_options) {
   all_options.add_options()("help", "display help message")(
         "version", "display version information")(
@@ -562,7 +562,8 @@ void option_description_setup(po::options_description &all_options,
     all_options.add(db_options).add(sa_options);
 }
 
-int print_help_msg(CliArgConsumer &arg_consumer, po::options_description &all_options) {
+int print_help_msg(CliArgConsumer &arg_consumer,
+                   po::options_description &all_options) {
   if (arg_consumer.has_arg("help")) {
     std::cout << all_options << "\n";
     return 1;
@@ -734,12 +735,12 @@ int main(int argc, char* argv[]) {
     po::options_description db_options("Database Options [--db]");
     po::options_description sa_options(
         "Sensitivity Analysis Options [--sensitivity-analysis]");
-    
+
     option_description_setup(all_options, db_options, sa_options);
 
     CliArgConsumer arg_consumer(argc, argv, all_options);
 
-    if(print_help_msg(arg_consumer, all_options) == 1)
+    if (print_help_msg(arg_consumer, all_options) == 1)
       return 1;
 
     // Redirect output to file
