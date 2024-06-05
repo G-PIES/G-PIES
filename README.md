@@ -12,7 +12,7 @@ Our model can be run on Linux, MacOS, or Windows. However the CUDA-enabled
 version will only work on a Linux or Windows machine which has a compatible 
 Nvidia graphics card.  
 
-[User Guide / Documentation](https://g-pies.github.io/G-PIES/)  
+[User Guide / Documentation](https://g-pies.github.io/)
 
 **Doxygen**  
 
