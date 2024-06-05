@@ -489,11 +489,8 @@ ClusterDynamics create_cd([[maybe_unused]] CliArgConsumer& arg_consumer) {
   return ClusterDynamics::cpu(cd_config);
 }
 
-int main(int argc, char* argv[]) {
-  try {
-    // Declare the supported options
-    po::options_description all_options("General Options");
-    all_options.add_options()("help", "display help message")(
+void option_description_setup(po::options_description &all_options, po::options_description &db_options, po::options_description &sa_options){
+  all_options.add_options()("help", "display help message")(
         "version", "display version information")(
 #if defined(USE_CUDA)
         "cuda", "use the CUDA-accelerated simulation engine")(
@@ -542,15 +539,12 @@ int main(int argc, char* argv[]) {
         po::value<gp_float>()->implicit_value(cd_config.max_integration_step),
         "maximum step size for integration");
 
-    po::options_description db_options("Database Options [--db]");
     db_options.add_options()("history,h", "display simulation history")(
         "history-detail", "display detailed simulation history")(
         "run,r", po::value<int>()->value_name("id"),
         "run a simulation from the history by [id]")(
         "clear,c", "clear simulation history");
 
-    po::options_description sa_options(
-        "Sensitivity Analysis Options [--sensitivity-analysis]");
     sa_options.add_options()(
         "sensitivity-analysis-help",
         "display sensitivity analysis supported variables and example command")(
@@ -564,34 +558,187 @@ int main(int argc, char* argv[]) {
         "amount to change [sensitivity-var] by for each simulation (REQUIRED)");
 
     all_options.add(db_options).add(sa_options);
+}
+
+int print_help_msg(CliArgConsumer &arg_consumer, po::options_description &all_options){
+  if (arg_consumer.has_arg("help")) {
+    std::cout << all_options << "\n";
+    return 1;
+  } else if (arg_consumer.has_arg("sensitivity-analysis-help")) {
+    std::cout << "\nSupported Variables [--sensitivity-var]:\n";
+    for (const auto& [key, value] : sensitivity_variables) {
+      std::cout << key << std::endl;
+    }
+
+    std::cout
+        << "\nexample command: run 10 simulations, increasing the "
+            "reactor flux by 1e-7 for each simulation\n"
+        << "./gpies --sensitivity-analysis --num-sims 10 "
+            "--sensitivity-var flux-dpa-s --sensitivity-var-delta 1e-7\n\n";
+    return 1;
+  } else if (arg_consumer.has_arg("version")) {
+    std::cout << "G-PIES version " << GPIES_SEMANTIC_VERSION << "\n";
+    return 1;
+  } else if (arg_consumer.has_arg("generate-config-file")) {
+    std::string filename =
+        arg_consumer.get_value<std::string>("generate-config-file");
+    emit_config_yaml(filename);
+    return 1;
+  }
+
+  return 0;
+}
+
+void database(CliArgConsumer &arg_consumer, ClientDb &db){
+  if (arg_consumer.has_arg("history", "db")) {
+    // print simulation history
+    print_simulation_history(db, false);
+  } else if (arg_consumer.has_arg("history-detail", "db")) {
+    // print detailed simulation history
+    print_simulation_history(db, true);
+  } else if (arg_consumer.has_arg("clear", "db")) {
+    // clear history
+    if (db.delete_simulations()) {
+      std::cout << "Simulation History Cleared. " << db.changes()
+                << " Simulation(s) Deleted.\n";
+    }
+  } else if (arg_consumer.has_arg("run", "db")) {
+    // rerun a previous simulation by database id
+    int sim_sqlite_id = arg_consumer.get_value<int>("run", "db");
+    HistorySimulation sim;
+    if (db.read_simulation(sim_sqlite_id, sim)) {
+      // TODO - support storing sensitivity analysis
+      std::cout << "Running simulation " << sim_sqlite_id << std::endl;
+      cd_config.max_cluster_size = sim.max_cluster_size;
+      cd_config.simulation_time = sim.simulation_time;
+
+      // TODO - Support sample interval and set a max resolution to
+      // avoid bloating the database. For this to work we will need a
+      // list of ClusterDynamicState objects and a SQLite intersection
+      // table.
+      cd_config.time_delta = cd_config.sample_interval = sim.time_delta;
+
+      cd_config.material = sim.material;
+      cd_config.reactor = sim.reactor;
+
+      ClusterDynamics cd = create_cd(arg_consumer);
+      run_simulation(cd);
+    } else {
+      std::cerr << "Could not find simulation " << sim_sqlite_id
+                << std::endl;
+    }
+  }
+}
+
+void sensitivity_analysis(CliArgConsumer &arg_consumer){
+  std::string sa_var_name;
+  // Set sensitivity analysis mode to true
+  if (arg_consumer.has_arg("num-sims", "sensitivity-analysis") &&
+      arg_consumer.has_arg("sensitivity-var", "sensitivity-analysis") &&
+      arg_consumer.has_arg("sensitivity-var-delta",
+                            "sensitivity-analysis")) {
+    cd_config.sa_num_simulations =
+        arg_consumer.get_value<int>("num-sims", "sensitivity-analysis");
+
+    if (cd_config.sa_num_simulations <= 0)
+      throw GpiesException(
+          "Value for num-sims must be a positive, non-zero integer.");
+
+    cd_config.sa_var = arg_consumer.get_sa_var();
+    sa_var_name = arg_consumer.get_value<std::string>(
+        "sensitivity-var", "sensitivity-analysis");
+
+    cd_config.sa_var_delta = arg_consumer.get_value<gp_float>(
+        "sensitivity-var-delta", "sensitivity-analysis");
+  } else {
+    throw GpiesException(
+        "Missing required arguments for sensitivity "
+        "analysis.\n--help to see required variables.");
+  }
+
+  std::cout << "\nSENSITIVITY ANALYSIS MODE\n"
+            << "# of simulations: " << cd_config.sa_num_simulations
+            << "  sensitivity variable: " << sa_var_name
+            << "  sensitivity variable delta: " << cd_config.sa_var_delta
+            << "\n\n";
+
+  gp_float sa_var_value = get_sa_var_value();
+
+  // --------------------------------------------------------------------------------------------
+  // sensitivity analysis simulation loop
+  for (size_t n = 0; n < cd_config.sa_num_simulations; n++) {
+    ClusterDynamics cd = create_cd(arg_consumer);
+    ClusterDynamicsState state;
+
+    if (n > 0) os << "\n";  // visual divider for consecutive sims
+
+    if (csv) {
+      os << "simulation " << n + 1
+          << ",sensitivity variable: " << sa_var_name
+          << ",current value: " << sa_var_value << ",current delta: "
+          << static_cast<gp_float>(n) * cd_config.sa_var_delta << "\n\n";
+      os << "time (s),cluster size,"
+            "interstitials / cm^3,vacancies / cm^3\n";
+    } else {
+      os << "simulation " << n + 1
+          << "\tsensitivity variable: " << sa_var_name
+          << "\tcurrent value: " << sa_var_value << "\tcurrent delta: "
+          << static_cast<gp_float>(n) * cd_config.sa_var_delta << std::endl;
+    }
+
+    print_start_message();
+
+    for (gp_float t = 0; t < cd_config.simulation_time; t = state.time) {
+      // run simulation for this time slice
+      state = cd.run(cd_config.time_delta, cd_config.sample_interval);
+
+      if (step_print) {
+        step_print_prompt(state);
+      } else if (csv) {
+        print_csv(state);
+      }
+    }
+
+    // ----------------------------------------------------------------
+    // print results
+    if (!step_print && !csv) {
+      print_state(state);
+    }
+    // ----------------------------------------------------------------
+
+    sa_var_value = sa_update_config();
+  }
+  // --------------------------------------------------------------------
+}
+
+void cluster_dynamics_options(CliArgConsumer& arg_consumer, ClientDb &db){
+  ClusterDynamics cd = create_cd(arg_consumer);
+  ClusterDynamicsState state = run_simulation(cd);
+
+  // --------------------------------------------------------------------------------------------
+  // Write simulation result to the database
+  HistorySimulation history_simulation(
+      cd_config.max_cluster_size, cd_config.simulation_time,
+      cd_config.time_delta, cd_config.reactor, cd_config.material, state);
+
+  db.create_simulation(history_simulation);
+  // --------------------------------------------------------------------------------------------
+}
+
+int main(int argc, char* argv[]) {
+  try {
+    // Declare the supported options
+    po::options_description all_options("General Options");
+    po::options_description db_options("Database Options [--db]");
+    po::options_description sa_options(
+        "Sensitivity Analysis Options [--sensitivity-analysis]");
+    
+    option_description_setup(all_options, db_options, sa_options);
 
     CliArgConsumer arg_consumer(argc, argv, all_options);
 
-    // Help message
-    if (arg_consumer.has_arg("help")) {
-      std::cout << all_options << "\n";
+    if(print_help_msg(arg_consumer, all_options) == 1)
       return 1;
-    } else if (arg_consumer.has_arg("sensitivity-analysis-help")) {
-      std::cout << "\nSupported Variables [--sensitivity-var]:\n";
-      for (const auto& [key, value] : sensitivity_variables) {
-        std::cout << key << std::endl;
-      }
-
-      std::cout
-          << "\nexample command: run 10 simulations, increasing the "
-             "reactor flux by 1e-7 for each simulation\n"
-          << "./gpies --sensitivity-analysis --num-sims 10 "
-             "--sensitivity-var flux-dpa-s --sensitivity-var-delta 1e-7\n\n";
-      return 1;
-    } else if (arg_consumer.has_arg("version")) {
-      std::cout << "G-PIES version " << GPIES_SEMANTIC_VERSION << "\n";
-      return 1;
-    } else if (arg_consumer.has_arg("generate-config-file")) {
-      std::string filename =
-          arg_consumer.get_value<std::string>("generate-config-file");
-      emit_config_yaml(filename);
-      return 1;
-    }
 
     // Redirect output to file
     if (arg_consumer.has_arg("output-file")) {
@@ -618,136 +765,12 @@ int main(int argc, char* argv[]) {
     // --------------------------------------------------------------------------------------------
     // arg parsing
     if (arg_consumer.has_arg("db", "")) {  // DATABASE
-      if (arg_consumer.has_arg("history", "db")) {
-        // print simulation history
-        print_simulation_history(db, false);
-      } else if (arg_consumer.has_arg("history-detail", "db")) {
-        // print detailed simulation history
-        print_simulation_history(db, true);
-      } else if (arg_consumer.has_arg("clear", "db")) {
-        // clear history
-        if (db.delete_simulations()) {
-          std::cout << "Simulation History Cleared. " << db.changes()
-                    << " Simulation(s) Deleted.\n";
-        }
-      } else if (arg_consumer.has_arg("run", "db")) {
-        // rerun a previous simulation by database id
-        int sim_sqlite_id = arg_consumer.get_value<int>("run", "db");
-        HistorySimulation sim;
-        if (db.read_simulation(sim_sqlite_id, sim)) {
-          // TODO - support storing sensitivity analysis
-          std::cout << "Running simulation " << sim_sqlite_id << std::endl;
-          cd_config.max_cluster_size = sim.max_cluster_size;
-          cd_config.simulation_time = sim.simulation_time;
-
-          // TODO - Support sample interval and set a max resolution to
-          // avoid bloating the database. For this to work we will need a
-          // list of ClusterDynamicState objects and a SQLite intersection
-          // table.
-          cd_config.time_delta = cd_config.sample_interval = sim.time_delta;
-
-          cd_config.material = sim.material;
-          cd_config.reactor = sim.reactor;
-
-          ClusterDynamics cd = create_cd(arg_consumer);
-          run_simulation(cd);
-        } else {
-          std::cerr << "Could not find simulation " << sim_sqlite_id
-                    << std::endl;
-        }
-      }
+      database(arg_consumer, db);
     } else if (arg_consumer.has_arg("sensitivity-analysis",
                                     "")) {  // SENSITIVITY ANALYSIS
-      std::string sa_var_name;
-      // Set sensitivity analysis mode to true
-      if (arg_consumer.has_arg("num-sims", "sensitivity-analysis") &&
-          arg_consumer.has_arg("sensitivity-var", "sensitivity-analysis") &&
-          arg_consumer.has_arg("sensitivity-var-delta",
-                               "sensitivity-analysis")) {
-        cd_config.sa_num_simulations =
-            arg_consumer.get_value<int>("num-sims", "sensitivity-analysis");
-
-        if (cd_config.sa_num_simulations <= 0)
-          throw GpiesException(
-              "Value for num-sims must be a positive, non-zero integer.");
-
-        cd_config.sa_var = arg_consumer.get_sa_var();
-        sa_var_name = arg_consumer.get_value<std::string>(
-            "sensitivity-var", "sensitivity-analysis");
-
-        cd_config.sa_var_delta = arg_consumer.get_value<gp_float>(
-            "sensitivity-var-delta", "sensitivity-analysis");
-      } else {
-        throw GpiesException(
-            "Missing required arguments for sensitivity "
-            "analysis.\n--help to see required variables.");
-      }
-
-      std::cout << "\nSENSITIVITY ANALYSIS MODE\n"
-                << "# of simulations: " << cd_config.sa_num_simulations
-                << "  sensitivity variable: " << sa_var_name
-                << "  sensitivity variable delta: " << cd_config.sa_var_delta
-                << "\n\n";
-
-      gp_float sa_var_value = get_sa_var_value();
-
-      // --------------------------------------------------------------------------------------------
-      // sensitivity analysis simulation loop
-      for (size_t n = 0; n < cd_config.sa_num_simulations; n++) {
-        ClusterDynamics cd = create_cd(arg_consumer);
-        ClusterDynamicsState state;
-
-        if (n > 0) os << "\n";  // visual divider for consecutive sims
-
-        if (csv) {
-          os << "simulation " << n + 1
-             << ",sensitivity variable: " << sa_var_name
-             << ",current value: " << sa_var_value << ",current delta: "
-             << static_cast<gp_float>(n) * cd_config.sa_var_delta << "\n\n";
-          os << "time (s),cluster size,"
-                "interstitials / cm^3,vacancies / cm^3\n";
-        } else {
-          os << "simulation " << n + 1
-             << "\tsensitivity variable: " << sa_var_name
-             << "\tcurrent value: " << sa_var_value << "\tcurrent delta: "
-             << static_cast<gp_float>(n) * cd_config.sa_var_delta << std::endl;
-        }
-
-        print_start_message();
-
-        for (gp_float t = 0; t < cd_config.simulation_time; t = state.time) {
-          // run simulation for this time slice
-          state = cd.run(cd_config.time_delta, cd_config.sample_interval);
-
-          if (step_print) {
-            step_print_prompt(state);
-          } else if (csv) {
-            print_csv(state);
-          }
-        }
-
-        // ----------------------------------------------------------------
-        // print results
-        if (!step_print && !csv) {
-          print_state(state);
-        }
-        // ----------------------------------------------------------------
-
-        sa_var_value = sa_update_config();
-      }
-      // --------------------------------------------------------------------
+      sensitivity_analysis(arg_consumer);
     } else {  // CLUSTER DYNAMICS OPTIONS
-      ClusterDynamics cd = create_cd(arg_consumer);
-      ClusterDynamicsState state = run_simulation(cd);
-
-      // --------------------------------------------------------------------------------------------
-      // Write simulation result to the database
-      HistorySimulation history_simulation(
-          cd_config.max_cluster_size, cd_config.simulation_time,
-          cd_config.time_delta, cd_config.reactor, cd_config.material, state);
-
-      db.create_simulation(history_simulation);
-      // --------------------------------------------------------------------------------------------
+      cluster_dynamics_options(arg_consumer, db);
     }
   } catch (const ClusterDynamicsException& e) {
     std::cerr << "A simulation error occured.\n"
