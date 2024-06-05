@@ -489,7 +489,9 @@ ClusterDynamics create_cd([[maybe_unused]] CliArgConsumer& arg_consumer) {
   return ClusterDynamics::cpu(cd_config);
 }
 
-void option_description_setup(po::options_description &all_options, po::options_description &db_options, po::options_description &sa_options){
+void option_description_setup(po::options_description &all_options, 
+                              po::options_description &db_options, 
+                              po::options_description &sa_options) {
   all_options.add_options()("help", "display help message")(
         "version", "display version information")(
 #if defined(USE_CUDA)
@@ -560,7 +562,7 @@ void option_description_setup(po::options_description &all_options, po::options_
     all_options.add(db_options).add(sa_options);
 }
 
-int print_help_msg(CliArgConsumer &arg_consumer, po::options_description &all_options){
+int print_help_msg(CliArgConsumer &arg_consumer, po::options_description &all_options) {
   if (arg_consumer.has_arg("help")) {
     std::cout << all_options << "\n";
     return 1;
@@ -589,7 +591,7 @@ int print_help_msg(CliArgConsumer &arg_consumer, po::options_description &all_op
   return 0;
 }
 
-void database(CliArgConsumer &arg_consumer, ClientDb &db){
+void database(CliArgConsumer &arg_consumer, ClientDb &db) {
   if (arg_consumer.has_arg("history", "db")) {
     // print simulation history
     print_simulation_history(db, false);
@@ -630,7 +632,7 @@ void database(CliArgConsumer &arg_consumer, ClientDb &db){
   }
 }
 
-void sensitivity_analysis(CliArgConsumer &arg_consumer){
+void sensitivity_analysis(CliArgConsumer &arg_consumer) {
   std::string sa_var_name;
   // Set sensitivity analysis mode to true
   if (arg_consumer.has_arg("num-sims", "sensitivity-analysis") &&
@@ -711,7 +713,7 @@ void sensitivity_analysis(CliArgConsumer &arg_consumer){
   // --------------------------------------------------------------------
 }
 
-void cluster_dynamics_options(CliArgConsumer& arg_consumer, ClientDb &db){
+void cluster_dynamics_options(CliArgConsumer& arg_consumer, ClientDb &db) {
   ClusterDynamics cd = create_cd(arg_consumer);
   ClusterDynamicsState state = run_simulation(cd);
 
